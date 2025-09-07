@@ -1,0 +1,59 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: l4h-sql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+      - SA_PASSWORD=SecureTest123!
+    ports:
+      - "14333:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  upload-gateway:
+    build:
+      context: ..
+      dockerfile: src/upload-gateway/Dockerfile
+    environment:
+      ASPNETCORE_URLS: "http://0.0.0.0:7070"
+      Uploads__BasePath: "/data/uploads"
+      Uploads__QuarantineSubdir: "quarantine"
+      Uploads__Token__SigningKey: "dev-change-me"
+      Uploads__Token__TtlMinutes: 30
+      Uploads__MaxSizeMB: 25
+    ports:
+      - "7070:7070"
+    volumes:
+      - uploads-data:/data/uploads
+
+  api:
+    build:
+      context: ..
+      dockerfile: src/api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://0.0.0.0:8080"
+      # Connection string used when the API runs inside compose (talk to the service name)
+      ConnectionStrings__SqlServer: "Server=sqlserver,1433;Database=L4H;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;"
+      # Admin seed password
+      ADMIN_SEED_PASSWORD: "SecureTest123!"
+      Uploads__BasePath: "/data/uploads"
+      Uploads__QuarantineSubdir: "quarantine"
+      Uploads__CleanSubdir: "clean"
+      Uploads__Gateway__PublicBaseUrl: "http://localhost:7070"
+      Uploads__Token__SigningKey: "dev-change-me"
+      Uploads__Token__TtlMinutes: 30
+      Uploads__MaxSizeMB: 25
+      Uploads__AllowedExtensions: "pdf,docx,doc,png,jpg,jpeg,tiff,gif,heic"
+    depends_on:
+      - sqlserver
+      - upload-gateway
+    volumes:
+      - uploads-data:/data/uploads
+    ports:
+      - "8765:8080"
+
+volumes:
+  mssql-data:
+  uploads-data:

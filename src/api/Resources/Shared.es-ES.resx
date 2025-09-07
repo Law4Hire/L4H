@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Auth.LoginFailed" xml:space="preserve">
+    <value>Correo o contraseña inválidos.</value>
+  </data>
+  <data name="Cases.InvalidTransition" xml:space="preserve">
+    <value>Transición de estado inválida.</value>
+  </data>
+  <data name="Pricing.MissingVisaType" xml:space="preserve">
+    <value>Tipo de visa no encontrado o no activo.</value>
+  </data>
+  <data name="Admin.Forbidden" xml:space="preserve">
+    <value>Acceso de administrador requerido.</value>
+  </data>
+  <data name="Admin.PricingUpdated" xml:space="preserve">
+    <value>Información de precios actualizada exitosamente.</value>
+  </data>
+  <data name="Admin.VisaTypeNotFound" xml:space="preserve">
+    <value>Tipo de visa no encontrado.</value>
+  </data>
+  <data name="Interview.SessionNotFound" xml:space="preserve">
+    <value>Sesión de entrevista no encontrada.</value>
+  </data>
+  <data name="Interview.Forbidden" xml:space="preserve">
+    <value>No tienes acceso a esta sesión de entrevista.</value>
+  </data>
+  <data name="Interview.Locked" xml:space="preserve">
+    <value>La entrevista está bloqueada y no se puede modificar.</value>
+  </data>
+  <data name="Interview.AnswerSaved" xml:space="preserve">
+    <value>Respuesta guardada exitosamente.</value>
+  </data>
+  <data name="Interview.Completed" xml:space="preserve">
+    <value>Entrevista completada exitosamente.</value>
+  </data>
+  <data name="Interview.Rationale.TourismB2" xml:space="preserve">
+    <value>Basado en tu propósito de viaje, se recomienda una Visa de Turista B-2.</value>
+  </data>
+  <data name="Interview.Rationale.EmploymentH1B" xml:space="preserve">
+    <value>Basado en tu empleo con patrocinador, se recomienda una Visa de Ocupación Especializada H-1B.</value>
+  </data>
+  <data name="Seeds.CountriesLoaded" xml:space="preserve">
+    <value>Datos semilla de países cargados exitosamente.</value>
+  </data>
+  <data name="Seeds.SubdivisionsLoaded" xml:space="preserve">
+    <value>Datos semilla de subdivisiones de EE.UU. cargados exitosamente.</value>
+  </data>
+  <data name="Seeds.VisaClassesLoaded" xml:space="preserve">
+    <value>Datos semilla de clases de visa cargados exitosamente.</value>
+  </data>
+  <!-- Visa Change Resources -->
+  <data name="VisaChange.StaffOnly" xml:space="preserve">
+    <value>Solo los miembros del personal pueden proponer cambios de visa.</value>
+  </data>
+  <data name="VisaChange.CaseLocked" xml:space="preserve">
+    <value>Este caso está bloqueado y no se puede modificar.</value>
+  </data>
+  <data name="VisaChange.PendingExists" xml:space="preserve">
+    <value>Ya existe una solicitud de cambio de visa pendiente para este caso.</value>
+  </data>
+  <data name="VisaChange.VisaTypeNotFound" xml:space="preserve">
+    <value>El tipo de visa solicitado no fue encontrado o no está activo.</value>
+  </data>
+  <data name="VisaChange.SameVisaType" xml:space="preserve">
+    <value>No se puede cambiar al mismo tipo de visa.</value>
+  </data>
+  <data name="VisaChange.PriceCalculationFailed" xml:space="preserve">
+    <value>No se pudo calcular la diferencia de precio para este cambio de visa.</value>
+  </data>
+  <data name="VisaChange.RequestNotFound" xml:space="preserve">
+    <value>Solicitud de cambio de visa no encontrada.</value>
+  </data>
+  <data name="VisaChange.ClientOnly" xml:space="preserve">
+    <value>Solo el propietario del caso puede aprobar o rechazar solicitudes de cambio de visa.</value>
+  </data>
+  <data name="VisaChange.NotPending" xml:space="preserve">
+    <value>Esta solicitud de cambio de visa ya no está pendiente.</value>
+  </data>
+  <data name="VisaChange.Expired" xml:space="preserve">
+    <value>Esta solicitud de cambio de visa ha expirado.</value>
+  </data>
+  <data name="VisaChange.Approved" xml:space="preserve">
+    <value>Solicitud de cambio de visa aprobada exitosamente.</value>
+  </data>
+  <data name="VisaChange.Rejected" xml:space="preserve">
+    <value>Solicitud de cambio de visa rechazada.</value>
+  </data>
+  <!-- Appointment Resources -->
+  <data name="Appointments.AccessDenied" xml:space="preserve">
+    <value>No tienes acceso a esta cita.</value>
+  </data>
+  <data name="Appointments.ExistingActive" xml:space="preserve">
+    <value>Ya existe una cita activa para este caso.</value>
+  </data>
+  <data name="Appointments.NoStaffAvailable" xml:space="preserve">
+    <value>No hay miembros del personal disponibles en el horario solicitado.</value>
+  </data>
+  <data name="Appointments.SchedulingConflict" xml:space="preserve">
+    <value>El horario solicitado conflicta con citas existentes.</value>
+  </data>
+  <data name="Appointments.NotFound" xml:space="preserve">
+    <value>Cita no encontrada.</value>
+  </data>
+  <data name="Appointments.StaffMismatch" xml:space="preserve">
+    <value>Solo puedes modificar citas asignadas a ti.</value>
+  </data>
+  <data name="Appointments.CannotReschedule" xml:space="preserve">
+    <value>Esta cita no se puede reprogramar en su estado actual.</value>
+  </data>
+  <data name="Appointments.RescheduleLimit" xml:space="preserve">
+    <value>Has alcanzado el número máximo de solicitudes de reprogramación (2 por lado).</value>
+  </data>
+  <data name="Appointments.PendingReschedule" xml:space="preserve">
+    <value>Ya existe una solicitud de reprogramación pendiente para esta cita.</value>
+  </data>
+  <data name="Appointments.AllOptionsConflict" xml:space="preserve">
+    <value>Todas las opciones de reprogramación propuestas conflictan con citas existentes.</value>
+  </data>
+  <data name="Appointments.InvalidOption" xml:space="preserve">
+    <value>Por favor elige una opción válida (1, 2, o 3).</value>
+  </data>
+  <data name="Appointments.ProposalNotFound" xml:space="preserve">
+    <value>Propuesta de reprogramación no encontrada.</value>
+  </data>
+  <data name="Appointments.StaffResponseRequired" xml:space="preserve">
+    <value>Esta solicitud de reprogramación requiere una respuesta del personal.</value>
+  </data>
+  <data name="Appointments.ClientResponseRequired" xml:space="preserve">
+    <value>Esta solicitud de reprogramación requiere una respuesta del cliente.</value>
+  </data>
+  <data name="Appointments.ProposalNotPending" xml:space="preserve">
+    <value>Esta propuesta de reprogramación ya no está pendiente.</value>
+  </data>
+  <data name="Appointments.ProposalExpired" xml:space="preserve">
+    <value>Esta propuesta de reprogramación ha expirado.</value>
+  </data>
+  <data name="Appointments.ChosenOptionConflicts" xml:space="preserve">
+    <value>La opción de reprogramación elegida ahora conflicta con otras citas.</value>
+  </data>
+  <data name="Appointments.CannotCancel" xml:space="preserve">
+    <value>Esta cita no se puede cancelar en su estado actual.</value>
+  </data>
+  <!-- Forms Resources -->
+  <data name="Forms.Field.FullName" xml:space="preserve">
+    <value>Nombre Completo</value>
+  </data>
+  <data name="Forms.Field.BirthDate" xml:space="preserve">
+    <value>Fecha de Nacimiento</value>
+  </data>
+  <data name="Forms.TemplateNotFound" xml:space="preserve">
+    <value>Plantilla de formulario no encontrada.</value>
+  </data>
+  <data name="Forms.TemplateCreated" xml:space="preserve">
+    <value>Plantilla de formulario creada exitosamente.</value>
+  </data>
+  <data name="Forms.ValidationRequired" xml:space="preserve">
+    <value>Este campo obligatorio.</value>
+  </data>
+  <data name="Forms.ValidationInvalid" xml:space="preserve">
+    <value>Valor inválido para este campo.</value>
+  </data>
+  <data name="Forms.PdfGenerated" xml:space="preserve">
+    <value>PDF del formulario generado exitosamente.</value>
+  </data>
+  <data name="Forms.MissingRequiredField" xml:space="preserve">
+    <value>El campo obligatorio '{fieldName}' falta o está vacío.</value>
+  </data>
+  <data name="Forms.CaseNotAccessible" xml:space="preserve">
+    <value>No tienes acceso a este caso para la generación de formularios.</value>
+  </data>
+  <!-- Admin Settings Resources -->
+  <data name="AdminSettings.Updated" xml:space="preserve">
+    <value>Configuraciones de administrador actualizadas exitosamente.</value>
+  </data>
+  <data name="AdminSettings.ValidationError" xml:space="preserve">
+    <value>Valor de configuración inválido proporcionado.</value>
+  </data>
+  <data name="AdminSettings.RetentionDaysInvalid" xml:space="preserve">
+    <value>Los días de retención deben estar entre 1 y 3650.</value>
+  </data>
+  <data name="AdminSettings.UploadSizeInvalid" xml:space="preserve">
+    <value>El tamaño de carga debe estar entre 1 y 500 MB.</value>
+  </data>
+  <data name="AdminSettings.BufferMinutesInvalid" xml:space="preserve">
+    <value>Los minutos de buffer deben estar entre 0 y 120.</value>
+  </data>
+  <!-- Retention Resources -->
+  <data name="Retention.ProcessingStarted" xml:space="preserve">
+    <value>Procesamiento de retención iniciado.</value>
+  </data>
+  <data name="Retention.ProcessingCompleted" xml:space="preserve">
+    <value>Procesamiento de retención completado. {itemCount} elementos procesados.</value>
+  </data>
+  <data name="Retention.ItemQueued" xml:space="preserve">
+    <value>Elemento puesto en cola para {action}: {category} - {targetId}</value>
+  </data>
+  <data name="Retention.ActionExecuted" xml:space="preserve">
+    <value>Acción de retención ejecutada: {action} en {targetId}</value>
+  </data>
+  
+  <!-- Scraper Messages -->
+  <data name="Scraper.RunStarted" xml:space="preserve">
+    <value>Iniciando ejecución del scraper para {0} países y {1} tipos de visa</value>
+  </data>
+  <data name="Scraper.RunCompleted" xml:space="preserve">
+    <value>Ejecución del scraper completada. Procesados: {0} países, Borradores: {1}, Sin cambios: {2}</value>
+  </data>
+  <data name="Scraper.DraftCreated" xml:space="preserve">
+    <value>Borrador creado para {0} {1} versión {2} con {3} cambios</value>
+  </data>
+  <data name="Scraper.NoChangesDetected" xml:space="preserve">
+    <value>No se detectaron cambios para {0} {1}</value>
+  </data>
+  <data name="Scraper.ProcessingCountry" xml:space="preserve">
+    <value>Procesando flujos de trabajo para {0}</value>
+  </data>
+  <data name="Scraper.ProcessingVisaType" xml:space="preserve">
+    <value>Procesando tipo de visa {0} para {1}</value>
+  </data>
+  <data name="Scraper.FallbackToUscis" xml:space="preserve">
+    <value>Fallback a USCIS para {0} tipo de visa {1}</value>
+  </data>
+  <data name="Scraper.AndorraUsesSpain" xml:space="preserve">
+    <value>Usando médicos del panel de {1} para {0}</value>
+  </data>
+  <data name="Scraper.ContentHashMatch" xml:space="preserve">
+    <value>Hash de contenido coincide - omitiendo procesamiento para {0} {1}</value>
+  </data>
+  <data name="Scraper.DigestCreated" xml:space="preserve">
+    <value>Resumen diario creado con {0} elementos para revisión administrativa</value>
+  </data>
+
+  <!-- Workflow Messages -->
+  <data name="Workflow.MissingParameters" xml:space="preserve">
+    <value>Los parámetros de tipo de visa y país son obligatorios</value>
+  </data>
+  <data name="Workflow.VisaTypeNotFound" xml:space="preserve">
+    <value>Tipo de visa '{0}' no encontrado</value>
+  </data>
+  <data name="Workflow.LookupNotFound" xml:space="preserve">
+    <value>No se encontró flujo de trabajo aprobado para los criterios especificados</value>
+  </data>
+  <data name="Workflow.LookupOk" xml:space="preserve">
+    <value>Búsqueda exitosa de flujo de trabajo: {0} {1} versión {2}</value>
+  </data>
+  <data name="Workflow.NotFound" xml:space="preserve">
+    <value>Flujo de trabajo no encontrado</value>
+  </data>
+  <data name="Workflow.NotPending" xml:space="preserve">
+    <value>El flujo de trabajo no está pendiente de aprobación</value>
+  </data>
+  <data name="Workflow.PendingStatus" xml:space="preserve">
+    <value>Pendiente de Aprobación</value>
+  </data>
+  <data name="Workflow.Approved" xml:space="preserve">
+    <value>Flujo de trabajo {0} aprobado por usuario {1}</value>
+  </data>
+  <data name="Workflow.ApprovedSuccess" xml:space="preserve">
+    <value>Flujo de trabajo aprobado exitosamente</value>
+  </data>
+  <data name="Workflow.RejectedSuccess" xml:space="preserve">
+    <value>Flujo de trabajo rechazado exitosamente</value>
+  </data>
+
+  <!-- Digest Messages -->
+  <data name="Digest.DailyWorkflowSummary" xml:space="preserve">
+    <value>Resumen Diario de Flujos de Trabajo - {0:yyyy-MM-dd}</value>
+  </data>
+  <data name="Digest.PendingWorkflows" xml:space="preserve">
+    <value>{0} flujos de trabajo pendientes de revisión</value>
+  </data>
+  <data name="Digest.NewDraftsAvailable" xml:space="preserve">
+    <value>Nuevos borradores disponibles para revisión administrativa</value>
+  </data>
+  <data name="Digest.CoalescedItems" xml:space="preserve">
+    <value>Este resumen contiene {0} elementos agrupados del día</value>
+  </data>
+  <data name="Digest.NoItemsToday" xml:space="preserve">
+    <value>Sin elementos de revisión para hoy</value>
+  </data>
+
+  <!-- Workflow Error Messages -->
+  <data name="Error.WorkflowProcessing" xml:space="preserve">
+    <value>Error procesando flujo de trabajo para {0}: {1}</value>
+  </data>
+  <data name="Error.ScrapingFailed" xml:space="preserve">
+    <value>Falló el scraping para {0} tipo de visa {1}: {2}</value>
+  </data>
+  <data name="Error.DatabaseSave" xml:space="preserve">
+    <value>Error guardando en base de datos: {0}</value>
+  </data>
+  <data name="Error.UnauthorizedAccess" xml:space="preserve">
+    <value>Acceso no autorizado a este recurso</value>
+  </data>
+  <data name="Error.InvalidRequest" xml:space="preserve">
+    <value>Solicitud inválida: {0}</value>
+  </data>
+  <!-- Workflow Lookup Resources -->
+  <data name="Workflow.LookupNotFound" xml:space="preserve">
+    <value>No se encontró el flujo de trabajo.</value>
+  </data>
+  <data name="Workflow.LookupOk" xml:space="preserve">
+    <value>Búsqueda de flujo de trabajo exitosa para tipo de visa '{0}', país '{1}', versión '{2}'.</value>
+  </data>
+  
+  <!-- GraphMail Resources -->
+  <data name="GraphMail.TestEmailSent" xml:space="preserve">
+    <value>Correo enviado exitosamente</value>
+  </data>
+  <data name="GraphMail.AdminOnly" xml:space="preserve">
+    <value>Este endpoint solo está disponible para administradores.</value>
+  </data>
+</root>

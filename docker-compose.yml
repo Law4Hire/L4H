@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: l4h-sqlserver
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: SecureTest123!
+      MSSQL_PID: Express
+    ports:
+      - "14333:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P SecureTest123! -Q 'SELECT 1'"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  api:
+    build:
+      context: .
+      dockerfile: src/api/Dockerfile
+    container_name: l4h-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=L4H;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;
+      - Logging__LogLevel__Default=Information
+      - ADMIN_SEED_PASSWORD=SecureTest123!
+    ports:
+      - "5000:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./data/uploads:/app/uploads
+    restart: unless-stopped
+
+  scraper:
+    build:
+      context: .
+      dockerfile: src/scraper/Dockerfile
+    container_name: l4h-scraper
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=L4H;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;
+      - Logging__LogLevel__Default=Information
+      - ScraperSettings__IntervalMinutes=4320  # 3 days
+      - ScraperSettings__EnabledCountries=ES,US,AD
+      - ScraperSettings__EnabledVisaTypes=H1B,B2,F1
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./data/scraped:/data/scraped
+      - ./tests/fixtures:/app/fixtures
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+    driver: local

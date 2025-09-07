@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    env:
+      DOTNET_ENVIRONMENT: Development
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Run unit and integration tests
+      run: dotnet test --no-build --configuration Release --verbosity normal --filter "Category!=E2E"
+      
+    - name: Build Docker image
+      run: |
+        docker build -f src/api/Dockerfile -t ghcr.io/l4h/l4h-api:${{ github.sha }} .
+        
+    - name: Test Docker image
+      run: |
+        docker run --rm -d --name l4h-test -p 8080:8080 ghcr.io/l4h/l4h-api:${{ github.sha }}
+        sleep 10
+        curl -f http://localhost:8080/healthz
+        docker stop l4h-test
+        
+  e2e-tests:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || contains(github.event.head_commit.message, '[e2e]'))
+    
+    env:
+      DOTNET_ENVIRONMENT: Testing
+      E2E_UI: 1
+      
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: SecureTest123!
+          MSSQL_PID: Developer
+        ports:
+          - 14333:1433
+        options: --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P SecureTest123! -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Setup Node.js (for Playwright)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Install Playwright browsers
+      run: |
+        cd tests/e2e.ui.tests
+        npx playwright install --with-deps
+        
+    - name: Wait for SQL Server
+      run: |
+        for i in {1..30}; do
+          if /opt/mssql-tools/bin/sqlcmd -S localhost,14333 -U sa -P SecureTest123! -Q "SELECT 1" &> /dev/null; then
+            echo "SQL Server is ready"
+            break
+          fi
+          echo "Waiting for SQL Server... ($i/30)"
+          sleep 2
+        done
+        
+    - name: Run E2E tests
+      run: |
+        export ConnectionStrings__SqlServer="Server=localhost,14333;Database=L4H_E2E;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
+        dotnet test tests/e2e.ui.tests --configuration Release --verbosity normal --logger "trx;LogFileName=e2e-results.trx"
+        
+    - name: Upload E2E test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-test-results
+        path: |
+          tests/e2e.ui.tests/TestResults/
+          tests/e2e.ui.tests/playwright-report/
+          tests/e2e.ui.tests/playwright-results.json
+        retention-days: 7
+        
+    - name: Upload E2E screenshots and videos
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: e2e-failures
+        path: |
+          tests/e2e.ui.tests/playwright-report/
+          tests/e2e.ui.tests/test-results/
+        retention-days: 14

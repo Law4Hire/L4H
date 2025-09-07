@@ -1,0 +1,32 @@
+[
+  {
+    "iso2": "US",
+    "iso3": "USA", 
+    "name": "United States",
+    "isActive": true
+  },
+  {
+    "iso2": "IN",
+    "iso3": "IND",
+    "name": "India", 
+    "isActive": true
+  },
+  {
+    "iso2": "PH",
+    "iso3": "PHL",
+    "name": "Philippines",
+    "isActive": true
+  },
+  {
+    "iso2": "ES",
+    "iso3": "ESP",
+    "name": "Spain",
+    "isActive": true
+  },
+  {
+    "iso2": "AD",
+    "iso3": "AND",
+    "name": "Andorra",
+    "isActive": true
+  }
+]

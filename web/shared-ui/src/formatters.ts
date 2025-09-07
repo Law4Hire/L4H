@@ -1,0 +1,239 @@
+import { isRTL } from './i18n'
+
+// Currency formatting
+export function formatCurrency(
+  amount: number, 
+  currency: string = 'USD', 
+  locale?: string
+): string {
+  const currentLocale = locale || getCurrentLocale()
+  
+  try {
+    return new Intl.NumberFormat(currentLocale, {
+      style: 'currency',
+      currency: currency,
+    }).format(amount)
+  } catch (error) {
+    console.warn('Currency formatting failed, using fallback:', error)
+    return `${currency} ${amount.toFixed(2)}`
+  }
+}
+
+// Date formatting
+export function formatDate(
+  date: Date | string, 
+  options?: Intl.DateTimeFormatOptions,
+  locale?: string
+): string {
+  const currentLocale = locale || getCurrentLocale()
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }
+  
+  try {
+    return new Intl.DateTimeFormat(currentLocale, {
+      ...defaultOptions,
+      ...options,
+    }).format(dateObj)
+  } catch (error) {
+    console.warn('Date formatting failed, using fallback:', error)
+    return dateObj.toLocaleDateString()
+  }
+}
+
+// Time formatting
+export function formatTime(
+  date: Date | string, 
+  options?: Intl.DateTimeFormatOptions,
+  locale?: string
+): string {
+  const currentLocale = locale || getCurrentLocale()
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }
+  
+  try {
+    return new Intl.DateTimeFormat(currentLocale, {
+      ...defaultOptions,
+      ...options,
+    }).format(dateObj)
+  } catch (error) {
+    console.warn('Time formatting failed, using fallback:', error)
+    return dateObj.toLocaleTimeString()
+  }
+}
+
+// DateTime formatting
+export function formatDateTime(
+  date: Date | string, 
+  options?: Intl.DateTimeFormatOptions,
+  locale?: string
+): string {
+  const currentLocale = locale || getCurrentLocale()
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }
+  
+  try {
+    return new Intl.DateTimeFormat(currentLocale, {
+      ...defaultOptions,
+      ...options,
+    }).format(dateObj)
+  } catch (error) {
+    console.warn('DateTime formatting failed, using fallback:', error)
+    return dateObj.toLocaleString()
+  }
+}
+
+// Number formatting
+export function formatNumber(
+  number: number, 
+  options?: Intl.NumberFormatOptions,
+  locale?: string
+): string {
+  const currentLocale = locale || getCurrentLocale()
+  
+  try {
+    return new Intl.NumberFormat(currentLocale, options).format(number)
+  } catch (error) {
+    console.warn('Number formatting failed, using fallback:', error)
+    return number.toString()
+  }
+}
+
+// Relative time formatting (e.g., "2 hours ago")
+export function formatRelativeTime(
+  date: Date | string, 
+  options?: Intl.RelativeTimeFormatOptions,
+  locale?: string
+): string {
+  const currentLocale = locale || getCurrentLocale()
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  const now = new Date()
+  const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000)
+  
+  const defaultOptions: Intl.RelativeTimeFormatOptions = {
+    numeric: 'auto',
+  }
+  
+  try {
+    const rtf = new Intl.RelativeTimeFormat(currentLocale, {
+      ...defaultOptions,
+      ...options,
+    })
+    
+    // Determine the appropriate unit and value
+    if (Math.abs(diffInSeconds) < 60) {
+      return rtf.format(diffInSeconds, 'second')
+    } else if (Math.abs(diffInSeconds) < 3600) {
+      return rtf.format(Math.floor(diffInSeconds / 60), 'minute')
+    } else if (Math.abs(diffInSeconds) < 86400) {
+      return rtf.format(Math.floor(diffInSeconds / 3600), 'hour')
+    } else if (Math.abs(diffInSeconds) < 2592000) {
+      return rtf.format(Math.floor(diffInSeconds / 86400), 'day')
+    } else if (Math.abs(diffInSeconds) < 31536000) {
+      return rtf.format(Math.floor(diffInSeconds / 2592000), 'month')
+    } else {
+      return rtf.format(Math.floor(diffInSeconds / 31536000), 'year')
+    }
+  } catch (error) {
+    console.warn('Relative time formatting failed, using fallback:', error)
+    return formatDateTime(dateObj, { month: 'short', day: 'numeric' })
+  }
+}
+
+// Get current locale from i18n
+function getCurrentLocale(): string {
+  // Try to get from i18n first
+  if (typeof window !== 'undefined' && window.i18n) {
+    return window.i18n.language
+  }
+  
+  // Fallback to browser locale
+  return navigator.language || 'en-US'
+}
+
+// File size formatting
+export function formatFileSize(bytes: number, locale?: string): string {
+  const currentLocale = locale || getCurrentLocale()
+  
+  if (bytes === 0) return '0 Bytes'
+  
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  
+  const size = bytes / Math.pow(k, i)
+  
+  try {
+    return new Intl.NumberFormat(currentLocale, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    }).format(size) + ' ' + sizes[i]
+  } catch (error) {
+    console.warn('File size formatting failed, using fallback:', error)
+    return size.toFixed(1) + ' ' + sizes[i]
+  }
+}
+
+// Percentage formatting
+export function formatPercentage(
+  value: number, 
+  options?: Intl.NumberFormatOptions,
+  locale?: string
+): string {
+  const currentLocale = locale || getCurrentLocale()
+  
+  try {
+    return new Intl.NumberFormat(currentLocale, {
+      style: 'percent',
+      ...options,
+    }).format(value / 100)
+  } catch (error) {
+    console.warn('Percentage formatting failed, using fallback:', error)
+    return `${value.toFixed(1)}%`
+  }
+}
+
+// List formatting (e.g., "apple, banana, and orange")
+export function formatList(
+  items: string[], 
+  options?: Intl.ListFormatOptions,
+  locale?: string
+): string {
+  const currentLocale = locale || getCurrentLocale()
+  
+  try {
+    return new Intl.ListFormat(currentLocale, {
+      type: 'conjunction',
+      ...options,
+    }).format(items)
+  } catch (error) {
+    console.warn('List formatting failed, using fallback:', error)
+    return items.join(', ')
+  }
+}
+
+// Declare global i18n for type safety
+declare global {
+  interface Window {
+    i18n?: {
+      language: string
+    }
+  }
+}

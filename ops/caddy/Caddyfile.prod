@@ -1,0 +1,28 @@
+{
+  email {env.LE_EMAIL}
+  auto_https disable_redirects
+}
+
+{env.L4H_DOMAIN} {
+  encode zstd gzip
+  root * /srv/www/l4h
+  file_server
+  handle_path /api/* {
+    reverse_proxy api:8080
+  }
+  handle_path /gateway/* {
+    reverse_proxy upload-gateway:7070
+  }
+}
+
+{env.CANNLAW_DOMAIN} {
+  encode zstd gzip
+  root * /srv/www/cannlaw
+  file_server
+  handle_path /api/* {
+    reverse_proxy api:8080
+  }
+  handle_path /gateway/* {
+    reverse_proxy upload-gateway:7070
+  }
+}

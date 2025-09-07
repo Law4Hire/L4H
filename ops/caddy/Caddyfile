@@ -1,0 +1,29 @@
+l4h.localhost:8765 {
+    reverse_proxy api:8080
+    
+    log {
+        output stdout
+        format console
+    }
+    
+    header {
+        # Security headers
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+}
+
+# Frontend development proxies
+l4h.localhost {
+    reverse_proxy /api 127.0.0.1:8765
+    reverse_proxy /gateway 127.0.0.1:7070
+    reverse_proxy 127.0.0.1:5173
+}
+
+cannlaw.localhost {
+    reverse_proxy /api 127.0.0.1:8765
+    reverse_proxy /gateway 127.0.0.1:7070
+    reverse_proxy 127.0.0.1:5174
+}

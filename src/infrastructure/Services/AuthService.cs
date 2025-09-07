@@ -1,0 +1,220 @@
+using L4H.Infrastructure.Data;
+using L4H.Infrastructure.Entities;
+using L4H.Shared.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace L4H.Infrastructure.Services;
+
+public interface IAuthService
+{
+    Task<Result<AuthResponse>> SignupAsync(SignupRequest request);
+    Task<Result<AuthResponse>> LoginAsync(LoginRequest request);
+    Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token);
+    Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request);
+    Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request);
+}
+
+public class AuthService : IAuthService
+{
+    private readonly L4HDbContext _context;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IPasswordPolicy _passwordPolicy;
+    private readonly IJwtTokenService _jwtTokenService;
+    private readonly IRememberMeTokenService _rememberMeTokenService;
+    private readonly IPasswordResetTokenService _passwordResetService;
+    private readonly ILogger<AuthService> _logger;
+
+    public AuthService(
+        L4HDbContext context,
+        IPasswordHasher passwordHasher,
+        IPasswordPolicy passwordPolicy,
+        IJwtTokenService jwtTokenService,
+        IRememberMeTokenService rememberMeTokenService,
+        IPasswordResetTokenService passwordResetService,
+        ILogger<AuthService> logger)
+    {
+        _context = context;
+        _passwordHasher = passwordHasher;
+        _passwordPolicy = passwordPolicy;
+        _jwtTokenService = jwtTokenService;
+        _rememberMeTokenService = rememberMeTokenService;
+        _passwordResetService = passwordResetService;
+        _logger = logger;
+    }
+
+    public async Task<Result<AuthResponse>> SignupAsync(SignupRequest request)
+    {
+        // Validate password policy
+        var policyResult = _passwordPolicy.ValidatePassword(request.Password);
+        if (!policyResult.IsSuccess)
+        {
+            return Result<AuthResponse>.Failure(policyResult.Error!);
+        }
+
+        // Check if user already exists
+        var existingUser = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == request.Email).ConfigureAwait(false);
+
+        if (existingUser != null)
+        {
+            return Result<AuthResponse>.Failure("User with this email already exists");
+        }
+
+        // Create new user
+        var user = new User
+        {
+            Email = request.Email,
+            PasswordHash = _passwordHasher.HashPassword(request.Password),
+            EmailVerified = false,
+            CreatedAt = DateTime.UtcNow,
+            PasswordUpdatedAt = DateTime.UtcNow,
+            FailedLoginCount = 0,
+            IsAdmin = false
+        };
+
+        _context.Users.Add(user);
+        
+        // Create a case for the new user if none exists
+        var existingCase = await _context.Cases
+            .FirstOrDefaultAsync(c => c.UserId == user.Id).ConfigureAwait(false);
+
+        if (existingCase == null)
+        {
+            var newCase = new Case
+            {
+                UserId = user.Id,
+                Status = "pending",
+                CreatedAt = DateTime.UtcNow,
+                LastActivityAt = DateTime.UtcNow
+            };
+            _context.Cases.Add(newCase);
+        }
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Generate JWT token
+        var token = _jwtTokenService.GenerateAccessToken(user);
+
+        return Result<AuthResponse>.Success(new AuthResponse { Token = token, UserId = user.Id });
+    }
+
+    public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == request.Email).ConfigureAwait(false);
+
+        if (user == null)
+        {
+            return Result<AuthResponse>.Failure("Invalid email or password");
+        }
+
+        // Check if user is locked out
+        if (user.LockoutUntil.HasValue && user.LockoutUntil > DateTimeOffset.UtcNow)
+        {
+            return Result<AuthResponse>.Failure("Account is temporarily locked. Please try again later.");
+        }
+
+        // Verify password
+        if (!_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
+        {
+            // Increment failed login count
+            user.FailedLoginCount++;
+            
+            // Lock account after 5 failed attempts for 15 minutes
+            if (user.FailedLoginCount >= 5)
+            {
+                user.LockoutUntil = DateTimeOffset.UtcNow.AddMinutes(15);
+                _logger.LogWarning("Account locked for user {Email} after {FailedCount} failed login attempts", 
+                    user.Email, user.FailedLoginCount);
+            }
+            
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            return Result<AuthResponse>.Failure("Invalid email or password");
+        }
+
+        // Reset failed login count on successful login
+        user.FailedLoginCount = 0;
+        user.LockoutUntil = null;
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Generate JWT token
+        var token = _jwtTokenService.GenerateAccessToken(user);
+
+        var response = new AuthResponse { Token = token, UserId = user.Id };
+
+        return Result<AuthResponse>.Success(response);
+    }
+
+    public async Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token)
+    {
+        var user = await _rememberMeTokenService.ValidateAndRotateTokenAsync(token).ConfigureAwait(false);
+        
+        if (user == null)
+        {
+            return Result<AuthResponse>.Failure("Invalid or expired remember token");
+        }
+
+        // Generate new JWT token
+        var jwtToken = _jwtTokenService.GenerateAccessToken(user);
+
+        return Result<AuthResponse>.Success(new AuthResponse { Token = jwtToken, UserId = user.Id });
+    }
+
+    public async Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request)
+    {
+        var resetToken = await _passwordResetService.CreatePasswordResetTokenAsync(request.Email).ConfigureAwait(false);
+
+        // For now, log the reset URL to console/Serilog (email wiring later)
+        var resetUrl = $"https://localhost:8765/reset-password?token={Uri.EscapeDataString(resetToken)}";
+        _logger.LogInformation("Password reset requested for {Email}. Reset URL: {ResetUrl}", 
+            request.Email, resetUrl);
+
+        // Always return success to prevent email enumeration
+        return Result<MessageResponse>.Success(
+            new MessageResponse { Message = "If an account with that email exists, a password reset link has been sent." });
+    }
+
+    public async Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request)
+    {
+        // Validate new password policy
+        var policyResult = _passwordPolicy.ValidatePassword(request.NewPassword);
+        if (!policyResult.IsSuccess)
+        {
+            return Result<MessageResponse>.Failure(policyResult.Error!);
+        }
+
+        // Validate reset token
+        var tokenValidation = await _passwordResetService.ValidatePasswordResetTokenAsync(request.Token).ConfigureAwait(false);
+        if (!tokenValidation.IsSuccess)
+        {
+            return Result<MessageResponse>.Failure(tokenValidation.Error!);
+        }
+
+        var userId = tokenValidation.Value!;
+
+        // Get user
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+        if (user == null)
+        {
+            return Result<MessageResponse>.Failure("User not found");
+        }
+
+        // Update password
+        user.PasswordHash = _passwordHasher.HashPassword(request.NewPassword);
+        user.PasswordUpdatedAt = DateTime.UtcNow;
+        user.FailedLoginCount = 0;
+        user.LockoutUntil = null;
+
+        // Mark reset token as used
+        await _passwordResetService.MarkTokenAsUsedAsync(request.Token).ConfigureAwait(false);
+
+        // Revoke all remember-me tokens for security
+        await _rememberMeTokenService.RevokeAllTokensForUserAsync(userId).ConfigureAwait(false);
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Result<MessageResponse>.Success(
+            new MessageResponse { Message = "Password has been reset successfully." });
+    }
+}

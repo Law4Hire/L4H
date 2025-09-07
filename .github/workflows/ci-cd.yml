@@ -1,0 +1,233 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+  release:
+    types: [ published ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          web/l4h/package-lock.json
+          web/cannlaw/package-lock.json
+          web/shared-ui/package-lock.json
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test API and Infrastructure
+      run: dotnet test --no-build --verbosity normal
+
+    - name: Test UI Components
+      run: dotnet test tests/ui.wrap --no-build --verbosity normal
+
+    - name: Test E2E (optional)
+      if: env.E2E_UI == '1'
+      run: dotnet test tests/ui.e2e --no-build --verbosity normal
+      env:
+        E2E_UI: ${{ vars.E2E_UI }}
+
+    - name: Install UI dependencies
+      run: |
+        cd web/shared-ui && npm ci
+        cd ../l4h && npm ci
+        cd ../cannlaw && npm ci
+
+    - name: Build UI artifacts
+      run: |
+        cd web/l4h && npm run build
+        cd ../cannlaw && npm run build
+
+    - name: Verify UI builds
+      run: |
+        test -d web/l4h/dist
+        test -d web/cannlaw/dist
+        ls -la web/l4h/dist/
+        ls -la web/cannlaw/dist/
+
+  docker-build-push:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.CR_PAT }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-upload-gateway
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-scraper
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push API image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: src/api/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api:latest
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Build and push Upload Gateway image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: src/upload-gateway/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-upload-gateway:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-upload-gateway:latest
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Build and push Scraper image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: src/scraper/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-scraper:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-scraper:latest
+        labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    environment: production
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          web/l4h/package-lock.json
+          web/cannlaw/package-lock.json
+          web/shared-ui/package-lock.json
+
+    - name: Install UI dependencies
+      run: |
+        cd web/shared-ui && npm ci
+        cd ../l4h && npm ci
+        cd ../cannlaw && npm ci
+
+    - name: Build UI artifacts
+      run: |
+        cd web/l4h && npm run build
+        cd ../cannlaw && npm run build
+
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          # Create temporary directory for UI artifacts
+          mkdir -p /tmp/l4h-deploy
+          
+          # Stop existing services
+          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml down || true
+          
+          # Pull latest images
+          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml pull
+
+    - name: Copy UI artifacts to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        source: "web/l4h/dist/*,web/cannlaw/dist/*"
+        target: "/tmp/l4h-deploy/"
+
+    - name: Deploy UI artifacts and start services
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          # Copy UI artifacts to Docker volumes
+          docker run --rm -v l4h_web-l4h:/dst -v /tmp/l4h-deploy/l4h:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
+          docker run --rm -v l4h_web-cannlaw:/dst -v /tmp/l4h-deploy/cannlaw:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
+          
+          # Create production environment file
+          cat > ops/.env.prod << EOF
+          LE_EMAIL=${{ secrets.LE_EMAIL }}
+          L4H_DOMAIN=${{ secrets.L4H_DOMAIN }}
+          CANNLAW_DOMAIN=${{ secrets.CANNLAW_DOMAIN }}
+          SQL_SA_PASSWORD=${{ secrets.SQL_SA_PASSWORD }}
+          JWT_SIGNING_KEY=${{ secrets.JWT_SIGNING_KEY }}
+          ADMIN_SEED_PASSWORD=${{ secrets.ADMIN_SEED_PASSWORD }}
+          UPLOADS_TOKEN_SIGNING_KEY=${{ secrets.UPLOADS_TOKEN_SIGNING_KEY }}
+          GH_ORG=${{ github.repository_owner }}
+          IMAGE_TAG=${{ github.sha }}
+          EOF
+          
+          # Start services
+          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml up -d
+          
+          # Wait for services to be healthy
+          sleep 30
+          
+          # Clean up temporary files
+          rm -rf /tmp/l4h-deploy
+
+    - name: Smoke tests
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          # Test API health endpoints
+          curl -fsS https://${{ secrets.L4H_DOMAIN }}/api/healthz || exit 1
+          curl -fsS https://${{ secrets.CANNLAW_DOMAIN }}/api/healthz || exit 1
+          
+          # Test static file serving
+          curl -fsS https://${{ secrets.L4H_DOMAIN }}/ | grep -q "html" || exit 1
+          curl -fsS https://${{ secrets.CANNLAW_DOMAIN }}/ | grep -q "html" || exit 1
+          
+          echo "Deployment successful! All smoke tests passed."

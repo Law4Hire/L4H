@@ -1,0 +1,32 @@
+[
+  {
+    "code": "CA",
+    "name": "California",
+    "isState": true,
+    "isTerritory": false
+  },
+  {
+    "code": "NY",
+    "name": "New York",
+    "isState": true,
+    "isTerritory": false
+  },
+  {
+    "code": "TX",
+    "name": "Texas",
+    "isState": true,
+    "isTerritory": false
+  },
+  {
+    "code": "FL",
+    "name": "Florida",
+    "isState": true,
+    "isTerritory": false
+  },
+  {
+    "code": "PR",
+    "name": "Puerto Rico",
+    "isState": false,
+    "isTerritory": true
+  }
+]

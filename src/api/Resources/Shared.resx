@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Errors.PasswordPolicy" xml:space="preserve">
+    <value>Password must be at least 8 chars and meet complexity.</value>
+  </data>
+  <data name="Auth.LoginFailed" xml:space="preserve">
+    <value>Invalid email or password.</value>
+  </data>
+  <data name="Auth.EmailSent" xml:space="preserve">
+    <value>We've sent you an email with a link to continue.</value>
+  </data>
+  <data name="Cases.NotFound" xml:space="preserve">
+    <value>Case not found.</value>
+  </data>
+  <data name="Cases.Forbidden" xml:space="preserve">
+    <value>You do not have access to this case.</value>
+  </data>
+  <data name="Cases.InvalidTransition" xml:space="preserve">
+    <value>Invalid status transition.</value>
+  </data>
+  <data name="Cases.TransitionApplied" xml:space="preserve">
+    <value>Status updated successfully.</value>
+  </data>
+  <data name="Cases.AutoAgedInactive" xml:space="preserve">
+    <value>Case automatically aged to inactive due to inactivity.</value>
+  </data>
+  <data name="Pricing.MissingVisaType" xml:space="preserve">
+    <value>Visa type not found or not active.</value>
+  </data>
+  <data name="Pricing.MissingCountry" xml:space="preserve">
+    <value>Country code is required.</value>
+  </data>
+  <data name="Pricing.NoActiveRule" xml:space="preserve">
+    <value>No active pricing rule found for this combination.</value>
+  </data>
+  <data name="Pricing.SnapshotCreated" xml:space="preserve">
+    <value>Package selected and pricing snapshot created.</value>
+  </data>
+  <data name="Admin.Forbidden" xml:space="preserve">
+    <value>Admin access required.</value>
+  </data>
+  <data name="Admin.PricingUpdated" xml:space="preserve">
+    <value>Pricing information updated successfully.</value>
+  </data>
+  <data name="Admin.VisaTypeNotFound" xml:space="preserve">
+    <value>Visa type not found.</value>
+  </data>
+  <data name="Interview.SessionNotFound" xml:space="preserve">
+    <value>Interview session not found.</value>
+  </data>
+  <data name="Interview.Forbidden" xml:space="preserve">
+    <value>You do not have access to this interview session.</value>
+  </data>
+  <data name="Interview.Locked" xml:space="preserve">
+    <value>Interview is locked and cannot be modified.</value>
+  </data>
+  <data name="Interview.AnswerSaved" xml:space="preserve">
+    <value>Answer saved successfully.</value>
+  </data>
+  <data name="Interview.Completed" xml:space="preserve">
+    <value>Interview completed successfully.</value>
+  </data>
+  <data name="Interview.Rationale.TourismB2" xml:space="preserve">
+    <value>Based on your purpose of travel, a B-2 Tourist Visa is recommended.</value>
+  </data>
+  <data name="Interview.Rationale.EmploymentH1B" xml:space="preserve">
+    <value>Based on your employment with sponsor, an H-1B Specialty Occupation Visa is recommended.</value>
+  </data>
+  <data name="Seeds.CountriesLoaded" xml:space="preserve">
+    <value>Countries seed data loaded successfully.</value>
+  </data>
+  <data name="Seeds.SubdivisionsLoaded" xml:space="preserve">
+    <value>US Subdivisions seed data loaded successfully.</value>
+  </data>
+  <data name="Seeds.VisaClassesLoaded" xml:space="preserve">
+    <value>Visa Classes seed data loaded successfully.</value>
+  </data>
+
+  <!-- Workflow Lookup Resources -->
+  <data name="Workflow.LookupNotFound" xml:space="preserve">
+    <value>Workflow not found.</value>
+  </data>
+  <data name="Workflow.LookupOk" xml:space="preserve">
+    <value>Workflow lookup succeeded for VisaType '{0}', Country '{1}', Version '{2}'.</value>
+  </data>
+  <!-- Visa Change Resources -->
+  <data name="VisaChange.StaffOnly" xml:space="preserve">
+    <value>Only staff members can propose visa changes.</value>
+  </data>
+  <data name="VisaChange.CaseLocked" xml:space="preserve">
+    <value>This case is locked and cannot be modified.</value>
+  </data>
+  <data name="VisaChange.PendingExists" xml:space="preserve">
+    <value>There is already a pending visa change request for this case.</value>
+  </data>
+  <data name="VisaChange.VisaTypeNotFound" xml:space="preserve">
+    <value>The requested visa type was not found or is not active.</value>
+  </data>
+  <data name="VisaChange.SameVisaType" xml:space="preserve">
+    <value>Cannot change to the same visa type.</value>
+  </data>
+  <data name="VisaChange.PriceCalculationFailed" xml:space="preserve">
+    <value>Unable to calculate price difference for this visa change.</value>
+  </data>
+  <data name="VisaChange.RequestNotFound" xml:space="preserve">
+    <value>Visa change request not found.</value>
+  </data>
+  <data name="VisaChange.ClientOnly" xml:space="preserve">
+    <value>Only the case owner can approve or reject visa change requests.</value>
+  </data>
+  <data name="VisaChange.NotPending" xml:space="preserve">
+    <value>This visa change request is no longer pending.</value>
+  </data>
+  <data name="VisaChange.Expired" xml:space="preserve">
+    <value>This visa change request has expired.</value>
+  </data>
+  <data name="VisaChange.Approved" xml:space="preserve">
+    <value>Visa change request approved successfully.</value>
+  </data>
+  <data name="VisaChange.Rejected" xml:space="preserve">
+    <value>Visa change request rejected.</value>
+  </data>
+  <!-- Appointment Resources -->
+  <data name="Appointments.AccessDenied" xml:space="preserve">
+    <value>You do not have access to this appointment.</value>
+  </data>
+  <data name="Appointments.ExistingActive" xml:space="preserve">
+    <value>There is already an active appointment for this case.</value>
+  </data>
+  <data name="Appointments.NoStaffAvailable" xml:space="preserve">
+    <value>No staff members are available at the requested time.</value>
+  </data>
+  <data name="Appointments.SchedulingConflict" xml:space="preserve">
+    <value>The requested time conflicts with existing appointments.</value>
+  </data>
+  <data name="Appointments.NotFound" xml:space="preserve">
+    <value>Appointment not found.</value>
+  </data>
+  <data name="Appointments.StaffMismatch" xml:space="preserve">
+    <value>You can only modify appointments assigned to you.</value>
+  </data>
+  <data name="Appointments.CannotReschedule" xml:space="preserve">
+    <value>This appointment cannot be rescheduled in its current status.</value>
+  </data>
+  <data name="Appointments.RescheduleLimit" xml:space="preserve">
+    <value>You have reached the maximum number of reschedule requests (2 per side).</value>
+  </data>
+  <data name="Appointments.PendingReschedule" xml:space="preserve">
+    <value>There is already a pending reschedule request for this appointment.</value>
+  </data>
+  <data name="Appointments.AllOptionsConflict" xml:space="preserve">
+    <value>All proposed reschedule options conflict with existing appointments.</value>
+  </data>
+  <data name="Appointments.InvalidOption" xml:space="preserve">
+    <value>Please choose a valid option (1, 2, or 3).</value>
+  </data>
+  <data name="Appointments.ProposalNotFound" xml:space="preserve">
+    <value>Reschedule proposal not found.</value>
+  </data>
+  <data name="Appointments.StaffResponseRequired" xml:space="preserve">
+    <value>This reschedule request requires a staff response.</value>
+  </data>
+  <data name="Appointments.ClientResponseRequired" xml:space="preserve">
+    <value>This reschedule request requires a client response.</value>
+  </data>
+  <data name="Appointments.ProposalNotPending" xml:space="preserve">
+    <value>This reschedule proposal is no longer pending.</value>
+  </data>
+  <data name="Appointments.ProposalExpired" xml:space="preserve">
+    <value>This reschedule proposal has expired.</value>
+  </data>
+  <data name="Appointments.ChosenOptionConflicts" xml:space="preserve">
+    <value>The chosen reschedule option now conflicts with other appointments.</value>
+  </data>
+  <data name="Appointments.CannotCancel" xml:space="preserve">
+    <value>This appointment cannot be cancelled in its current status.</value>
+  </data>
+  <!-- Messages Resources -->
+  <data name="Messages.Forbidden" xml:space="preserve">
+    <value>You do not have access to this message thread.</value>
+  </data>
+  <data name="Messages.ThreadNotFound" xml:space="preserve">
+    <value>Message thread not found.</value>
+  </data>
+  <data name="Messages.NotFound" xml:space="preserve">
+    <value>Messages not found.</value>
+  </data>
+  <!-- Uploads Resources -->
+  <data name="Uploads.Forbidden" xml:space="preserve">
+    <value>You do not have access to this upload.</value>
+  </data>
+  <data name="Uploads.NotFound" xml:space="preserve">
+    <value>Upload not found.</value>
+  </data>
+  <data name="Uploads.CaseNotPaid" xml:space="preserve">
+    <value>Case must be paid or active to upload files.</value>
+  </data>
+  <data name="Uploads.TooLarge" xml:space="preserve">
+    <value>File is too large. Maximum size is {maxSize}MB.</value>
+  </data>
+  <data name="Uploads.TypeNotAllowed" xml:space="preserve">
+    <value>This file type is not allowed.</value>
+  </data>
+  <data name="Uploads.StatusPending" xml:space="preserve">
+    <value>Upload must be in pending status to confirm.</value>
+  </data>
+  <data name="Uploads.PresignCreated" xml:space="preserve">
+    <value>Upload URL created successfully.</value>
+  </data>
+  <data name="Uploads.ConfirmAccepted" xml:space="preserve">
+    <value>Upload confirmation accepted.</value>
+  </data>
+  <data name="Uploads.ScanInfected" xml:space="preserve">
+    <value>File was detected as infected and removed.</value>
+  </data>
+  <data name="Uploads.CleanReady" xml:space="preserve">
+    <value>File scanned clean and ready for download.</value>
+  </data>
+  <!-- Messaging Resources -->
+  <data name="Messaging.ThreadCreated" xml:space="preserve">
+    <value>Message thread created successfully.</value>
+  </data>
+  <data name="Messaging.MessagePosted" xml:space="preserve">
+    <value>Message posted successfully.</value>
+  </data>
+  <data name="Messaging.ReadReceiptUpdated" xml:space="preserve">
+    <value>Read receipt updated successfully.</value>
+  </data>
+  <data name="Messaging.DigestReady" xml:space="preserve">
+    <value>Daily digest is ready for review.</value>
+  </data>
+  <!-- Forms Resources -->
+  <data name="Forms.Field.FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Forms.Field.BirthDate" xml:space="preserve">
+    <value>Birth Date</value>
+  </data>
+  <data name="Forms.TemplateNotFound" xml:space="preserve">
+    <value>Form template not found.</value>
+  </data>
+  <data name="Forms.TemplateCreated" xml:space="preserve">
+    <value>Form template created successfully.</value>
+  </data>
+  <data name="Forms.ValidationRequired" xml:space="preserve">
+    <value>This field is required.</value>
+  </data>
+  <data name="Forms.ValidationInvalid" xml:space="preserve">
+    <value>Invalid value for this field.</value>
+  </data>
+  <data name="Forms.PdfGenerated" xml:space="preserve">
+    <value>Form PDF generated successfully.</value>
+  </data>
+  <data name="Forms.MissingRequiredField" xml:space="preserve">
+    <value>Required field '{fieldName}' is missing or empty.</value>
+  </data>
+  <data name="Forms.CaseNotAccessible" xml:space="preserve">
+    <value>You do not have access to this case for form generation.</value>
+  </data>
+  <!-- Admin Settings Resources -->
+  <data name="AdminSettings.Updated" xml:space="preserve">
+    <value>Admin settings updated successfully.</value>
+  </data>
+  <data name="AdminSettings.ValidationError" xml:space="preserve">
+    <value>Invalid setting value provided.</value>
+  </data>
+  <data name="AdminSettings.RetentionDaysInvalid" xml:space="preserve">
+    <value>Retention days must be between 1 and 3650.</value>
+  </data>
+  <data name="AdminSettings.UploadSizeInvalid" xml:space="preserve">
+    <value>Upload size must be between 1 and 500 MB.</value>
+  </data>
+  <data name="AdminSettings.BufferMinutesInvalid" xml:space="preserve">
+    <value>Buffer minutes must be between 0 and 120.</value>
+  </data>
+  <!-- Retention Resources -->
+  <data name="Retention.ProcessingStarted" xml:space="preserve">
+    <value>Retention processing started.</value>
+  </data>
+  <data name="Retention.ProcessingCompleted" xml:space="preserve">
+    <value>Retention processing completed. {itemCount} items processed.</value>
+  </data>
+  <data name="Retention.ItemQueued" xml:space="preserve">
+    <value>Item queued for {action}: {category} - {targetId}</value>
+  </data>
+  <data name="Retention.ActionExecuted" xml:space="preserve">
+    <value>Retention action executed: {action} on {targetId}</value>
+  </data>
+  
+  <!-- Scraper Resources -->
+  <data name="Scraper.RunStarted" xml:space="preserve">
+    <value>Scraper run started for {visaType} {country}.</value>
+  </data>
+  <data name="Scraper.RunCompleted" xml:space="preserve">
+    <value>Scraper run completed successfully.</value>
+  </data>
+  <data name="Scraper.DraftCreated" xml:space="preserve">
+    <value>Draft workflow created: {workflowId} with {changeCount} changes.</value>
+  </data>
+  <data name="Scraper.NoChange" xml:space="preserve">
+    <value>No changes detected, existing draft returned.</value>
+  </data>
+  <data name="Scraper.SourceEmbassy" xml:space="preserve">
+    <value>Embassy</value>
+  </data>
+  <data name="Scraper.SourceUSCIS" xml:space="preserve">
+    <value>USCIS</value>
+  </data>
+  <data name="Scraper.SourceMixed" xml:space="preserve">
+    <value>Mixed</value>
+  </data>
+  <data name="Scraper.AndorraUsesSpain" xml:space="preserve">
+    <value>Using {toCountry} panel physicians for {fromCountry} (country mapping).</value>
+  </data>
+  
+  <!-- Workflow Resources -->
+  <data name="Workflow.PendingList" xml:space="preserve">
+    <value>Pending workflows retrieved successfully.</value>
+  </data>
+  <data name="Workflow.PendingStatus" xml:space="preserve">
+    <value>Pending Approval</value>
+  </data>
+  <data name="Workflow.DiffReady" xml:space="preserve">
+    <value>Workflow diff computed successfully.</value>
+  </data>
+  <data name="Workflow.Approved" xml:space="preserve">
+    <value>Workflow {workflowId} approved by {userId}.</value>
+  </data>
+  <data name="Workflow.ApprovedSuccess" xml:space="preserve">
+    <value>Workflow approved successfully.</value>
+  </data>
+  <data name="Workflow.Rejected" xml:space="preserve">
+    <value>Workflow rejected successfully.</value>
+  </data>
+  <data name="Workflow.RejectedSuccess" xml:space="preserve">
+    <value>Workflow rejected successfully.</value>
+  </data>
+  <data name="Workflow.NotFound" xml:space="preserve">
+    <value>Workflow not found.</value>
+  </data>
+  <data name="Workflow.NotPending" xml:space="preserve">
+    <value>Workflow is not in pending approval status.</value>
+  </data>
+  <data name="Workflow.MissingParameters" xml:space="preserve">
+    <value>Both visaType and country parameters are required.</value>
+  </data>
+  <data name="Workflow.VisaTypeNotFound" xml:space="preserve">
+    <value>Visa type '{visaType}' not found.</value>
+  </data>
+  
+  <!-- Digest Resources -->
+  <data name="Digest.WorkflowDraftsQueued" xml:space="preserve">
+    <value>Workflow drafts queued for admin notification.</value>
+  </data>
+  
+  <!-- GraphMail Resources -->
+  <data name="GraphMail.TestEmailSent" xml:space="preserve">
+    <value>Email sent successfully via Fake provider</value>
+  </data>
+  <data name="GraphMail.AdminOnly" xml:space="preserve">
+    <value>This endpoint is only available to administrators.</value>
+  </data>
+  <data name="Graph.TestMailSubject" xml:space="preserve">
+    <value>Test Email from Law4Hire</value>
+  </data>
+  <data name="Graph.TestMailBody" xml:space="preserve">
+    <value>This is a test email to verify Graph integration is working correctly.</value>
+  </data>
+  <data name="Graph.TestMailSent" xml:space="preserve">
+    <value>Test email sent successfully</value>
+  </data>
+  <data name="Graph.TestMailError" xml:space="preserve">
+    <value>Failed to send test email</value>
+  </data>
+  <data name="Availability.RetrievalFailed" xml:space="preserve">
+    <value>Calendar availability could not be retrieved</value>
+  </data>
+  <data name="Availability.RetrievalError" xml:space="preserve">
+    <value>Error retrieving calendar availability</value>
+  </data>
+  <data name="Appointments.CreatedSuccessfully" xml:space="preserve">
+    <value>Appointment created successfully</value>
+  </data>
+  <data name="Appointments.CreationFailed" xml:space="preserve">
+    <value>Failed to create appointment</value>
+  </data>
+  <data name="Appointments.CreationError" xml:space="preserve">
+    <value>Error creating appointment</value>
+  </data>
+  <data name="Payments.CheckoutCreated" xml:space="preserve">
+    <value>Checkout session created successfully</value>
+  </data>
+  <data name="Payments.CheckoutFailed" xml:space="preserve">
+    <value>Failed to create checkout session</value>
+  </data>
+  <data name="Payments.CheckoutError" xml:space="preserve">
+    <value>Error creating checkout session</value>
+  </data>
+  <data name="Payments.WebhookProcessed" xml:space="preserve">
+    <value>Webhook processed successfully</value>
+  </data>
+  <data name="Payments.WebhookRejected" xml:space="preserve">
+    <value>Webhook rejected</value>
+  </data>
+  <data name="Payments.WebhookIgnored" xml:space="preserve">
+    <value>Webhook ignored</value>
+  </data>
+  <data name="Payments.WebhookError" xml:space="preserve">
+    <value>Webhook processing error</value>
+  </data>
+  <data name="Payments.CheckoutCompleted" xml:space="preserve">
+    <value>Checkout completed successfully</value>
+  </data>
+  <data name="Payments.RefundProcessed" xml:space="preserve">
+    <value>Refund processed successfully</value>
+  </data>
+</root>

@@ -1,0 +1,823 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  L4H.Shared -> C:\programming\L4HProject\src\shared\bin\Debug\net9.0\L4H.Shared.dll
+  L4H.UI.Wrap.Tests -> C:\programming\L4HProject\tests\ui.wrap\bin\Debug\net9.0\L4H.UI.Wrap.Tests.dll
+Test run for C:\programming\L4HProject\tests\ui.wrap\bin\Debug\net9.0\L4H.UI.Wrap.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.1 (x64)
+
+  L4H.Infrastructure -> C:\programming\L4HProject\src\infrastructure\bin\Debug\net9.0\L4H.Infrastructure.dll
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  L4H.UploadGateway -> C:\programming\L4HProject\src\upload-gateway\bin\Debug\net9.0\L4H.UploadGateway.dll
+  L4H.ScraperWorker -> C:\programming\L4HProject\src\scraper\bin\Debug\net9.0\L4H.ScraperWorker.dll
+  L4H.Scraper.Tests -> C:\programming\L4HProject\tests\scraper.tests\bin\Debug\net9.0\L4H.Scraper.Tests.dll
+Test run for C:\programming\L4HProject\tests\scraper.tests\bin\Debug\net9.0\L4H.Scraper.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.1 (x64)
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 9.0.8)
+
+[xUnit.net 00:00:00.18]   Discovering: L4H.UI.Wrap.Tests
+[xUnit.net 00:00:00.26]   Discovered:  L4H.UI.Wrap.Tests
+[xUnit.net 00:00:00.27]   Starting:    L4H.UI.Wrap.Tests
+Starting test execution, please wait...
+  L4H.Api -> C:\programming\L4HProject\src\api\bin\Debug\net9.0\L4H.Api.dll
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.41]   Finished:    L4H.UI.Wrap.Tests
+  Passed L4H.UI.Wrap.Tests.VitestWrapperTests.SharedUI_Vitest_Tests_Should_Pass [15 ms]
+  Passed L4H.UI.Wrap.Tests.VitestWrapperTests.Cannlaw_Vitest_Tests_Should_Pass [6 ms]
+  Passed L4H.UI.Wrap.Tests.VitestWrapperTests.L4H_Vitest_Tests_Should_Pass [6 ms]
+
+Test Run Successful.
+Total tests: 3
+     Passed: 3
+ Total time: 1.5814 Seconds
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 9.0.8)
+  L4H.Api.Tests -> C:\programming\L4HProject\tests\api.tests\bin\Debug\net9.0\L4H.Api.Tests.dll
+[xUnit.net 00:00:00.19]   Discovering: L4H.Scraper.Tests
+  L4H.UI.E2E.Tests -> C:\programming\L4HProject\tests\ui.e2e\bin\Debug\net9.0\L4H.UI.E2E.Tests.dll
+[xUnit.net 00:00:00.25]   Discovered:  L4H.Scraper.Tests
+Test run for C:\programming\L4HProject\tests\api.tests\bin\Debug\net9.0\L4H.Api.Tests.dll (.NETCoreApp,Version=v9.0)
+[xUnit.net 00:00:00.26]   Starting:    L4H.Scraper.Tests
+Test run for C:\programming\L4HProject\tests\ui.e2e\bin\Debug\net9.0\L4H.UI.E2E.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.1 (x64)
+
+VSTest version 17.14.1 (x64)
+
+Starting test execution, please wait...
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 9.0.8)
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 9.0.8)
+[xUnit.net 00:00:00.17]   Discovering: L4H.UI.E2E.Tests
+[xUnit.net 00:00:00.19]   Discovering: L4H.Api.Tests
+[xUnit.net 00:00:00.24]   Discovered:  L4H.UI.E2E.Tests
+[xUnit.net 00:00:00.24]   Starting:    L4H.UI.E2E.Tests
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 0 entities to in-memory store.
+[xUnit.net 00:00:00.31]   Discovered:  L4H.Api.Tests
+[xUnit.net 00:00:00.32]   Starting:    L4H.Api.Tests
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: ".hidden-file", expected: "hidden-file") [34 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "file<>:\"|?*.txt", expected: "file_______.txt") [< 1 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "../../../etc/passwd", expected: "passwd") [< 1 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "", expected: "upload") [< 1 ms]
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 3 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.RunStarted
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "C:\\Windows\\System32\\notepad.exe", expected: "notepad.exe") [< 1 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "   ", expected: "upload") [< 1 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "document with spaces.pdf", expected: "document with spaces.pdf") [< 1 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GenerateToken_WithValidInputs_ShouldCreateValidToken [94 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithPathTraversalAttempts_ShouldSanitize [1 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GenerateToken_WithDifferentInputs_ShouldGenerateDifferentTokens [2 ms]
+  Passed L4H.Api.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithExtremelyLongFilename_ShouldTruncateCorrectly [3 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.HashPassword_SamePassword_GeneratesDifferentHashes [469 ms]
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 9 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.DraftCreated
+  Passed L4H.Scraper.Tests.ScraperIntegrationTests.Scraper_FakeEmbassySpain_B2_ProducesDoctorsAndSteps [3 s]
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 0 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 3 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 0 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 3 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.RunStarted
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.HashPassword_NullPassword_ThrowsArgumentNullException [1 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.VerifyPassword_InvalidHashFormat_ReturnsFalse [2 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.VerifyPassword_NullOrEmptyInputs_ReturnsFalse(password: null, hashedPassword: "hashedPassword") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.VerifyPassword_NullOrEmptyInputs_ReturnsFalse(password: "password", hashedPassword: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.VerifyPassword_NullOrEmptyInputs_ReturnsFalse(password: "", hashedPassword: "hashedPassword") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.VerifyPassword_NullOrEmptyInputs_ReturnsFalse(password: "password", hashedPassword: "") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.VerifyPassword_CorrectPassword_ReturnsTrue [396 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.HashPassword_ValidPassword_ReturnsHashedPassword [193 ms]
+  Passed L4H.Api.Tests.Services.PasswordHasherTests.VerifyPassword_IncorrectPassword_ReturnsFalse [333 ms]
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 6 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.DraftCreated
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 0 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 3 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.RunStarted
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.AndorraUsesSpain
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 9 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.DraftCreated
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 0 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 3 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 3 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 0 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 3 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.RunStarted
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 9 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.DraftCreated
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.RunStarted
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.NoChange
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 0 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 3 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.RunStarted
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 9 entities to in-memory store.
+info: L4H.ScraperWorker.Services.WorkflowScraperService[0]
+      Scraper.DraftCreated
+[xUnit.net 00:00:03.71]   Finished:    L4H.Scraper.Tests
+[23:59:42 WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+[23:59:42 WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+  Passed L4H.Scraper.Tests.ScraperIntegrationTests.Scraper_EmbassyFixtureMissing_UsesUSCIS [114 ms]
+  Passed L4H.Scraper.Tests.ScraperIntegrationTests.Scraper_AndorraFallsBackToSpain_ForDoctors [39 ms]
+  Passed L4H.Scraper.Tests.ScraperIntegrationTests.DiffEngine_ReportsAddedModifiedRemoved [31 ms]
+  Passed L4H.Scraper.Tests.ScraperIntegrationTests.Draft_DeDupeByHash_AvoidsDuplicates [25 ms]
+  Passed L4H.Scraper.Tests.ScraperIntegrationTests.Scraper_WithSpanishLocale_LogsLocalizedMessages [23 ms]
+
+Test Run Successful.
+Total tests: 6
+     Passed: 6
+ Total time: 4.7179 Seconds
+  L4H.UploadGateway.Tests -> C:\programming\L4HProject\tests\upload-gateway.tests\bin\Debug\net9.0\L4H.UploadGateway.Tests.dll
+Test run for C:\programming\L4HProject\tests\upload-gateway.tests\bin\Debug\net9.0\L4H.UploadGateway.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.RescheduleProposal_ExpiresAfterTwoDays [2 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerBasicTests.CaseLock_PreventsNewSessions_WhenSet [2 s]
+  Passed L4H.Api.Tests.Services.RetentionServiceTests.ExecuteQueuedRetentionActions_WithMaskAction_ShouldMaskSensitiveData [2 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerBasicTests.VisaRecommendation_CanBeSaved_WithCaseReference [108 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.TimezoneHandling_StoresCorrectOffsetAndTimezone [208 ms]
+  Passed L4H.Api.Tests.Services.RetentionServiceTests.ProcessRetentionQueue_WithExpiredMessages_ShouldMarkForPurge [184 ms]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerBasicTests.InterviewQA_CanBeAdded_ToSession [132 ms]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerBasicTests.MultipleQAs_CanBeAdded_WithStepNumbers [24 ms]
+  Passed L4H.Api.Tests.Services.RetentionServiceTests.ExecuteQueuedRetentionActions_WithPurgeAction_ShouldDeleteEntity [45 ms]
+  Passed L4H.Api.Tests.Services.RetentionServiceTests.ProcessRetentionQueue_WithExpiredRecordings_ShouldMarkForPurge [19 ms]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerBasicTests.SessionHistory_CanBeRetrieved_ForCase [30 ms]
+  Passed L4H.Api.Tests.Services.RetentionServiceTests.ProcessRetentionQueue_WithExpiredMedicalDocuments_ShouldMarkForMasking [21 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.AppointmentHistory_ReturnsUserAppointments [199 ms]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerBasicTests.Recommendation_GeneratesH1B_ForEmploymentWithSponsor [38 ms]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerBasicTests.Recommendation_GeneratesB2_ForTourism [30 ms]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerBasicTests.InterviewSession_CanBeCreated_WithValidData [11 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "!@#$%^&*", expectedSuccess: False, expectedError: "Password must contain at least 3 of the following") [11 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "short", expectedSuccess: False, expectedError: "Password must be at least 8 characters long") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "PASS123!", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "12345678", expectedSuccess: False, expectedError: "Password must contain at least 3 of the following") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "Password123!", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "PASSWORD123!", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "NoSpecial123", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "PASSWORD", expectedSuccess: False, expectedError: "Password must contain at least 3 of the following") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "Password", expectedSuccess: False, expectedError: "Password must contain at least 3 of the following") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "password1", expectedSuccess: False, expectedError: "Password must contain at least 3 of the following") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "password", expectedSuccess: False, expectedError: "Password must contain at least 3 of the following") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "Password!", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "password123!", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithStandardPolicy_ReturnsExpectedResult(password: "", expectedSuccess: False, expectedError: "Password cannot be empty") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithFallbackPolicy_ReturnsExpectedResult(password: "Password123", expectedSuccess: False, expectedError: "Password must contain at least one special charact"┬╖┬╖┬╖) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithFallbackPolicy_ReturnsExpectedResult(password: "", expectedSuccess: False, expectedError: "Password cannot be empty") [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithFallbackPolicy_ReturnsExpectedResult(password: "abcdefgh!", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithFallbackPolicy_ReturnsExpectedResult(password: "12345678!", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithFallbackPolicy_ReturnsExpectedResult(password: "Password123!", expectedSuccess: True, expectedError: null) [< 1 ms]
+  Passed L4H.Api.Tests.Services.PasswordPolicyTests.ValidatePassword_WithFallbackPolicy_ReturnsExpectedResult(password: "short", expectedSuccess: False, expectedError: "Password must be at least 8 characters long") [< 1 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.RescheduleProposal_WithValidData_CreatesProposal [166 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.AppointmentBuffer_WithThirtyMinuteBuffer_PreventsTooCloseBooking [33 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.CreateAppointment_WithValidData_CreatesAppointmentSuccessfully [9 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.SchedulingConflictDetection_WithOverlappingAppointments_DetectsConflict [83 ms]
+[xUnit.net 00:00:03.44]     L4H.UI.E2E.Tests.L4H_E2E_Tests.L4H_Login_Shows_Dashboard [SKIP]
+[xUnit.net 00:00:03.44]       E2E tests are skipped unless E2E_UI=1
+[xUnit.net 00:00:03.45]     L4H.UI.E2E.Tests.L4H_E2E_Tests.Cannlaw_Login_Shows_Schedule [SKIP]
+[xUnit.net 00:00:03.45]       E2E tests are skipped unless E2E_UI=1
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.CreateAppointment_WhenExistingActiveAppointmentExists_ShouldPreventCreation [78 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.RescheduleLimit_TwoReschedulesPerSide_EnforcesLimit [20 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.ChooseRescheduleOption_WithValidChoice_UpdatesAppointment [17 ms]
+  Passed L4H.Api.Tests.Controllers.SchedulingControllerTests.CancelAppointment_RemovesInterviewLock [8 ms]
+  Passed L4H.Api.Tests.Services.AntivirusScanServiceTests.ProcessUpload_WithMissingFile_ShouldMarkAsRejected [113 ms]
+  Passed L4H.Api.Tests.Controllers.VisaChangeControllerTests.VisaChangeHistory_ReturnsRequestsForUser [612 ms]
+  Passed L4H.Api.Tests.Controllers.VisaChangeControllerTests.RejectVisaChange_WithValidRequest_DoesNotUpdateCase [9 ms]
+  Passed L4H.Api.Tests.Controllers.VisaChangeControllerTests.PriceDeltaCalculation_ChargeForHigherPriceVisaType [31 ms]
+[xUnit.net 00:00:03.81]   Finished:    L4H.UI.E2E.Tests
+  Passed L4H.Api.Tests.Controllers.VisaChangeControllerTests.MultipleVisaChangeRequests_OnlyOnePendingAllowed [24 ms]
+  Passed L4H.Api.Tests.Controllers.VisaChangeControllerTests.VisaChangeRequest_ExpiresAfterSevenDays [7 ms]
+  Passed L4H.Api.Tests.Controllers.VisaChangeControllerTests.PriceDeltaCalculation_RefundForLowerPriceVisaType [3 ms]
+  Passed L4H.Api.Tests.HostedServices.RetentionBackgroundServiceTests.ExecuteAsync_WithValidScope_ShouldCallRetentionService [3 s]
+  Passed L4H.Api.Tests.Services.AntivirusScanServiceTests.ProcessUpload_WithEicarFile_ShouldMarkAsInfectedAndDelete [242 ms]
+  Passed L4H.Api.Tests.HostedServices.RetentionBackgroundServiceTests.StopAsync_ShouldStopService [69 ms]
+  Passed L4H.Api.Tests.HostedServices.RetentionBackgroundServiceTests.StartAsync_ShouldInitializeService [5 ms]
+[23:59:44 WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+[23:59:44 WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+  Skipped L4H.UI.E2E.Tests.L4H_E2E_Tests.L4H_Login_Shows_Dashboard [1 ms]
+  Skipped L4H.UI.E2E.Tests.L4H_E2E_Tests.Cannlaw_Login_Shows_Schedule [1 ms]
+
+Test Run Successful.
+Total tests: 2
+    Skipped: 2
+ Total time: 4.9044 Seconds
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 9.0.8)
+[xUnit.net 00:00:00.27]   Discovering: L4H.UploadGateway.Tests
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+  Passed L4H.Api.Tests.HostedServices.RetentionBackgroundServiceTests.Service_ShouldImplementIHostedService [3 ms]
+  Passed L4H.Api.Tests.Controllers.VisaChangeControllerTests.ApproveVisaChange_WithValidRequest_UpdatesCaseVisaType [174 ms]
+  Passed L4H.Api.Tests.Services.AntivirusScanServiceTests.ProcessUpload_WithHeicFile_ShouldLogHeicDetection [137 ms]
+  Passed L4H.Api.Tests.Controllers.VisaChangeControllerTests.ProposeVisaChange_WithValidData_CreatesRequestSuccessfully [75 ms]
+  Passed L4H.Api.Tests.Services.AntivirusScanServiceTests.ProcessUpload_WithCleanFile_ShouldMoveToCleanDirectory [163 ms]
+  Passed L4H.Api.Tests.HostedServices.RetentionBackgroundServiceTests.ExecuteAsync_ShouldProcessRetentionPeriodically [368 ms]
+  Passed L4H.Api.Tests.HostedServices.RetentionBackgroundServiceTests.ExecuteAsync_WhenExceptionOccurs_ShouldLogErrorAndContinue [129 ms]
+  Passed L4H.Api.Tests.HealthTests.HealthEndpoint_ReturnsOkWithExpectedStatus [4 s]
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[xUnit.net 00:00:00.47]   Discovered:  L4H.UploadGateway.Tests
+[xUnit.net 00:00:00.49]   Starting:    L4H.UploadGateway.Tests
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Login_InvalidCredentials_ReturnsUnauthorized [4 s]
+  Passed L4H.Api.Tests.HealthTests.PingEndpoint_ReturnsOkWithPong [316 ms]
+  Passed L4H.Api.Tests.Controllers.UploadsControllerTests.PresignUpload_WithValidRequest_ShouldReturnPresignedUrl [795 ms]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Signup_InvalidEmail_ReturnsBadRequest(invalidEmail: "") [323 ms]
+  Passed L4H.Api.Tests.Teams.MeetingsIntegrationTests.ConfirmExistingAppointment_ShouldCreateMeeting [4 s]
+  Passed L4H.Api.Tests.Controllers.LocalizationIntegrationTests.AuthForgot_WithCulture_ReturnsLocalizedMessage [1 s]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.ValidateToken_WithValidToken_ShouldReturnTrue [150 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: ".hidden", expected: "hidden") [< 1 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "../../../etc/passwd", expected: "passwd") [< 1 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "test file.pdf", expected: "test file.pdf") [< 1 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "file<with>invalid:chars.pdf", expected: "file_with_invalid_chars.pdf") [< 1 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "test\\file.pdf", expected: "test_file.pdf") [< 1 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVariousInputs_ShouldReturnSafeFilename(input: "", expected: "upload") [< 1 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.ValidateToken_WithInvalidSignature_ShouldReturnFalse [1 ms]
+[23:59:45 WRN] Upload file not found in quarantine: 460c7c14-79e5-44be-b575-2e1cac5fcab5, Path: C:\Users\The_R\AppData\Local\Temp\upload-controller-tests\41304f23-ee75-4901-b511-abc1753c6078\quarantine\eyJjYXNlSWQiOiJmZTdjZTE3ZS01NDNhLTQwZTUtYjc5YS01NTM5Mzc5N2U1YjAiLCJmaWxlbmFtZSI6InRlc3QtZG9jdW1lbnQucGRmIiwiY29udGVudFR5cGUiOiJhcHBsaWNhdGlvbi9wZGYiLCJzaXplQnl0ZXMiOjEwMjQsImV4cCI6MTc1NzA0NjU4NSwic2lnbmF0dXJlIjoiYWsvYTVlU0xxcTBjZ3YxdXhhRkZTWExWRXpPb3Zwcm1CbHgxMUExUDNrcz0ifQ/test-document.pdf
+[23:59:45 WRN] Upload file not found in quarantine: 460c7c14-79e5-44be-b575-2e1cac5fcab5, Path: C:\Users\The_R\AppData\Local\Temp\upload-controller-tests\41304f23-ee75-4901-b511-abc1753c6078\quarantine\eyJjYXNlSWQiOiJmZTdjZTE3ZS01NDNhLTQwZTUtYjc5YS01NTM5Mzc5N2U1YjAiLCJmaWxlbmFtZSI6InRlc3QtZG9jdW1lbnQucGRmIiwiY29udGVudFR5cGUiOiJhcHBsaWNhdGlvbi9wZGYiLCJzaXplQnl0ZXMiOjEwMjQsImV4cCI6MTc1NzA0NjU4NSwic2lnbmF0dXJlIjoiYWsvYTVlU0xxcTBjZ3YxdXhhRkZTWExWRXpPb3Zwcm1CbHgxMUExUDNrcz0ifQ/test-document.pdf
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:45 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+info: Program[0]
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+      Processing upload for case f0e1eb38-fd48-4ce0-90d8-18484c903b58, file test.txt
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+warn: Program[0]
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+      Content type mismatch: expected text/plain; charset=utf-8, got application/pdf; charset=utf-8
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+info: Program[0]
+      Processing upload for case 8214a810-9595-40e0-a3f3-f7c6fd1f2bc1, file test.txt
+info: Program[0]
+      Upload completed: C:\Users\The_R\AppData\Local\Temp\test-uploads\c1fb2da9-996a-465f-a6c3-b366d9b50b29\quarantine\eyJjYXNlSWQiOiI4MjE0YTgxMC05NTk1LTQwZTAtYTNmMy1mN2M2ZmQxZjJiYzEiLCJmaWxlbmFtZSI6InRlc3QudHh0IiwiY29udGVudFR5cGUiOiJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Iiwic2l6ZUJ5dGVzIjoxMDI0LCJleHAiOjE3NTcwNDU2ODYsInNpZ25hdHVyZSI6ImtkbDZ0WnlhbGlsNjBBcXY3eU1QWkRpdUdSd2E4TDF\test.txt, 46 bytes
+warn: Program[0]
+      Invalid or expired token: eyJjYXNlSWQiOiI2ZjRjMzRkMy0wYjkxLTQ0M2MtODliMy0yMmZkNGIzNmJkYjYiLCJmaWxlbmFtZSI6InRlc3QudHh0IiwiY29udGVudFR5cGUiOiJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Iiwic2l6ZUJ5dGVzIjoxMDI0LCJleHAiOjE3NTcwNDQ0ODYsInNpZ25hdHVyZSI6IjlabHZBem9hQ1VnSG9jTkU3dWJmVEppL1ZRU2JVUE91T29DVG51Mkh5OVU9In0
+info: Program[0]
+      Processing upload for case 6436ed8d-8569-46de-8c7b-30ad93365965, file test.txt
+warn: Program[0]
+      Content length 2048 exceeds token limit 1024
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+  Passed L4H.Api.Tests.Graph.StaffAvailabilityControllerTests.GetStaffAvailability_WhenGraphProviderFails_ShouldReturnAppointmentsOnly [4 s]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Signup_InvalidEmail_ReturnsBadRequest(invalidEmail: "not-an-email") [298 ms]
+  Passed L4H.Api.Tests.Controllers.UploadsControllerTests.PresignUpload_WithUnpaidCase_ShouldReturnConflict [364 ms]
+  Passed L4H.Api.Tests.Controllers.LocalizationIntegrationTests.AuthLogin_WithEnglishCulture_ReturnsEnglishError [408 ms]
+  Passed L4H.Api.Tests.Graph.StaffAvailabilityControllerTests.GetStaffAvailability_WithInvalidDateRange_ShouldReturnBadRequest [425 ms]
+  Passed L4H.Api.Tests.Teams.MeetingsIntegrationTests.CreatePendingAppointment_ShouldNotTriggerMeetingCreation [613 ms]
+warn: Program[0]
+      Invalid or expired token: invalid-token
+[xUnit.net 00:00:01.55]   Finished:    L4H.UploadGateway.Tests
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.ValidateToken_WithExpiredToken_ShouldReturnFalse [< 1 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.ValidateToken_WithMalformedToken_ShouldReturnFalse [6 ms]
+  Passed L4H.UploadGateway.Tests.Services.UploadTokenServiceTests.GetSafeFilename_WithVeryLongFilename_ShouldTruncate [2 ms]
+  Passed L4H.UploadGateway.Tests.Integration.UploadGatewayIntegrationTests.UploadFile_WithWrongContentType_ShouldReturnBadRequest [646 ms]
+  Passed L4H.UploadGateway.Tests.Integration.UploadGatewayIntegrationTests.UploadFile_WithValidToken_ShouldSucceed [123 ms]
+  Passed L4H.UploadGateway.Tests.Integration.UploadGatewayIntegrationTests.UploadFile_WithExpiredToken_ShouldReturnBadRequest [50 ms]
+  Passed L4H.UploadGateway.Tests.Integration.UploadGatewayIntegrationTests.UploadFile_WithExcessiveSize_ShouldReturnBadRequest [23 ms]
+  Passed L4H.UploadGateway.Tests.Integration.UploadGatewayIntegrationTests.Health_ShouldReturnOk [56 ms]
+  Passed L4H.UploadGateway.Tests.Integration.UploadGatewayIntegrationTests.UploadFile_WithInvalidToken_ShouldReturnBadRequest [36 ms]
+
+Test Run Successful.
+Total tests: 17
+[23:59:46 WRN] Upload file not found in quarantine: dbca190f-fcac-49f6-926c-4b5c50e2f9c0, Path: /data/uploads\quarantine\eyJjYXNlSWQiOiI0MTE1YTUwNC1lNDYzLTRjYTQtYTkxNy1kODViZjY0ZmUyYzAiLCJmaWxlbmFtZSI6InRlc3QucGRmIiwiY29udGVudFR5cGUiOiJhcHBsaWNhdGlvbi9wZGYiLCJzaXplQnl0ZXMiOjEwMjQsImV4cCI6MTc1NzA0NjU4Niwic2lnbmF0dXJlIjoiMXVSOFlRNUV5NVNyaW5YQkVENGtiQzdBbXExdS9CcG1IZnhHdnc1Y1Y0ND0ifQ/test.pdf
+     Passed: 17
+[23:59:46 WRN] Upload file not found in quarantine: dbca190f-fcac-49f6-926c-4b5c50e2f9c0, Path: /data/uploads\quarantine\eyJjYXNlSWQiOiI0MTE1YTUwNC1lNDYzLTRjYTQtYTkxNy1kODViZjY0ZmUyYzAiLCJmaWxlbmFtZSI6InRlc3QucGRmIiwiY29udGVudFR5cGUiOiJhcHBsaWNhdGlvbi9wZGYiLCJzaXplQnl0ZXMiOjEwMjQsImV4cCI6MTc1NzA0NjU4Niwic2lnbmF0dXJlIjoiMXVSOFlRNUV5NVNyaW5YQkVENGtiQzdBbXExdS9CcG1IZnhHdnc1Y1Y0ND0ifQ/test.pdf
+ Total time: 3.0768 Seconds
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[xUnit.net 00:00:06.05]     L4H.Api.Tests.Controllers.UploadsControllerTests.ConfirmUpload_WithValidRequest_ShouldReturnAccepted [FAIL]
+[xUnit.net 00:00:06.05]       System.Exception : Expected Accepted (202) but got BadRequest: {"title":"Invalid Status","status":400,"detail":"Upload must be in pending status to confirm."}
+[xUnit.net 00:00:06.05]       Stack Trace:
+[xUnit.net 00:00:06.05]         C:\programming\L4HProject\tests\api.tests\Controllers\UploadsControllerTests.cs(221,0): at L4H.Api.Tests.Controllers.UploadsControllerTests.ConfirmUpload_WithValidRequest_ShouldReturnAccepted()
+[xUnit.net 00:00:06.05]         --- End of stack trace from previous location ---
+[23:59:46 ERR] Error in daily digest service
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure' to the 'UseSqlServer' call.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): The request failed to run because the batch is aborted, this can be caused by abort signal sent from client, or another request is running in the same session, which makes the session busy.
+Operation cancelled by user.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+ClientConnectionId:56b22d68-a45d-42de-8248-739b4c7577ad
+Error Number:3980,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:46 ERR] Error in daily digest service
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure' to the 'UseSqlServer' call.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): The request failed to run because the batch is aborted, this can be caused by abort signal sent from client, or another request is running in the same session, which makes the session busy.
+Operation cancelled by user.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+ClientConnectionId:56b22d68-a45d-42de-8248-739b4c7577ad
+Error Number:3980,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Signup_InvalidEmail_ReturnsBadRequest(invalidEmail: "invalid@") [325 ms]
+  Passed L4H.Api.Tests.Controllers.LocalizationIntegrationTests.AuthLogin_WithSpanishCulture_ReturnsLocalizedError [498 ms]
+  Failed L4H.Api.Tests.Controllers.UploadsControllerTests.ConfirmUpload_WithValidRequest_ShouldReturnAccepted [650 ms]
+  Error Message:
+   System.Exception : Expected Accepted (202) but got BadRequest: {"title":"Invalid Status","status":400,"detail":"Upload must be in pending status to confirm."}
+  Stack Trace:
+     at L4H.Api.Tests.Controllers.UploadsControllerTests.ConfirmUpload_WithValidRequest_ShouldReturnAccepted() in C:\programming\L4HProject\tests\api.tests\Controllers\UploadsControllerTests.cs:line 221
+--- End of stack trace from previous location ---
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Signup_InvalidPassword_ReturnsBadRequest [428 ms]
+  Passed L4H.Api.Tests.Graph.StaffAvailabilityControllerTests.GetStaffAvailability_WithBufferTime_ShouldApplyCorrectBuffer [645 ms]
+  Passed L4H.Api.Tests.Teams.MeetingsIntegrationTests.CreateAppointment_ShouldCreateAuditLog [605 ms]
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:46 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure' to the 'UseSqlServer' call.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): The request failed to run because the batch is aborted, this can be caused by abort signal sent from client, or another request is running in the same session, which makes the session busy.
+Operation cancelled by user.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+ClientConnectionId:56b22d68-a45d-42de-8248-739b4c7577ad
+Error Number:3980,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure' to the 'UseSqlServer' call.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): The request failed to run because the batch is aborted, this can be caused by abort signal sent from client, or another request is running in the same session, which makes the session busy.
+Operation cancelled by user.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+ClientConnectionId:56b22d68-a45d-42de-8248-739b4c7577ad
+Error Number:3980,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 68
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 68
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+  Passed L4H.Api.Tests.Controllers.UploadsControllerTests.PresignUpload_WithDisallowedExtension_ShouldReturnBadRequest [315 ms]
+  Passed L4H.Api.Tests.Graph.StaffAvailabilityControllerTests.GetStaffAvailability_WithInvalidStaffId_ShouldReturnNotFound [297 ms]
+  Passed L4H.Api.Tests.Controllers.UploadsControllerTests.GetUploadLimits_ShouldReturnConfiguredLimits [301 ms]
+  Passed L4H.Api.Tests.Teams.MeetingsIntegrationTests.CreateAppointment_WhenMeetingsProviderFails_ShouldStillCreateAppointment [499 ms]
+  Passed L4H.Api.Tests.Graph.StaffAvailabilityControllerTests.GetStaffAvailability_WithValidRequest_ShouldMergeBusySlotsAndAppointments [524 ms]
+  Passed L4H.Api.Tests.Controllers.UploadsControllerTests.PresignUpload_WithExcessiveSize_ShouldReturnBadRequest [346 ms]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Login_ValidCredentials_ReturnsSuccess [1 s]
+[23:59:47 ERR] Error in daily digest service
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure' to the 'UseSqlServer' call.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): The request failed to run because the batch is aborted, this can be caused by abort signal sent from client, or another request is running in the same session, which makes the session busy.
+Operation cancelled by user.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+ClientConnectionId:56b22d68-a45d-42de-8248-739b4c7577ad
+Error Number:3980,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:47 ERR] Error in daily digest service
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure' to the 'UseSqlServer' call.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): The request failed to run because the batch is aborted, this can be caused by abort signal sent from client, or another request is running in the same session, which makes the session busy.
+Operation cancelled by user.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__211_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+ClientConnectionId:56b22d68-a45d-42de-8248-739b4c7577ad
+Error Number:3980,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:48 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:48 ERR] Error in daily digest service
+System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at L4H.Api.Services.DailyDigestService.CreateDigestQueuesFromMessages(L4HDbContext context, CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 125
+   at L4H.Api.Services.DailyDigestService.ProcessDigestQueues(CancellationToken cancellationToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 63
+   at L4H.Api.Services.DailyDigestService.ExecuteAsync(CancellationToken stoppingToken) in C:\programming\L4HProject\src\api\Services\DailyDigestService.cs:line 32
+[23:59:49 WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+[23:59:49 WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+  Passed L4H.Api.Tests.Teams.MeetingsIntegrationTests.GetAppointmentDetails_WithMeeting_ShouldIncludeMeetingInfo [522 ms]
+  Passed L4H.Api.Tests.Graph.StaffAvailabilityControllerTests.GetStaffAvailability_WithSpanishLocale_ShouldReturnLocalizedMessages [331 ms]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.ForgotPassword_NonexistentEmail_ReturnsSuccess [270 ms]
+  Passed L4H.Api.Tests.Controllers.UploadsControllerTests.ListUploads_WithValidCaseId_ShouldReturnUploads [458 ms]
+  Passed L4H.Api.Tests.Teams.MeetingsIntegrationTests.CreateConfirmedAppointment_ShouldTriggerMeetingCreation [452 ms]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Remember_WithoutCookie_ReturnsUnauthorized [300 ms]
+  Passed L4H.Api.Tests.Teams.MeetingsIntegrationTests.GiveRecordingConsent_ShouldUpdateMeetingConsentTimestamp [412 ms]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Signup_ValidRequest_ReturnsSuccess [636 ms]
+[23:59:50 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[23:59:50 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Signup_DuplicateEmail_ReturnsBadRequest [557 ms]
+  Passed L4H.Api.Tests.Services.DailyDigestServiceTests.ProcessDailyDigests_WithNoNewMessages_ShouldNotCreateDigest [9 s]
+  Passed L4H.Api.Tests.Integration.UploadWorkflowIntegrationTests.UploadWorkflow_ChecksFileSizeLimits_AtPresignStage [9 s]
+  Passed L4H.Api.Tests.Controllers.MessagingControllerTests.PostMessage_WithInvalidThreadId_ShouldReturnNotFound [9 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.CrossUserAccess_ShouldBeForbidden_WhenAccessingOtherUsersCase [9 s]
+  Passed L4H.Api.Tests.Digests.WorkflowDigestTests.Digest_MultipleAdmins_EachGetsOneEmail [9 s]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.ForgotPassword_ValidEmail_ReturnsSuccess [1 s]
+  Passed L4H.Api.Tests.Graph.GraphMailControllerTests.SendTestMail_ShouldCreateAuditLog [10 s]
+  Passed L4H.Api.Tests.Workflows.WorkflowLookupControllerTests.GetWorkflow_CreatesAuditLogEntry [9 s]
+  Passed L4H.Api.Tests.Services.RememberMeTokenServiceTests.ValidateAndRotateTokenAsync_ValidToken_ReturnsUserAndRotatesToken [7 s]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.Login_WithRememberMe_SetsCookie [1 s]
+  Passed L4H.Api.Tests.Admin.WorkflowReviewControllerTests.ApproveWorkflow_WithValidId_ShouldBumpVersionAndCreateAuditLog [11 s]
+[23:59:54 WRN] Upload file not found in quarantine: 61ef56c7-a7b6-435d-9221-6d8621a89bcc, Path: C:\Users\The_R\AppData\Local\Temp\upload-workflow-tests\cc3aa53d-6756-4330-97eb-3829c8996e9a\quarantine\eyJjYXNlSWQiOiJkNzY1NDMyMS00MzIxLTQzMjEtNDMyMS0yMTA5ODc2NTQzMjEiLCJmaWxlbmFtZSI6Im1pc3NpbmctZmlsZS5wZGYiLCJjb250ZW50VHlwZSI6ImFwcGxpY2F0aW9uL3BkZiIsInNpemVCeXRlcyI6MTAyNCwiZXhwIjoxNzU3MDQ2NTk0LCJzaWduYXR1cmUiOiJKRy8yVEkyRmx3cnhYdjNBTng3SDBXUEZIajd6cDJzTTZBcGQ4b2pzUVVFPSJ9/missing-file.pdf
+[23:59:54 WRN] Upload file not found in quarantine: 61ef56c7-a7b6-435d-9221-6d8621a89bcc, Path: C:\Users\The_R\AppData\Local\Temp\upload-workflow-tests\cc3aa53d-6756-4330-97eb-3829c8996e9a\quarantine\eyJjYXNlSWQiOiJkNzY1NDMyMS00MzIxLTQzMjEtNDMyMS0yMTA5ODc2NTQzMjEiLCJmaWxlbmFtZSI6Im1pc3NpbmctZmlsZS5wZGYiLCJjb250ZW50VHlwZSI6ImFwcGxpY2F0aW9uL3BkZiIsInNpemVCeXRlcyI6MTAyNCwiZXhwIjoxNzU3MDQ2NTk0LCJzaWduYXR1cmUiOiJKRy8yVEkyRmx3cnhYdjNBTng3SDBXUEZIajd6cDJzTTZBcGQ4b2pzUVVFPSJ9/missing-file.pdf
+  Passed L4H.Api.Tests.Integration.UploadWorkflowIntegrationTests.UploadWorkflow_WithMissingFile_ShouldMarkAsRejected [4 s]
+  Passed L4H.Api.Tests.Services.DailyDigestServiceTests.ProcessDailyDigests_WithMultipleUsers_ShouldCreateSeparateDigests [4 s]
+  Passed L4H.Api.Tests.Controllers.MessagingControllerTests.GetThreadMessages_WithValidThread_ShouldReturnMessages [5 s]
+  Passed L4H.Api.Tests.Digests.WorkflowDigestTests.Digest_CoalescesToOneItemPerDay [5 s]
+  Passed L4H.Api.Tests.Graph.GraphMailControllerTests.SendTestMail_WhenProviderFails_ShouldReturnInternalServerError [5 s]
+  Passed L4H.Api.Tests.Services.RememberMeTokenServiceTests.CreateRememberMeTokenAsync_ValidUserId_ReturnsToken [4 s]
+[23:59:56 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[23:59:56 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+  Passed L4H.Api.Tests.Workflows.WorkflowLookupControllerTests.GetWorkflow_WithNoPendingOnlyDrafts_ShouldOnlyReturnApproved [4 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.GetHistory_ShouldReturnSessionHistory_WhenSessionsExist [6 s]
+  Passed L4H.Api.Tests.Admin.WorkflowReviewControllerTests.ListPending_WithSpanishLocale_ShouldReturnLocalizedMessages [5 s]
+  Passed L4H.Api.Tests.Integration.UploadWorkflowIntegrationTests.CompleteUploadWorkflow_WithInfectedFile_ShouldRejectFile [4 s]
+  Passed L4H.Api.Tests.Controllers.AuthControllerTests.ResetPassword_InvalidToken_ReturnsBadRequest [7 s]
+  Passed L4H.Api.Tests.Services.DailyDigestServiceTests.ProcessDailyDigests_WithNewMessages_ShouldCreateDigests [4 s]
+  Passed L4H.Api.Tests.Controllers.MessagingControllerTests.PostMessage_WithValidRequest_ShouldCreateMessage [4 s]
+  Passed L4H.Api.Tests.Graph.GraphMailControllerTests.SendTestMail_WithSpanishLocale_ShouldReturnLocalizedMessage [4 s]
+  Passed L4H.Api.Tests.Services.RememberMeTokenServiceTests.RevokeAllTokensForUserAsync_ValidUserId_RevokesAllTokens [4 s]
+  Passed L4H.Api.Tests.Workflows.WorkflowLookupControllerTests.GetWorkflow_WithNoApprovedVersion_ShouldReturn404Localized [4 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.RecommendationLogic_ShouldRecommendH1B_ForEmploymentWithSponsor [5 s]
+  Passed L4H.Api.Tests.Admin.WorkflowReviewControllerTests.GetWorkflowDiff_WithValidId_ShouldReturnStepLevelDiffs [4 s]
+  Passed L4H.Api.Tests.Services.DailyDigestServiceTests.ProcessDailyDigests_WithUserMessagesOnly_ShouldNotCreateDigest [4 s]
+  Passed L4H.Api.Tests.Controllers.MessagingControllerTests.GetCaseThreads_WithValidCase_ShouldReturnThreads [4 s]
+  Passed L4H.Api.Tests.Services.RememberMeTokenServiceTests.ValidateAndRotateTokenAsync_InvalidToken_ReturnsNull [3 s]
+  Passed L4H.Api.Tests.Integration.UploadWorkflowIntegrationTests.CompleteUploadWorkflow_WithCleanFile_ShouldProcessSuccessfully [5 s]
+  Passed L4H.Api.Tests.Graph.GraphMailControllerTests.SendTestMail_AsNonAdmin_ShouldReturnForbidden [4 s]
+[00:00:06 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[00:00:06 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.StartInterview_ShouldCreateNewSession_WhenValidRequest [4 s]
+  Passed L4H.Api.Tests.Admin.WorkflowReviewControllerTests.ListPending_WithAdminAuth_ShouldReturnDraftsWithSummaryCounts [4 s]
+  Passed L4H.Api.Tests.Workflows.WorkflowLookupControllerTests.GetWorkflow_WithApprovedVersion_ShouldReturnLatestApproved [5 s]
+  Passed L4H.Api.Tests.Services.RememberMeTokenServiceTests.ValidateAndRotateTokenAsync_ExpiredToken_ReturnsNull [3 s]
+  Passed L4H.Api.Tests.Services.DailyDigestServiceTests.ProcessDailyDigests_WithExistingDigest_ShouldNotCreateDuplicate [4 s]
+  Passed L4H.Api.Tests.Controllers.MessagingControllerTests.MarkMessageAsRead_WithValidMessage_ShouldUpdateReadStatus [4 s]
+  Passed L4H.Api.Tests.Graph.GraphMailControllerTests.SendTestMail_WithInvalidRequest_ShouldReturnBadRequest [4 s]
+  Passed L4H.Api.Tests.Integration.UploadWorkflowIntegrationTests.UploadWorkflow_ChecksFileExtensions_AtPresignStage [5 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.LockInterview_ShouldPreventFurtherModifications_WhenCalled [4 s]
+  Passed L4H.Api.Tests.Admin.WorkflowReviewControllerTests.ApproveWorkflow_AsNonAdmin_ShouldReturnForbidden [4 s]
+  Passed L4H.Api.Tests.Controllers.MessagingControllerTests.CreateThread_WithInvalidCaseId_ShouldReturnBadRequest [3 s]
+  Passed L4H.Api.Tests.Graph.GraphMailControllerTests.SendTestMail_WithValidRequest_ShouldSendVieFakeProvider [3 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.RerunInterview_ShouldCancelActiveSession_WhenCalled [2 s]
+  Passed L4H.Api.Tests.Controllers.MessagingControllerTests.CreateThread_WithValidRequest_ShouldCreateThread [2 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.UnauthorizedAccess_ShouldReturnUnauthorized_WhenNoToken [1 s]
+  Passed L4H.Api.Tests.Controllers.MessagingControllerTests.GetUnreadCounts_WithValidCase_ShouldReturnCounts [1 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.Interview_ShouldReturnLocalizedMessages_WhenSpanishCultureSet [1 s]
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.CompleteInterview_ShouldGenerateRecommendation_WhenSessionHasAnswers [1 s]
+[xUnit.net 00:00:39.16]   Finished:    L4H.Api.Tests
+  Passed L4H.Api.Tests.Controllers.InterviewControllerTests.AnswerQuestion_ShouldAcceptAnswer_WhenValidSessionAndQuestion [1 s]
+
+Test Run Failed.
+Total tests: 171
+     Passed: 170
+     Failed: 1
+ Total time: 40.1431 Seconds

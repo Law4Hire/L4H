@@ -1,0 +1,55 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,vb}]
+indent_style = space
+indent_size = 4
+
+# C# Code Style Rules
+[*.cs]
+
+# Culture-aware formatting
+dotnet_diagnostic.CA1305.severity = error
+dotnet_diagnostic.CA1304.severity = error
+
+# Dispose patterns
+dotnet_diagnostic.CA2007.severity = error
+dotnet_diagnostic.CA1063.severity = error
+dotnet_diagnostic.CA1816.severity = error
+
+# Cancellation token flow
+dotnet_diagnostic.CA2016.severity = error
+
+# Async/await patterns
+dotnet_diagnostic.CA2012.severity = error
+
+# Security
+dotnet_diagnostic.CA5350.severity = error
+dotnet_diagnostic.CA5351.severity = error
+
+# Performance
+dotnet_diagnostic.CA1822.severity = error
+dotnet_diagnostic.CA1829.severity = error
+
+# Naming conventions
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1708.severity = error
+
+# Documentation
+dotnet_diagnostic.CS1591.severity = none
+
+[*.{js,ts,jsx,tsx}]
+indent_style = space
+indent_size = 2
+
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

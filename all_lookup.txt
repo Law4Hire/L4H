@@ -1,0 +1,331 @@
+using FluentAssertions;
+using L4H.Infrastructure.Data;
+using L4H.Infrastructure.Entities;
+using L4H.Shared.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using Xunit;
+
+namespace L4H.Api.Tests.Workflows;
+
+public class WorkflowLookupControllerTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
+{
+    private readonly WebApplicationFactory<Program> _factory;
+    private readonly HttpClient _client;
+
+    public WorkflowLookupControllerTests(WebApplicationFactory<Program> factory)
+    {
+        _factory = factory.WithWebHostBuilder(builder =>
+        {
+            // Use Testing environment to apply migrations and fakes
+            builder.UseEnvironment("Testing");
+        });
+
+        _client = _factory.CreateClient();
+    }
+
+    [Fact]
+    public async Task GetWorkflow_WithApprovedVersion_ShouldReturnLatestApproved()
+    {
+        // Arrange
+        await SetupTestDataWithApprovedWorkflow();
+        var token = await GetAuthTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        var response = await _client.GetAsync("/v1/workflows?visaType=B2&country=ES");
+
+        // Assert
+        response.IsSuccessStatusCode.Should().BeTrue();
+
+        var content = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<WorkflowLookupResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        result.Should().NotBeNull();
+        result!.VisaTypeId.Should().Be(TestData.B2VisaTypeId);
+        result.CountryCode.Should().Be("ES");
+        result.Version.Should().Be(2); // Latest approved version
+        result.Status.Should().Be("approved");
+        result.Steps.Should().HaveCount(3);
+        result.Doctors.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task GetWorkflow_WithNoPendingOnlyDrafts_ShouldOnlyReturnApproved()
+    {
+        // Arrange
+        await SetupTestDataWithMixedStatuses();
+        var token = await GetAuthTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        var response = await _client.GetAsync("/v1/workflows?visaType=B2&country=ES");
+
+        // Assert
+        response.IsSuccessStatusCode.Should().BeTrue();
+
+        var content = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<WorkflowLookupResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        result.Should().NotBeNull();
+        result!.Status.Should().Be("approved");
+        result.Version.Should().Be(1); // Only approved version
+    }
+
+    [Fact]
+    public async Task GetWorkflow_WithNoApprovedVersion_ShouldReturn404Localized()
+    {
+        // Arrange
+        await SetupTestDataWithOnlyDrafts();
+        var token = await GetAuthTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        _client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("es-ES"));
+
+        // Act
+        var response = await _client.GetAsync("/v1/workflows?visaType=B2&country=ES");
+
+        // Assert
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+
+        var content = await response.Content.ReadAsStringAsync();
+        var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        
+        errorResponse.Should().NotBeNull();
+        errorResponse!.Message.Should().Contain("encontrado"); // Spanish for "not found"
+    }
+
+    [Fact]
+    public async Task GetWorkflow_CreatesAuditLogEntry()
+    {
+        // Arrange
+        await SetupTestDataWithApprovedWorkflow();
+        var token = await GetAuthTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        await _client.GetAsync("/v1/workflows?visaType=B2&country=ES");
+
+        // Assert - Verify audit log was created
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+        
+        var auditLog = await context.AuditLogs
+            .Where(a => a.Category == "workflow" && a.Action.Contains("lookup"))
+            .FirstOrDefaultAsync();
+        
+        auditLog.Should().NotBeNull();
+        auditLog!.TargetType.Should().Be("WorkflowVersion");
+        auditLog.ActorUserId.Should().Be(TestData.TestUserId);
+    }
+
+    private async Task SetupTestDataWithApprovedWorkflow()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+
+        var user = new User
+        {
+            Id = TestData.TestUserId,
+            Email = "test@example.com",
+            PasswordHash = "hashed-password",
+            EmailVerified = true,
+            CreatedAt = DateTime.UtcNow,
+            PasswordUpdatedAt = DateTime.UtcNow
+        };
+
+        // Create approved workflow v2 (latest)
+        var approvedWorkflow = new WorkflowVersion
+        {
+            Id = Guid.NewGuid(),
+            VisaTypeId = TestData.B2VisaTypeId,
+            CountryCode = "ES",
+            Version = 2,
+            Status = "approved",
+            Source = "Embassy",
+            ScrapeHash = "approved-hash-v2",
+            ScrapedAt = DateTime.UtcNow,
+            ApprovedAt = DateTime.UtcNow
+        };
+
+        // Create steps
+        var steps = new List<WorkflowStep>
+        {
+            new WorkflowStep
+            {
+                Id = Guid.NewGuid(),
+                WorkflowVersionId = approvedWorkflow.Id,
+                Ordinal = 1,
+                Key = "medical_exam",
+                Title = "Medical Examination",
+                Description = "Complete medical examination"
+            },
+            new WorkflowStep
+            {
+                Id = Guid.NewGuid(),
+                WorkflowVersionId = approvedWorkflow.Id,
+                Ordinal = 2,
+                Key = "fee_payment",
+                Title = "Pay Application Fee",
+                Description = "Pay required fee"
+            },
+            new WorkflowStep
+            {
+                Id = Guid.NewGuid(),
+                WorkflowVersionId = approvedWorkflow.Id,
+                Ordinal = 3,
+                Key = "interview",
+                Title = "Consular Interview",
+                Description = "Attend interview"
+            }
+        };
+
+        // Create doctors
+        var doctors = new List<WorkflowDoctor>
+        {
+            new WorkflowDoctor
+            {
+                Id = Guid.NewGuid(),
+                WorkflowVersionId = approvedWorkflow.Id,
+                Name = "Dr. Test One",
+                Address = "Test Address 1",
+                City = "Madrid",
+                CountryCode = "ES"
+            },
+            new WorkflowDoctor
+            {
+                Id = Guid.NewGuid(),
+                WorkflowVersionId = approvedWorkflow.Id,
+                Name = "Dr. Test Two",
+                Address = "Test Address 2",
+                City = "Barcelona",
+                CountryCode = "ES"
+            }
+        };
+
+        context.Users.Add(user);
+        context.WorkflowVersions.Add(approvedWorkflow);
+        context.WorkflowSteps.AddRange(steps);
+        context.WorkflowDoctors.AddRange(doctors);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task SetupTestDataWithMixedStatuses()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+
+        var user = new User
+        {
+            Id = TestData.TestUserId,
+            Email = "test@example.com",
+            PasswordHash = "hashed-password",
+            EmailVerified = true,
+            CreatedAt = DateTime.UtcNow,
+            PasswordUpdatedAt = DateTime.UtcNow
+        };
+
+        // Approved v1
+        var approvedWorkflow = new WorkflowVersion
+        {
+            Id = Guid.NewGuid(),
+            VisaTypeId = TestData.B2VisaTypeId,
+            CountryCode = "ES",
+            Version = 1,
+            Status = "approved",
+            Source = "Embassy",
+            ScrapeHash = "approved-hash",
+            ScrapedAt = DateTime.UtcNow.AddDays(-1),
+            ApprovedAt = DateTime.UtcNow.AddDays(-1)
+        };
+
+        // Pending v2 (should not be returned to non-admin)
+        var pendingWorkflow = new WorkflowVersion
+        {
+            Id = Guid.NewGuid(),
+            VisaTypeId = TestData.B2VisaTypeId,
+            CountryCode = "ES",
+            Version = 2,
+            Status = "pending_approval",
+            Source = "Embassy",
+            ScrapeHash = "pending-hash",
+            ScrapedAt = DateTime.UtcNow
+        };
+
+        context.Users.Add(user);
+        context.WorkflowVersions.AddRange(approvedWorkflow, pendingWorkflow);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task SetupTestDataWithOnlyDrafts()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+
+        var user = new User
+        {
+            Id = TestData.TestUserId,
+            Email = "test@example.com",
+            PasswordHash = "hashed-password",
+            EmailVerified = true,
+            CreatedAt = DateTime.UtcNow,
+            PasswordUpdatedAt = DateTime.UtcNow
+        };
+
+        // Only pending draft (no approved versions)
+        var pendingWorkflow = new WorkflowVersion
+        {
+            Id = Guid.NewGuid(),
+            VisaTypeId = TestData.B2VisaTypeId,
+            CountryCode = "ES",
+            Version = 1,
+            Status = "pending_approval",
+            Source = "Embassy",
+            ScrapeHash = "pending-only-hash",
+            ScrapedAt = DateTime.UtcNow
+        };
+
+        context.Users.Add(user);
+        context.WorkflowVersions.Add(pendingWorkflow);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task<string> GetAuthTokenAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+        
+        var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Email == "test@example.com");
+        if (existingUser == null)
+        {
+            var user = new User
+            {
+                Id = TestData.TestUserId,
+                Email = "test@example.com",
+                PasswordHash = "hashed-password",
+                EmailVerified = true,
+                CreatedAt = DateTime.UtcNow,
+                PasswordUpdatedAt = DateTime.UtcNow
+            };
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+        }
+
+        return "mock-jwt-token-for-testing";
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
+        _factory.Dispose();
+    }
+
+    private static class TestData
+    {
+        public static readonly UserId TestUserId = new UserId(Guid.Parse("12345678-1234-1234-1234-123456789012"));
+        public static readonly int B2VisaTypeId = 1;
+    }
+}

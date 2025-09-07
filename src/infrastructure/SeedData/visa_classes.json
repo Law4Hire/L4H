@@ -1,0 +1,44 @@
+[
+  {
+    "code": "B",
+    "name": "Visitor",
+    "generalCategory": "Temporary Visitor",
+    "isActive": true
+  },
+  {
+    "code": "H",
+    "name": "Temporary Worker",
+    "generalCategory": "Temporary Worker",
+    "isActive": true
+  },
+  {
+    "code": "L",
+    "name": "Intracompany Transferee",
+    "generalCategory": "Temporary Worker",
+    "isActive": true
+  },
+  {
+    "code": "O",
+    "name": "Extraordinary Ability",
+    "generalCategory": "Temporary Worker",
+    "isActive": true
+  },
+  {
+    "code": "EB",
+    "name": "Employment-Based Immigrant",
+    "generalCategory": "Permanent Resident",
+    "isActive": true
+  },
+  {
+    "code": "F",
+    "name": "Student",
+    "generalCategory": "Academic Student",
+    "isActive": true
+  },
+  {
+    "code": "TN",
+    "name": "NAFTA Professional",
+    "generalCategory": "Temporary Worker",
+    "isActive": true
+  }
+]

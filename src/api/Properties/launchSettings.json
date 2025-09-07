@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "L4H.Api": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:8765"
+    }
+  }
+}

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Payments.WebhookProcessed" xml:space="preserve">
+    <value>Webhook procesado exitosamente</value>
+  </data>
+  <data name="Payments.WebhookRejected" xml:space="preserve">
+    <value>Webhook rechazado</value>
+  </data>
+  <data name="Payments.CheckoutCreated" xml:space="preserve">
+    <value>Sesión de pago creada</value>
+  </data>
+  <data name="Payments.CheckoutFailed" xml:space="preserve">
+    <value>Error al crear sesión de pago</value>
+  </data>
+  <data name="Payments.Refunded" xml:space="preserve">
+    <value>Pago reembolsado</value>
+  </data>
+  <data name="Payments.RefundFailed" xml:space="preserve">
+    <value>Error al procesar reembolso</value>
+  </data>
+  <data name="Mail.TestSent" xml:space="preserve">
+    <value>Correo de prueba enviado exitosamente</value>
+  </data>
+  <data name="Mail.SendFailed" xml:space="preserve">
+    <value>Error al enviar correo</value>
+  </data>
+  <data name="Availability.Fetched" xml:space="preserve">
+    <value>Disponibilidad obtenida exitosamente</value>
+  </data>
+  <data name="Availability.ProviderError" xml:space="preserve">
+    <value>Error del proveedor</value>
+  </data>
+  <data name="Meetings.Created" xml:space="preserve">
+    <value>Reunión creada exitosamente</value>
+  </data>
+  <data name="Meetings.ProviderError" xml:space="preserve">
+    <value>Error del proveedor</value>
+  </data>
+  <data name="Providers.Live" xml:space="preserve">
+    <value>En Vivo</value>
+  </data>
+  <data name="Providers.Fake" xml:space="preserve">
+    <value>Falso</value>
+  </data>
+  <data name="Providers.Teams" xml:space="preserve">
+    <value>Teams</value>
+  </data>
+  <data name="Graph.TestMailSubject" xml:space="preserve">
+    <value>Correo de Prueba de Law4Hire</value>
+  </data>
+  <data name="Graph.TestMailBody" xml:space="preserve">
+    <value>Este es un correo de prueba para verificar que la integración de Graph funciona correctamente.</value>
+  </data>
+  <data name="Graph.TestMailSent" xml:space="preserve">
+    <value>Correo de prueba enviado exitosamente</value>
+  </data>
+  <data name="Graph.TestMailError" xml:space="preserve">
+    <value>Error al enviar correo de prueba</value>
+  </data>
+  <data name="Availability.RetrievalFailed" xml:space="preserve">
+    <value>No se pudo recuperar la disponibilidad del calendario</value>
+  </data>
+  <data name="Availability.RetrievalError" xml:space="preserve">
+    <value>Error al recuperar la disponibilidad del calendario</value>
+  </data>
+  <data name="Appointments.CreatedSuccessfully" xml:space="preserve">
+    <value>Cita creada exitosamente</value>
+  </data>
+  <data name="Appointments.CreationFailed" xml:space="preserve">
+    <value>Error al crear cita</value>
+  </data>
+  <data name="Appointments.CreationError" xml:space="preserve">
+    <value>Error al crear cita</value>
+  </data>
+  <data name="Payments.CheckoutError" xml:space="preserve">
+    <value>Error al crear sesión de pago</value>
+  </data>
+  <data name="Payments.WebhookIgnored" xml:space="preserve">
+    <value>Webhook ignorado</value>
+  </data>
+  <data name="Payments.WebhookError" xml:space="preserve">
+    <value>Error al procesar webhook</value>
+  </data>
+  <data name="Payments.CheckoutCompleted" xml:space="preserve">
+    <value>Pago completado exitosamente</value>
+  </data>
+  <data name="Payments.RefundProcessed" xml:space="preserve">
+    <value>Reembolso procesado exitosamente</value>
+  </data>
+</root>

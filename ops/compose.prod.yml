@@ -1,0 +1,102 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      SA_PASSWORD: ${SQL_SA_PASSWORD}
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd","-S","localhost","-U","sa","-P","${SQL_SA_PASSWORD}","-Q","SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  api:
+    image: ghcr.io/${GH_ORG}/l4h-api:${IMAGE_TAG}
+    command: ["--migrate"]
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      ConnectionStrings__SqlServer: "Server=sqlserver,1433;Database=L4H;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;"
+      Auth__Jwt__SigningKey: ${JWT_SIGNING_KEY}
+      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD}
+      RUN_SEED_ON_START: "false"
+      # uploads (local fs)
+      Uploads__BasePath: "/data/uploads"
+      Uploads__QuarantineSubdir: "quarantine"
+      Uploads__CleanSubdir: "clean"
+      Uploads__Gateway__PublicBaseUrl: "https://${L4H_DOMAIN}/gateway"
+      Uploads__Token__SigningKey: ${UPLOADS_TOKEN_SIGNING_KEY}
+      Uploads__Token__TtlMinutes: 30
+      # providers default to Fake; prod toggle later:
+      Payments__Stripe__Mode: Fake
+      Graph__Mode: Fake
+      Meetings__Mode: Fake
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - uploads-data:/data/uploads
+    healthcheck:
+      test: ["CMD","curl","-fsS","http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  upload-gateway:
+    image: ghcr.io/${GH_ORG}/l4h-upload-gateway:${IMAGE_TAG}
+    environment:
+      ASPNETCORE_URLS: "http://0.0.0.0:7070"
+      Uploads__BasePath: "/data/uploads"
+      Uploads__QuarantineSubdir: "quarantine"
+      Uploads__Token__SigningKey: ${UPLOADS_TOKEN_SIGNING_KEY}
+      Uploads__Token__TtlMinutes: 30
+      Uploads__MaxSizeMB: 25
+    volumes:
+      - uploads-data:/data/uploads
+    healthcheck:
+      test: ["CMD","curl","-fsS","http://localhost:7070/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  scraper:
+    image: ghcr.io/${GH_ORG}/l4h-scraper:${IMAGE_TAG}
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      Scraper__Cron: "P3D"
+      Scraper__UserAgent: "L4H-Scraper/1.0"
+      Scraper__RespectRobots: "true"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2
+    environment:
+      LE_EMAIL: ${LE_EMAIL}
+      L4H_DOMAIN: ${L4H_DOMAIN}
+      CANNLAW_DOMAIN: ${CANNLAW_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile.prod:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+      - web-l4h:/srv/www/l4h:ro
+      - web-cannlaw:/srv/www/cannlaw:ro
+    depends_on:
+      api:
+        condition: service_healthy
+      upload-gateway:
+        condition: service_healthy
+
+volumes:
+  mssql-data:
+  uploads-data:
+  caddy-data:
+  caddy-config:
+  web-l4h:
+  web-cannlaw:
