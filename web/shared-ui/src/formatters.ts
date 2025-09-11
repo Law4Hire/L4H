@@ -1,4 +1,4 @@
-import { isRTL } from './i18n'
+// import { isRTL } from './i18n' // Commented out unused import
 
 // Currency formatting
 export function formatCurrency(
@@ -213,16 +213,20 @@ export function formatPercentage(
 // List formatting (e.g., "apple, banana, and orange")
 export function formatList(
   items: string[], 
-  options?: Intl.ListFormatOptions,
-  locale?: string
+  _options?: { type?: 'conjunction' | 'disjunction' | 'unit', style?: 'long' | 'short' | 'narrow' },
+  _locale?: string
 ): string {
-  const currentLocale = locale || getCurrentLocale()
+  // const currentLocale = locale || getCurrentLocale() // Unused for now
   
   try {
-    return new Intl.ListFormat(currentLocale, {
-      type: 'conjunction',
-      ...options,
-    }).format(items)
+    // Use a simplified approach for older browsers
+    if (items.length === 0) return ''
+    if (items.length === 1) return items[0]
+    if (items.length === 2) return `${items[0]} and ${items[1]}`
+    
+    const lastItem = items[items.length - 1]
+    const otherItems = items.slice(0, -1)
+    return `${otherItems.join(', ')}, and ${lastItem}`
   } catch (error) {
     console.warn('List formatting failed, using fallback:', error)
     return items.join(', ')

@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react' // Not needed with new JSX transform
 import { LucideIcon } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -62,7 +62,6 @@ export {
   Edit,
   Trash2,
   Save,
-  Cancel,
   Check,
   X as Close,
   
@@ -101,5 +100,4 @@ export {
   
   // Loading
   Loader2,
-  Spinner,
 } from 'lucide-react'

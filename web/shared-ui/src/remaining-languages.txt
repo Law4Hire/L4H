@@ -1,0 +1,19 @@
+This file is a temporary holder to help me structure the remaining languages. The remaining languages that need to be added are:
+- French (fr-FR)
+- Hindi (hi-IN)
+- Indonesian (id-ID)
+- Italian (it-IT)
+- Japanese (ja-JP)
+- Korean (ko-KR)
+- Marathi (mr-IN)
+- Polish (pl-PL)
+- Portuguese (pt-PT)
+- Russian (ru-RU)
+- Tamil (ta-IN)
+- Telugu (te-IN)
+- Turkish (tr-TR)
+- Urdu (ur-PK)
+- Vietnamese (vi-VN)
+- Chinese (zh-CN)
+
+I need to add complete translation resources for each of these languages with all the required namespaces.

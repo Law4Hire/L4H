@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Button, LanguageSwitcher, authClient } from '@l4h/shared-ui'
 
 const LoginPage: React.FC = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation(['auth', 'login', 'common'])
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,10 +23,10 @@ const LoginPage: React.FC = () => {
       if (result.success) {
         navigate('/schedule')
       } else {
-        setError(result.error || t('login.loginFailed'))
+        setError(result.error || t('loginFailed'))
       }
     } catch (err) {
-      setError(t('login.loginFailed'))
+      setError(t('loginFailed'))
     } finally {
       setLoading(false)
     }
@@ -37,10 +37,10 @@ const LoginPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('login.title')}
+            {t('title')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {t('login.subtitle')}
+            {t('subtitle')}
           </p>
         </div>
         
@@ -48,7 +48,7 @@ const LoginPage: React.FC = () => {
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">
-                {t('auth.email')}
+                {t('email')}
               </label>
               <input
                 id="email"
@@ -57,14 +57,14 @@ const LoginPage: React.FC = () => {
                 autoComplete="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t('auth.email')}
+                placeholder={t('email')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                {t('auth.password')}
+                {t('password')}
               </label>
               <input
                 id="password"
@@ -73,7 +73,7 @@ const LoginPage: React.FC = () => {
                 autoComplete="current-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t('auth.password')}
+                placeholder={t('password')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -91,7 +91,7 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                {t('auth.remember')}
+                {t('remember')}
               </label>
             </div>
           </div>
@@ -109,7 +109,7 @@ const LoginPage: React.FC = () => {
               loading={loading}
               disabled={loading}
             >
-              {t('auth.login')}
+              {t('login')}
             </Button>
           </div>
 

@@ -1,20 +1,42 @@
 import React from 'react'
+import { clsx } from 'clsx'
 
 interface CardProps {
   children: React.ReactNode
   className?: string
   title?: string
   actions?: React.ReactNode
+  variant?: 'default' | 'elevated' | 'outlined'
+  padding?: 'none' | 'sm' | 'md' | 'lg'
 }
 
 export const Card: React.FC<CardProps> = ({ 
   children, 
-  className = '', 
+  className, 
   title, 
-  actions 
+  actions,
+  variant = 'default',
+  padding = 'md'
 }) => {
+  const variantClasses = {
+    default: 'bg-white border border-gray-200 shadow-sm',
+    elevated: 'bg-white border border-gray-200 shadow-lg',
+    outlined: 'bg-white border-2 border-gray-300 shadow-none'
+  }
+
+  const paddingClasses = {
+    none: '',
+    sm: 'p-4',
+    md: 'p-6',
+    lg: 'p-8'
+  }
+
   return (
-    <div className={`bg-white shadow rounded-lg border border-gray-200 ${className}`}>
+    <div className={clsx(
+      'rounded-lg transition-shadow hover:shadow-md',
+      variantClasses[variant],
+      className
+    )}>
       {(title || actions) && (
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           {title && (
@@ -27,7 +49,10 @@ export const Card: React.FC<CardProps> = ({
           )}
         </div>
       )}
-      <div className="px-6 py-4">
+      <div className={clsx(
+        paddingClasses[padding],
+        title || actions ? '' : 'rounded-lg'
+      )}>
         {children}
       </div>
     </div>

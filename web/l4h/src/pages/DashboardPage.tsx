@@ -1,37 +1,44 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { Card, Button, apiClient, Case, formatDateTime } from '@l4h/shared-ui'
+import { useQuery } from '@tanstack/react-query'
+import { Card, Button, cases, interview, useToast, useTranslation } from '@l4h/shared-ui'
+
+interface Case {
+  id: string
+  status: string
+  createdAt: string
+}
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [cases, setCases] = useState<Case[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { error: showError } = useToast()
 
-  useEffect(() => {
-    const loadCases = async () => {
-      try {
-        const myCases = await apiClient.getMyCases()
-        setCases(myCases)
-      } catch (err) {
-        setError(t('common.error'))
-        console.error('Failed to load cases:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadCases()
-  }, [t])
+  // Fetch cases using React Query
+  const { data: casesList = [], isLoading, error } = useQuery({
+    queryKey: ['cases'],
+    queryFn: cases.mine
+  })
 
   const handleStartInterview = async () => {
     try {
-      const result = await apiClient.startInterview()
-      window.open(result.interviewUrl, '_blank')
-    } catch (err) {
-      console.error('Failed to start interview:', err)
+      if (casesList.length === 0) {
+        showError('You need to create a case first. Please contact us to get started.')
+        return
+      }
+      
+      // Use the first available case for the interview
+      const activeCase = casesList[0]
+      
+      // Start the interview
+      const response = await interview.start(activeCase.id)
+      
+      // Navigate to interview page with session ID
+      navigate(`/interview?sessionId=${response.sessionId}`)
+      
+    } catch (error: any) {
+      console.error('Failed to start interview:', error)
+      showError(error.message || 'Failed to start interview. Please try again.')
     }
   }
 
@@ -50,7 +57,7 @@ const DashboardPage: React.FC = () => {
     )
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-lg">{t('common.loading')}</div>
@@ -64,10 +71,10 @@ const DashboardPage: React.FC = () => {
       <div className="bg-white overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {t('dashboard.welcome')}
+            {t('dashboard:welcome')}
           </h1>
           <p className="text-gray-600">
-            {t('app.tagline')}
+            {t('app:tagline')}
           </p>
         </div>
       </div>
@@ -117,15 +124,15 @@ const DashboardPage: React.FC = () => {
       <Card title={t('dashboard.caseStatus')}>
         {error ? (
           <div className="text-red-600 text-center py-4">
-            {error}
+            {t('common.error')}
           </div>
-        ) : cases.length === 0 ? (
+        ) : casesList.length === 0 ? (
           <div className="text-gray-500 text-center py-4">
             No cases found
           </div>
         ) : (
           <div className="space-y-4">
-            {cases.map((caseItem) => (
+            {casesList.map((caseItem: Case) => (
               <div key={caseItem.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
                   <div className="font-medium text-gray-900">

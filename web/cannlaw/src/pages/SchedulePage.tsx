@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card, apiClient, Appointment } from '@l4h/shared-ui'
+import { Card, apiClient, type Appointment } from '@l4h/shared-ui'
 
 const SchedulePage: React.FC = () => {
   const { t } = useTranslation()

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
-import { useTranslation } from 'react-i18next'
+import '@testing-library/jest-dom'
 import SchedulePage from './SchedulePage'
 import { apiClient } from '@l4h/shared-ui'
 

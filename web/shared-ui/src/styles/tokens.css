@@ -1,0 +1,132 @@
+@layer base {
+  :root {
+    /* Brand colors */
+    --brand-50: 224 100% 97%;
+    --brand-100: 224 100% 94%;
+    --brand-200: 224 100% 89%;
+    --brand-300: 224 100% 82%;
+    --brand-400: 224 100% 71%;
+    --brand-500: 224 75% 58%;
+    --brand-600: 224 75% 48%;
+    --brand-700: 224 80% 40%;
+    --brand-800: 224 80% 32%;
+    --brand-900: 224 80% 26%;
+    --brand-950: 224 80% 13%;
+
+    /* Surface colors */
+    --bg: 0 0% 100%;
+    --fg: 222 47% 11%;
+    --muted: 220 14% 96%;
+    --muted-fg: 220 9% 46%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 224 75% 48%;
+
+    /* State colors */
+    --success: 142 71% 45%;
+    --success-fg: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-fg: 0 0% 100%;
+    --danger: 0 72% 51%;
+    --danger-fg: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-fg: 0 0% 100%;
+
+    /* Typography */
+    --font-sans: 'Inter', 'Noto Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Spacing */
+    --radius: 1rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1.5rem;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+    /* Transitions */
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --bg: 222 47% 11%;
+    --fg: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-fg: 215 20% 65%;
+    --border: 217 33% 22%;
+    --input: 217 33% 22%;
+    --ring: 224 75% 48%;
+
+    --success: 142 71% 45%;
+    --success-fg: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-fg: 0 0% 100%;
+    --danger: 0 72% 51%;
+    --danger-fg: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-fg: 0 0% 100%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--bg));
+    color: hsl(var(--fg));
+    font-family: var(--font-sans);
+    font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Focus styles */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Skip to content link */
+  .skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: hsl(var(--brand-600));
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    z-index: 1000;
+    transition: var(--transition);
+  }
+
+  .skip-to-content:focus {
+    top: 6px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* RTL support */
+  [dir="rtl"] {
+    text-align: right;
+  }
+
+  [dir="rtl"] .skip-to-content {
+    left: auto;
+    right: 6px;
+  }
+}

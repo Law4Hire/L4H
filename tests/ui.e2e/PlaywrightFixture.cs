@@ -16,7 +16,8 @@ public class PlaywrightFixture : IAsyncLifetime
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync().ConfigureAwait(false);
         Browser = await Playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            Headless = true
+            Headless = false, // Non-headless so we can see what's happening
+            SlowMo = 500 // Slow down actions for visibility
         }).ConfigureAwait(false);
     }
 

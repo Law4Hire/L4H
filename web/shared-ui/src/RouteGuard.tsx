@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { authClient } from './AuthClient'
+import { auth, getJwtToken, setJwtToken } from './api-client'
 
 interface RouteGuardProps {
   children: React.ReactNode
@@ -11,28 +10,39 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
   children, 
   redirectTo = '/login' 
 }) => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate() // Commented out router dependency
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
   useEffect(() => {
     const checkAuth = async () => {
       // First check if we have a token in memory
-      if (authClient.isAuthenticated()) {
+      if (getJwtToken()) {
         setIsAuthenticated(true)
         return
       }
 
       // Try to remember (exchange cookie for JWT)
-      const remembered = await authClient.remember()
-      setIsAuthenticated(remembered)
+      try {
+        const response = await auth.remember()
+        if (response && response.token) {
+          setJwtToken(response.token)
+          setIsAuthenticated(true)
+        } else {
+          setIsAuthenticated(false)
+        }
+      } catch (error) {
+        console.warn('Remember me failed:', error)
+        setIsAuthenticated(false)
+      }
       
-      if (!remembered) {
-        navigate(redirectTo, { replace: true })
+      if (!getJwtToken()) {
+        // Redirect to login page
+        window.location.href = redirectTo
       }
     }
 
     checkAuth()
-  }, [navigate, redirectTo])
+  }, [redirectTo])
 
   // Show loading while checking authentication
   if (isAuthenticated === null) {

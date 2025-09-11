@@ -26,13 +26,36 @@ public class JwtTokenService : IJwtTokenService
 
     public string GenerateAccessToken(User user)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim("email_verified", user.EmailVerified.ToString()),
             new Claim("is_admin", user.IsAdmin.ToString())
         };
+
+        // Add name claims if available
+        if (!string.IsNullOrEmpty(user.FirstName))
+        {
+            claims.Add(new Claim("given_name", user.FirstName));
+            claims.Add(new Claim("firstName", user.FirstName));
+        }
+        
+        if (!string.IsNullOrEmpty(user.LastName))
+        {
+            claims.Add(new Claim("family_name", user.LastName));
+            claims.Add(new Claim("lastName", user.LastName));
+        }
+        
+        // Add full name if both first and last name are available
+        if (!string.IsNullOrEmpty(user.FirstName) && !string.IsNullOrEmpty(user.LastName))
+        {
+            claims.Add(new Claim("name", $"{user.FirstName} {user.LastName}"));
+        }
+        else if (!string.IsNullOrEmpty(user.FirstName))
+        {
+            claims.Add(new Claim("name", user.FirstName));
+        }
 
         var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
 

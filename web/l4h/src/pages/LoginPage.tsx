@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { Button, Input, LanguageSwitcher, authClient } from '@l4h/shared-ui'
+import { Button, Input, LanguageSwitcher, auth, setJwtToken, useToast, useTranslation } from '@l4h/shared-ui'
 
 interface LoginFormData {
   email: string
@@ -10,9 +9,18 @@ interface LoginFormData {
   remember: boolean
 }
 
-const LoginPage: React.FC = () => {
-  const { t } = useTranslation()
+interface LoginPageProps {
+  onSuccess?: () => void
+}
+
+const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
+  const { t, i18n } = useTranslation(['login', 'auth', 'common'])
+  
+  // Use translations from shared i18n system
+  const loginTitle = t('title', { ns: 'login', defaultValue: 'Sign In to Law4Hire' })
+  const loginSubtitle = t('subtitle', { ns: 'login', defaultValue: 'Access your immigration case portal' })
   const navigate = useNavigate()
+  const { success, error: showError } = useToast()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -27,18 +35,30 @@ const LoginPage: React.FC = () => {
     setError('')
 
     try {
-      const result = await authClient.login(data.email, data.password)
+      const result = await auth.login({
+        email: data.email,
+        password: data.password,
+        rememberMe: data.remember
+      })
       
-      if (result.success) {
-        if (data.remember) {
-          await authClient.remember()
+      if (result && result.token) {
+        setJwtToken(result.token)
+        // Dispatch custom event to notify auth state change
+        window.dispatchEvent(new Event('jwt-token-changed'))
+        success(t('auth.login') + ' ' + t('common.success'))
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          navigate('/dashboard')
         }
-        navigate('/dashboard')
       } else {
-        setError(result.error || t('login.loginFailed'))
+        setError(t('auth.loginFailed'))
+        showError(t('auth.loginFailed'))
       }
     } catch (err) {
-      setError(t('login.loginFailed'))
+      const errorMessage = err instanceof Error ? err.message : t('auth.loginFailed')
+      setError(errorMessage)
+      showError(t('auth.loginFailed'), errorMessage)
     } finally {
       setLoading(false)
     }
@@ -49,10 +69,10 @@ const LoginPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('login.title')}
+            {t('title', { ns: 'login' })}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {t('login.subtitle')}
+            {t('subtitle', { ns: 'login' })}
           </p>
         </div>
         
@@ -64,31 +84,31 @@ const LoginPage: React.FC = () => {
         >
           <div className="space-y-4">
             <Input
-              label={t('auth.email')}
+              label={t('email', { ns: 'auth' })}
               type="email"
               autoComplete="email"
-              placeholder={t('auth.email')}
+              placeholder={t('email', { ns: 'auth' })}
               error={errors.email?.message}
               {...register('email', {
-                required: t('auth.emailRequired') || 'Email is required',
+                required: t('emailRequired', { ns: 'auth' }) || 'Email is required',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: t('auth.emailInvalid') || 'Invalid email format',
+                  message: t('emailInvalid', { ns: 'auth' }) || 'Invalid email format',
                 },
               })}
             />
             
             <Input
-              label={t('auth.password')}
+              label={t('password', { ns: 'auth' })}
               type="password"
               autoComplete="current-password"
-              placeholder={t('auth.password')}
+              placeholder={t('password', { ns: 'auth' })}
               error={errors.password?.message}
               {...register('password', {
-                required: t('auth.passwordRequired') || 'Password is required',
+                required: t('passwordRequired', { ns: 'auth' }) || 'Password is required',
                 minLength: {
                   value: 6,
-                  message: t('auth.passwordMinLength') || 'Password must be at least 6 characters',
+                  message: t('passwordMinLength', { ns: 'auth' }) || 'Password must be at least 6 characters',
                 },
               })}
             />
@@ -102,7 +122,7 @@ const LoginPage: React.FC = () => {
               {...register('remember')}
             />
             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-              {t('auth.remember')}
+              {t('remember', { ns: 'auth' })}
             </label>
           </div>
 
@@ -119,8 +139,21 @@ const LoginPage: React.FC = () => {
               disabled={loading}
               className="w-full"
             >
-              {t('auth.login')}
+              {t('login', { ns: 'auth' })}
             </Button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              {t('dontHaveAccount', { ns: 'auth' })} {' '}
+              <button
+                type="button"
+                onClick={() => navigate('/register')}
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                {t('signUpNow', { ns: 'auth' })}
+              </button>
+            </p>
           </div>
 
           <div className="flex justify-center">
