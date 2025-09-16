@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import LoginPage from './pages/LoginPage'
 import SchedulePage from './pages/SchedulePage'
 import CasesPage from './pages/CasesPage'
+import AdminPage from './pages/AdminPage'
 import AdminPricingPage from './pages/AdminPricingPage'
 import AdminWorkflowsPage from './pages/AdminWorkflowsPage'
 import AdminTimeEntriesPage from './pages/AdminTimeEntriesPage'
@@ -33,6 +34,36 @@ function App() {
             <RouteGuard>
               <Layout title={t('nav.cases')}>
                 <CasesPage />
+              </Layout>
+            </RouteGuard>
+          } 
+        />
+        <Route 
+          path="/admin" 
+          element={
+            <RouteGuard>
+              <Layout title={t('admin.title')}>
+                <AdminPage />
+              </Layout>
+            </RouteGuard>
+          } 
+        />
+        <Route 
+          path="/admin/users" 
+          element={
+            <RouteGuard>
+              <Layout title="User Management">
+                <div>User Management Page - To be implemented</div>
+              </Layout>
+            </RouteGuard>
+          } 
+        />
+        <Route 
+          path="/admin/cases" 
+          element={
+            <RouteGuard>
+              <Layout title="Case Management">
+                <div>Case Management Page - To be implemented</div>
               </Layout>
             </RouteGuard>
           } 

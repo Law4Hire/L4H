@@ -49,7 +49,7 @@ export default function AppointmentsPage() {
 
   const handleCreateAppointment = () => {
     if (!newAppointment.caseId || !newAppointment.scheduledAt) {
-      error(t('common.error'), 'Please fill in all required fields')
+      error(t('common.error'), t('validation.requiredFields', { defaultValue: 'Please fill in all required fields' }))
       return
     }
 
@@ -84,7 +84,7 @@ export default function AppointmentsPage() {
           <EmptyState
             icon={Calendar}
             title={t('appointments.noAppointments')}
-            description="Schedule your first appointment to get started"
+            description={t('appointments.scheduleFirst', { defaultValue: 'Schedule your first appointment to get started' })}
             action={
               <Button onClick={() => setShowCreateModal(true)}>
                 <Plus className="h-4 w-4 mr-2" />
@@ -165,7 +165,7 @@ export default function AppointmentsPage() {
             type="number"
             value={newAppointment.duration}
             onChange={(e) => setNewAppointment(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-            helperText="Duration in minutes"
+            helperText={t('appointments.durationHelper', { defaultValue: `Duration in ${t('appointments.duration')}` })}
           />
 
           <Input

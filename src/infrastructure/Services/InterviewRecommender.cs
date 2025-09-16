@@ -36,7 +36,7 @@ public class RuleBasedRecommender : IInterviewRecommender
         {
             result = new RecommendationResult
             {
-                VisaTypeId = await GetVisaTypeIdByCodeAsync("B2").ConfigureAwait(false), // B-2 Tourist Visa
+                VisaTypeId = await GetVisaTypeIdByCodeAsync("B-2").ConfigureAwait(false), // B-2 Tourist Visa
                 Rationale = "Based on your purpose of travel, a B-2 Tourist Visa is recommended."
             };
         }
@@ -46,7 +46,7 @@ public class RuleBasedRecommender : IInterviewRecommender
             {
                 result = new RecommendationResult
                 {
-                    VisaTypeId = await GetVisaTypeIdByCodeAsync("H1B").ConfigureAwait(false), // H-1B Specialty Occupation
+                    VisaTypeId = await GetVisaTypeIdByCodeAsync("H-1B").ConfigureAwait(false), // H-1B Specialty Occupation
                     Rationale = "Based on your employment purpose and employer sponsorship, an H-1B Specialty Occupation Visa is recommended."
                 };
             }
@@ -55,7 +55,7 @@ public class RuleBasedRecommender : IInterviewRecommender
                 // Fallback to B2 if no sponsor
                 result = new RecommendationResult
                 {
-                    VisaTypeId = await GetVisaTypeIdByCodeAsync("B2").ConfigureAwait(false), // B-2 Tourist Visa  
+                    VisaTypeId = await GetVisaTypeIdByCodeAsync("B-2").ConfigureAwait(false), // B-2 Tourist Visa  
                     Rationale = "Based on your purpose of travel, a B-2 Tourist Visa is recommended."
                 };
             }
@@ -65,7 +65,7 @@ public class RuleBasedRecommender : IInterviewRecommender
             // Default fallback to B2
             result = new RecommendationResult
             {
-                VisaTypeId = await GetVisaTypeIdByCodeAsync("B2").ConfigureAwait(false), // B-2 Tourist Visa
+                VisaTypeId = await GetVisaTypeIdByCodeAsync("B-2").ConfigureAwait(false), // B-2 Tourist Visa
                 Rationale = "Based on your purpose of travel, a B-2 Tourist Visa is recommended."
             };
         }
@@ -81,8 +81,8 @@ public class RuleBasedRecommender : IInterviewRecommender
             return visaType.Id;
         }
 
-        // Fallback: try to find B2 as default
-        var b2VisaType = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "B2").ConfigureAwait(false);
+        // Fallback: try to find B-2 as default
+        var b2VisaType = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "B-2").ConfigureAwait(false);
         if (b2VisaType != null)
         {
             return b2VisaType.Id;

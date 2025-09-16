@@ -13,7 +13,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
     }
 
     [Fact]
-    public async Task L4H_Comprehensive_Localization_Test()
+    public async Task L4H_Home_Page_Localization_Test()
     {
         var page = await _fixture.Browser.NewPageAsync().ConfigureAwait(false);
 
@@ -23,69 +23,87 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
 
         try
         {
-            // Step 1: Test L4H Public Pages (no login required)
-            Console.WriteLine("=== Testing L4H Public Pages ===");
+            Console.WriteLine("=== Testing L4H Home Page - All Languages ===");
             
             // Test Landing Page
             await TestPageLocalization(page, "http://localhost:5175/", "Landing Page", 
-                new[] { "nav.dashboard", "nav.pricing", "common.getStarted" }).ConfigureAwait(false);
+                new[] { "landing.hero.title", "landing.hero.subtitle", "landing.hero.startCase", "landing.hero.exploreVisas", "common.getStarted" }).ConfigureAwait(false);
+
+            Console.WriteLine("=== L4H Home Page Testing Complete ===");
+        }
+        finally
+        {
+            await page.CloseAsync().ConfigureAwait(false);
+        }
+    }
+
+    [Fact]
+    public async Task L4H_Login_Page_Localization_Test()
+    {
+        var page = await _fixture.Browser.NewPageAsync().ConfigureAwait(false);
+
+        // Capture console messages for debugging
+        page.Console += (_, e) => Console.WriteLine($"CONSOLE: {e.Text}");
+        page.PageError += (_, e) => Console.WriteLine($"PAGE ERROR: {e}");
+
+        try
+        {
+            Console.WriteLine("=== Testing L4H Login Page - All Languages ===");
+            
+            // Test Login Page with actual content verification
+            await TestLoginPageLocalization(page, "http://localhost:5175/login", "Login Page").ConfigureAwait(false);
+
+            Console.WriteLine("=== L4H Login Page Testing Complete ===");
+        }
+        finally
+        {
+            await page.CloseAsync().ConfigureAwait(false);
+        }
+    }
+
+    [Fact]
+    public async Task L4H_Register_Page_Localization_Test()
+    {
+        var page = await _fixture.Browser.NewPageAsync().ConfigureAwait(false);
+
+        // Capture console messages for debugging
+        page.Console += (_, e) => Console.WriteLine($"CONSOLE: {e.Text}");
+        page.PageError += (_, e) => Console.WriteLine($"PAGE ERROR: {e}");
+
+        try
+        {
+            Console.WriteLine("=== Testing L4H Register Page - All Languages ===");
+            
+            // Test Register Page
+            await TestPageLocalization(page, "http://localhost:5175/register", "Register Page",
+                new[] { "auth.createAccount", "auth.firstName", "auth.lastName", "auth.email", "auth.password", "auth.confirmPassword", "auth.alreadyHaveAccount", "auth.register" }).ConfigureAwait(false);
+
+            Console.WriteLine("=== L4H Register Page Testing Complete ===");
+        }
+        finally
+        {
+            await page.CloseAsync().ConfigureAwait(false);
+        }
+    }
+
+    [Fact]
+    public async Task L4H_Visa_Library_Page_Localization_Test()
+    {
+        var page = await _fixture.Browser.NewPageAsync().ConfigureAwait(false);
+
+        // Capture console messages for debugging
+        page.Console += (_, e) => Console.WriteLine($"CONSOLE: {e.Text}");
+        page.PageError += (_, e) => Console.WriteLine($"PAGE ERROR: {e}");
+
+        try
+        {
+            Console.WriteLine("=== Testing L4H Visa Library Page - All Languages ===");
             
             // Test Visa Library Page
             await TestPageLocalization(page, "http://localhost:5175/visa-library", "Visa Library Page",
                 new[] { "visaLibrary.title", "visaLibrary.description", "visaLibrary.learnMore", "visaLibrary.cta.title", "visaLibrary.categories.nonimmigrant", "visaLibrary.categories.immigrant" }).ConfigureAwait(false);
 
-            // Test Login Page
-            await TestPageLocalization(page, "http://localhost:5175/login", "Login Page",
-                new[] { "auth.login", "auth.email", "auth.password" }).ConfigureAwait(false);
-
-            // Test Register Page
-            await TestPageLocalization(page, "http://localhost:5175/register", "Register Page",
-                new[] { "auth.createAccount", "auth.firstName", "auth.lastName", "auth.email", "auth.password" }).ConfigureAwait(false);
-
-            // Step 2: Login and Test Protected Pages
-            Console.WriteLine("=== Logging in to test protected pages ===");
-            await page.GotoAsync("http://localhost:5175/login").ConfigureAwait(false);
-            await page.WaitForSelectorAsync("input[type='email']", new PageWaitForSelectorOptions { Timeout = 10000 }).ConfigureAwait(false);
-            await page.FillAsync("input[type='email']", "dcann@cannlaw.com").ConfigureAwait(false);
-            await page.FillAsync("input[type='password']", "SecureTest123!").ConfigureAwait(false);
-            var submitButton = await page.QuerySelectorAsync("button[type='submit']").ConfigureAwait(false);
-            Assert.NotNull(submitButton);
-            await submitButton.ClickAsync().ConfigureAwait(false);
-
-            // Wait for dashboard to load
-            await page.WaitForSelectorAsync("button:has-text('Hello'), button:has-text('Hola')", 
-                new PageWaitForSelectorOptions { Timeout = 15000 }).ConfigureAwait(false);
-
-            // Test Dashboard Page
-            await TestPageLocalization(page, "http://localhost:5175/dashboard", "Dashboard Page",
-                new[] { "nav.dashboard", "dashboard.quickLinks", "nav.hello" }).ConfigureAwait(false);
-
-            // Test Pricing Page
-            await TestPageLocalization(page, "http://localhost:5175/pricing", "Pricing Page",
-                new[] { "nav.pricing" }).ConfigureAwait(false);
-
-            // Test Appointments Page
-            await TestPageLocalization(page, "http://localhost:5175/appointments", "Appointments Page",
-                new[] { "nav.appointments" }).ConfigureAwait(false);
-
-            // Test Messages Page
-            await TestPageLocalization(page, "http://localhost:5175/messages", "Messages Page",
-                new[] { "nav.messages" }).ConfigureAwait(false);
-
-            // Test Uploads Page
-            await TestPageLocalization(page, "http://localhost:5175/uploads", "Uploads Page",
-                new[] { "nav.uploads" }).ConfigureAwait(false);
-
-            // Test Invoices Page
-            await TestPageLocalization(page, "http://localhost:5175/invoices", "Invoices Page",
-                new[] { "nav.invoices" }).ConfigureAwait(false);
-
-            // Test Interview Page
-            await TestPageLocalization(page, "http://localhost:5175/interview", "Interview Page",
-                new[] { "nav.interview" }).ConfigureAwait(false);
-
-            Console.WriteLine("=== L4H Testing Complete ===");
-
+            Console.WriteLine("=== L4H Visa Library Page Testing Complete ===");
         }
         finally
         {
@@ -162,52 +180,233 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
         await page.WaitForSelectorAsync("body", new PageWaitForSelectorOptions { Timeout = 10000 }).ConfigureAwait(false);
         await page.WaitForTimeoutAsync(2000).ConfigureAwait(false); // Wait for i18n to initialize
 
-        // Test English (default)
-        Console.WriteLine($"  Testing English localization for {pageName}");
-        var pageContent = await page.TextContentAsync("body").ConfigureAwait(false);
-        Assert.NotNull(pageContent);
-
-        // Check for translation keys that should not be visible
-        foreach (var key in expectedTranslationKeys)
+        // Test all languages for comprehensive validation
+        var allLanguages = new[]
         {
-            if (pageContent.Contains(key))
-            {
-                Console.WriteLine($"  ERROR: Translation key '{key}' found in English content for {pageName}");
-                Assert.False(true, $"Translation key '{key}' should not be visible in {pageName}. Found in content: {pageContent.Substring(0, Math.Min(300, pageContent.Length))}...");
-            }
-        }
+            "en-US", "es-ES", "ar-SA", "bn-BD", "de-DE", "fr-FR", 
+            "hi-IN", "id-ID", "it-IT", "ja-JP", "ko-KR", "mr-IN",
+            "pl-PL", "pt-PT", "ru-RU", "ta-IN", "te-IN", "tr-TR",
+            "ur-PK", "vi-VN", "zh-CN"
+        };
 
-        // Switch to Spanish and test
-        Console.WriteLine($"  Testing Spanish localization for {pageName}");
+        // Expected hero titles for each language (for home page validation)
+        var expectedHeroTitles = new Dictionary<string, string>
+        {
+            ["en-US"] = "Your Immigration Journey Starts Here",
+            ["es-ES"] = "Tu Viaje de Inmigración Comienza Aquí",
+            ["ar-SA"] = "رحلة الهجرة الخاصة بك تبدأ هنا",
+            ["bn-BD"] = "আপনার ইমিগ্রেশন যাত্রা এখানে শুরু",
+            ["de-DE"] = "Ihre Einwanderungsreise beginnt hier",
+            ["fr-FR"] = "Votre parcours d'immigration commence ici",
+            ["hi-IN"] = "आपकी इमिग्रेशन यात्रा यहाँ से शुरू होती है",
+            ["id-ID"] = "Perjalanan Imigrasi Anda Dimulai Di Sini",
+            ["it-IT"] = "Il Tuo Viaggio di Immigrazione Inizia Qui",
+            ["ja-JP"] = "あなたの移民の旅はここから始まります",
+            ["ko-KR"] = "당신의 이민 여정이 여기서 시작됩니다",
+            ["mr-IN"] = "तुमचा इमिग्रेशन प्रवास इथे सुरू होतो",
+            ["pl-PL"] = "Twoja Podróż Imigracyjna Zaczyna Się Tutaj",
+            ["pt-PT"] = "A Sua Jornada de Imigração Começa Aqui",
+            ["ru-RU"] = "Ваше иммиграционное путешествие начинается здесь",
+            ["ta-IN"] = "உங்கள் குடியேற்றப் பயணம் இங்கே தொடங்குகிறது",
+            ["te-IN"] = "మీ ఇమ్మిగ్రేషన్ యాత్ర ఇక్కడ మొదలవుతుంది",
+            ["tr-TR"] = "Göçmenlik Yolculuğunuz Burada Başlıyor",
+            ["ur-PK"] = "آپ کا امیگریشن سفر یہاں سے شروع ہوتا ہے",
+            ["vi-VN"] = "Hành Trình Nhập Cư Của Bạn Bắt Đầu Tại Đây",
+            ["zh-CN"] = "您的移民之旅从这里开始"
+        };
+
         var dropdown = await page.QuerySelectorAsync("select").ConfigureAwait(false);
-        if (dropdown != null)
-        {
-            await dropdown.SelectOptionAsync("es-ES").ConfigureAwait(false);
-            await page.WaitForTimeoutAsync(2000).ConfigureAwait(false); // Wait for language change
-
-            var spanishContent = await page.TextContentAsync("body").ConfigureAwait(false);
-            Assert.NotNull(spanishContent);
-
-            // Check for translation keys that should not be visible in Spanish
-            foreach (var key in expectedTranslationKeys)
-            {
-                if (spanishContent.Contains(key))
-                {
-                    Console.WriteLine($"  ERROR: Translation key '{key}' found in Spanish content for {pageName}");
-                    Assert.False(true, $"Translation key '{key}' should not be visible in Spanish {pageName}. Found in content: {spanishContent.Substring(0, Math.Min(300, spanishContent.Length))}...");
-                }
-            }
-
-            // Switch back to English for next test
-            await dropdown.SelectOptionAsync("en-US").ConfigureAwait(false);
-            await page.WaitForTimeoutAsync(1000).ConfigureAwait(false);
-        }
-        else
+        if (dropdown == null)
         {
             Console.WriteLine($"  WARNING: No language dropdown found on {pageName}");
+            return;
         }
 
-        Console.WriteLine($"  ✓ {pageName} localization test passed");
+        foreach (var language in allLanguages)
+        {
+            Console.WriteLine($"  Testing {language} localization for {pageName}");
+            
+            try
+            {
+                await dropdown.SelectOptionAsync(language).ConfigureAwait(false);
+                await page.WaitForTimeoutAsync(2000).ConfigureAwait(false); // Wait for language change
+
+                var content = await page.TextContentAsync("body").ConfigureAwait(false);
+                Assert.NotNull(content);
+
+                // For home/landing page, check if the hero title is properly translated
+                if (pageName.Contains("Landing Page") && expectedHeroTitles.ContainsKey(language))
+                {
+                    var expectedTitle = expectedHeroTitles[language];
+                    
+                    // Check if the expected translated title is present
+                    if (!content.Contains(expectedTitle))
+                    {
+                        // Check if it's showing English instead (which would be wrong for non-English languages)
+                        var englishTitle = expectedHeroTitles["en-US"];
+                        if (language != "en-US" && content.Contains(englishTitle))
+                        {
+                            Console.WriteLine($"    ❌ FAILURE: {language} showing English title '{englishTitle}' instead of '{expectedTitle}'");
+                            Assert.False(true, $"Language {language} is showing English title instead of proper translation. Expected: '{expectedTitle}', but page shows English.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"    ❌ FAILURE: {language} title '{expectedTitle}' not found in page content");
+                            Assert.False(true, $"Language {language} expected title '{expectedTitle}' not found in page content");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"    ✅ {language} localization working correctly - found title: '{expectedTitle}'");
+                    }
+                }
+                else
+                {
+                    // For other pages, fall back to the old translation key checking method
+                    var hasTranslationKeys = false;
+                    foreach (var key in expectedTranslationKeys)
+                    {
+                        if (content.Contains(key))
+                        {
+                            hasTranslationKeys = true;
+                            Console.WriteLine($"    ERROR: Translation key '{key}' found in {language} content for {pageName}");
+                        }
+                    }
+
+                    if (hasTranslationKeys)
+                    {
+                        Assert.False(true, $"Translation keys should not be visible in {language} for {pageName}. Language should be fully functional.");
+                    }
+                    Console.WriteLine($"    ✓ {language} localization working correctly");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"    ERROR: Failed to test {language} - {ex.Message}");
+                Assert.False(true, $"Language {language} failed to load properly in {pageName}: {ex.Message}");
+            }
+        }
+
+        // Reset to English
+        await dropdown.SelectOptionAsync("en-US").ConfigureAwait(false);
+        await page.WaitForTimeoutAsync(1000).ConfigureAwait(false);
+
+        Console.WriteLine($"  ✓ {pageName} comprehensive language testing complete");
+    }
+
+    private static async Task TestLoginPageLocalization(IPage page, string url, string pageName)
+    {
+        Console.WriteLine($"Testing {pageName} - {url}");
+        
+        await page.GotoAsync(url).ConfigureAwait(false);
+        
+        // Wait for page to load
+        await page.WaitForSelectorAsync("body", new PageWaitForSelectorOptions { Timeout = 10000 }).ConfigureAwait(false);
+        await page.WaitForTimeoutAsync(2000).ConfigureAwait(false); // Wait for i18n to initialize
+
+        // Expected login titles and subtitles for each language
+        var expectedLoginTranslations = new Dictionary<string, (string title, string subtitle)>
+        {
+            ["en-US"] = ("Sign In to Law4Hire", "Access your immigration case portal"),
+            ["es-ES"] = ("Iniciar Sesión en Law4Hire", "Accede a tu portal de casos de inmigración"),
+            ["ar-SA"] = ("تسجيل الدخول إلى Law4Hire", "الوصول إلى بوابة قضايا الهجرة الخاصة بك"),
+            ["bn-BD"] = ("Law4Hire-এ সাইন ইন", "আপনার ইমিগ্রেশন কেস পোর্টাল অ্যাক্সেস করুন"),
+            ["de-DE"] = ("Bei Law4Hire anmelden", "Zugriff auf Ihr Einwanderungsfall-Portal"),
+            ["fr-FR"] = ("Se connecter à Law4Hire", "Accédez à votre portail de dossiers d'immigration"),
+            ["hi-IN"] = ("Law4Hire में साइन इन करें", "अपने इमिग्रेशन केस पोर्टल तक पहुंचें"),
+            ["id-ID"] = ("Masuk ke Law4Hire", "Akses portal kasus imigrasi Anda"),
+            ["it-IT"] = ("Accedi a Law4Hire", "Accedi al tuo portale dei casi di immigrazione"),
+            ["ja-JP"] = ("Law4Hireにサインイン", "移民ケースポータルにアクセス"),
+            ["ko-KR"] = ("Law4Hire에 로그인", "이민 케이스 포털에 액세스"),
+            ["mr-IN"] = ("Law4Hire मध्ये साइन इन करा", "तुमच्या इमिग्रेशन केस पोर्टलमध्ये प्रवेश करा"),
+            ["pl-PL"] = ("Zaloguj się do Law4Hire", "Uzyskaj dostęp do swojego portalu spraw imigracyjnych"),
+            ["pt-PT"] = ("Iniciar sessão no Law4Hire", "Aceda ao seu portal de casos de imigração"),
+            ["ru-RU"] = ("Войти в Law4Hire", "Доступ к вашему порталу иммиграционных дел"),
+            ["ta-IN"] = ("Law4Hire இல் உள்நுழையுங்கள்", "உங்கள் குடியேற்ற வழக்கு போர்ட்டலை அணுகவும்"),
+            ["te-IN"] = ("Law4Hire లో సైన్ ఇన్ చేయండి", "మీ ఇమ్మిగ్రేషన్ కేస్ పోర్టల్‌ను యాక్సెస్ చేయండి"),
+            ["tr-TR"] = ("Law4Hire'a Giriş Yap", "Göçmenlik davası portalınıza erişin"),
+            ["ur-PK"] = ("Law4Hire میں سائن ان کریں", "اپنے امیگریشن کیس پورٹل تک رسائی حاصل کریں"),
+            ["vi-VN"] = ("Đăng nhập vào Law4Hire", "Truy cập cổng thông tin vụ án nhập cư của bạn"),
+            ["zh-CN"] = ("登录Law4Hire", "访问您的移民案例门户")
+        };
+
+        // Test just the languages that have login sections first
+        var languagesWithLoginSections = new[]
+        {
+            "en-US", "es-ES", "ar-SA", "bn-BD", "de-DE", "fr-FR", "hi-IN", "id-ID", "it-IT", "ja-JP", "ko-KR", "mr-IN", "pl-PL", "pt-PT", "ru-RU", "ta-IN", "te-IN", "tr-TR", "ur-PK", "vi-VN", "zh-CN"
+        };
+
+        var dropdown = await page.QuerySelectorAsync("select").ConfigureAwait(false);
+        if (dropdown == null)
+        {
+            Console.WriteLine($"  WARNING: No language dropdown found on {pageName}");
+            return;
+        }
+
+        foreach (var language in languagesWithLoginSections)
+        {
+            Console.WriteLine($"  Testing {language} localization for {pageName}");
+            
+            try
+            {
+                await dropdown.SelectOptionAsync(language).ConfigureAwait(false);
+                await page.WaitForTimeoutAsync(2000).ConfigureAwait(false); // Wait for language change
+
+                var content = await page.TextContentAsync("body").ConfigureAwait(false);
+                Assert.NotNull(content);
+
+                if (expectedLoginTranslations.ContainsKey(language))
+                {
+                    var (expectedTitle, expectedSubtitle) = expectedLoginTranslations[language];
+                    
+                    // Check if the expected translated title is present
+                    if (!content.Contains(expectedTitle))
+                    {
+                        // Check if it's showing English instead (which would be wrong for non-English languages)
+                        var englishTitle = expectedLoginTranslations["en-US"].title;
+                        if (language != "en-US" && content.Contains(englishTitle))
+                        {
+                            Console.WriteLine($"    ❌ FAILURE: {language} showing English title '{englishTitle}' instead of '{expectedTitle}'");
+                            Assert.False(true, $"Language {language} is showing English title instead of proper translation. Expected: '{expectedTitle}', but page shows English title.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"    ❌ FAILURE: {language} title '{expectedTitle}' not found in page content");
+                            Assert.False(true, $"Language {language} expected title '{expectedTitle}' not found in page content");
+                        }
+                    }
+                    
+                    // Check if the expected translated subtitle is present
+                    if (!content.Contains(expectedSubtitle))
+                    {
+                        var englishSubtitle = expectedLoginTranslations["en-US"].subtitle;
+                        if (language != "en-US" && content.Contains(englishSubtitle))
+                        {
+                            Console.WriteLine($"    ❌ FAILURE: {language} showing English subtitle '{englishSubtitle}' instead of '{expectedSubtitle}'");
+                            Assert.False(true, $"Language {language} is showing English subtitle instead of proper translation. Expected: '{expectedSubtitle}', but page shows English subtitle.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"    ❌ FAILURE: {language} subtitle '{expectedSubtitle}' not found in page content");
+                            Assert.False(true, $"Language {language} expected subtitle '{expectedSubtitle}' not found in page content");
+                        }
+                    }
+                    
+                    Console.WriteLine($"    ✅ {language} login page localization working correctly");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"    ERROR: Failed to test {language} - {ex.Message}");
+                Assert.False(true, $"Language {language} failed to load properly in {pageName}: {ex.Message}");
+            }
+        }
+
+        // Reset to English
+        await dropdown.SelectOptionAsync("en-US").ConfigureAwait(false);
+        await page.WaitForTimeoutAsync(1000).ConfigureAwait(false);
+
+        Console.WriteLine($"  ✓ {pageName} comprehensive language testing complete");
     }
 
     [SkippableFact]

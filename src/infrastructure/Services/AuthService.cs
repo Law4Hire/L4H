@@ -13,6 +13,8 @@ public interface IAuthService
     Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token);
     Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request);
     Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request);
+    Task<bool> UserExistsAsync(string email);
+    Task<Result<MessageResponse>> UpdateProfileAsync(UserId userId, UpdateProfileRequest request);
 }
 
 public class AuthService : IAuthService
@@ -65,6 +67,8 @@ public class AuthService : IAuthService
         var user = new User
         {
             Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             PasswordHash = _passwordHasher.HashPassword(request.Password),
             EmailVerified = false,
             CreatedAt = DateTime.UtcNow,
@@ -216,5 +220,49 @@ public class AuthService : IAuthService
 
         return Result<MessageResponse>.Success(
             new MessageResponse { Message = "Password has been reset successfully." });
+    }
+
+    public async Task<bool> UserExistsAsync(string email)
+    {
+        return await _context.Users
+            .AnyAsync(u => u.Email == email).ConfigureAwait(false);
+    }
+
+    public async Task<Result<MessageResponse>> UpdateProfileAsync(UserId userId, UpdateProfileRequest request)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+
+        if (user == null)
+        {
+            return Result<MessageResponse>.Failure("User not found");
+        }
+
+        // Update only the provided fields
+        if (!string.IsNullOrEmpty(request.PhoneNumber))
+            user.PhoneNumber = request.PhoneNumber;
+        
+        if (!string.IsNullOrEmpty(request.StreetAddress))
+            user.StreetAddress = request.StreetAddress;
+            
+        if (!string.IsNullOrEmpty(request.City))
+            user.City = request.City;
+            
+        if (!string.IsNullOrEmpty(request.StateProvince))
+            user.StateProvince = request.StateProvince;
+            
+        if (!string.IsNullOrEmpty(request.PostalCode))
+            user.PostalCode = request.PostalCode;
+            
+        if (!string.IsNullOrEmpty(request.Country))
+            user.Country = request.Country;
+            
+        if (!string.IsNullOrEmpty(request.Nationality))
+            user.Nationality = request.Nationality;
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Result<MessageResponse>.Success(
+            new MessageResponse { Message = "Profile updated successfully" });
     }
 }

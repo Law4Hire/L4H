@@ -44,10 +44,10 @@ const DashboardPage: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusClasses = {
-      active: 'bg-green-100 text-green-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      completed: 'bg-blue-100 text-blue-800',
-      closed: 'bg-gray-100 text-gray-800'
+      active: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400',
+      pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400',
+      completed: 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400',
+      closed: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
     }
 
     return (
@@ -68,12 +68,12 @@ const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             {t('dashboard:welcome')}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             {t('app:tagline')}
           </p>
         </div>
@@ -127,18 +127,18 @@ const DashboardPage: React.FC = () => {
             {t('common.error')}
           </div>
         ) : casesList.length === 0 ? (
-          <div className="text-gray-500 text-center py-4">
+          <div className="text-gray-500 dark:text-gray-400 text-center py-4">
             No cases found
           </div>
         ) : (
           <div className="space-y-4">
             {casesList.map((caseItem: Case) => (
-              <div key={caseItem.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+              <div key={caseItem.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                 <div>
-                  <div className="font-medium text-gray-900">
+                  <div className="font-medium text-gray-900 dark:text-gray-100">
                     Case #{caseItem.id.slice(-8)}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
                     Created: {new Date(caseItem.createdAt).toLocaleDateString()}
                   </div>
                 </div>

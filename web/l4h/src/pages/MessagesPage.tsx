@@ -70,7 +70,7 @@ export default function MessagesPage() {
 
   const handleSendMessage = () => {
     if (!newMessage.subject || !newMessage.content) {
-      error(t('common.error'), 'Please fill in all required fields')
+      error(t('common.error'), t('validation.requiredFields', { defaultValue: 'Please fill in all required fields' }))
       return
     }
 
@@ -112,7 +112,7 @@ export default function MessagesPage() {
               <EmptyState
                 icon={MessageCircle}
                 title={t('messages.noMessages')}
-                description="Start a conversation"
+                description={t('messages.startConversation', { defaultValue: 'Start a conversation' })}
                 action={
                   <Button onClick={() => setShowComposeModal(true)}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -197,8 +197,8 @@ export default function MessagesPage() {
             <Card>
               <EmptyState
                 icon={MessageCircle}
-                title="Select a conversation"
-                description="Choose a message thread to view the conversation"
+                title={t('messages.selectConversation', { defaultValue: 'Select a conversation' })}
+                description={t('messages.chooseThread', { defaultValue: 'Choose a message thread to view the conversation' })}
               />
             </Card>
           )}
@@ -224,7 +224,7 @@ export default function MessagesPage() {
             label={t('messages.recipient')}
             value={newMessage.recipientId}
             onChange={(e) => setNewMessage(prev => ({ ...prev, recipientId: e.target.value }))}
-            placeholder="Enter recipient email or ID"
+            placeholder={t('messages.recipientPlaceholder', { defaultValue: 'Enter recipient email or ID' })}
             required
           />
 

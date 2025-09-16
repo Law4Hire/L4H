@@ -5,6 +5,7 @@ interface User {
     firstName?: string;
     lastName?: string;
     roles?: string[];
+    isAdmin?: boolean;
 }
 interface LayoutProps {
     children: React.ReactNode;

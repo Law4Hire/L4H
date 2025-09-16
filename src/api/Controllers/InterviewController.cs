@@ -18,24 +18,27 @@ public class InterviewController : ControllerBase
 {
     private readonly L4HDbContext _context;
     private readonly IInterviewRecommender _recommender;
+    private readonly IAdaptiveInterviewService _adaptiveInterview;
     private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<InterviewController> _logger;
 
     public InterviewController(
         L4HDbContext context,
         IInterviewRecommender recommender,
+        IAdaptiveInterviewService adaptiveInterview,
         IStringLocalizer<Shared> localizer,
         ILogger<InterviewController> logger)
     {
         _context = context;
         _recommender = recommender;
+        _adaptiveInterview = adaptiveInterview;
         _localizer = localizer;
         _logger = logger;
     }
 
     private UserId GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             throw new UnauthorizedAccessException("Invalid user ID in token");
@@ -458,6 +461,119 @@ public class InterviewController : ControllerBase
         {
             Sessions = sessions,
             LatestRecommendation = latestRecommendation
+        });
+    }
+
+    /// <summary>
+    /// Get the next question in an adaptive interview
+    /// </summary>
+    /// <param name="request">Next question request</param>
+    /// <returns>Next interview question or completion status</returns>
+    [HttpPost("next-question")]
+    [ProducesResponseType<InterviewNextQuestionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetNextQuestion([FromBody] InterviewNextQuestionRequest request)
+    {
+        var userId = GetCurrentUserId();
+
+        // Get session with QAs
+        var session = await _context.InterviewSessions
+            .Include(s => s.QAs)
+            .Include(s => s.Case)
+            .FirstOrDefaultAsync(s => s.Id == request.SessionId).ConfigureAwait(false);
+
+        if (session == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Session Not Found",
+                Detail = _localizer["Interview.SessionNotFound"]
+            });
+        }
+
+        if (session.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        if (session.Status != "active")
+        {
+            return Conflict(new ProblemDetails
+            {
+                Title = "Session Not Active",
+                Detail = _localizer["Interview.Locked"]
+            });
+        }
+
+        // Build current answers from session
+        var answers = session.QAs.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue);
+
+        // Get next question from adaptive service
+        var nextQuestion = await _adaptiveInterview.GetNextQuestionAsync(answers).ConfigureAwait(false);
+
+        // Check if interview is complete
+        var isComplete = await _adaptiveInterview.IsCompleteAsync(answers).ConfigureAwait(false);
+
+        if (isComplete)
+        {
+            // Get recommendation
+            var recommendation = await _adaptiveInterview.GetRecommendationAsync(answers).ConfigureAwait(false);
+
+            // Create visa recommendation record
+            var visaRecommendation = new VisaRecommendation
+            {
+                Id = Guid.NewGuid(),
+                CaseId = session.CaseId,
+                VisaTypeId = recommendation.VisaTypeId,
+                Rationale = recommendation.Rationale,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.VisaRecommendations.Add(visaRecommendation);
+
+            // Mark session as completed
+            session.Status = "completed";
+            session.FinishedAt = DateTime.UtcNow;
+
+            // Update case activity
+            session.Case.LastActivityAt = DateTimeOffset.UtcNow;
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            // Get visa type name for response
+            var visaType = await _context.VisaTypes.FindAsync(recommendation.VisaTypeId).ConfigureAwait(false);
+
+            return Ok(new InterviewNextQuestionResponse
+            {
+                IsComplete = true,
+                Question = null,
+                Recommendation = new InterviewRecommendation
+                {
+                    VisaType = visaType?.Name ?? "Unknown",
+                    Rationale = recommendation.Rationale
+                }
+            });
+        }
+
+        return Ok(new InterviewNextQuestionResponse
+        {
+            IsComplete = false,
+            Question = new InterviewQuestionDto
+            {
+                Key = nextQuestion.Key,
+                Question = nextQuestion.Question,
+                Type = nextQuestion.Type,
+                Options = nextQuestion.Options.Select(o => new InterviewOptionDto
+                {
+                    Value = o.Value,
+                    Label = o.Label,
+                    Description = o.Description
+                }).ToList(),
+                Required = nextQuestion.Required,
+                RemainingVisaTypes = nextQuestion.RemainingVisaTypes
+            },
+            Recommendation = null
         });
     }
 }

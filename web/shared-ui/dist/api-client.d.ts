@@ -28,6 +28,15 @@ export declare const auth: {
         newPassword: string;
     }): Promise<any>;
     logoutAll(): Promise<any>;
+    updateProfile(profileData: {
+        phoneNumber?: string;
+        streetAddress?: string;
+        city?: string;
+        stateProvince?: string;
+        postalCode?: string;
+        country?: string;
+        nationality?: string;
+    }): Promise<any>;
 };
 export declare const i18n: {
     supported(): Promise<{
@@ -112,6 +121,11 @@ export declare const admin: {
     reports(type: string, dateRange: {
         from: string;
         to: string;
+    }): Promise<any>;
+    users(): Promise<any>;
+    updateUserRoles(userId: string, roles: {
+        isAdmin: boolean;
+        isStaff: boolean;
     }): Promise<any>;
 };
 export { fetchJson, ApiError };

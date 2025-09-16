@@ -72,10 +72,10 @@ function requiresCsrfToken(path: string): boolean {
 
 // Main fetch wrapper
 async function fetchJson<T = any>(
-  path: string, 
+  path: string,
   init: RequestInit = {}
 ): Promise<T> {
-  const url = path.startsWith('/api') ? path : `/api${path}`
+  const url = `/api${path}`
   
   // Prepare headers
   const headers: Record<string, string> = {
@@ -147,10 +147,18 @@ async function fetchJson<T = any>(
 // Set JWT token
 export function setJwtToken(token: string | null): void {
   jwtToken = token
+  if (token) {
+    localStorage.setItem('jwt_token', token)
+  } else {
+    localStorage.removeItem('jwt_token')
+  }
 }
 
 // Get current JWT token
 export function getJwtToken(): string | null {
+  if (!jwtToken) {
+    jwtToken = localStorage.getItem('jwt_token')
+  }
   return jwtToken
 }
 
@@ -204,6 +212,21 @@ export const auth = {
   async logoutAll() {
     return fetchJson('/v1/auth/logout-all', {
       method: 'POST'
+    })
+  },
+
+  async updateProfile(profileData: {
+    phoneNumber?: string
+    streetAddress?: string
+    city?: string
+    stateProvince?: string
+    postalCode?: string
+    country?: string
+    nationality?: string
+  }) {
+    return fetchJson('/v1/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profileData)
     })
   }
 }
@@ -454,6 +477,17 @@ export const admin = {
     return fetchJson(`/v1/admin/reports/${type}`, {
       method: 'POST',
       body: JSON.stringify(dateRange)
+    })
+  },
+
+  async users() {
+    return fetchJson('/v1/admin/users')
+  },
+
+  async updateUserRoles(userId: string, roles: { isAdmin: boolean; isStaff: boolean }) {
+    return fetchJson(`/v1/admin/users/${userId}/roles`, {
+      method: 'PUT',
+      body: JSON.stringify(roles)
     })
   }
 }

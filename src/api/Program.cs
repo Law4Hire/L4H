@@ -76,7 +76,7 @@ builder.Services.AddDbContext<L4HDbContext>(opt =>
 // Configure JWT settings
 var jwtConfig = new JwtConfig
 {
-    SigningKey = builder.Configuration["Auth:Jwt:SigningKey"] ?? builder.Configuration["Auth__Jwt__SigningKey"] ?? "CHANGE_ME_DEV_ONLY",
+    SigningKey = builder.Configuration["Auth:Jwt:SigningKey"] ?? builder.Configuration["Auth__Jwt__SigningKey"] ?? "CHANGE_ME_DEV_ONLY_256_BIT_KEY_REQUIRED_FOR_HS256_SECURITY_ALGORITHM",
     Issuer = builder.Configuration["Auth:Jwt:Issuer"] ?? builder.Configuration["Auth__Jwt__Issuer"] ?? "L4H",
     Audience = builder.Configuration["Auth:Jwt:Audience"] ?? builder.Configuration["Auth__Jwt__Audience"] ?? "L4H"
 };
@@ -84,9 +84,13 @@ var jwtConfig = new JwtConfig
 // Add JWT Authentication - bypass in Testing environment
 if (!builder.Environment.IsEnvironment("Testing"))
 {
+    // Clear default claim mappings to preserve JWT standard claim names
+    Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
+            options.MapInboundClaims = false; // Preserve original claim names
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -96,7 +100,8 @@ if (!builder.Environment.IsEnvironment("Testing"))
                 ValidIssuer = jwtConfig.Issuer,
                 ValidAudience = jwtConfig.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SigningKey)),
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                NameClaimType = "sub" // Map the subject claim to the name claim type
             };
         });
 }
@@ -159,6 +164,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminSeedService, AdminSeedService>();
 builder.Services.AddScoped<IPricingSeedService, PricingSeedService>();
 builder.Services.AddScoped<IInterviewRecommender, RuleBasedRecommender>();
+builder.Services.AddScoped<IAdaptiveInterviewService, AdaptiveInterviewService>();
 
             // Security hardening services
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
@@ -197,6 +203,7 @@ builder.Services.AddScoped<UploadTokenService>();
 builder.Services.AddScoped<ISeedTask, CountriesSeeder>();
 builder.Services.AddScoped<ISeedTask, USSubdivisionsSeeder>();
 builder.Services.AddScoped<ISeedTask, VisaClassesSeeder>();
+builder.Services.AddScoped<ISeedTask, VisaTypesSeeder>();
 builder.Services.AddScoped<SeedRunner>();
 
 // Workflow and scraper services (for API endpoints)

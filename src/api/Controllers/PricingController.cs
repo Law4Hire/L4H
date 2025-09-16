@@ -255,7 +255,7 @@ public class PricingController : ControllerBase
 
     private UserId GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (Guid.TryParse(userIdClaim, out var userId))
         {
             return new UserId(userId);

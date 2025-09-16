@@ -7,6 +7,7 @@ interface User {
   firstName?: string
   lastName?: string
   roles?: string[]
+  isAdmin?: boolean
 }
 
 interface AuthState {
@@ -49,7 +50,8 @@ export function useAuth(): AuthState {
           name: payload.name,
           firstName: payload.given_name || payload.firstName,
           lastName: payload.family_name || payload.lastName,
-          roles: payload.roles || payload.role ? [payload.role] : []
+          roles: payload.roles || payload.role ? [payload.role] : [],
+          isAdmin: payload.is_admin === 'true' || payload.is_admin === 'True' || payload.is_admin === true
         }
 
         setAuthState({

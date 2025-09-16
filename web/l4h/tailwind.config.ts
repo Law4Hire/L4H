@@ -10,32 +10,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Design tokens as CSS variables
+        // Design tokens as CSS variables wrapped in hsl()
         primary: {
-          50: 'var(--color-primary-50)',
-          100: 'var(--color-primary-100)',
-          200: 'var(--color-primary-200)',
-          300: 'var(--color-primary-300)',
-          400: 'var(--color-primary-400)',
-          500: 'var(--color-primary-500)',
-          600: 'var(--color-primary-600)',
-          700: 'var(--color-primary-700)',
-          800: 'var(--color-primary-800)',
-          900: 'var(--color-primary-900)',
-          950: 'var(--color-primary-950)',
-        },
-        gray: {
-          50: 'var(--color-gray-50)',
-          100: 'var(--color-gray-100)',
-          200: 'var(--color-gray-200)',
-          300: 'var(--color-gray-300)',
-          400: 'var(--color-gray-400)',
-          500: 'var(--color-gray-500)',
-          600: 'var(--color-gray-600)',
-          700: 'var(--color-gray-700)',
-          800: 'var(--color-gray-800)',
-          900: 'var(--color-gray-900)',
-          950: 'var(--color-gray-950)',
+          50: 'hsl(var(--color-primary-50))',
+          100: 'hsl(var(--color-primary-100))',
+          200: 'hsl(var(--color-primary-200))',
+          300: 'hsl(var(--color-primary-300))',
+          400: 'hsl(var(--color-primary-400))',
+          500: 'hsl(var(--color-primary-500))',
+          600: 'hsl(var(--color-primary-600))',
+          700: 'hsl(var(--color-primary-700))',
+          800: 'hsl(var(--color-primary-800))',
+          900: 'hsl(var(--color-primary-900))',
+          950: 'hsl(var(--color-primary-950))',
         },
         success: {
           50: 'var(--color-success-50)',

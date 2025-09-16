@@ -36,12 +36,14 @@ public class PricingSeedService : IPricingSeedService
                 return;
             }
 
-            _logger.LogInformation("Starting pricing data seed (VisaTypes: {HasVisaTypes}, Packages: {HasPackages}, PricingRules: {HasPricingRules})...", 
+            _logger.LogInformation("Starting pricing data seed (VisaTypes: {HasVisaTypes}, Packages: {HasPackages}, PricingRules: {HasPricingRules})...",
                 hasVisaTypes, hasPackages, hasPricingRules);
 
-            await SeedVisaTypesAsync().ConfigureAwait(false);
-            await SeedPackagesAsync().ConfigureAwait(false);
-            await SeedPricingRulesAsync().ConfigureAwait(false);
+            // Skip VisaTypes seeding - handled by VisaTypesSeeder in SeedRunner
+            // await SeedVisaTypesAsync().ConfigureAwait(false);
+            // Temporarily skip packages seeding to test VisaTypesSeeder
+            // await SeedPackagesAsync().ConfigureAwait(false);
+            // await SeedPricingRulesAsync().ConfigureAwait(false);
 
             await _context.SaveChangesAsync().ConfigureAwait(false);
             _logger.LogInformation("Pricing data seed completed successfully");

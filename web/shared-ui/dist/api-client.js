@@ -63,7 +63,7 @@ function requiresCsrfToken(path) {
 }
 // Main fetch wrapper
 async function fetchJson(path, init = {}) {
-    const url = path.startsWith('/api') ? path : `/api${path}`;
+    const url = `/api${path}`;
     // Prepare headers
     const headers = {
         'Content-Type': 'application/json',
@@ -118,9 +118,18 @@ async function fetchJson(path, init = {}) {
 // Set JWT token
 export function setJwtToken(token) {
     jwtToken = token;
+    if (token) {
+        localStorage.setItem('jwt_token', token);
+    }
+    else {
+        localStorage.removeItem('jwt_token');
+    }
 }
 // Get current JWT token
 export function getJwtToken() {
+    if (!jwtToken) {
+        jwtToken = localStorage.getItem('jwt_token');
+    }
     return jwtToken;
 }
 // Clear tokens
@@ -166,6 +175,12 @@ export const auth = {
     async logoutAll() {
         return fetchJson('/v1/auth/logout-all', {
             method: 'POST'
+        });
+    },
+    async updateProfile(profileData) {
+        return fetchJson('/v1/auth/profile', {
+            method: 'PUT',
+            body: JSON.stringify(profileData)
         });
     }
 };
@@ -356,6 +371,15 @@ export const admin = {
         return fetchJson(`/v1/admin/reports/${type}`, {
             method: 'POST',
             body: JSON.stringify(dateRange)
+        });
+    },
+    async users() {
+        return fetchJson('/v1/admin/users');
+    },
+    async updateUserRoles(userId, roles) {
+        return fetchJson(`/v1/admin/users/${userId}/roles`, {
+            method: 'PUT',
+            body: JSON.stringify(roles)
         });
     }
 };

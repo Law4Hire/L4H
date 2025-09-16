@@ -10,6 +10,12 @@ public record SignupRequest
 
     [Required]
     public string Password { get; init; } = string.Empty;
+
+    [Required]
+    public string FirstName { get; init; } = string.Empty;
+
+    [Required]
+    public string LastName { get; init; } = string.Empty;
 }
 
 public record LoginRequest
@@ -49,4 +55,22 @@ public record AuthResponse
 public record MessageResponse
 {
     public string Message { get; init; } = string.Empty;
+}
+
+public record UpdateProfileRequest
+{
+    [Phone]
+    public string? PhoneNumber { get; init; }
+    
+    public string? StreetAddress { get; init; }
+    
+    public string? City { get; init; }
+    
+    public string? StateProvince { get; init; }
+    
+    public string? PostalCode { get; init; }
+    
+    public string? Country { get; init; }
+    
+    public string? Nationality { get; init; }
 }

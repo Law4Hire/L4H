@@ -27,7 +27,7 @@ public class GraphController : ControllerBase
     }
 
     [HttpPost("test-mail")]
-    public async Task<IActionResult> TestMail([FromBody] TestMailRequest request)
+    public async Task<IActionResult> TestMail([FromBody] AdminTestMailRequest request)
     {
         _logger.LogInformation("Admin requested Graph mail test");
 
@@ -59,7 +59,7 @@ public class GraphController : ControllerBase
     }
 }
 
-public class TestMailRequest
+public class AdminTestMailRequest
 {
     public string? To { get; set; }
 }

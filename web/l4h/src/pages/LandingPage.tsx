@@ -7,26 +7,26 @@ const LandingPage: React.FC = () => {
   const { t } = useTranslation(['landing', 'common'])
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #eff6ff, #e0e7ff)' }}>
+    <div className="min-h-screen bg-blue-50 dark:bg-gray-900">
       {/* Hero Section */}
-      <main style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#111827' }}>
+      <main className="py-16 px-8 text-center">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-5xl font-bold mb-6 text-gray-900 dark:text-gray-100">
             {t('hero.title', { ns: 'landing' })}
           </h2>
-          <p style={{ fontSize: '1.25rem', color: '#6b7280', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto 2rem' }}>
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
             {t('hero.description', { ns: 'landing' })}
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="flex justify-center gap-4 flex-wrap">
             <button
-              onClick={() => navigate('/login')}
-              style={{ background: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', padding: '1rem 2rem', fontSize: '1.125rem', cursor: 'pointer' }}
+              onClick={() => navigate('/register')}
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border-none rounded-lg px-8 py-4 text-lg cursor-pointer transition-colors duration-200"
             >
               {t('hero.startCase', { ns: 'landing' })}
             </button>
             <button
               onClick={() => navigate('/visa-library')}
-              style={{ background: 'none', border: '2px solid #2563eb', color: '#2563eb', borderRadius: '8px', padding: '1rem 2rem', fontSize: '1.125rem', cursor: 'pointer' }}
+              className="bg-transparent hover:bg-blue-50 dark:hover:bg-gray-700 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 rounded-lg px-8 py-4 text-lg cursor-pointer transition-colors duration-200"
             >
               {t('hero.exploreVisas', { ns: 'landing' })}
             </button>

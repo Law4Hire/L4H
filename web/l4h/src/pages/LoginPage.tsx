@@ -45,33 +45,33 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         setJwtToken(result.token)
         // Dispatch custom event to notify auth state change
         window.dispatchEvent(new Event('jwt-token-changed'))
-        success(t('auth.login') + ' ' + t('common.success'))
+        success(t('login', { ns: 'auth' }) + ' ' + t('success', { ns: 'common' }))
         if (onSuccess) {
           onSuccess()
         } else {
           navigate('/dashboard')
         }
       } else {
-        setError(t('auth.loginFailed'))
-        showError(t('auth.loginFailed'))
+        setError(t('loginFailed', { ns: 'auth' }))
+        showError(t('loginFailed', { ns: 'auth' }))
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : t('auth.loginFailed')
+      const errorMessage = err instanceof Error ? err.message : t('loginFailed', { ns: 'auth' })
       setError(errorMessage)
-      showError(t('auth.loginFailed'), errorMessage)
+      showError(t('loginFailed', { ns: 'auth' }), errorMessage)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
             {t('title', { ns: 'login' })}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             {t('subtitle', { ns: 'login' })}
           </p>
         </div>
@@ -118,10 +118,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
             <input
               id="remember-me"
               type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded"
               {...register('remember')}
             />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
               {t('remember', { ns: 'auth' })}
             </label>
           </div>
@@ -144,12 +144,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               {t('dontHaveAccount', { ns: 'auth' })} {' '}
               <button
                 type="button"
                 onClick={() => navigate('/register')}
-                className="font-medium text-blue-600 hover:text-blue-500"
+                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 {t('signUpNow', { ns: 'auth' })}
               </button>

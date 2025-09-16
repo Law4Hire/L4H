@@ -1,0 +1,382 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using L4H.Infrastructure.Data;
+using L4H.Infrastructure.Entities;
+using L4H.Shared.Models;
+using L4H.Infrastructure.Services;
+using System.Security.Claims;
+
+namespace L4H.Api.Controllers;
+
+[ApiController]
+[Route("v1/guardian")]
+[Authorize]
+public class GuardianController : ControllerBase
+{
+    private readonly L4HDbContext _context;
+    private readonly ILogger<GuardianController> _logger;
+
+    public GuardianController(L4HDbContext context, ILogger<GuardianController> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    [HttpPost("invitations")]
+    public async Task<ActionResult> SendGuardianInvitations([FromBody] GuardianInvitationRequest request)
+    {
+        try
+        {
+            // Get current user ID
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var childUserId = new UserId(userId);
+
+            // Get child user details
+            var childUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == childUserId);
+
+            if (childUser == null)
+            {
+                return NotFound(new { error = "User not found" });
+            }
+
+            var results = new List<GuardianInvitationResult>();
+
+            foreach (var guardianEmail in request.GuardianEmails.Distinct())
+            {
+                if (string.IsNullOrWhiteSpace(guardianEmail))
+                    continue;
+
+                var result = new GuardianInvitationResult { Email = guardianEmail };
+
+                try
+                {
+                    // Check if guardian user exists
+                    var guardianUser = await _context.Users
+                        .FirstOrDefaultAsync(u => u.Email.ToLower() == guardianEmail.ToLower());
+
+                    if (guardianUser != null)
+                    {
+                        // Check if guardian link already exists
+                        var existingLink = await _context.GuardianLinks
+                            .FirstOrDefaultAsync(gl => gl.ChildUserId == childUserId && gl.GuardianUserId == guardianUser.Id);
+
+                        if (existingLink != null)
+                        {
+                            result.Status = "already_linked";
+                            result.Message = "Guardian is already linked to this child";
+                        }
+                        else
+                        {
+                            // Create guardian invitation message
+                            await CreateGuardianInvitationMessage(childUser, guardianUser);
+                            result.Status = "invitation_sent";
+                            result.Message = "Invitation sent to existing user";
+                        }
+                    }
+                    else
+                    {
+                        // Create invitation for non-existing user
+                        await CreatePendingInvitation(childUser, guardianEmail);
+                        result.Status = "pending_registration";
+                        result.Message = "Invitation created for when user registers";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing guardian invitation for {Email}", guardianEmail);
+                    result.Status = "error";
+                    result.Message = "Failed to process invitation";
+                }
+
+                results.Add(result);
+            }
+
+            return Ok(new { results });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending guardian invitations");
+            return StatusCode(500, new { error = "Failed to send invitations" });
+        }
+    }
+
+    [HttpPost("accept/{invitationId}")]
+    public async Task<ActionResult> AcceptGuardianInvitation(Guid invitationId, [FromBody] GuardianInvitationResponse response)
+    {
+        try
+        {
+            // Get current user ID
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var guardianUserId = new UserId(userId);
+
+            // Find the invitation message
+            var message = await _context.Messages
+                .Include(m => m.Thread)
+                .FirstOrDefaultAsync(m => m.Id == invitationId);
+
+            if (message == null || !message.Thread.ParticipantUserIds.Contains(guardianUserId))
+            {
+                return NotFound(new { error = "Invitation not found" });
+            }
+
+            // Parse child user ID from message metadata
+            var childUserIdString = message.Metadata?.Split(':').LastOrDefault();
+            if (string.IsNullOrEmpty(childUserIdString) || !Guid.TryParse(childUserIdString, out var childUserGuid))
+            {
+                return BadRequest(new { error = "Invalid invitation format" });
+            }
+
+            var childUserId = new UserId(childUserGuid);
+
+            if (response.Accept)
+            {
+                // Create guardian link
+                var guardianLink = new GuardianLink
+                {
+                    Id = Guid.NewGuid(),
+                    ChildUserId = childUserId,
+                    GuardianUserId = guardianUserId,
+                    Status = "active",
+                    CreatedAt = DateTime.UtcNow,
+                    AttestationId = Guid.NewGuid() // For future attestation tracking
+                };
+
+                _context.GuardianLinks.Add(guardianLink);
+
+                // Create response message
+                await CreateGuardianResponseMessage(guardianUserId, childUserId, true, response.ResponseMessage);
+            }
+            else
+            {
+                // Handle rejection
+                if (response.ReportReason?.Length > 3000)
+                {
+                    return BadRequest(new { error = "Report reason too long (max 3000 characters)" });
+                }
+
+                await CreateGuardianResponseMessage(guardianUserId, childUserId, false, response.ResponseMessage, response.ReportReason);
+
+                if (!string.IsNullOrEmpty(response.ReportReason))
+                {
+                    // Create admin report
+                    await CreateAdminReport(guardianUserId, childUserId, response.ReportReason);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { success = true, accepted = response.Accept });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing guardian invitation response");
+            return StatusCode(500, new { error = "Failed to process response" });
+        }
+    }
+
+    [HttpGet("children")]
+    public async Task<ActionResult<IEnumerable<ChildCaseInfo>>> GetChildrenCases()
+    {
+        try
+        {
+            // Get current user ID
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var guardianUserId = new UserId(userId);
+
+            var childrenCases = await _context.GuardianLinks
+                .Where(gl => gl.GuardianUserId == guardianUserId && gl.Status == "active")
+                .Include(gl => gl.ChildUser)
+                .ThenInclude(u => u.Cases)
+                .Select(gl => new ChildCaseInfo
+                {
+                    ChildName = $"{gl.ChildUser.FirstName} {gl.ChildUser.LastName}",
+                    ChildUserId = gl.ChildUserId.Value,
+                    Cases = gl.ChildUser.Cases.Select(c => new ChildCaseDetails
+                    {
+                        Id = c.Id.Value,
+                        Status = c.Status,
+                        CreatedAt = c.CreatedAt,
+                        VisaType = c.VisaType,
+                        // Add other relevant case fields as needed
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return Ok(childrenCases);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching children cases for guardian");
+            return StatusCode(500, new { error = "Failed to fetch children cases" });
+        }
+    }
+
+    private async Task CreateGuardianInvitationMessage(User childUser, User guardianUser)
+    {
+        var thread = new MessageThread
+        {
+            Id = Guid.NewGuid(),
+            Subject = $"Guardian Invitation from {childUser.FirstName} {childUser.LastName}",
+            ParticipantUserIds = new List<UserId> { guardianUser.Id },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var message = new Message
+        {
+            Id = Guid.NewGuid(),
+            ThreadId = thread.Id,
+            SenderUserId = childUser.Id, // System message from child
+            Content = $"Hello,\n\n{childUser.FirstName} {childUser.LastName} has invited you to be their guardian on Law4Hire. As a guardian, you will be able to view their case status, documents, and workflow progress.\n\nPlease respond to accept or decline this invitation.\n\nBest regards,\nLaw4Hire Team",
+            Priority = "medium",
+            SentAt = DateTime.UtcNow,
+            IsRead = false,
+            Metadata = $"guardian_invitation:{childUser.Id}" // Store child user ID for processing
+        };
+
+        _context.MessageThreads.Add(thread);
+        _context.Messages.Add(message);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task CreatePendingInvitation(User childUser, string guardianEmail)
+    {
+        // This would be implemented to create a pending invitation record
+        // that gets processed when the guardian user registers
+        _logger.LogInformation("Created pending invitation from {ChildName} to {GuardianEmail}",
+            $"{childUser.FirstName} {childUser.LastName}", guardianEmail);
+    }
+
+    private async Task CreateGuardianResponseMessage(UserId guardianUserId, UserId childUserId, bool accepted, string? message, string? reportReason = null)
+    {
+        var guardianUser = await _context.Users.FindAsync(guardianUserId);
+        var childUser = await _context.Users.FindAsync(childUserId);
+
+        if (guardianUser == null || childUser == null) return;
+
+        var responseContent = accepted
+            ? $"{guardianUser.FirstName} {guardianUser.LastName} has accepted the guardian invitation."
+            : $"{guardianUser.FirstName} {guardianUser.LastName} has declined the guardian invitation.";
+
+        if (!string.IsNullOrEmpty(message))
+        {
+            responseContent += $"\n\nMessage: {message}";
+        }
+
+        // Create message thread for child to see the response
+        var thread = new MessageThread
+        {
+            Id = Guid.NewGuid(),
+            Subject = $"Guardian Invitation Response from {guardianUser.FirstName} {guardianUser.LastName}",
+            ParticipantUserIds = new List<UserId> { childUserId },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var responseMessage = new Message
+        {
+            Id = Guid.NewGuid(),
+            ThreadId = thread.Id,
+            SenderUserId = guardianUserId,
+            Content = responseContent,
+            Priority = "medium",
+            SentAt = DateTime.UtcNow,
+            IsRead = false
+        };
+
+        _context.MessageThreads.Add(thread);
+        _context.Messages.Add(responseMessage);
+    }
+
+    private async Task CreateAdminReport(UserId guardianUserId, UserId childUserId, string reportReason)
+    {
+        var guardianUser = await _context.Users.FindAsync(guardianUserId);
+        var childUser = await _context.Users.FindAsync(childUserId);
+
+        if (guardianUser == null || childUser == null) return;
+
+        // Get admin users
+        var adminUsers = await _context.Users
+            .Where(u => u.IsAdmin)
+            .Select(u => u.Id)
+            .ToListAsync();
+
+        if (!adminUsers.Any()) return;
+
+        var thread = new MessageThread
+        {
+            Id = Guid.NewGuid(),
+            Subject = $"Guardian Invitation Report: {guardianUser.FirstName} {guardianUser.LastName} vs {childUser.FirstName} {childUser.LastName}",
+            ParticipantUserIds = adminUsers,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var reportMessage = new Message
+        {
+            Id = Guid.NewGuid(),
+            ThreadId = thread.Id,
+            SenderUserId = guardianUserId,
+            Content = $"GUARDIAN INVITATION REPORT\n\nGuardian: {guardianUser.FirstName} {guardianUser.LastName} ({guardianUser.Email})\nChild: {childUser.FirstName} {childUser.LastName} ({childUser.Email})\n\nReport Reason:\n{reportReason}",
+            Priority = "high",
+            SentAt = DateTime.UtcNow,
+            IsRead = false,
+            Metadata = "admin_report:guardian_invitation"
+        };
+
+        _context.MessageThreads.Add(thread);
+        _context.Messages.Add(reportMessage);
+    }
+}
+
+// DTOs
+public class GuardianInvitationRequest
+{
+    public List<string> GuardianEmails { get; set; } = new();
+}
+
+public class GuardianInvitationResponse
+{
+    public bool Accept { get; set; }
+    public string? ResponseMessage { get; set; }
+    public string? ReportReason { get; set; }
+}
+
+public class GuardianInvitationResult
+{
+    public string Email { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+}
+
+public class ChildCaseInfo
+{
+    public string ChildName { get; set; } = string.Empty;
+    public Guid ChildUserId { get; set; }
+    public List<ChildCaseDetails> Cases { get; set; } = new();
+}
+
+public class ChildCaseDetails
+{
+    public Guid Id { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public string VisaType { get; set; } = string.Empty;
+}

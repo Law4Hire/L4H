@@ -2,12 +2,22 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Card, Button, Input, interview, useToast, useTranslation } from '@l4h/shared-ui'
 
-interface Question {
+interface AdaptiveQuestion {
   key: string
   question: string
   type: 'text' | 'select' | 'radio'
-  options?: string[]
-  required?: boolean
+  options: Array<{
+    value: string
+    label: string
+    description?: string
+  }>
+  required: boolean
+  remainingVisaTypes: number
+}
+
+interface InterviewRecommendation {
+  visaType: string
+  rationale: string
 }
 
 const InterviewPage: React.FC = () => {
@@ -15,74 +25,76 @@ const InterviewPage: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { success: showSuccess, error: showError } = useToast()
-  
+
   const sessionId = searchParams.get('sessionId')
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentQuestion, setCurrentQuestion] = useState<AdaptiveQuestion | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
-  const [recommendation, setRecommendation] = useState<{
-    visaType: string
-    rationale: string
-  } | null>(null)
-
-  // Interview questions
-  const questions: Question[] = [
-    {
-      key: 'purpose',
-      question: t('interview.purpose', 'What is your primary purpose for visiting the United States?'),
-      type: 'select',
-      options: ['tourism', 'employment', 'study', 'business', 'family'],
-      required: true
-    },
-    {
-      key: 'hasEmployerSponsor',
-      question: t('interview.hasEmployerSponsor', 'Do you have an employer sponsor in the United States?'),
-      type: 'radio',
-      options: ['yes', 'no'],
-      required: true
-    },
-    {
-      key: 'educationLevel',
-      question: t('interview.educationLevel', 'What is your highest level of education?'),
-      type: 'select',
-      options: ['high_school', 'bachelor', 'master', 'phd', 'other'],
-      required: true
-    },
-    {
-      key: 'workExperience',
-      question: t('interview.workExperience', 'How many years of work experience do you have?'),
-      type: 'select',
-      options: ['0-2', '3-5', '6-10', '10+'],
-      required: true
-    },
-    {
-      key: 'nationality',
-      question: t('interview.nationality', 'What is your nationality?'),
-      type: 'text',
-      required: true
-    }
-  ]
+  const [recommendation, setRecommendation] = useState<InterviewRecommendation | null>(null)
+  const [questionCount, setQuestionCount] = useState(0)
 
   useEffect(() => {
     if (!sessionId) {
       showError('Invalid session. Please start a new interview.')
       navigate('/dashboard')
+      return
     }
+
+    // Start the adaptive interview by getting the first question
+    loadNextQuestion()
   }, [sessionId, navigate, showError])
 
-  const currentQuestion = questions[currentStep]
-  const isLastStep = currentStep === questions.length - 1
+  const loadNextQuestion = async () => {
+    if (!sessionId) return
+
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/v1/interview/next-question`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          sessionId: sessionId
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to get next question')
+      }
+
+      const data = await response.json()
+
+      if (data.isComplete) {
+        setCurrentQuestion(null)
+        setIsComplete(true)
+        setRecommendation({
+          visaType: data.recommendation?.visaType || 'Unknown',
+          rationale: data.recommendation?.rationale || 'Please consult with an immigration attorney.'
+        })
+        showSuccess('Interview completed! See your visa recommendation below.')
+      } else {
+        setCurrentQuestion(data.question)
+      }
+    } catch (error: any) {
+      console.error('Failed to get next question:', error)
+      showError(error.message || 'Failed to load question. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleAnswer = (value: string) => {
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion.key]: value
+      [currentQuestion?.key || '']: value
     }))
   }
 
   const handleNext = async () => {
-    if (!sessionId) return
+    if (!sessionId || !currentQuestion) return
 
     const answer = answers[currentQuestion.key]
     if (currentQuestion.required && !answer) {
@@ -95,34 +107,21 @@ const InterviewPage: React.FC = () => {
       // Submit answer to API
       await interview.answer({
         sessionId,
-        stepNumber: currentStep + 1,
+        stepNumber: questionCount + 1,
         questionKey: currentQuestion.key,
         answerValue: answer || ''
       })
 
-      if (isLastStep) {
-        // Complete the interview
-        const completeResponse = await interview.complete(sessionId)
-        setRecommendation({
-          visaType: completeResponse.recommendationVisaType,
-          rationale: completeResponse.rationale
-        })
-        setIsComplete(true)
-        showSuccess('Interview completed! See your visa recommendation below.')
-      } else {
-        setCurrentStep(currentStep + 1)
-      }
+      setQuestionCount(prev => prev + 1)
+
+      // Load the next question
+      await loadNextQuestion()
+
     } catch (error: any) {
       console.error('Failed to submit answer:', error)
       showError(error.message || 'Failed to submit answer. Please try again.')
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
     }
   }
 
@@ -146,8 +145,11 @@ const InterviewPage: React.FC = () => {
               <p className="text-gray-600">
                 {t('interview.complete.description', 'Based on your answers, we have a visa recommendation for you.')}
               </p>
+              <p className="text-sm text-gray-500 mt-2">
+                Questions asked: {questionCount} | Adaptive system narrowed down from 88+ visa types
+              </p>
             </div>
-            
+
             <div className="bg-blue-50 p-6 rounded-lg">
               <h3 className="text-xl font-bold text-blue-900 mb-2">
                 {t('interview.recommended.visa', 'Recommended Visa Type')}
@@ -161,14 +163,14 @@ const InterviewPage: React.FC = () => {
             </div>
 
             <div className="flex justify-center space-x-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleStartOver}
               >
                 {t('interview.backToDashboard', 'Back to Dashboard')}
               </Button>
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 onClick={() => navigate('/pricing')}
               >
                 {t('interview.viewPackages', 'View Service Packages')}
@@ -180,23 +182,35 @@ const InterviewPage: React.FC = () => {
     )
   }
 
+  if (isLoading && !currentQuestion) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <Card title={t('interview.title', 'Visa Eligibility Interview')}>
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading your personalized interview...</p>
+          </div>
+        </Card>
+      </div>
+    )
+  }
+
+  if (!currentQuestion) {
+    return null
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
       <Card title={t('interview.title', 'Visa Eligibility Interview')}>
         <div className="space-y-6">
-          {/* Progress bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
-            />
-          </div>
-          
-          <div className="text-sm text-gray-600">
-            {t('interview.progress', 'Question {{current}} of {{total}}', {
-              current: currentStep + 1,
-              total: questions.length
-            })}
+          {/* Adaptive progress indicator */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="text-sm text-blue-800 mb-2">
+              Adaptive Interview Progress
+            </div>
+            <div className="text-xs text-blue-600">
+              Question {questionCount + 1} | {currentQuestion.remainingVisaTypes} visa types remaining
+            </div>
           </div>
 
           <div>
@@ -220,8 +234,8 @@ const InterviewPage: React.FC = () => {
               >
                 <option value="">{t('interview.selectOption', 'Select an option')}</option>
                 {currentQuestion.options?.map((option) => (
-                  <option key={option} value={option}>
-                    {t(`interview.options.${option}`, option)}
+                  <option key={option.value} value={option.value} title={option.description}>
+                    {option.label}
                   </option>
                 ))}
               </select>
@@ -230,41 +244,35 @@ const InterviewPage: React.FC = () => {
             {currentQuestion.type === 'radio' && (
               <div className="space-y-3">
                 {currentQuestion.options?.map((option) => (
-                  <label key={option} className="flex items-center space-x-3 cursor-pointer">
+                  <label key={option.value} className="flex items-start space-x-3 cursor-pointer p-3 border rounded-lg hover:bg-gray-50">
                     <input
                       type="radio"
                       name={currentQuestion.key}
-                      value={option}
-                      checked={answers[currentQuestion.key] === option}
+                      value={option.value}
+                      checked={answers[currentQuestion.key] === option.value}
                       onChange={(e) => handleAnswer(e.target.value)}
-                      className="w-4 h-4 text-blue-600"
+                      className="w-4 h-4 text-blue-600 mt-1"
                     />
-                    <span>{t(`interview.options.${option}`, option)}</span>
+                    <div>
+                      <div className="font-medium">{option.label}</div>
+                      {option.description && (
+                        <div className="text-sm text-gray-600">{option.description}</div>
+                      )}
+                    </div>
                   </label>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="flex justify-between pt-6">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={currentStep === 0}
-            >
-              {t('interview.previous', 'Previous')}
-            </Button>
-            
+          <div className="flex justify-end pt-6">
             <Button
               variant="primary"
               onClick={handleNext}
               disabled={isLoading}
               loading={isLoading}
             >
-              {isLastStep 
-                ? t('interview.complete', 'Complete Interview') 
-                : t('interview.next', 'Next')
-              }
+              {t('interview.next', 'Next Question')}
             </Button>
           </div>
         </div>

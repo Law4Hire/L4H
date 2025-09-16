@@ -2,6 +2,7 @@ import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useTranslation, I18nextProvider } from 'react-i18next';
 import i18n, { CULTURE_NAMES, i18nReady } from './i18n-enhanced';
+import { i18n as i18nApi } from './api-client';
 const I18nContext = createContext(undefined);
 export function I18nProvider({ children }) {
     const [cultures, setCultures] = useState([]);
@@ -48,8 +49,16 @@ export function I18nProvider({ children }) {
     }, []);
     const setCurrentCulture = async (culture) => {
         try {
-            // Just change the language locally, no API calls
+            // Change language locally first
             await i18n.changeLanguage(culture);
+            // Also persist to server for logged-in users
+            try {
+                await i18nApi.setCulture(culture);
+            }
+            catch (apiError) {
+                // API call failed, but local change succeeded - continue gracefully
+                console.warn('Failed to persist language preference to server:', apiError);
+            }
         }
         catch (error) {
             console.error('Failed to set culture:', error);

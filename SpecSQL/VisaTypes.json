@@ -1,0 +1,532 @@
+{
+  "Visas": [
+    {
+      "VisaName": "A-1",
+      "VisaDescription": "This visa is for heads of state, ambassadors, public ministers, career diplomats, consular officers, and their immediate family members.",
+      "VisaAppropriateFor": "High-ranking government officials representing their country in the U.S.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "A-2",
+      "VisaDescription": "For other accredited officials and employees of foreign governments, and their immediate family members.",
+      "VisaAppropriateFor": "Full-time government employees working in an embassy or consulate, foreign military members stationed in the U.S., and other government representatives on official business.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "A-3",
+      "VisaDescription": "For personal attendants, servants, and employees of A-1 and A-2 visa holders, and their immediate family members.",
+      "VisaAppropriateFor": "Individuals working in a domestic or personal capacity for A-1 or A-2 visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "B-1",
+      "VisaDescription": "For individuals traveling to the United States temporarily for business.",
+      "VisaAppropriateFor": "Travelers consulting with business associates, attending conventions or conferences, settling an estate, or negotiating contracts.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "B-2",
+      "VisaDescription": "For individuals traveling to the United States temporarily for pleasure or medical treatment.",
+      "VisaAppropriateFor": "Tourists, visitors seeing friends or relatives, individuals seeking medical treatment, and those participating in social or service activities.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "C-1",
+      "VisaDescription": "For foreign nationals in immediate and continuous transit through the United States.",
+      "VisaAppropriateFor": "Individuals traveling to another country who must make a brief stop in the U.S.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "C-1/D",
+      "VisaDescription": "A combination transit and crewmember visa.",
+      "VisaAppropriateFor": "Crewmembers of airlines or ships who are transiting through the U.S. to join their vessel or aircraft.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "C-2",
+      "VisaDescription": "For foreign nationals in transit to the United Nations Headquarters District. Travel is restricted to a 25-mile radius of Columbus Circle in New York City.",
+      "VisaAppropriateFor": "Individuals with official business at the United Nations in New York City.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "C-3",
+      "VisaDescription": "For foreign government officials, their immediate family, and their attendants, servants, or personal employees, in transit.",
+      "VisaAppropriateFor": "Foreign government officials and their staff who are passing through the U.S. en route to another country.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "D",
+      "VisaDescription": "For crewmembers of sea vessels or international airlines.",
+      "VisaAppropriateFor": "Pilots, flight attendants, captains, engineers, deckhands, and other service staff on commercial airplanes or sea vessels.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "E-1",
+      "VisaDescription": "For nationals of a country with which the United States maintains a treaty of commerce and navigation who are coming to the U.S. to carry on substantial trade.",
+      "VisaAppropriateFor": "Business owners, managers, and employees who engage in a significant amount of trade between the U.S. and their home country.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "E-2",
+      "VisaDescription": "For nationals of a country with which the United States maintains a treaty of commerce and navigation who are coming to the U.S. to develop and direct the operations of an enterprise in which they have invested a substantial amount of capital.",
+      "VisaAppropriateFor": "Investors who have made a significant financial investment in a U.S. business.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "E-3",
+      "VisaDescription": "For Australian nationals coming to the U.S. solely to perform services in a specialty occupation. There is an annual cap of 10,500 visas.",
+      "VisaAppropriateFor": "Australian professionals with a bachelor's degree or its equivalent in a specific specialty field.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "EB-1",
+      "VisaDescription": "First preference employment-based immigrant visa for priority workers. Does not require labor certification.",
+      "VisaAppropriateFor": "Three sub-categories: individuals with extraordinary ability in the sciences, arts, education, business, or athletics; outstanding professors and researchers; and certain multinational managers and executives.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "EB-2",
+      "VisaDescription": "Second preference employment-based immigrant visa for professionals holding an advanced degree or persons of exceptional ability.",
+      "VisaAppropriateFor": "Individuals with advanced degrees or who can demonstrate exceptional ability in the sciences, arts, or business. A labor certification is generally required, unless the applicant can obtain a National Interest Waiver (NIW).",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "EB-3",
+      "VisaDescription": "Third preference employment-based immigrant visa for skilled workers, professionals, and other workers.",
+      "VisaAppropriateFor": "Three sub-categories: 'Skilled workers' whose jobs require a minimum of 2 years training or experience; 'Professionals' whose jobs require at least a U.S. baccalaureate degree or a foreign equivalent; and 'Other workers' for persons performing unskilled labor requiring less than 2 years training or experience.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "EB-4",
+      "VisaDescription": "Fourth preference employment-based immigrant visa for 'special immigrants'.",
+      "VisaAppropriateFor": "A diverse group including religious workers, special immigrant juveniles, certain broadcasters, certain retired officers or employees of a G-4 international organization or NATO-6 civilian employees, and other classes of aliens.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "EB-5",
+      "VisaDescription": "Fifth preference employment-based immigrant visa for immigrant investors.",
+      "VisaAppropriateFor": "Foreign investors who invest a significant amount of capital in a new commercial enterprise that creates at least 10 full-time jobs for U.S. workers.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "F-1",
+      "VisaDescription": "For full-time academic or language students.",
+      "VisaAppropriateFor": "Individuals who have been accepted to study at an accredited U.S. college, university, seminary, conservatory, academic high school, elementary school, or other academic institution or in a language training program.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "F-2",
+      "VisaDescription": "For spouses and children of F-1 visa holders.",
+      "VisaAppropriateFor": "Dependents of F-1 students who wish to accompany them to the U.S. F-2 spouses may not engage in full-time study, and F-2 children may only study at the K-12 level.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "F-3",
+      "VisaDescription": "For 'border commuters' who are nationals of Mexico or Canada and who are commuting to the U.S. to attend an academic institution.",
+      "VisaAppropriateFor": "Mexican and Canadian students who reside in their home country while attending school in the U.S.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "G-1",
+      "VisaDescription": "For principal resident representatives of a recognized foreign member government to an international organization, their staff, and immediate family members.",
+      "VisaAppropriateFor": "High-ranking representatives of foreign governments to international organizations such as the United Nations.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "G-2",
+      "VisaDescription": "For other representatives of a recognized foreign member government to an international organization, and their immediate family members.",
+      "VisaAppropriateFor": "Other government representatives and their staff attending meetings of a designated international organization.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "G-3",
+      "VisaDescription": "For representatives of a non-recognized or non-member foreign government to an international organization, and their immediate family members.",
+      "VisaAppropriateFor": "Representatives from countries that are not members of the international organization.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "G-4",
+      "VisaDescription": "For officers and employees of international organizations, and their immediate family members.",
+      "VisaAppropriateFor": "Individuals coming to the U.S. to take up an appointment at a designated international organization, including the United Nations.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "G-5",
+      "VisaDescription": "For attendants, servants, and personal employees of G-1, G-2, G-3, and G-4 visa holders, and their immediate family members.",
+      "VisaAppropriateFor": "Personal staff of G-visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "H-1B",
+      "VisaDescription": "For individuals coming to the U.S. to perform services in a specialty occupation.",
+      "VisaAppropriateFor": "Professionals with a bachelor's degree or its equivalent in a specific field, such as IT, finance, engineering, and medicine.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "H-1B1",
+      "VisaDescription": "A sub-category of the H-1B visa reserved for nationals of Chile and Singapore under the Free Trade Agreements.",
+      "VisaAppropriateFor": "Professionals from Chile and Singapore in specialty occupations.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "H-1C",
+      "VisaDescription": "For registered nurses coming to the U.S. to work in areas with a shortage of health professionals.",
+      "VisaAppropriateFor": "Registered nurses.",
+      "Status": "Deprecated"
+    },
+    {
+      "VisaName": "H-2A",
+      "VisaDescription": "For temporary or seasonal agricultural work.",
+      "VisaAppropriateFor": "Individuals performing agricultural labor or services of a temporary or seasonal nature.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "H-2B",
+      "VisaDescription": "For temporary or seasonal non-agricultural work.",
+      "VisaAppropriateFor": "Individuals performing services or labor of a temporary or seasonal nature in fields such as landscaping, hospitality, and construction.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "H-3",
+      "VisaDescription": "For individuals coming to the U.S. to receive training, other than graduate medical education or training, that is not available in their home country.",
+      "VisaAppropriateFor": "Individuals participating in a training program in any field other than graduate medical training.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "H-4",
+      "VisaDescription": "For spouses and children of H-1B, H-1C, H-2A, H-2B, and H-3 visa holders.",
+      "VisaAppropriateFor": "Dependents of H-visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "I",
+      "VisaDescription": "For representatives of the foreign media, including members of the press, radio, film, and print industries.",
+      "VisaAppropriateFor": "Journalists, film crews, editors, and similar professionals working for a foreign media outlet.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "J-1",
+      "VisaDescription": "For individuals approved to participate in work-and-study-based exchange visitor programs.",
+      "VisaAppropriateFor": "Students, scholars, trainees, teachers, professors, research assistants, and au pairs participating in an approved exchange program.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "J-2",
+      "VisaDescription": "For spouses and children of J-1 visa holders.",
+      "VisaAppropriateFor": "Dependents of J-1 exchange visitors.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "K-1",
+      "VisaDescription": "For the fiancé(e) of a U.S. citizen. The marriage must occur within 90 days of entry into the U.S.",
+      "VisaAppropriateFor": "Individuals coming to the U.S. to marry a U.S. citizen.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "K-2",
+      "VisaDescription": "For minor children of K-1 visa holders. The K-2 visa must be issued within one year from the date of issuance of the K-1 visa to the principal alien.",
+      "VisaAppropriateFor": "The unmarried children under 21 of a K-1 applicant.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "K-3",
+      "VisaDescription": "For the foreign-citizen spouse of a U.S. citizen who is awaiting the approval of an immigrant visa petition.",
+      "VisaAppropriateFor": "Spouses of U.S. citizens.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "K-4",
+      "VisaDescription": "For the children of K-3 visa holders. The K-4 visa must be issued within one year from the date of issuance of the K-3 visa to the principal alien.",
+      "VisaAppropriateFor": "The unmarried children under 21 of a K-3 applicant.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "L-1A",
+      "VisaDescription": "For intracompany transferees in a managerial or executive position.",
+      "VisaAppropriateFor": "Executives and managers who have worked for a qualifying organization abroad for at least one year and are being transferred to the U.S. to work in a similar capacity.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "L-1B",
+      "VisaDescription": "For intracompany transferees with specialized knowledge.",
+      "VisaAppropriateFor": "Employees with specialized knowledge of the company's product, service, research, equipment, techniques, management, or other interests who are being transferred to a U.S. branch of the same company.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "L-2",
+      "VisaDescription": "For spouses and children of L-1 visa holders.",
+      "VisaAppropriateFor": "Dependents of L-1 visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "M-1",
+      "VisaDescription": "For students in vocational or other non-academic programs.",
+      "VisaAppropriateFor": "Individuals attending a vocational school or other recognized non-academic institution, other than a language training program.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "M-2",
+      "VisaDescription": "For spouses and children of M-1 visa holders.",
+      "VisaAppropriateFor": "Dependents of M-1 vocational students.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "M-3",
+      "VisaDescription": "For Canadian or Mexican national 'border commuters' attending vocational or other non-academic programs.",
+      "VisaAppropriateFor": "Mexican and Canadian students who reside in their home country while attending a vocational school in the U.S.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "N-8",
+      "VisaDescription": "A special immigrant status for parents of certain G-4 or NATO-6 employees.",
+      "VisaAppropriateFor": "Parents of certain special immigrants who were granted that status because they were officers or employees of an international organization in the U.S.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "N-9",
+      "VisaDescription": "A special immigrant status for children of certain G-4 or NATO-6 employees.",
+      "VisaAppropriateFor": "Children of certain special immigrants who were granted that status because they were officers or employees of an international organization in the U.S.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "NATO-1",
+      "VisaDescription": "For permanent representatives to NATO, their staff, and immediate family.",
+      "VisaAppropriateFor": "High-ranking officials and staff of NATO member countries.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "NATO-2",
+      "VisaDescription": "For other representatives to NATO, their staff, and immediate family.",
+      "VisaAppropriateFor": "Other representatives of NATO member countries and their staff.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "NATO-3",
+      "VisaDescription": "For official clerical staff of NATO representatives and their immediate family.",
+      "VisaAppropriateFor": "Clerical staff accompanying NATO representatives.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "NATO-4",
+      "VisaDescription": "For officials of NATO and their immediate family.",
+      "VisaAppropriateFor": "NATO officials not covered by other NATO visa categories.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "NATO-5",
+      "VisaDescription": "For experts employed on missions for NATO, and their dependents.",
+      "VisaAppropriateFor": "Experts working on NATO missions.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "NATO-6",
+      "VisaDescription": "For members of the civilian component of NATO and their dependents.",
+      "VisaAppropriateFor": "Civilian personnel accompanying armed forces on a NATO mission.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "NATO-7",
+      "VisaDescription": "For personal employees of NATO-1 through NATO-6 visa holders.",
+      "VisaAppropriateFor": "Personal employees of NATO visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "O-1",
+      "VisaDescription": "For individuals with an extraordinary ability in the sciences, arts, education, business, or athletics, or who have a demonstrated record of extraordinary achievement in the motion picture or television industry.",
+      "VisaAppropriateFor": "Individuals at the top of their field.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "O-2",
+      "VisaDescription": "For individuals who will accompany an O-1 artist or athlete to assist in a specific event or performance.",
+      "VisaAppropriateFor": "Essential support personnel for O-1 visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "O-3",
+      "VisaDescription": "For spouses and children of O-1 and O-2 visa holders.",
+      "VisaAppropriateFor": "Dependents of O-1 and O-2 visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "P-1",
+      "VisaDescription": "For internationally recognized athletes or entertainment groups.",
+      "VisaAppropriateFor": "Athletes competing at an internationally recognized level of performance, or entertainment groups that have been established for at least one year and are recognized internationally.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "P-2",
+      "VisaDescription": "For artists or entertainers, either individually or as part of a group, who will be performing under a reciprocal exchange program.",
+      "VisaAppropriateFor": "Artists and entertainers in programs that have been established through a formal agreement between a U.S. organization and an organization in a foreign country.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "P-3",
+      "VisaDescription": "For artists or entertainers, either individually or as part of a group, who will be performing, teaching, or coaching in a culturally unique program.",
+      "VisaAppropriateFor": "Artists and entertainers in programs that are culturally unique.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "P-4",
+      "VisaDescription": "For spouses and children of P-1, P-2, and P-3 visa holders.",
+      "VisaAppropriateFor": "Dependents of P-visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "Q-1",
+      "VisaDescription": "For individuals participating in an international cultural exchange program.",
+      "VisaAppropriateFor": "Participants in programs designed to provide practical training, employment, and the sharing of the history, culture, and traditions of the participant's home country.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "Q-2",
+      "VisaDescription": "For participants in the Irish Peace Process Cultural and Training Program (Walsh Visas).",
+      "VisaAppropriateFor": "Young people from designated counties in Ireland and Northern Ireland for the purpose of developing job skills and conflict resolution abilities.",
+      "Status": "Deprecated"
+    },
+    {
+      "VisaName": "Q-3",
+      "VisaDescription": "For the spouse and children of Q-2 visa holders.",
+      "VisaAppropriateFor": "Dependents of Q-2 visa holders.",
+      "Status": "Deprecated"
+    },
+    {
+      "VisaName": "R-1",
+      "VisaDescription": "For temporary religious workers.",
+      "VisaAppropriateFor": "Ministers and individuals working in a religious vocation or occupation.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "R-2",
+      "VisaDescription": "For spouses and children of R-1 visa holders.",
+      "VisaAppropriateFor": "Dependents of R-1 religious workers.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "S-5",
+      "VisaDescription": "For individuals who are witnesses, informants, or otherwise supplying information regarding a criminal organization.",
+      "VisaAppropriateFor": "Individuals assisting law enforcement in a criminal investigation or prosecution.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "S-6",
+      "VisaDescription": "For individuals supplying critical information relating to terrorism.",
+      "VisaAppropriateFor": "Individuals assisting law enforcement in a terrorism-related investigation or prosecution.",
+      "Status": "Active"
+    },
+	{
+      "VisaName": "S-7",
+      "VisaDescription": "For qualified family members of S-5 or S-6 visa holders.",
+      "VisaAppropriateFor": "Dependents of S-5 and S-6 visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "T-1",
+      "VisaDescription": "For victims of a severe form of human trafficking. A T-1 visa application must be filed first.",
+      "VisaAppropriateFor": "Individuals who are or have been victims of trafficking and are assisting law enforcement in the investigation or prosecution of trafficking acts.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "T-2",
+      "VisaDescription": "For the spouse of a T-1 visa holder.",
+      "VisaAppropriateFor": "Spouse of a T-1 visa holder.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "T-3",
+      "VisaDescription": "For the child of a T-1 visa holder.",
+      "VisaAppropriateFor": "Child of a T-1 visa holder.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "T-4",
+      "VisaDescription": "For the parent of a T-1 visa holder who is under 21 years old.",
+      "VisaAppropriateFor": "Parent of a T-1 visa holder who is a minor.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "T-5",
+      "VisaDescription": "For the unmarried sibling under 18 years of age of a T-1 visa holder who is under 21 years old.",
+      "VisaAppropriateFor": "Unmarried minor sibling of a T-1 visa holder who is a minor.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "T-6",
+      "VisaDescription": "For the adult or minor child of a derivative beneficiary of a T-1 visa holder.",
+      "VisaAppropriateFor": "Child of a T-2, T-3, T-4, or T-5 visa holder.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "TN",
+      "VisaDescription": "For qualified Canadian and Mexican citizens to seek temporary entry into the United States to engage in business activities at a professional level, as part of the NAFTA/USMCA agreement.",
+      "VisaAppropriateFor": "Canadian and Mexican citizens who are members of one of the professions specified in the agreement.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "TPS",
+      "VisaDescription": "Temporary Protected Status is granted to eligible nationals of designated countries who are already in the United States. It is not a visa to enter the U.S.",
+      "VisaAppropriateFor": "Nationals of countries designated for TPS due to ongoing armed conflict, environmental disaster, or other extraordinary and temporary conditions.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "TWOV",
+      "VisaDescription": "Transit Without Visa was a program that allowed certain foreign nationals to transit through the U.S. without a visa.",
+      "VisaAppropriateFor": "Citizens of designated countries transiting through the U.S.",
+      "Status": "Deprecated"
+    },
+    {
+      "VisaName": "U-1",
+      "VisaDescription": "For victims of certain criminal activities who have suffered substantial mental or physical abuse and are willing to assist law enforcement. A U-1 visa application must be filed first.",
+      "VisaAppropriateFor": "Victims of crimes such as domestic violence, sexual assault, and human trafficking who are cooperating with the investigation or prosecution of the criminal activity.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "U-2",
+      "VisaDescription": "For the spouse of a U-1 visa holder.",
+      "VisaAppropriateFor": "Spouse of a U-1 visa holder.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "U-3",
+      "VisaDescription": "For the child of a U-1 visa holder.",
+      "VisaAppropriateFor": "Child of a U-1 visa holder.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "U-4",
+      "VisaDescription": "For the parent of a U-1 visa holder who is under 21 years old.",
+      "VisaAppropriateFor": "Parent of a U-1 visa holder who is a minor.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "U-5",
+      "VisaDescription": "For the unmarried sibling under 18 years of age of a U-1 visa holder who is under 21 years old.",
+      "VisaAppropriateFor": "Unmarried minor sibling of a U-1 visa holder who is a minor.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "V-1",
+      "VisaDescription": "For the spouse of a lawful permanent resident who is the principal beneficiary of a family-based petition (Form I-130) which was filed prior to December 21, 2000, and has been pending for at least three years.",
+      "VisaAppropriateFor": "Spouses of lawful permanent residents.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "V-2",
+      "VisaDescription": "For the child of a lawful permanent resident who is the principal beneficiary of a family-based petition (Form I-130) which was filed prior to December 21, 2000, and has been pending for at least three years.",
+      "VisaAppropriateFor": "Children of lawful permanent residents.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "V-3",
+      "VisaDescription": "For the derivative child of a V-1 or V-2 visa holder.",
+      "VisaAppropriateFor": "Children of V-1 or V-2 visa holders.",
+      "Status": "Active"
+    },
+    {
+      "VisaName": "Diversity Visa",
+      "VisaDescription": "The Diversity Immigrant Visa Program, also known as the Green Card Lottery, makes up to 55,000 immigrant visas available annually, drawn from random selection among all entries to individuals who are from countries with low rates of immigration to the United States.",
+      "VisaAppropriateFor": "Nationals of countries with historically low rates of immigration to the U.S. who meet strict eligibility requirements.",
+      "Status": "Active"
+    }
+  ]
+}

@@ -17,6 +17,23 @@ public class User
     public bool IsAdmin { get; set; }
     public bool IsStaff { get; set; }
 
+    // Extended Profile Information
+    public string PhoneNumber { get; set; } = string.Empty;
+    public DateTime? DateOfBirth { get; set; }
+    public string MaritalStatus { get; set; } = string.Empty; // Single, Married, Divorced, Widowed
+    public string Nationality { get; set; } = string.Empty;
+    public string Citizenship { get; set; } = string.Empty;
+    
+    // Address Information
+    public string StreetAddress { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string StateProvince { get; set; } = string.Empty;
+    public string PostalCode { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    
+    // Guardian Information (for users under 18)
+    public string GuardianEmail { get; set; } = string.Empty;
+
     // Navigation properties
     public ICollection<Case> Cases { get; set; } = new List<Case>();
     public ICollection<GuardianLink> ChildLinks { get; set; } = new List<GuardianLink>();

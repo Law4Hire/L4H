@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ProfileCompletionPage from './pages/ProfileCompletionPage'
 import DashboardPage from './pages/DashboardPage'
 import PricingPage from './pages/PricingPage'
 import AppointmentsPage from './pages/AppointmentsPage'
@@ -14,6 +15,10 @@ import InvoicesPage from './pages/InvoicesPage'
 import VerifyPage from './pages/VerifyPage'
 import VisaLibraryPage from './pages/VisaLibraryPage'
 import InterviewPage from './pages/InterviewPage'
+import AdminPage from './pages/AdminPage'
+import UserManagementPage from './pages/UserManagementPage'
+import AdminPricingPage from './pages/AdminPricingPage'
+import AdminCaseManagementPage from './pages/AdminCaseManagementPage'
 import { useAuth } from './hooks/useAuth'
 
 function App() {
@@ -58,6 +63,20 @@ function App() {
             >
               <RegisterPage />
             </Layout>
+          } 
+        />
+        <Route 
+          path="/profile-completion" 
+          element={
+            <RouteGuard>
+              <Layout 
+                showUserMenu={false} 
+                user={user} 
+                isAuthenticated={isAuthenticated}
+              >
+                <ProfileCompletionPage />
+              </Layout>
+            </RouteGuard>
           } 
         />
         <Route 
@@ -185,6 +204,66 @@ function App() {
                 isAuthenticated={isAuthenticated}
               >
                 <InterviewPage />
+              </Layout>
+            </RouteGuard>
+          } 
+        />
+        <Route 
+          path="/admin" 
+          element={
+            <RouteGuard>
+              <Layout 
+                title={t('nav.admin')} 
+                showUserMenu={true} 
+                user={user} 
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminPage />
+              </Layout>
+            </RouteGuard>
+          } 
+        />
+        <Route 
+          path="/admin/users" 
+          element={
+            <RouteGuard>
+              <Layout 
+                title="User Management" 
+                showUserMenu={true} 
+                user={user} 
+                isAuthenticated={isAuthenticated}
+              >
+                <UserManagementPage />
+              </Layout>
+            </RouteGuard>
+          } 
+        />
+        <Route 
+          path="/admin/pricing" 
+          element={
+            <RouteGuard>
+              <Layout 
+                title="Pricing Management" 
+                showUserMenu={true} 
+                user={user} 
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminPricingPage />
+              </Layout>
+            </RouteGuard>
+          } 
+        />
+        <Route 
+          path="/admin/cases" 
+          element={
+            <RouteGuard>
+              <Layout 
+                title="Case Management" 
+                showUserMenu={true} 
+                user={user} 
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminCaseManagementPage />
               </Layout>
             </RouteGuard>
           } 

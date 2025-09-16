@@ -209,7 +209,7 @@ public class CasesController : ControllerBase
 
     private UserId GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (Guid.TryParse(userIdClaim, out var userId))
         {
             return new UserId(userId);
@@ -219,7 +219,7 @@ public class CasesController : ControllerBase
 
     private bool IsAdmin()
     {
-        return User.HasClaim("IsAdmin", "true") || User.IsInRole("Admin");
+        return User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
     }
 
     private async Task LogAuditAsync(string category, string action, string targetType, string targetId, object details)

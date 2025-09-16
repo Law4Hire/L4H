@@ -1,18 +1,34 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Card, Button } from '@l4h/shared-ui'
 
 const AdminPage: React.FC = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+
+  const handleUserManagement = () => {
+    navigate('/admin/users')
+  }
+
+  const handleCaseManagement = () => {
+    navigate('/admin/cases')
+  }
 
   const handlePricingEditor = () => {
-    // TODO: Navigate to pricing editor
-    console.log('Navigate to pricing editor')
+    navigate('/admin/pricing')
+  }
+
+  const handleReportsAnalytics = () => {
+    navigate('/admin/reports')
+  }
+
+  const handleTimeEntries = () => {
+    navigate('/admin/time-entries')
   }
 
   const handleWorkflowReview = () => {
-    // TODO: Navigate to workflow review
-    console.log('Navigate to workflow review')
+    navigate('/admin/workflows')
   }
 
   return (
@@ -29,6 +45,33 @@ const AdminPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <Card title="User Management">
+          <p className="text-gray-600 mb-4">
+            Manage users, roles, and permissions
+          </p>
+          <Button onClick={handleUserManagement}>
+            Manage Users
+          </Button>
+        </Card>
+
+        <Card title="Case Management">
+          <p className="text-gray-600 mb-4">
+            Review and manage immigration cases
+          </p>
+          <Button onClick={handleCaseManagement}>
+            Manage Cases
+          </Button>
+        </Card>
+
+        <Card title="Reports & Analytics">
+          <p className="text-gray-600 mb-4">
+            View business metrics and performance data
+          </p>
+          <Button onClick={handleReportsAnalytics}>
+            View Reports
+          </Button>
+        </Card>
+
         <Card title={t('admin.pricing')}>
           <p className="text-gray-600 mb-4">
             Manage pricing plans and service costs
@@ -38,20 +81,20 @@ const AdminPage: React.FC = () => {
           </Button>
         </Card>
 
+        <Card title="Time Entries">
+          <p className="text-gray-600 mb-4">
+            Track and manage billable hours
+          </p>
+          <Button onClick={handleTimeEntries}>
+            Manage Time
+          </Button>
+        </Card>
+
         <Card title={t('admin.workflows')}>
           <p className="text-gray-600 mb-4">
             Review and approve workflow changes
           </p>
           <Button onClick={handleWorkflowReview}>
-            {t('common.view')}
-          </Button>
-        </Card>
-
-        <Card title={t('admin.settings')}>
-          <p className="text-gray-600 mb-4">
-            System configuration and settings
-          </p>
-          <Button variant="outline" disabled>
             {t('common.view')}
           </Button>
         </Card>

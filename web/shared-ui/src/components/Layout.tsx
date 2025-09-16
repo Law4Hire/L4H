@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '../i18n-provider'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 import { useTheme } from '../ThemeProvider'
 import { Sun, Moon } from '../Icon'
@@ -12,6 +12,7 @@ interface User {
   firstName?: string
   lastName?: string
   roles?: string[]
+  isAdmin?: boolean
 }
 
 interface LayoutProps {
@@ -69,9 +70,9 @@ export const Layout: React.FC<LayoutProps> = ({
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       {/* Header with Full Navigation */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Left side - Logo and Brand */}
@@ -84,8 +85,8 @@ export const Layout: React.FC<LayoutProps> = ({
                   <span className="text-white font-bold text-lg">🇺🇸</span>
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900">{_t('brand:title', 'US Immigration Help')}</h1>
-                  <p className="text-xs text-gray-600">{_t('brand:subtitle', 'Powered by Law4Hire')}</p>
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">{_t('brand:title', 'US Immigration Help')}</h1>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{_t('brand:subtitle', 'Powered by Law4Hire')}</p>
                 </div>
               </div>
             </div>
@@ -124,24 +125,35 @@ export const Layout: React.FC<LayoutProps> = ({
                     {_t('nav.hello')} {getUserDisplayName(user)}
                   </Button>
                   {showUserDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
                       <button
                         onClick={() => {
                           setShowUserDropdown(false)
                           navigate('/dashboard')
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         {_t('nav.dashboard')}
                       </button>
+                      {user?.isAdmin && (
+                        <button
+                          onClick={() => {
+                            setShowUserDropdown(false)
+                            navigate('/admin')
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          {_t('nav.admin')}
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           setShowUserDropdown(false)
                           handleLogout()
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
-                        {_t('auth.logout')}
+                        {_t('logout', { ns: 'auth' })}
                       </button>
                     </div>
                   )}

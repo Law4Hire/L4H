@@ -63,6 +63,25 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Check if a user exists by email
+    /// </summary>
+    /// <param name="email">Email to check</param>
+    /// <returns>True if user exists, false otherwise</returns>
+    [HttpGet("check-email")]
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CheckEmailExists([FromQuery, Required, EmailAddress] string email)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var userExists = await _authService.UserExistsAsync(email).ConfigureAwait(false);
+        return Ok(new { exists = userExists });
+    }
+
+    /// <summary>
     /// Register a new user account
     /// </summary>
     /// <param name="request">Signup details</param>
@@ -348,5 +367,34 @@ public class AuthController : ControllerBase
 
         var sessions = await _sessionManagementService.GetActiveSessionsAsync(userId).ConfigureAwait(false);
         return Ok(sessions);
+    }
+
+    /// <summary>
+    /// Update user profile information
+    /// </summary>
+    /// <param name="request">Profile update details</param>
+    /// <returns>Success message</returns>
+    [HttpPut("profile")]
+    [ProducesResponseType<MessageResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var userIdClaim = User.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userIdGuid))
+        {
+            return Unauthorized(new { error = "Invalid user" });
+        }
+        var userId = new UserId(userIdGuid);
+
+        var result = await _authService.UpdateProfileAsync(userId, request).ConfigureAwait(false);
+        
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result.Value);
     }
 }

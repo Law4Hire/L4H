@@ -29,6 +29,7 @@ public class JwtTokenService : IJwtTokenService
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
+            new Claim("sub", user.Id.Value.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim("email_verified", user.EmailVerified.ToString()),
             new Claim("is_admin", user.IsAdmin.ToString())

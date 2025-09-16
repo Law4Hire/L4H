@@ -60,14 +60,14 @@ const VisaLibraryPage: React.FC = () => {
   }, {} as Record<string, VisaType[]>)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             {t('visaLibrary.title', 'US Visa Types Library')}
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
             {t('visaLibrary.description', 'Explore comprehensive information about different US visa categories. Click on any visa type to learn about eligibility requirements, application process, and benefits.')}
           </p>
         </div>
@@ -75,13 +75,13 @@ const VisaLibraryPage: React.FC = () => {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600 text-lg">{t('visaLibrary.loading', 'Loading visa information...')}</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400 text-lg">{t('visaLibrary.loading', 'Loading visa information...')}</p>
           </div>
         ) : (
           <div className="space-y-12">
             {Object.entries(groupedVisaTypes).map(([category, visas]) => (
               <section key={category}>
-                <h3 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+                <h3 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
                   {t(`visaLibrary.categories.${category.toLowerCase()}`, `${category} Visas`)}
                 </h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -92,18 +92,18 @@ const VisaLibraryPage: React.FC = () => {
                       onClick={() => setSelectedVisa(visa)}
                     >
                       <div className="text-center">
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-2xl font-bold text-blue-600">
+                        <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                             {visa.code}
                           </span>
                         </div>
-                        <h4 className="font-bold text-lg text-gray-900 mb-2">
+                        <h4 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2">
                           {t(`visaLibrary.visas.${visa.code}.name`, visa.name)}
                         </h4>
-                        <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
                           {t(`visaLibrary.visas.${visa.code}.description`, visa.description)}
                         </p>
-                        <span className="inline-flex items-center text-blue-600 text-sm font-medium">
+                        <span className="inline-flex items-center text-blue-600 dark:text-blue-400 text-sm font-medium">
                           {t('visaLibrary.learnMore', 'Learn More')} →
                         </span>
                       </div>
@@ -116,16 +116,16 @@ const VisaLibraryPage: React.FC = () => {
         )}
 
         {/* Call to Action */}
-        <div className="bg-blue-600 rounded-lg p-8 text-center text-white mt-16">
+        <div className="bg-blue-600 dark:bg-blue-700 rounded-lg p-8 text-center text-white mt-16">
           <h3 className="text-2xl font-bold mb-4">
             {t('visaLibrary.cta.title', 'Need Help Choosing the Right Visa?')}
           </h3>
-          <p className="text-lg text-blue-100 mb-6">
+          <p className="text-lg text-blue-100 dark:text-blue-200 mb-6">
             {t('visaLibrary.cta.description', 'Our immigration experts can help you determine which visa category fits your situation best.')}
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+            className="bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             {t('visaLibrary.cta.button', 'Start Your Application')}
           </button>
@@ -135,27 +135,27 @@ const VisaLibraryPage: React.FC = () => {
       {/* Visa Detail Modal */}
       {selectedVisa && (
         <Modal
-          isOpen={!!selectedVisa}
+          open={!!selectedVisa}
           onClose={() => setSelectedVisa(null)}
           title={`${selectedVisa.code} - ${selectedVisa.name}`}
           size="lg"
         >
           <div className="space-y-6">
             <div>
-              <h4 className="font-bold text-gray-900 mb-2 text-lg">{t('visaLibrary.modal.category', 'Category')}</h4>
-              <p className="text-gray-600 text-lg">
+              <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-2 text-lg">{t('visaLibrary.modal.category', 'Category')}</h4>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">
                 {t(`visaLibrary.categories.${selectedVisa.generalCategory.toLowerCase()}`, `${selectedVisa.generalCategory} Visa`)}
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 mb-2 text-lg">{t('visaLibrary.modal.description', 'Description')}</h4>
-              <p className="text-gray-600 leading-relaxed">
+              <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-2 text-lg">{t('visaLibrary.modal.description', 'Description')}</h4>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                 {t(`visaLibrary.visas.${selectedVisa.code}.description`, selectedVisa.description)}
               </p>
             </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-blue-900 mb-2">{t('visaLibrary.modal.nextSteps', 'Next Steps')}</h4>
-              <p className="text-blue-800 text-sm">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">{t('visaLibrary.modal.nextSteps', 'Next Steps')}</h4>
+              <p className="text-blue-800 dark:text-blue-200 text-sm">
                 {t('visaLibrary.modal.readyToApply', 'Ready to apply for the {{code}} visa? Our immigration attorneys can guide you through the entire process.', { code: selectedVisa.code })}
               </p>
             </div>
