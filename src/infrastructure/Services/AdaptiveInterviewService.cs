@@ -7,9 +7,9 @@ namespace L4H.Infrastructure.Services;
 
 public interface IAdaptiveInterviewService
 {
-    Task<InterviewQuestion> GetNextQuestionAsync(Dictionary<string, string> answers);
-    Task<RecommendationResult> GetRecommendationAsync(Dictionary<string, string> answers);
-    Task<bool> IsCompleteAsync(Dictionary<string, string> answers);
+    Task<InterviewQuestion> GetNextQuestionAsync(Dictionary<string, string> answers, User? user = null);
+    Task<RecommendationResult> GetRecommendationAsync(Dictionary<string, string> answers, User? user = null);
+    Task<bool> IsCompleteAsync(Dictionary<string, string> answers, User? user = null);
 }
 
 public class InterviewQuestion
@@ -40,10 +40,13 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         _logger = logger;
     }
 
-    public async Task<InterviewQuestion> GetNextQuestionAsync(Dictionary<string, string> answers)
+    public async Task<InterviewQuestion> GetNextQuestionAsync(Dictionary<string, string> answers, User? user = null)
     {
+        // Merge user profile data with interview answers
+        var enrichedAnswers = EnrichAnswersWithUserData(answers, user);
+
         // Get remaining possible visa types based on current answers
-        var possibleVisaTypes = await GetPossibleVisaTypesAsync(answers).ConfigureAwait(false);
+        var possibleVisaTypes = await GetPossibleVisaTypesAsync(enrichedAnswers).ConfigureAwait(false);
 
         _logger.LogInformation($"Current answers: {string.Join(", ", answers.Select(kvp => $"{kvp.Key}={kvp.Value}"))}");
         _logger.LogInformation($"Remaining visa types: {possibleVisaTypes.Count}");
@@ -60,18 +63,20 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         // Determine the best question to narrow down the remaining visa types
-        return await GetBestDiscriminatingQuestionAsync(possibleVisaTypes, answers).ConfigureAwait(false);
+        return await GetBestDiscriminatingQuestionAsync(possibleVisaTypes, enrichedAnswers).ConfigureAwait(false);
     }
 
-    public async Task<bool> IsCompleteAsync(Dictionary<string, string> answers)
+    public async Task<bool> IsCompleteAsync(Dictionary<string, string> answers, User? user = null)
     {
-        var possibleVisaTypes = await GetPossibleVisaTypesAsync(answers).ConfigureAwait(false);
+        var enrichedAnswers = EnrichAnswersWithUserData(answers, user);
+        var possibleVisaTypes = await GetPossibleVisaTypesAsync(enrichedAnswers).ConfigureAwait(false);
         return possibleVisaTypes.Count <= 1;
     }
 
-    public async Task<RecommendationResult> GetRecommendationAsync(Dictionary<string, string> answers)
+    public async Task<RecommendationResult> GetRecommendationAsync(Dictionary<string, string> answers, User? user = null)
     {
-        var possibleVisaTypes = await GetPossibleVisaTypesAsync(answers).ConfigureAwait(false);
+        var enrichedAnswers = EnrichAnswersWithUserData(answers, user);
+        var possibleVisaTypes = await GetPossibleVisaTypesAsync(enrichedAnswers).ConfigureAwait(false);
 
         if (possibleVisaTypes.Count == 0)
         {
@@ -85,7 +90,7 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         var recommendedVisa = possibleVisaTypes.First();
-        var rationale = GenerateRationale(recommendedVisa, answers);
+        var rationale = GenerateRationale(recommendedVisa, enrichedAnswers);
 
         return new RecommendationResult
         {
@@ -232,12 +237,36 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         // Fallback question if no good discriminator found
+        // Always prioritize purpose as the first question if not answered
+        if (!answers.ContainsKey("purpose"))
+        {
+            return Task.FromResult(questions.First(q => q.Key == "purpose"));
+        }
+
+        // If purpose is answered but we still can't discriminate, try other key questions
+        // But avoid asking for data we might already have from user profile
+        var fallbackOrder = new[] { "familyRelationship", "employerSponsor", "educationLevel", "hasJobOffer" };
+
+        foreach (var fallbackKey in fallbackOrder)
+        {
+            if (!answers.ContainsKey(fallbackKey))
+            {
+                var fallbackQuestion = questions.FirstOrDefault(q => q.Key == fallbackKey);
+                if (fallbackQuestion != null)
+                {
+                    fallbackQuestion.RemainingVisaTypes = possibleVisaTypes.Count;
+                    return Task.FromResult(fallbackQuestion);
+                }
+            }
+        }
+
+        // If all else fails, return a generic question but NOT nationality (since we have it from profile)
         return Task.FromResult(new InterviewQuestion
         {
-            Key = "nationality",
-            Question = "What is your nationality?",
+            Key = "additionalInfo",
+            Question = "Please provide any additional information about your travel purpose.",
             Type = "text",
-            Required = true,
+            Required = false,
             RemainingVisaTypes = possibleVisaTypes.Count
         });
     }
@@ -426,6 +455,40 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         return bestScore;
+    }
+
+    private static Dictionary<string, string> EnrichAnswersWithUserData(Dictionary<string, string> answers, User? user)
+    {
+        var enriched = new Dictionary<string, string>(answers);
+
+        if (user != null)
+        {
+            // Add user profile data if not already answered in interview
+            if (!enriched.ContainsKey("nationality") && !string.IsNullOrEmpty(user.Nationality))
+                enriched["nationality"] = user.Nationality.ToLowerInvariant();
+
+            if (!enriched.ContainsKey("citizenship") && !string.IsNullOrEmpty(user.Citizenship))
+                enriched["citizenship"] = user.Citizenship.ToLowerInvariant();
+
+            if (!enriched.ContainsKey("country") && !string.IsNullOrEmpty(user.Country))
+                enriched["country"] = user.Country.ToLowerInvariant();
+
+            if (!enriched.ContainsKey("maritalStatus") && !string.IsNullOrEmpty(user.MaritalStatus))
+                enriched["maritalStatus"] = user.MaritalStatus.ToLowerInvariant();
+
+            if (!enriched.ContainsKey("dateOfBirth") && user.DateOfBirth.HasValue)
+            {
+                var age = DateTime.Now.Year - user.DateOfBirth.Value.Year;
+                if (DateTime.Now.DayOfYear < user.DateOfBirth.Value.DayOfYear) age--;
+                enriched["age"] = age.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+
+            // Guardian information for minors
+            if (!enriched.ContainsKey("hasGuardian") && !string.IsNullOrEmpty(user.GuardianEmail))
+                enriched["hasGuardian"] = "yes";
+        }
+
+        return enriched;
     }
 
     private static string GenerateRationale(VisaType visaType, Dictionary<string, string> answers)

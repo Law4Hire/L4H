@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/interview")]
+[Route("api/v1/interview")]
 [Tags("Interview")]
 [Authorize]
 public class InterviewController : ControllerBase
@@ -477,10 +477,11 @@ public class InterviewController : ControllerBase
     {
         var userId = GetCurrentUserId();
 
-        // Get session with QAs
+        // Get session with QAs and user data
         var session = await _context.InterviewSessions
             .Include(s => s.QAs)
             .Include(s => s.Case)
+            .Include(s => s.User) // Include user data for profile information
             .FirstOrDefaultAsync(s => s.Id == request.SessionId).ConfigureAwait(false);
 
         if (session == null)
@@ -510,15 +511,15 @@ public class InterviewController : ControllerBase
         var answers = session.QAs.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue);
 
         // Get next question from adaptive service
-        var nextQuestion = await _adaptiveInterview.GetNextQuestionAsync(answers).ConfigureAwait(false);
+        var nextQuestion = await _adaptiveInterview.GetNextQuestionAsync(answers, session.User).ConfigureAwait(false);
 
         // Check if interview is complete
-        var isComplete = await _adaptiveInterview.IsCompleteAsync(answers).ConfigureAwait(false);
+        var isComplete = await _adaptiveInterview.IsCompleteAsync(answers, session.User).ConfigureAwait(false);
 
         if (isComplete)
         {
             // Get recommendation
-            var recommendation = await _adaptiveInterview.GetRecommendationAsync(answers).ConfigureAwait(false);
+            var recommendation = await _adaptiveInterview.GetRecommendationAsync(answers, session.User).ConfigureAwait(false);
 
             // Create visa recommendation record
             var visaRecommendation = new VisaRecommendation
