@@ -49,7 +49,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         if (onSuccess) {
           onSuccess()
         } else {
-          navigate('/dashboard')
+          // Determine redirect path based on user type and completion status
+          if (result.isStaff || result.isAdmin) {
+            // Staff and admin users always go to dashboard
+            navigate('/dashboard')
+          } else if (!result.isProfileComplete) {
+            // Regular users with incomplete profile go to profile completion
+            navigate('/profile-completion')
+          } else if (!result.isInterviewComplete) {
+            // Regular users with complete profile but incomplete interview go to interview
+            navigate('/interview')
+          } else {
+            // Regular users with complete profile and interview go to dashboard
+            navigate('/dashboard')
+          }
         }
       } else {
         setError(t('loginFailed', { ns: 'auth' }))

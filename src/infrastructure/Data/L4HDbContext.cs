@@ -62,6 +62,9 @@ public class L4HDbContext : DbContext
     public DbSet<ScrapedDocument> ScrapedDocuments { get; set; }
     public DbSet<CountryServiceMapping> CountryServiceMappings { get; set; }
 
+    // Approved doctors entity
+    public DbSet<ApprovedDoctor> ApprovedDoctors { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

@@ -1,8 +1,10 @@
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
+using L4H.Infrastructure.Configuration;
 using L4H.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace L4H.Infrastructure.Services;
 
@@ -26,6 +28,7 @@ public class AuthService : IAuthService
     private readonly IRememberMeTokenService _rememberMeTokenService;
     private readonly IPasswordResetTokenService _passwordResetService;
     private readonly ILogger<AuthService> _logger;
+    private readonly SupportOptions _supportOptions;
 
     public AuthService(
         L4HDbContext context,
@@ -34,7 +37,8 @@ public class AuthService : IAuthService
         IJwtTokenService jwtTokenService,
         IRememberMeTokenService rememberMeTokenService,
         IPasswordResetTokenService passwordResetService,
-        ILogger<AuthService> logger)
+        ILogger<AuthService> logger,
+        IOptions<SupportOptions> supportOptions)
     {
         _context = context;
         _passwordHasher = passwordHasher;
@@ -43,6 +47,7 @@ public class AuthService : IAuthService
         _rememberMeTokenService = rememberMeTokenService;
         _passwordResetService = passwordResetService;
         _logger = logger;
+        _supportOptions = supportOptions.Value;
     }
 
     public async Task<Result<AuthResponse>> SignupAsync(SignupRequest request)
@@ -74,7 +79,8 @@ public class AuthService : IAuthService
             CreatedAt = DateTime.UtcNow,
             PasswordUpdatedAt = DateTime.UtcNow,
             FailedLoginCount = 0,
-            IsAdmin = false
+            IsAdmin = false,
+            IsActive = true // New users should be active by default
         };
 
         _context.Users.Add(user);
@@ -100,7 +106,15 @@ public class AuthService : IAuthService
         // Generate JWT token
         var token = _jwtTokenService.GenerateAccessToken(user);
 
-        return Result<AuthResponse>.Success(new AuthResponse { Token = token, UserId = user.Id });
+        return Result<AuthResponse>.Success(new AuthResponse
+        {
+            Token = token,
+            UserId = user.Id,
+            IsProfileComplete = IsProfileComplete(user),
+            IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
+            IsStaff = user.IsStaff,
+            IsAdmin = user.IsAdmin
+        });
     }
 
     public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request)
@@ -117,6 +131,12 @@ public class AuthService : IAuthService
         if (user.LockoutUntil.HasValue && user.LockoutUntil > DateTimeOffset.UtcNow)
         {
             return Result<AuthResponse>.Failure("Account is temporarily locked. Please try again later.");
+        }
+
+        // Check if user account is active
+        if (!user.IsActive)
+        {
+            return Result<AuthResponse>.Failure($"Your account has been deactivated. Please contact our office at {_supportOptions.PhoneNumber} for assistance.");
         }
 
         // Verify password
@@ -145,7 +165,15 @@ public class AuthService : IAuthService
         // Generate JWT token
         var token = _jwtTokenService.GenerateAccessToken(user);
 
-        var response = new AuthResponse { Token = token, UserId = user.Id };
+        var response = new AuthResponse
+        {
+            Token = token,
+            UserId = user.Id,
+            IsProfileComplete = IsProfileComplete(user),
+            IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
+            IsStaff = user.IsStaff,
+            IsAdmin = user.IsAdmin
+        };
 
         return Result<AuthResponse>.Success(response);
     }
@@ -162,7 +190,15 @@ public class AuthService : IAuthService
         // Generate new JWT token
         var jwtToken = _jwtTokenService.GenerateAccessToken(user);
 
-        return Result<AuthResponse>.Success(new AuthResponse { Token = jwtToken, UserId = user.Id });
+        return Result<AuthResponse>.Success(new AuthResponse
+        {
+            Token = jwtToken,
+            UserId = user.Id,
+            IsProfileComplete = IsProfileComplete(user),
+            IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
+            IsStaff = user.IsStaff,
+            IsAdmin = user.IsAdmin
+        });
     }
 
     public async Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request)
@@ -264,5 +300,31 @@ public class AuthService : IAuthService
 
         return Result<MessageResponse>.Success(
             new MessageResponse { Message = "Profile updated successfully" });
+    }
+
+    private static bool IsProfileComplete(User user)
+    {
+        // Check if essential profile fields are filled
+        return !string.IsNullOrEmpty(user.Country) &&
+               !string.IsNullOrEmpty(user.Nationality) &&
+               !string.IsNullOrEmpty(user.StreetAddress) &&
+               !string.IsNullOrEmpty(user.City) &&
+               !string.IsNullOrEmpty(user.PostalCode) &&
+               !string.IsNullOrEmpty(user.MaritalStatus) &&
+               user.DateOfBirth.HasValue;
+    }
+
+    private async Task<bool> IsInterviewCompleteAsync(User user)
+    {
+        // Check if user has any completed interview sessions with visa recommendations
+        var completedInterview = await _context.InterviewSessions
+            .Where(s => s.UserId == user.Id && s.Status == "completed")
+            .Join(_context.VisaRecommendations,
+                session => session.CaseId,
+                recommendation => recommendation.CaseId,
+                (session, recommendation) => new { session, recommendation })
+            .AnyAsync().ConfigureAwait(false);
+
+        return completedInterview;
     }
 }

@@ -50,6 +50,10 @@ public record AuthResponse
 {
     public string Token { get; init; } = string.Empty;
     public UserId? UserId { get; init; }
+    public bool IsProfileComplete { get; init; }
+    public bool IsInterviewComplete { get; init; }
+    public bool IsStaff { get; init; }
+    public bool IsAdmin { get; init; }
 }
 
 public record MessageResponse

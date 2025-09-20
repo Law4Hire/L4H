@@ -18,7 +18,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/workflows")]
+[Route("api/v1/workflows")]
 [Authorize]
 public class WorkflowLookupController : ControllerBase
 {
@@ -142,6 +142,161 @@ public class WorkflowLookupController : ControllerBase
             TargetId = workflowId.ToString(),
             ActorUserId = actorId,
             DetailsJson = JsonSerializer.Serialize(new 
+            {
+                timestamp = DateTime.UtcNow,
+                userAgent = Request.Headers.UserAgent.FirstOrDefault()
+            })
+        };
+
+        _context.AuditLogs.Add(auditLog);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Create a new workflow version with steps and doctors
+    /// </summary>
+    [HttpPost]
+    [Authorize] // Require admin or staff authorization
+    public async Task<ActionResult<WorkflowCreateResponse>> CreateWorkflow(
+        [FromBody] CreateWorkflowRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        // Validate request
+        if (string.IsNullOrWhiteSpace(request.VisaType) || string.IsNullOrWhiteSpace(request.CountryCode))
+        {
+            return BadRequest(new ErrorResponse
+            {
+                Message = _localizer["Workflow.MissingParameters"]
+            });
+        }
+
+        // Find visa type
+        var visaTypeEntity = await _context.VisaTypes
+            .FirstOrDefaultAsync(v => v.Code == request.VisaType, cancellationToken).ConfigureAwait(false);
+
+        if (visaTypeEntity == null)
+        {
+            return NotFound(new ErrorResponse
+            {
+                Message = _localizer["Workflow.VisaTypeNotFound", request.VisaType]
+            });
+        }
+
+        // Get current user for approval tracking
+        var userId = GetCurrentUserId();
+        if (!userId.HasValue)
+        {
+            return Unauthorized(new ErrorResponse
+            {
+                Message = _localizer["Auth.Unauthorized"]
+            });
+        }
+
+        // Get next version number
+        var latestVersion = await _context.WorkflowVersions
+            .Where(w => w.VisaTypeId == visaTypeEntity.Id &&
+                       w.CountryCode == request.CountryCode.ToUpper(CultureInfo.InvariantCulture))
+            .OrderByDescending(w => w.Version)
+            .Select(w => w.Version)
+            .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+
+        var newVersion = latestVersion + 1;
+
+        // Create workflow version
+        var workflow = new WorkflowVersion
+        {
+            VisaTypeId = visaTypeEntity.Id,
+            CountryCode = request.CountryCode.ToUpper(CultureInfo.InvariantCulture),
+            Version = newVersion,
+            Status = "draft",
+            Source = request.Source ?? "Manual",
+            ScrapeHash = Guid.NewGuid().ToString("N"), // Generate unique hash for manual entries
+            ScrapedAt = DateTime.UtcNow,
+            Notes = request.Notes,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.WorkflowVersions.Add(workflow);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        // Add steps
+        if (request.Steps?.Any() == true)
+        {
+            var steps = request.Steps.Select(step => new WorkflowStep
+            {
+                WorkflowVersionId = workflow.Id,
+                Ordinal = step.StepNumber,
+                Key = step.Key ?? $"step_{step.StepNumber}",
+                Title = step.Title ?? $"Step {step.StepNumber}",
+                Description = step.Description ?? "",
+                DataJson = JsonSerializer.Serialize(new
+                {
+                    documentType = step.DocumentType,
+                    isUserProvided = step.IsUserProvided,
+                    documentName = step.DocumentName,
+                    governmentLink = step.GovernmentLink,
+                    countryCode = step.CountryCode,
+                    visaType = step.VisaType,
+                    additionalData = step.AdditionalData
+                })
+            }).ToList();
+
+            _context.WorkflowSteps.AddRange(steps);
+        }
+
+        // Add doctors
+        if (request.Doctors?.Any() == true)
+        {
+            var doctors = request.Doctors.Select(doc => new WorkflowDoctor
+            {
+                WorkflowVersionId = workflow.Id,
+                Name = doc.Name,
+                Address = doc.Address,
+                Phone = doc.Phone,
+                City = doc.City,
+                CountryCode = doc.CountryCode,
+                SourceUrl = doc.SourceUrl ?? ""
+            }).ToList();
+
+            _context.WorkflowDoctors.AddRange(doctors);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        // Create audit log
+        await CreateWorkflowAuditLogAsync(workflow.Id, userId.Value, "created", cancellationToken).ConfigureAwait(false);
+
+        var response = new WorkflowCreateResponse
+        {
+            Id = workflow.Id,
+            VisaTypeId = workflow.VisaTypeId,
+            CountryCode = workflow.CountryCode,
+            Version = workflow.Version,
+            Status = workflow.Status,
+            StepsCount = request.Steps?.Count ?? 0,
+            DoctorsCount = request.Doctors?.Count ?? 0,
+            CreatedAt = workflow.CreatedAt
+        };
+
+        _logger.LogInformation("Created workflow version {Version} for {VisaType}/{Country}",
+            workflow.Version, request.VisaType, request.CountryCode);
+
+        return CreatedAtAction(nameof(GetLatestApprovedWorkflow),
+            new { visaType = request.VisaType, country = request.CountryCode },
+            response);
+    }
+
+    private async Task CreateWorkflowAuditLogAsync(Guid workflowId, UserId actorId, string action, CancellationToken cancellationToken)
+    {
+        var auditLog = new AuditLog
+        {
+            Category = "workflow",
+            Action = action,
+            TargetType = "WorkflowVersion",
+            TargetId = workflowId.ToString(),
+            ActorUserId = actorId,
+            DetailsJson = JsonSerializer.Serialize(new
             {
                 timestamp = DateTime.UtcNow,
                 userAgent = Request.Headers.UserAgent.FirstOrDefault()

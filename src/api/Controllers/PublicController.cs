@@ -5,7 +5,7 @@ using L4H.Infrastructure.Data;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/public")]
+[Route("api/v1/public")]
 [Tags("Public Information")]
 public class PublicController : ControllerBase
 {
@@ -38,6 +38,27 @@ public class PublicController : ControllerBase
             .ConfigureAwait(false);
 
         return Ok(visaTypes);
+    }
+
+    /// <summary>
+    /// Get simple list of all visa type codes and names
+    /// </summary>
+    [HttpGet("visa-list")]
+    [ProducesResponseType<IEnumerable<VisaListItem>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetVisaList()
+    {
+        var visaList = await _context.VisaClasses
+            .Where(v => v.IsActive)
+            .Select(v => new VisaListItem
+            {
+                Code = v.Code,
+                Name = v.Name
+            })
+            .OrderBy(v => v.Code)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return Ok(visaList);
     }
 
     private static string GetVisaDescription(string code)
@@ -74,4 +95,10 @@ public class VisaTypeInfo
     public string Name { get; set; } = string.Empty;
     public string GeneralCategory { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+}
+
+public class VisaListItem
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 }
