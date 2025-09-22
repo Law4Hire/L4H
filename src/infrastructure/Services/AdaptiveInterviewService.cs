@@ -321,10 +321,11 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             return visa.Code == "B-2" || visa.Code.Contains("Tourist") || visa.Code.Contains("Visitor");
         }
 
-        // Business purpose - ONLY business visitor visas (without employment)
+        // Business purpose - ONLY business visitor visas (without employment), including treaty business visas
         if (purpose == "business")
         {
-            return visa.Code == "B-1" || (visa.Code.Contains("Business") && employerSponsor != "yes");
+            return visa.Code == "B-1" || visa.Code == "E-1" || visa.Code == "E-2" ||
+                   (visa.Code.Contains("Business") && employerSponsor != "yes");
         }
 
         // Study purpose - ONLY student visas are possible
@@ -703,13 +704,30 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             }
 
             // If treatyCountry is "no", then E-1/E-2 are not possible, so B-1 is appropriate
-            // If treatyCountry is "yes" but neither tradeActivity nor investment is "yes", then B-1 is appropriate
-            if (treatyCountry == "no" ||
-                (treatyCountry == "yes" && answers.GetValueOrDefault("tradeActivity", "") != "yes" && answers.GetValueOrDefault("investment", "") != "yes"))
+            if (treatyCountry == "no")
             {
-                if (possibleVisaTypes.Any(v => v.Code == "B-1"))
+                if (possibleVisaTypes.Any(v => v.Code == "B-1") && possibleVisaTypes.Count == 1)
                 {
                     return true;
+                }
+            }
+
+            // If treatyCountry is "yes", we need to check tradeActivity and investment before completing with B-1
+            if (treatyCountry == "yes")
+            {
+                var hasCheckedTradeActivity = answers.ContainsKey("tradeActivity");
+                var hasCheckedInvestment = answers.ContainsKey("investment");
+                var tradeActivity = answers.GetValueOrDefault("tradeActivity", "");
+                var investment = answers.GetValueOrDefault("investment", "");
+
+                // Only complete with B-1 if we've checked both tradeActivity and investment and neither qualify
+                if (hasCheckedTradeActivity && hasCheckedInvestment &&
+                    tradeActivity != "yes" && investment != "yes")
+                {
+                    if (possibleVisaTypes.Any(v => v.Code == "B-1"))
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -908,13 +926,6 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             {
                 if (!answers.ContainsKey(questionKey))
                 {
-                    // Check if we already have enough information to determine the visa type
-                    if (possibleVisaTypes.Count <= 1)
-                    {
-                        // Don't ask more questions if we can already determine the visa type
-                        break;
-                    }
-
                     var question = questions.FirstOrDefault(q => q.Key == questionKey);
                     if (question != null)
                     {
@@ -958,6 +969,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                     {
                         question.RemainingVisaTypes = possibleVisaTypes.Count;
                         return Task.FromResult(question);
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Business question not found: {questionKey}");
                     }
                 }
             }
