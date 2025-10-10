@@ -13,9 +13,10 @@ RUN npm run build
 FROM node:20-alpine AS law4hire-build
 WORKDIR /workspace
 
-# Copy shared-ui dist
+# Copy shared-ui dist and node_modules
 COPY --from=shared-ui-build /workspace/shared-ui/dist ./shared-ui/dist
 COPY --from=shared-ui-build /workspace/shared-ui/package.json ./shared-ui/
+COPY --from=shared-ui-build /workspace/shared-ui/node_modules ./shared-ui/node_modules
 
 # Build law4hire
 COPY l4h/package*.json ./l4h/
@@ -28,9 +29,10 @@ RUN npm run build
 FROM node:20-alpine AS cannlaw-build
 WORKDIR /workspace
 
-# Copy shared-ui dist
+# Copy shared-ui dist and node_modules
 COPY --from=shared-ui-build /workspace/shared-ui/dist ./shared-ui/dist
 COPY --from=shared-ui-build /workspace/shared-ui/package.json ./shared-ui/
+COPY --from=shared-ui-build /workspace/shared-ui/node_modules ./shared-ui/node_modules
 
 # Build cannlaw
 COPY cannlaw/package*.json ./cannlaw/
