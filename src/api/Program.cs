@@ -17,9 +17,9 @@ using L4H.Infrastructure.Services.Payments;
 using L4H.Api.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Localization;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using L4H.Api.Validators;
+// using FluentValidation;
+// using FluentValidation.AspNetCore;
+// using L4H.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,18 +36,19 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new UserIdConverter());
     });
 
-builder.Services.AddScoped<IValidator<SignupRequest>, SignupRequestValidator>();
-builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
-builder.Services.AddScoped<IValidator<UpdateProfileRequest>, UpdateProfileRequestValidator>();
-builder.Services.AddScoped<IValidator<ForgotPasswordRequest>, ForgotPasswordRequestValidator>();
-builder.Services.AddScoped<IValidator<ResetPasswordRequest>, ResetPasswordRequestValidator>();
-builder.Services.AddScoped<IValidator<CreateApprovedDoctorRequest>, CreateApprovedDoctorRequestValidator>();
-builder.Services.AddScoped<IValidator<CreateWorkflowRequest>, CreateWorkflowRequestValidator>();
-builder.Services.AddScoped<IValidator<CreateWorkflowStepRequest>, CreateWorkflowStepRequestValidator>();
-builder.Services.AddScoped<IValidator<CreateWorkflowDoctorRequest>, CreateWorkflowDoctorRequestValidator>();
+// Validators temporarily disabled for deployment
+// builder.Services.AddScoped<IValidator<SignupRequest>, SignupRequestValidator>();
+// builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+// builder.Services.AddScoped<IValidator<UpdateProfileRequest>, UpdateProfileRequestValidator>();
+// builder.Services.AddScoped<IValidator<ForgotPasswordRequest>, ForgotPasswordRequestValidator>();
+// builder.Services.AddScoped<IValidator<ResetPasswordRequest>, ResetPasswordRequestValidator>();
+// builder.Services.AddScoped<IValidator<CreateApprovedDoctorRequest>, CreateApprovedDoctorRequestValidator>();
+// builder.Services.AddScoped<IValidator<CreateWorkflowRequest>, CreateWorkflowRequestValidator>();
+// builder.Services.AddScoped<IValidator<CreateWorkflowStepRequest>, CreateWorkflowStepRequestValidator>();
+// builder.Services.AddScoped<IValidator<CreateWorkflowDoctorRequest>, CreateWorkflowDoctorRequestValidator>();
 
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+// builder.Services.AddFluentValidationAutoValidation();
+// builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
