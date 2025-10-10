@@ -31,6 +31,8 @@ bld/
 # User secrets
 *.env
 .env.local
+.env.production
+.env.development
 
 # Docker
 .dockerignore
