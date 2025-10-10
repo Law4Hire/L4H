@@ -4,6 +4,7 @@ using L4H.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace L4H.Infrastructure.Migrations
 {
     [DbContext(typeof(L4HDbContext))]
-    partial class L4HDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251007181732_AddCountryVisaTypes")]
+    partial class AddCountryVisaTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,46 +390,6 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("CaseId");
 
                     b.ToTable("CasePriceSnapshots");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CategoryClass", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ClassCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("ClassName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("GeneralCategory")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassCode")
-                        .IsUnique();
-
-                    b.HasIndex("IsActive");
-
-                    b.ToTable("CategoryClasses");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Country", b =>

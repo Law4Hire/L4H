@@ -4,6 +4,7 @@ using L4H.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace L4H.Infrastructure.Migrations
 {
     [DbContext(typeof(L4HDbContext))]
-    partial class L4HDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250930035242_AddGenderToUser")]
+    partial class AddGenderToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -389,46 +392,6 @@ namespace L4H.Infrastructure.Migrations
                     b.ToTable("CasePriceSnapshots");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CategoryClass", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ClassCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("ClassName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("GeneralCategory")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassCode")
-                        .IsUnique();
-
-                    b.HasIndex("IsActive");
-
-                    b.ToTable("CategoryClasses");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.Country", b =>
                 {
                     b.Property<int>("Id")
@@ -502,39 +465,6 @@ namespace L4H.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("CountryServiceMappings");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CountryVisaType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("VisaTypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
-
-                    b.HasIndex("VisaTypeId");
-
-                    b.HasIndex("CountryId", "VisaTypeId")
-                        .IsUnique();
-
-                    b.ToTable("CountryVisaTypes");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.DailyDigestQueue", b =>
@@ -2240,25 +2170,6 @@ namespace L4H.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Case");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CountryVisaType", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Country", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("L4H.Infrastructure.Entities.VisaType", "VisaType")
-                        .WithMany()
-                        .HasForeignKey("VisaTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Country");
-
-                    b.Navigation("VisaType");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.DailyDigestQueue", b =>
