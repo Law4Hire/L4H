@@ -20,8 +20,9 @@ export function I18nProvider({ children }: I18nProviderProps) {
   const [cultures, setCultures] = useState<Culture[]>([])
   const [currentCulture, setCurrentCultureState] = useState(i18n.language)
   const [isLoading, setIsLoading] = useState(true)
+  const [i18nInitialized, setI18nInitialized] = useState(false)
   // Use the explicitly imported i18n instance instead of getting it from useTranslation
-  
+
   // I18nProvider initialization - shared i18n instance is now properly connected
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export function I18nProvider({ children }: I18nProviderProps) {
       try {
         // Wait for i18n to be ready
         await i18nReady
+        setI18nInitialized(true)
         
         // Use local culture definitions instead of API calls
         const supportedCultures = Object.entries(CULTURE_NAMES).map(([code, displayName]) => ({
@@ -67,9 +69,18 @@ export function I18nProvider({ children }: I18nProviderProps) {
 
   const setCurrentCulture = async (culture: string) => {
     try {
-      // Change language locally first
+      // Change language locally first (this will also save to cookie via setCulture)
       await i18n.changeLanguage(culture)
-      
+
+      // Save to cookie explicitly for consistency
+      const setCookie = (name: string, value: string, days = 365): void => {
+        if (typeof document === 'undefined') return
+        const expires = new Date()
+        expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000))
+        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`
+      }
+      setCookie('l4h-language', culture)
+
       // Also persist to server for logged-in users
       try {
         await i18nApi.setCulture(culture)
@@ -87,6 +98,11 @@ export function I18nProvider({ children }: I18nProviderProps) {
     currentCulture,
     setCurrentCulture,
     isLoading
+  }
+
+  // Don't render children until i18n is initialized
+  if (!i18nInitialized) {
+    return <div>Loading translations...</div>
   }
 
   return (

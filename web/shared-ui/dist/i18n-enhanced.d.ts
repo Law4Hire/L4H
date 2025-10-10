@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 export declare const CULTURE_NAMES: Record<string, string>;
-export declare const i18nReady: Promise<import("i18next").TFunction<"translation", undefined>>;
+export declare const i18nReady: Promise<void>;
 export default i18n;
 export interface Culture {
     code: string;

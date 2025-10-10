@@ -24,10 +24,6 @@ class ApiError extends Error {
 }
 // JWT token stored in memory
 let jwtToken = null;
-// Initialize JWT token from localStorage on module load
-if (typeof window !== 'undefined') {
-    jwtToken = localStorage.getItem('jwt_token');
-}
 // CSRF token cache
 let csrfToken = null;
 let csrfTokenExpiry = 0;
@@ -73,10 +69,9 @@ async function fetchJson(path, init = {}) {
         'Content-Type': 'application/json',
         ...init.headers
     };
-    // Add JWT token if available - ensure we load from localStorage if needed
-    const token = getJwtToken();
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+    // Add JWT token if available
+    if (jwtToken) {
+        headers['Authorization'] = `Bearer ${jwtToken}`;
     }
     // Add CSRF token for cookie endpoints
     if (requiresCsrfToken(path)) {
@@ -103,46 +98,6 @@ async function fetchJson(path, init = {}) {
         }
         const data = await response.json();
         if (!response.ok) {
-            // Try to refresh token on 401 Unauthorized
-            if (response.status === 401 && path !== '/v1/auth/remember' && path !== '/v1/auth/login') {
-                try {
-                    const refreshResponse = await fetch('/api/v1/auth/remember', {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    if (refreshResponse.ok) {
-                        const refreshData = await refreshResponse.json();
-                        if (refreshData.token) {
-                            // Update the token and retry the original request
-                            jwtToken = refreshData.token;
-                            localStorage.setItem('jwt_token', refreshData.token);
-                            // Retry the original request with new token
-                            const retryHeaders = {
-                                ...headers,
-                                'Authorization': `Bearer ${jwtToken}`
-                            };
-                            const retryResponse = await fetch(url, {
-                                ...init,
-                                headers: retryHeaders,
-                                credentials
-                            });
-                            if (retryResponse.ok) {
-                                const retryContentType = retryResponse.headers.get('content-type');
-                                if (!retryContentType?.includes('application/json')) {
-                                    return retryResponse;
-                                }
-                                const retryData = await retryResponse.json();
-                                return retryData.data || retryData;
-                            }
-                        }
-                    }
-                }
-                catch (refreshError) {
-                    // If refresh fails, fall through to original error handling
-                    console.warn('Token refresh failed:', refreshError);
-                }
-            }
             const error = data.error || {
                 title: `HTTP ${response.status}`,
                 detail: response.statusText,
@@ -254,11 +209,6 @@ export const cases = {
             method: 'POST',
             body: JSON.stringify({ packageId })
         });
-    },
-    async resetVisaType(caseId) {
-        return fetchJson(`/v1/cases/${caseId}/reset-visa-type`, {
-            method: 'POST'
-        });
     }
 };
 // Pricing API methods
@@ -353,22 +303,10 @@ export const interview = {
             body: JSON.stringify({ caseId })
         });
     },
-    async nextQuestion(sessionId) {
-        return fetchJson('/v1/interview/next-question', {
-            method: 'POST',
-            body: JSON.stringify({ sessionId })
-        });
-    },
     async answer(data) {
         return fetchJson('/v1/interview/answer', {
             method: 'POST',
             body: JSON.stringify(data)
-        });
-    },
-    async selectVisaType(sessionId, visaTypeCode) {
-        return fetchJson('/v1/interview/select-visa-type', {
-            method: 'POST',
-            body: JSON.stringify({ sessionId, visaTypeCode })
         });
     },
     async complete(sessionId) {

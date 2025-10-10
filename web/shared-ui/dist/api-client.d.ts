@@ -36,6 +36,8 @@ export declare const auth: {
         postalCode?: string;
         country?: string;
         nationality?: string;
+        dateOfBirth?: string;
+        maritalStatus?: string;
     }): Promise<any>;
 };
 export declare const i18n: {
@@ -47,7 +49,9 @@ export declare const i18n: {
 };
 export declare const cases: {
     mine(): Promise<any>;
+    get(caseId: string): Promise<any>;
     setPackage(caseId: string, packageId: string): Promise<any>;
+    resetVisaType(caseId: string): Promise<any>;
 };
 export declare const pricing: {
     get(visaType?: string, country?: string): Promise<any>;
@@ -98,12 +102,14 @@ export declare const invoices: {
 };
 export declare const interview: {
     start(caseId: string): Promise<any>;
+    nextQuestion(sessionId: string): Promise<any>;
     answer(data: {
         sessionId: string;
         stepNumber: number;
         questionKey: string;
         answerValue: string;
     }): Promise<any>;
+    selectVisaType(sessionId: string, visaTypeCode: string): Promise<any>;
     complete(sessionId: string): Promise<any>;
     rerun(caseId: string): Promise<any>;
     lock(caseId: string): Promise<any>;
@@ -127,6 +133,9 @@ export declare const admin: {
         isAdmin: boolean;
         isStaff: boolean;
     }): Promise<any>;
+    deleteUser(userId: string): Promise<any>;
+    changeUserPassword(userId: string, newPassword: string): Promise<any>;
+    changeUserStatus(userId: string, isActive: boolean): Promise<any>;
 };
 export { fetchJson, ApiError };
 export default fetchJson;

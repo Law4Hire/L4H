@@ -1,6 +1,6 @@
 // AuthClient - thin fetch wrapper with JWT handling
 export class AuthClient {
-    constructor(baseUrl = '/api') {
+    constructor(baseUrl = 'http://localhost:8765/api') {
         Object.defineProperty(this, "jwt", {
             enumerable: true,
             configurable: true,
