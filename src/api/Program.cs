@@ -17,6 +17,9 @@ using L4H.Infrastructure.Services.Payments;
 using L4H.Api.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Localization;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using L4H.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +35,20 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new CaseIdConverter());
         options.JsonSerializerOptions.Converters.Add(new UserIdConverter());
     });
+
+builder.Services.AddScoped<IValidator<SignupRequest>, SignupRequestValidator>();
+builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateProfileRequest>, UpdateProfileRequestValidator>();
+builder.Services.AddScoped<IValidator<ForgotPasswordRequest>, ForgotPasswordRequestValidator>();
+builder.Services.AddScoped<IValidator<ResetPasswordRequest>, ResetPasswordRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateApprovedDoctorRequest>, CreateApprovedDoctorRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateWorkflowRequest>, CreateWorkflowRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateWorkflowStepRequest>, CreateWorkflowStepRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateWorkflowDoctorRequest>, CreateWorkflowDoctorRequestValidator>();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -68,8 +85,7 @@ builder.Services.AddDbContext<L4HDbContext>(opt =>
     opt.UseSqlServer(
         builder.Configuration.GetConnectionString("SqlServer")
         ?? builder.Configuration["SqlServer:ConnectionString"]
-        ?? builder.Configuration["ConnectionStrings:SqlServer"]
-    )
+        ?? builder.Configuration["ConnectionStrings:SqlServer"])
     .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning))
 );
 
@@ -112,7 +128,10 @@ else
         .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, L4H.Api.TestAuthenticationHandler>("Test", options => { });
 }
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsAdmin", policy => policy.RequireClaim("is_admin", "true", "True"));
+});
 
             // Add HttpContextAccessor for CSRF service
             builder.Services.AddHttpContextAccessor();
@@ -161,8 +180,10 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IRememberMeTokenService, RememberMeTokenService>();
 builder.Services.AddScoped<IPasswordResetTokenService, PasswordResetTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IAdminSeedService, AdminSeedService>();
 builder.Services.AddScoped<IPricingSeedService, PricingSeedService>();
+builder.Services.AddScoped<CountriesSeeder>();
 builder.Services.AddScoped<IInterviewRecommender, RuleBasedRecommender>();
 builder.Services.AddScoped<IAdaptiveInterviewService, AdaptiveInterviewService>();
 
@@ -184,6 +205,7 @@ builder.Services.Configure<L4H.Api.Configuration.PaymentsOptions>(builder.Config
 
 // Configure security options
 builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("Auth"));
+builder.Services.Configure<L4H.Infrastructure.Configuration.SupportOptions>(builder.Configuration.GetSection("Support"));
 builder.Services.Configure<L4H.Api.Configuration.GraphOptions>(builder.Configuration.GetSection("Graph"));
 builder.Services.Configure<L4H.Api.Configuration.MeetingsOptions>(builder.Configuration.GetSection("Meetings"));
 
@@ -204,6 +226,8 @@ builder.Services.AddScoped<ISeedTask, CountriesSeeder>();
 builder.Services.AddScoped<ISeedTask, USSubdivisionsSeeder>();
 builder.Services.AddScoped<ISeedTask, VisaClassesSeeder>();
 builder.Services.AddScoped<ISeedTask, VisaTypesSeeder>();
+builder.Services.AddScoped<ISeedTask, CategoryClassSeeder>();
+builder.Services.AddScoped<ISeedTask, CountryVisaTypesSeeder>();
 builder.Services.AddScoped<SeedRunner>();
 
 // Workflow and scraper services (for API endpoints)
@@ -225,8 +249,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Ensure database is created and migrated for Development and Testing
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
+// Ensure database is created and migrated for Development, Testing, and Production
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") || app.Environment.IsProduction())
 {
     using (var scope = app.Services.CreateScope())
     {
@@ -235,8 +259,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
     }
 }
 
-// Seed admin and pricing data only in Development (skip Testing)
-if (app.Environment.IsDevelopment())
+// Seed admin and pricing data for Development and Production (skip Testing)
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     using (var scope = app.Services.CreateScope())
     {
@@ -246,13 +270,12 @@ if (app.Environment.IsDevelopment())
         var pricingSeedService = scope.ServiceProvider.GetRequiredService<IPricingSeedService>();
         await pricingSeedService.SeedPricingDataAsync().ConfigureAwait(false);
 
-        // Run seed data framework if enabled
-        var runSeedOnStart = app.Configuration.GetValue<bool>("RUN_SEED_ON_START", true);
-        if (runSeedOnStart)
-        {
-            var seedRunner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
-            await seedRunner.RunAllAsync().ConfigureAwait(false);
-        }
+        var countriesSeeder = scope.ServiceProvider.GetRequiredService<CountriesSeeder>();
+        await countriesSeeder.ExecuteAsync().ConfigureAwait(false);
+
+        // Run essential seeders that must always run
+        var seedRunner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
+        await seedRunner.RunAllAsync().ConfigureAwait(false);
     }
 }
 
