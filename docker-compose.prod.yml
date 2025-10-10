@@ -53,8 +53,9 @@ services:
 
   law4hire:
     build:
-      context: ./web/l4h
-      dockerfile: Dockerfile
+      context: ./web
+      dockerfile: Dockerfile.prod
+      target: law4hire
     container_name: l4h-web-prod
     ports:
       - "5173:80"
@@ -64,15 +65,16 @@ services:
     networks:
       - l4h-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:80/healthz || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
 
   cannlaw:
     build:
-      context: ./web/cannlaw
-      dockerfile: Dockerfile
+      context: ./web
+      dockerfile: Dockerfile.prod
+      target: cannlaw
     container_name: cannlaw-web-prod
     ports:
       - "5174:80"
@@ -82,7 +84,7 @@ services:
     networks:
       - l4h-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:80/healthz || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

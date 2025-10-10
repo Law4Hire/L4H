@@ -1,0 +1,54 @@
+# Multi-stage build for all web projects
+FROM node:20-alpine AS shared-ui-build
+WORKDIR /workspace
+
+# Build shared-ui first
+COPY shared-ui/package*.json ./shared-ui/
+WORKDIR /workspace/shared-ui
+RUN npm ci
+COPY shared-ui/ ./
+RUN npm run build
+
+# Build law4hire
+FROM node:20-alpine AS law4hire-build
+WORKDIR /workspace
+
+# Copy shared-ui dist
+COPY --from=shared-ui-build /workspace/shared-ui/dist ./shared-ui/dist
+COPY --from=shared-ui-build /workspace/shared-ui/package.json ./shared-ui/
+
+# Build law4hire
+COPY l4h/package*.json ./l4h/
+WORKDIR /workspace/l4h
+RUN npm ci
+COPY l4h/ ./
+RUN npm run build
+
+# Build cannlaw
+FROM node:20-alpine AS cannlaw-build
+WORKDIR /workspace
+
+# Copy shared-ui dist
+COPY --from=shared-ui-build /workspace/shared-ui/dist ./shared-ui/dist
+COPY --from=shared-ui-build /workspace/shared-ui/package.json ./shared-ui/
+
+# Build cannlaw
+COPY cannlaw/package*.json ./cannlaw/
+WORKDIR /workspace/cannlaw
+RUN npm ci
+COPY cannlaw/ ./
+RUN npm run build
+
+# Law4Hire nginx stage
+FROM nginx:stable-alpine AS law4hire
+COPY --from=law4hire-build /workspace/l4h/dist /usr/share/nginx/html
+COPY l4h/nginx.prod.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+# Cannlaw nginx stage
+FROM nginx:stable-alpine AS cannlaw
+COPY --from=cannlaw-build /workspace/cannlaw/dist /usr/share/nginx/html
+COPY cannlaw/nginx.prod.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
