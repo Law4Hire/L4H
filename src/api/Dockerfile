@@ -29,10 +29,6 @@ WORKDIR /app
 # Copy published app
 COPY --from=build /app/publish .
 
-# Copy entrypoint script
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
 # Create non-root user
 RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
 USER appuser
@@ -48,4 +44,5 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/healthz || exit 1
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Start the application
+CMD ["dotnet", "L4H.Api.dll"]
