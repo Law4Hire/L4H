@@ -54,7 +54,7 @@ services:
   law4hire:
     build:
       context: ./web/l4h
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     container_name: l4h-web-prod
     ports:
       - "5173:80"
@@ -72,7 +72,7 @@ services:
   cannlaw:
     build:
       context: ./web/cannlaw
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     container_name: cannlaw-web-prod
     ports:
       - "5174:80"
