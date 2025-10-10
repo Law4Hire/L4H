@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button, Input, useToast, useTranslation, admin } from '@l4h/shared-ui'
+import { useNavigate } from 'react-router-dom'
 
 interface User {
   id: string
@@ -8,13 +9,15 @@ interface User {
   lastName: string
   isAdmin: boolean
   isStaff: boolean
+  isActive: boolean
   emailVerified: boolean
   createdAt: string
 }
 
 const UserManagementPage: React.FC = () => {
   const { t } = useTranslation()
-  const { success, error } = useToast()
+  const { error } = useToast()
+  const navigate = useNavigate()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -37,23 +40,6 @@ const UserManagementPage: React.FC = () => {
     }
   }
 
-  const updateUserRole = async (userId: string, isAdmin: boolean, isStaff: boolean) => {
-    try {
-      await admin.updateUserRoles(userId, { isAdmin, isStaff })
-
-      // Update local state
-      setUsers(users.map(user =>
-        user.id === userId
-          ? { ...user, isAdmin, isStaff }
-          : user
-      ))
-
-      success('User roles updated successfully')
-    } catch (err) {
-      error('Failed to update user roles')
-      console.error('Error updating user roles:', err)
-    }
-  }
 
   const filteredUsers = users.filter(user =>
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -103,16 +89,10 @@ const UserManagementPage: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User
+                  User Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Roles
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -126,63 +106,27 @@ const UserManagementPage: React.FC = () => {
                     <div className="text-sm font-medium text-gray-900">
                       {user.firstName} {user.lastName}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      ID: {user.id.substring(0, 8)}...
-                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{user.email}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      user.emailVerified 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {user.emailVerified ? 'Verified' : 'Unverified'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="space-y-2">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={user.isAdmin}
-                          onChange={(e) => updateUserRole(user.id, e.target.checked, user.isStaff)}
-                          className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                        />
-                        <span className="ml-2 text-sm text-gray-700">Admin</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={user.isStaff}
-                          onChange={(e) => updateUserRole(user.id, user.isAdmin, e.target.checked)}
-                          className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                        />
-                        <span className="ml-2 text-sm text-gray-700">Legal Professional</span>
-                      </label>
-                    </div>
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          // TODO: Implement view user details
-                          console.log('View user:', user.id)
-                        }}
-                      >
-                        View
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        navigate(`/admin/users/${user.id}`)
+                      }}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      View
+                    </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          
+
           {filteredUsers.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               No users found matching your search criteria.
@@ -190,6 +134,7 @@ const UserManagementPage: React.FC = () => {
           )}
         </div>
       </Card>
+
     </div>
   )
 }

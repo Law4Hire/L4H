@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Button, Input, LanguageSwitcher, auth, setJwtToken, useToast, useTranslation } from '@l4h/shared-ui'
+import { Button, Input, LanguageSwitcher, auth, setJwtToken, useToast, useTranslation, cases, interview } from '@l4h/shared-ui'
 
 interface LoginFormData {
   email: string
@@ -30,6 +30,40 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
     formState: { errors },
   } = useForm<LoginFormData>()
 
+  const startInterviewSession = async () => {
+    try {
+      console.log('🔍 Starting interview session...')
+
+      // Get user's case
+      const userCases = await cases.mine()
+      console.log('🔍 User cases:', userCases)
+
+      if (!userCases || userCases.length === 0) {
+        showError('No case found. Please contact support.')
+        navigate('/dashboard')
+        return
+      }
+
+      const caseId = userCases[0].id || userCases[0].caseId
+      console.log('🔍 Using caseId:', caseId)
+
+      // Start interview session
+      const session = await interview.start(caseId)
+      console.log('🔍 Started interview session:', session)
+
+      if (session && session.sessionId) {
+        navigate(`/interview?sessionId=${session.sessionId}`)
+      } else {
+        showError('Failed to start interview session')
+        navigate('/dashboard')
+      }
+    } catch (error) {
+      console.error('🔍 Error starting interview session:', error)
+      showError('Failed to start interview session')
+      navigate('/dashboard')
+    }
+  }
+
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true)
     setError('')
@@ -47,6 +81,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         window.dispatchEvent(new Event('jwt-token-changed'))
         success(t('login', { ns: 'auth' }) + ' ' + t('success', { ns: 'common' }))
         if (onSuccess) {
+          console.log('🔍 Using onSuccess callback instead of redirect logic')
           onSuccess()
         } else {
           // Determine redirect path based on user type and completion status
@@ -58,7 +93,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
             navigate('/profile-completion')
           } else if (!result.isInterviewComplete) {
             // Regular users with complete profile but incomplete interview go to interview
-            navigate('/interview')
+            await startInterviewSession()
           } else {
             // Regular users with complete profile and interview go to dashboard
             navigate('/dashboard')

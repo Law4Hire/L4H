@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Container, Card, Button, EmptyState } from '@l4h/shared-ui'
-import { auth, useToast } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
+import { auth, useToast, useTranslation } from '@l4h/shared-ui'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 
-export default function VerifyPage() {
+function VerifyPageContent() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { t } = useTranslation()
   const { success, error } = useToast()
+  const { t } = useTranslation(['auth', 'common', 'nav'])
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -18,7 +17,7 @@ export default function VerifyPage() {
   useEffect(() => {
     if (!token) {
       setStatus('error')
-      setMessage(t('auth.verifyEmail') + ' - ' + t('common.error'))
+      setMessage(t('error', { ns: 'common', defaultValue: 'Error' }))
       return
     }
 
@@ -26,22 +25,22 @@ export default function VerifyPage() {
       try {
         await auth.verify(token)
         setStatus('success')
-        setMessage(t('auth.emailVerified'))
-        success(t('auth.emailVerified'))
-        
+        setMessage(t('emailVerified', { ns: 'auth', defaultValue: 'Email verified' }))
+        success(t('emailVerified', { ns: 'auth', defaultValue: 'Email verified' }))
+
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
           navigate('/dashboard')
         }, 2000)
       } catch (err) {
         setStatus('error')
-        setMessage(t('common.error'))
-        error(t('common.error'), err instanceof Error ? err.message : '')
+        setMessage(t('error', { ns: 'common', defaultValue: 'Error' }))
+        error(t('error', { ns: 'common', defaultValue: 'Error' }), err instanceof Error ? err.message : '')
       }
     }
 
     verifyEmail()
-  }, [token, t, success, error, navigate])
+  }, [token, success, error, navigate, t])
 
   const handleGoToDashboard = () => {
     navigate('/dashboard')
@@ -57,8 +56,8 @@ export default function VerifyPage() {
         <Card className="max-w-md mx-auto">
           <EmptyState
             icon={Loader2}
-            title={t('common.loading')}
-            description={t('auth.verifyEmail')}
+            title={t('loading', { ns: 'common', defaultValue: 'Loading...' })}
+            description={t('verifyEmail', { ns: 'auth', defaultValue: 'Verify email' })}
           />
         </Card>
       </Container>
@@ -72,20 +71,20 @@ export default function VerifyPage() {
           icon={status === 'success' ? CheckCircle : AlertCircle}
           title={message}
           description={
-            status === 'success' 
-              ? t('auth.emailVerified') 
-              : t('common.error')
+            status === 'success'
+              ? t('emailVerified', { ns: 'auth', defaultValue: 'Email verified' })
+              : t('error', { ns: 'common', defaultValue: 'Error' })
           }
           action={
             <div className="flex flex-col space-y-2">
               {status === 'success' && (
                 <Button onClick={handleGoToDashboard}>
-                  {t('nav.dashboard')}
+                  {t('dashboard', { ns: 'common', defaultValue: 'Dashboard' })}
                 </Button>
               )}
               {status === 'error' && (
                 <Button onClick={handleGoToLogin}>
-                  {t('nav.login')}
+                  {t('login', { ns: 'auth', defaultValue: 'Login' })}
                 </Button>
               )}
             </div>
@@ -96,3 +95,20 @@ export default function VerifyPage() {
   )
 }
 
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <Container>
+        <Card className="max-w-md mx-auto">
+          <EmptyState
+            icon={Loader2}
+            title="Loading..."
+            description="Please wait..."
+          />
+        </Card>
+      </Container>
+    }>
+      <VerifyPageContent />
+    </Suspense>
+  )
+}

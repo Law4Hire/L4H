@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Button, Input, useToast, useTranslation, auth } from '@l4h/shared-ui'
+import { Button, Input, useToast, useTranslation, auth, cases, interview } from '@l4h/shared-ui'
 import { SearchableSelect, SearchableSelectOption } from '@l4h/shared-ui'
 import { useQuery } from '@tanstack/react-query'
 
@@ -14,6 +14,7 @@ interface ProfileCompletionFormData {
   nationality: string
   dateOfBirth: string
   maritalStatus: string
+  gender: string
   guardianEmails: string[]
 }
 
@@ -44,6 +45,40 @@ const ProfileCompletionPage: React.FC = () => {
   const [selectedNationality, setSelectedNationality] = useState<string>('')
   const [isUnder18, setIsUnder18] = useState(false)
   const [guardianEmails, setGuardianEmails] = useState<string[]>([''])
+
+  const startInterviewSession = async () => {
+    try {
+      console.log('🔍 Starting interview session...')
+
+      // Get user's case
+      const userCases = await cases.mine()
+      console.log('🔍 User cases:', userCases)
+
+      if (!userCases || userCases.length === 0) {
+        showError('No case found. Please contact support.')
+        navigate('/dashboard')
+        return
+      }
+
+      const caseId = userCases[0].id || userCases[0].caseId
+      console.log('🔍 Using caseId:', caseId)
+
+      // Start interview session
+      const session = await interview.start(caseId)
+      console.log('🔍 Started interview session:', session)
+
+      if (session && session.sessionId) {
+        navigate(`/interview?sessionId=${session.sessionId}`)
+      } else {
+        showError('Failed to start interview session')
+        navigate('/dashboard')
+      }
+    } catch (error) {
+      console.error('🔍 Error starting interview session:', error)
+      showError('Failed to start interview session')
+      navigate('/dashboard')
+    }
+  }
 
   const {
     register,
@@ -110,6 +145,27 @@ const ProfileCompletionPage: React.FC = () => {
 
   const isUSA = selectedCountry === 'US'
 
+  // Determine date format based on selected country
+  const getDateFormat = (countryCode: string) => {
+    // Countries that use DD/MM/YYYY format
+    const ddmmCountries = ['FR', 'GB', 'DE', 'IT', 'ES', 'AU', 'NZ', 'IN', 'ZA', 'IE', 'NL', 'BE', 'PT', 'GR', 'AT', 'CH', 'DK', 'SE', 'NO', 'FI']
+
+    // Countries that use YYYY/MM/DD format
+    const yyyymmCountries = ['JP', 'KR', 'CN', 'TW', 'HK', 'MO', 'LT', 'HU']
+
+    if (ddmmCountries.includes(countryCode)) {
+      return { format: 'DD/MM/YYYY', placeholder: 'DD/MM/YYYY' }
+    } else if (yyyymmCountries.includes(countryCode)) {
+      return { format: 'YYYY/MM/DD', placeholder: 'YYYY/MM/DD' }
+    } else {
+      // Default to US format MM/DD/YYYY
+      return { format: 'MM/DD/YYYY', placeholder: 'MM/DD/YYYY' }
+    }
+  }
+
+  const dateFormat = getDateFormat(selectedCountry)
+  const isEuropeanDateFormat = dateFormat.format === 'DD/MM/YYYY'
+
   const maritalStatusOptions = [
     { value: 'Single', label: t('single', { defaultValue: 'Single' }) },
     { value: 'Married', label: t('married', { defaultValue: 'Married' }) },
@@ -140,6 +196,22 @@ const ProfileCompletionPage: React.FC = () => {
 
     try {
       // Prepare profile data
+      let dateOfBirthISO: string | undefined = undefined
+      if (data.dateOfBirth) {
+        if (isEuropeanDateFormat) {
+          // Parse DD/MM/YYYY format
+          const match = data.dateOfBirth.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+          if (match) {
+            const [, day, month, year] = match
+            const birthDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+            dateOfBirthISO = birthDate.toISOString()
+          }
+        } else {
+          // Use standard date parsing for non-European formats
+          dateOfBirthISO = new Date(data.dateOfBirth).toISOString()
+        }
+      }
+
       const profileData = {
         streetAddress: data.streetAddress,
         city: data.city,
@@ -147,8 +219,9 @@ const ProfileCompletionPage: React.FC = () => {
         postalCode: data.postalCode,
         country: selectedCountry,
         nationality: selectedNationality,
-        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString() : undefined,
-        maritalStatus: data.maritalStatus
+        dateOfBirth: dateOfBirthISO,
+        maritalStatus: data.maritalStatus,
+        gender: data.gender
       }
 
       // Update profile
@@ -175,7 +248,7 @@ const ProfileCompletionPage: React.FC = () => {
       }
 
       success(t('profileCompleted', { defaultValue: 'Profile completed successfully!' }))
-      navigate('/dashboard')
+      await startInterviewSession()
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('profileCompletionFailed', { defaultValue: 'Failed to complete profile. Please try again.' })
       setError(errorMessage)
@@ -185,8 +258,8 @@ const ProfileCompletionPage: React.FC = () => {
     }
   }
 
-  const handleSkip = () => {
-    navigate('/dashboard')
+  const handleSkip = async () => {
+    await startInterviewSession()
   }
 
   return (
@@ -294,23 +367,66 @@ const ProfileCompletionPage: React.FC = () => {
               noOptionsMessage={t('noCountriesFound', { defaultValue: 'No countries found' })}
             />
 
-            {/* Date of Birth */}
-            <Input
-              label={t('dateOfBirth', { defaultValue: 'Date of Birth' })}
-              type="date"
-              error={errors.dateOfBirth?.message}
-              {...register('dateOfBirth', {
-                required: t('dateOfBirthRequired', { defaultValue: 'Date of birth is required' }),
-                validate: (value) => {
-                  const birthDate = new Date(value)
-                  const today = new Date()
-                  const age = today.getFullYear() - birthDate.getFullYear()
-                  if (age > 150) return t('dateOfBirthTooOld', { defaultValue: 'Please enter a valid date of birth' })
-                  if (birthDate > today) return t('dateOfBirthFuture', { defaultValue: 'Date of birth cannot be in the future' })
-                  return true
-                }
-              })}
-            />
+            {/* Date of Birth with localized format */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('dateOfBirth', { defaultValue: 'Date of Birth' })}
+                <span className="text-red-500 ml-1">*</span>
+                <span className="text-xs text-gray-500 ml-2">({dateFormat.placeholder})</span>
+              </label>
+              {isEuropeanDateFormat ? (
+                <Input
+                  type="text"
+                  placeholder={dateFormat.placeholder}
+                  autoComplete="bday"
+                  error={errors.dateOfBirth?.message}
+                  {...register('dateOfBirth', {
+                    required: t('dateOfBirthRequired', { defaultValue: 'Date of birth is required' }),
+                    pattern: {
+                      value: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
+                      message: t('dateOfBirthInvalid', { defaultValue: `Please enter date in ${dateFormat.placeholder} format` })
+                    },
+                    validate: (value) => {
+                      // Parse DD/MM/YYYY format
+                      const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+                      if (!match) return t('dateOfBirthInvalid', { defaultValue: `Please enter date in ${dateFormat.placeholder} format` })
+
+                      const [, day, month, year] = match
+                      const birthDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+                      const today = new Date()
+
+                      // Validate the date is real
+                      if (birthDate.getDate() !== parseInt(day) ||
+                          birthDate.getMonth() !== parseInt(month) - 1 ||
+                          birthDate.getFullYear() !== parseInt(year)) {
+                        return t('dateOfBirthInvalid', { defaultValue: 'Please enter a valid date' })
+                      }
+
+                      const age = today.getFullYear() - birthDate.getFullYear()
+                      if (age > 150) return t('dateOfBirthTooOld', { defaultValue: 'Please enter a valid date of birth' })
+                      if (birthDate > today) return t('dateOfBirthFuture', { defaultValue: 'Date of birth cannot be in the future' })
+                      return true
+                    }
+                  })}
+                />
+              ) : (
+                <Input
+                  type="date"
+                  error={errors.dateOfBirth?.message}
+                  {...register('dateOfBirth', {
+                    required: t('dateOfBirthRequired', { defaultValue: 'Date of birth is required' }),
+                    validate: (value) => {
+                      const birthDate = new Date(value)
+                      const today = new Date()
+                      const age = today.getFullYear() - birthDate.getFullYear()
+                      if (age > 150) return t('dateOfBirthTooOld', { defaultValue: 'Please enter a valid date of birth' })
+                      if (birthDate > today) return t('dateOfBirthFuture', { defaultValue: 'Date of birth cannot be in the future' })
+                      return true
+                    }
+                  })}
+                />
+              )}
+            </div>
 
             {/* Marital Status */}
             <div>
@@ -334,6 +450,31 @@ const ProfileCompletionPage: React.FC = () => {
               {errors.maritalStatus && (
                 <p className="mt-2 text-sm text-red-600 dark:text-red-400" role="alert">
                   {errors.maritalStatus.message}
+                </p>
+              )}
+            </div>
+
+            {/* Gender */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('gender', { defaultValue: 'Gender' })}
+                <span className="text-red-500 ml-1">*</span>
+              </label>
+              <select
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-400 sm:text-sm sm:leading-6 bg-white dark:bg-gray-800"
+                {...register('gender', {
+                  required: t('genderRequired', { defaultValue: 'Gender is required' })
+                })}
+              >
+                <option value="">{t('selectGender', { defaultValue: 'Select gender...' })}</option>
+                <option value="Male">{t('male', { defaultValue: 'Male' })}</option>
+                <option value="Female">{t('female', { defaultValue: 'Female' })}</option>
+                <option value="Other">{t('other', { defaultValue: 'Other' })}</option>
+                <option value="PreferNotToSay">{t('preferNotToSay', { defaultValue: 'Prefer not to say' })}</option>
+              </select>
+              {errors.gender && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-400" role="alert">
+                  {errors.gender.message}
                 </p>
               )}
             </div>

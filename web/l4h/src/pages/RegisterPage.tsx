@@ -80,7 +80,12 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
           if (onSuccess) {
             onSuccess()
           } else {
-            navigate('/dashboard')
+            // Check if profile is complete, redirect accordingly
+            if (result.isProfileComplete === false) {
+              navigate('/profile-completion')
+            } else {
+              navigate('/dashboard')
+            }
           }
         } else {
           setError(t('loginFailed'))
@@ -103,7 +108,13 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
           if (onSuccess) {
             onSuccess()
           } else {
-            navigate('/profile-completion')
+            // New signups should always go to profile completion
+            // But check the flag just in case
+            if (result.isProfileComplete === false) {
+              navigate('/profile-completion')
+            } else {
+              navigate('/dashboard')
+            }
           }
         } else {
           setError(t('registrationFailed'))

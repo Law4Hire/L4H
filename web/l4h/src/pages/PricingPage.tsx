@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, Button, pricing, cases, useToast } from '@l4h/shared-ui'
+import { useAuth } from '../hooks/useAuth'
 
 interface PricingPackage {
   id: string
@@ -12,27 +14,52 @@ interface PricingPackage {
   features: string[]
 }
 
+interface Case {
+  id: string
+  status: string
+  createdAt: string
+  visaTypeCode?: string
+}
+
 const PricingPage: React.FC = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { success, error: showError } = useToast()
   const queryClient = useQueryClient()
+  const { user } = useAuth()
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null)
+
+  // Fetch user's cases to get case ID
+  const { data: casesList = [] } = useQuery<Case[]>({
+    queryKey: ['cases'],
+    queryFn: cases.mine
+  })
+
+  const activeCase = casesList.length > 0 ? casesList[0] : undefined
 
   // Fetch pricing data
   const { data: pricingData, isLoading, error } = useQuery({
-    queryKey: ['pricing'],
-    queryFn: pricing.get
+    queryKey: ['pricing', activeCase?.visaTypeCode, user?.country],
+    queryFn: () => pricing.get(activeCase?.visaTypeCode, user?.country),
+    enabled: !!activeCase && !!user?.country
   })
 
   // Select package mutation
   const selectPackageMutation = useMutation({
-    mutationFn: (packageId: string) => cases.setPackage('current-case-id', packageId),
+    mutationFn: (packageId: string) => {
+      const activeCase = casesList[0]
+      if (!activeCase) {
+        throw new Error('No case found. Please contact us to create a case first.')
+      }
+      return cases.setPackage(activeCase.id, packageId)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pricing'] })
-      success(t('pricing.selectPlan') + ' ' + t('common.success'))
+      success(t('pricing.packageSelected', 'Package selected successfully!'))
+      navigate('/scheduling')
     },
     onError: (err) => {
-      showError(t('common.error'), err instanceof Error ? err.message : '')
+      showError(err instanceof Error ? err.message : t('common.error'))
     }
   })
 
