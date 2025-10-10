@@ -16,11 +16,13 @@ public class User
     public DateTimeOffset? LockoutUntil { get; set; }
     public bool IsAdmin { get; set; }
     public bool IsStaff { get; set; }
+    public bool IsActive { get; set; } = true;
 
     // Extended Profile Information
     public string PhoneNumber { get; set; } = string.Empty;
     public DateTime? DateOfBirth { get; set; }
     public string MaritalStatus { get; set; } = string.Empty; // Single, Married, Divorced, Widowed
+    public string Gender { get; set; } = string.Empty;
     public string Nationality { get; set; } = string.Empty;
     public string Citizenship { get; set; } = string.Empty;
     

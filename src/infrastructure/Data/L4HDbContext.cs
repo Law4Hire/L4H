@@ -24,8 +24,10 @@ public class L4HDbContext : DbContext
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<InterviewQA> InterviewQAs { get; set; }
     public DbSet<Country> Countries { get; set; }
+    public DbSet<CountryVisaType> CountryVisaTypes { get; set; }
     public DbSet<USSubdivision> USSubdivisions { get; set; }
     public DbSet<VisaClass> VisaClasses { get; set; }
+    public DbSet<CategoryClass> CategoryClasses { get; set; }
     public DbSet<VisaChangeRequest> VisaChangeRequests { get; set; }
     public DbSet<PriceDeltaLedger> PriceDeltaLedgers { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
@@ -374,6 +376,26 @@ public class L4HDbContext : DbContext
             entity.HasIndex(e => e.Iso3).IsUnique();
         });
 
+        modelBuilder.Entity<CountryVisaType>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Notes).HasMaxLength(500);
+
+            entity.HasOne(e => e.Country)
+                .WithMany()
+                .HasForeignKey(e => e.CountryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.VisaType)
+                .WithMany()
+                .HasForeignKey(e => e.VisaTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => new { e.CountryId, e.VisaTypeId }).IsUnique();
+            entity.HasIndex(e => e.CountryId);
+            entity.HasIndex(e => e.VisaTypeId);
+        });
+
         modelBuilder.Entity<USSubdivision>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -391,6 +413,17 @@ public class L4HDbContext : DbContext
             entity.Property(e => e.GeneralCategory).HasMaxLength(100);
 
             entity.HasIndex(e => e.Code).IsUnique();
+        });
+
+        modelBuilder.Entity<CategoryClass>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ClassCode).HasMaxLength(10).IsRequired();
+            entity.Property(e => e.ClassName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.GeneralCategory).HasMaxLength(200).IsRequired();
+
+            entity.HasIndex(e => e.ClassCode).IsUnique();
+            entity.HasIndex(e => e.IsActive);
         });
 
         modelBuilder.Entity<VisaChangeRequest>(entity =>
