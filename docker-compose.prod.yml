@@ -14,7 +14,7 @@ services:
       - sqlserver_data:/var/opt/mssql
       - ./backups:/var/opt/mssql/backups
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${SQL_SA_PASSWORD} -Q 'SELECT 1'"]
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
       interval: 30s
       retries: 5
       timeout: 10s
