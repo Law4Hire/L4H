@@ -26,6 +26,11 @@ class ApiError extends Error {
 // JWT token stored in memory
 let jwtToken: string | null = null
 
+// Initialize JWT token from localStorage on module load
+if (typeof window !== 'undefined') {
+  jwtToken = localStorage.getItem('jwt_token')
+}
+
 // CSRF token cache
 let csrfToken: string | null = null
 let csrfTokenExpiry: number = 0
@@ -76,16 +81,17 @@ async function fetchJson<T = any>(
   init: RequestInit = {}
 ): Promise<T> {
   const url = `/api${path}`
-  
+
   // Prepare headers
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(init.headers as Record<string, string>)
   }
-  
-  // Add JWT token if available
-  if (jwtToken) {
-    headers['Authorization'] = `Bearer ${jwtToken}`
+
+  // Add JWT token if available - ensure we load from localStorage if needed
+  const token = getJwtToken()
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
   }
   
   // Add CSRF token for cookie endpoints
@@ -122,6 +128,50 @@ async function fetchJson<T = any>(
     const data: ApiResponse<T> = await response.json()
     
     if (!response.ok) {
+      // Try to refresh token on 401 Unauthorized
+      if (response.status === 401 && path !== '/v1/auth/remember' && path !== '/v1/auth/login') {
+        try {
+          const refreshResponse = await fetch('/api/v1/auth/remember', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+          })
+
+          if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json()
+            if (refreshData.token) {
+              // Update the token and retry the original request
+              jwtToken = refreshData.token
+              localStorage.setItem('jwt_token', refreshData.token)
+
+              // Retry the original request with new token
+              const retryHeaders = {
+                ...headers,
+                'Authorization': `Bearer ${jwtToken}`
+              }
+
+              const retryResponse = await fetch(url, {
+                ...init,
+                headers: retryHeaders,
+                credentials
+              })
+
+              if (retryResponse.ok) {
+                const retryContentType = retryResponse.headers.get('content-type')
+                if (!retryContentType?.includes('application/json')) {
+                  return retryResponse as unknown as T
+                }
+                const retryData = await retryResponse.json()
+                return retryData.data || retryData as T
+              }
+            }
+          }
+        } catch (refreshError) {
+          // If refresh fails, fall through to original error handling
+          console.warn('Token refresh failed:', refreshError)
+        }
+      }
+
       const error = data.error || {
         title: `HTTP ${response.status}`,
         detail: response.statusText,
@@ -223,6 +273,8 @@ export const auth = {
     postalCode?: string
     country?: string
     nationality?: string
+    dateOfBirth?: string
+    maritalStatus?: string
   }) {
     return fetchJson('/v1/auth/profile', {
       method: 'PUT',
@@ -250,11 +302,21 @@ export const cases = {
   async mine() {
     return fetchJson('/v1/cases/mine')
   },
-  
+
+  async get(caseId: string) {
+    return fetchJson(`/v1/cases/${caseId}`)
+  },
+
   async setPackage(caseId: string, packageId: string) {
     return fetchJson(`/v1/cases/${caseId}/package`, {
       method: 'POST',
       body: JSON.stringify({ packageId })
+    })
+  },
+
+  async resetVisaType(caseId: string) {
+    return fetchJson(`/v1/cases/${caseId}/reset-visa-type`, {
+      method: 'POST'
     })
   }
 }
@@ -387,6 +449,13 @@ export const interview = {
       body: JSON.stringify({ caseId })
     })
   },
+
+  async nextQuestion(sessionId: string) {
+    return fetchJson('/v1/interview/next-question', {
+      method: 'POST',
+      body: JSON.stringify({ sessionId })
+    })
+  },
   
   async answer(data: {
     sessionId: string
@@ -399,7 +468,14 @@ export const interview = {
       body: JSON.stringify(data)
     })
   },
-  
+
+  async selectVisaType(sessionId: string, visaTypeCode: string) {
+    return fetchJson('/v1/interview/select-visa-type', {
+      method: 'POST',
+      body: JSON.stringify({ sessionId, visaTypeCode })
+    })
+  },
+
   async complete(sessionId: string) {
     return fetchJson('/v1/interview/complete', {
       method: 'POST',
@@ -488,6 +564,26 @@ export const admin = {
     return fetchJson(`/v1/admin/users/${userId}/roles`, {
       method: 'PUT',
       body: JSON.stringify(roles)
+    })
+  },
+
+  async deleteUser(userId: string) {
+    return fetchJson(`/v1/admin/users/${userId}`, {
+      method: 'DELETE'
+    })
+  },
+
+  async changeUserPassword(userId: string, newPassword: string) {
+    return fetchJson(`/v1/admin/users/${userId}/password`, {
+      method: 'PUT',
+      body: JSON.stringify({ newPassword })
+    })
+  },
+
+  async changeUserStatus(userId: string, isActive: boolean) {
+    return fetchJson(`/v1/admin/users/${userId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ isActive })
     })
   }
 }

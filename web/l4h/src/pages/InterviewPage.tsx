@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { Card, Button, Input, interview, useToast, useTranslation } from '@l4h/shared-ui'
+import { Card, Button, Input, Modal, interview, useToast, useTranslation } from '@l4h/shared-ui'
 
 interface AdaptiveQuestion {
   key: string
@@ -13,6 +13,7 @@ interface AdaptiveQuestion {
   }>
   required: boolean
   remainingVisaTypes: number
+  remainingVisaCodes: string[]
 }
 
 interface InterviewRecommendation {
@@ -33,6 +34,8 @@ const InterviewPage: React.FC = () => {
   const [isComplete, setIsComplete] = useState(false)
   const [recommendation, setRecommendation] = useState<InterviewRecommendation | null>(null)
   const [questionCount, setQuestionCount] = useState(0)
+  const [showVisaSelectModal, setShowVisaSelectModal] = useState(false)
+  const [selectedVisaCode, setSelectedVisaCode] = useState<string | null>(null)
 
   useEffect(() => {
     if (!sessionId) {
@@ -41,31 +44,24 @@ const InterviewPage: React.FC = () => {
       return
     }
 
+    // Ensure we have auth token before loading question
+    const token = localStorage.getItem('jwt_token')
+    if (!token) {
+      showError('Please log in to continue.')
+      navigate('/login')
+      return
+    }
+
     // Start the adaptive interview by getting the first question
     loadNextQuestion()
-  }, [sessionId, navigate, showError])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId])
 
   const loadNextQuestion = async () => {
     if (!sessionId) return
 
-    setIsLoading(true)
     try {
-      const response = await fetch(`/api/v1/interview/next-question`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          sessionId: sessionId
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to get next question')
-      }
-
-      const data = await response.json()
+      const data = await interview.nextQuestion(sessionId)
 
       if (data.isComplete) {
         setCurrentQuestion(null)
@@ -81,8 +77,7 @@ const InterviewPage: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to get next question:', error)
       showError(error.message || 'Failed to load question. Please try again.')
-    } finally {
-      setIsLoading(false)
+      throw error // Re-throw so handleNext can catch it
     }
   }
 
@@ -94,9 +89,12 @@ const InterviewPage: React.FC = () => {
   }
 
   const handleNext = async () => {
-    if (!sessionId || !currentQuestion) return
+    if (!sessionId || !currentQuestion) {
+      return
+    }
 
     const answer = answers[currentQuestion.key]
+
     if (currentQuestion.required && !answer) {
       showError('Please answer this question before continuing.')
       return
@@ -104,7 +102,6 @@ const InterviewPage: React.FC = () => {
 
     setIsLoading(true)
     try {
-      // Submit answer to API
       await interview.answer({
         sessionId,
         stepNumber: questionCount + 1,
@@ -113,12 +110,10 @@ const InterviewPage: React.FC = () => {
       })
 
       setQuestionCount(prev => prev + 1)
-
-      // Load the next question
       await loadNextQuestion()
 
     } catch (error: any) {
-      console.error('Failed to submit answer:', error)
+      console.error('Error in handleNext:', error)
       showError(error.message || 'Failed to submit answer. Please try again.')
     } finally {
       setIsLoading(false)
@@ -128,6 +123,48 @@ const InterviewPage: React.FC = () => {
   const handleStartOver = () => {
     navigate('/dashboard')
   }
+
+  const handleVisaClick = (visaCode: string) => {
+    console.log('handleVisaClick called with:', visaCode)
+    setSelectedVisaCode(visaCode)
+    setShowVisaSelectModal(true)
+    console.log('Modal state should now be:', true)
+  }
+
+  const handleConfirmVisaSelection = async () => {
+    if (!sessionId || !selectedVisaCode) return
+
+    setIsLoading(true)
+    try {
+      await interview.selectVisaType(sessionId, selectedVisaCode)
+
+      showSuccess(`Visa type ${selectedVisaCode} selected! Interview complete.`)
+      setShowVisaSelectModal(false)
+
+      // Mark interview as complete and show recommendation
+      setIsComplete(true)
+      setRecommendation({
+        visaType: selectedVisaCode,
+        rationale: `You selected ${selectedVisaCode} as your preferred visa type. This is a suggested starting point for working with our legal professionals.`
+      })
+    } catch (error: any) {
+      showError(error.message || 'Failed to select visa type. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCancelVisaSelection = () => {
+    setShowVisaSelectModal(false)
+    setSelectedVisaCode(null)
+  }
+
+  // Memoize the button disabled state to prevent unnecessary recalculations
+  const currentAnswer = currentQuestion ? answers[currentQuestion.key] : undefined
+  const isButtonDisabled = useMemo(() => {
+    if (!currentQuestion) return true
+    return isLoading || (currentQuestion.required && !currentAnswer)
+  }, [isLoading, currentQuestion, currentAnswer])
 
   if (!sessionId) {
     return null
@@ -203,14 +240,45 @@ const InterviewPage: React.FC = () => {
     <div className="max-w-2xl mx-auto">
       <Card title={t('interview.title', 'Visa Eligibility Interview')}>
         <div className="space-y-6">
-          {/* Adaptive progress indicator */}
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="text-sm text-blue-800 mb-2">
+          {/* Adaptive progress indicator with hoverable visa chips */}
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg group relative">
+            <div className="text-sm text-blue-800 dark:text-blue-200 mb-2">
               Adaptive Interview Progress
             </div>
-            <div className="text-xs text-blue-600">
-              Question {questionCount + 1} | {currentQuestion.remainingVisaTypes} visa types remaining
+            <div className="text-xs text-blue-600 dark:text-blue-400 cursor-help">
+              Question {questionCount + 1} |{' '}
+              <span className="underline decoration-dotted">
+                {currentQuestion.remainingVisaTypes} visa types remaining
+              </span>
             </div>
+
+            {/* Remaining Visa Types - Show on hover */}
+            {currentQuestion.remainingVisaCodes && currentQuestion.remainingVisaCodes.length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible hover:opacity-100 hover:visible transition-all duration-200 z-10">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    Click a visa type to select it directly:
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {currentQuestion.remainingVisaCodes.map((code) => (
+                      <button
+                        key={code}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          console.log('Visa clicked:', code)
+                          handleVisaClick(code)
+                        }}
+                        className="px-3 py-1.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        title={`Select ${code} visa type`}
+                      >
+                        {code}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
@@ -269,7 +337,7 @@ const InterviewPage: React.FC = () => {
             <Button
               variant="primary"
               onClick={handleNext}
-              disabled={isLoading}
+              disabled={isButtonDisabled}
               loading={isLoading}
             >
               {t('interview.next', 'Next Question')}
@@ -277,6 +345,45 @@ const InterviewPage: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      {/* Visa Selection Confirmation Modal */}
+      {console.log('Modal isOpen:', showVisaSelectModal, 'selectedVisa:', selectedVisaCode)}
+      <Modal
+        isOpen={showVisaSelectModal}
+        onClose={handleCancelVisaSelection}
+        title="Confirm Visa Type Selection"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-700 dark:text-gray-300">
+            You are selecting <strong className="text-blue-600 dark:text-blue-400">{selectedVisaCode}</strong> as your visa type suggestion.
+          </p>
+          <p className="text-gray-700 dark:text-gray-300">
+            This will complete the interview and set this visa type as your suggested starting point for working with our legal professionals.
+          </p>
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+            <p className="text-blue-800 dark:text-blue-200 text-sm">
+              ℹ️ <strong>Note:</strong> This is a suggestion only and is not a legal recommendation.
+              Our legal professionals will review your case and provide official guidance.
+            </p>
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={handleCancelVisaSelection}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleConfirmVisaSelection}
+              loading={isLoading}
+            >
+              Confirm Selection
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

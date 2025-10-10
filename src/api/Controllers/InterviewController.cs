@@ -81,19 +81,20 @@ public class InterviewController : ControllerBase
             });
         }
 
-        // Check if there's already an active session
+        // Check if there's already an active session and clear it for fresh testing
         var existingSession = await _context.InterviewSessions
             .FirstOrDefaultAsync(s => s.CaseId == request.CaseId && s.Status == "active").ConfigureAwait(false);
 
         if (existingSession != null)
         {
-            // Reuse existing active session
-            return Ok(new InterviewStartResponse
-            {
-                SessionId = existingSession.Id,
-                Status = existingSession.Status,
-                StartedAt = existingSession.StartedAt
-            });
+            // Clear existing session data for fresh testing
+            var existingQAs = await _context.InterviewQAs
+                .Where(qa => qa.SessionId == existingSession.Id)
+                .ToListAsync().ConfigureAwait(false);
+
+            _context.InterviewQAs.RemoveRange(existingQAs);
+            _context.InterviewSessions.Remove(existingSession);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         // Create new session
@@ -172,9 +173,9 @@ public class InterviewController : ControllerBase
             });
         }
 
-        // Upsert the answer
+        // Upsert the answer by QuestionKey (not StepNumber) to prevent overwriting different questions
         var existingQA = await _context.InterviewQAs
-            .FirstOrDefaultAsync(q => q.SessionId == request.SessionId && q.StepNumber == request.StepNumber).ConfigureAwait(false);
+            .FirstOrDefaultAsync(q => q.SessionId == request.SessionId && q.QuestionKey == request.QuestionKey).ConfigureAwait(false);
 
         if (existingQA != null)
         {
@@ -184,11 +185,17 @@ public class InterviewController : ControllerBase
         }
         else
         {
+            // Get the next step number for this session
+            var maxStepNumber = await _context.InterviewQAs
+                .Where(q => q.SessionId == request.SessionId)
+                .Select(q => (int?)q.StepNumber)
+                .MaxAsync().ConfigureAwait(false) ?? 0;
+
             var newQA = new InterviewQA
             {
                 Id = Guid.NewGuid(),
                 SessionId = request.SessionId,
-                StepNumber = request.StepNumber,
+                StepNumber = maxStepNumber + 1,
                 QuestionKey = request.QuestionKey,
                 AnswerValue = request.AnswerValue,
                 AnsweredAt = DateTime.UtcNow
@@ -285,9 +292,10 @@ public class InterviewController : ControllerBase
         session.Status = "completed";
         session.FinishedAt = DateTime.UtcNow;
 
-        // Update case activity
+        // Update case with assigned visa type
+        session.Case.VisaTypeId = recommendation.VisaTypeId;
         session.Case.LastActivityAt = DateTimeOffset.UtcNow;
-        
+
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         // Get visa type name for response
@@ -415,6 +423,81 @@ public class InterviewController : ControllerBase
     }
 
     /// <summary>
+    /// Reset interview session (cancel current session and create a completely fresh one)
+    /// </summary>
+    /// <param name="request">Interview reset request</param>
+    /// <returns>New interview session details</returns>
+    [HttpPost("reset")]
+    [ProducesResponseType<InterviewStartResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Reset([FromBody] InterviewResetRequest request)
+    {
+        var userId = GetCurrentUserId();
+
+        // Verify the session exists and belongs to the user
+        var session = await _context.InterviewSessions
+            .Include(s => s.Case)
+            .FirstOrDefaultAsync(s => s.Id == request.SessionId && s.UserId == userId).ConfigureAwait(false);
+
+        if (session == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Session Not Found",
+                Detail = _localizer["Interview.SessionNotFound"]
+            });
+        }
+
+        if (session.Case.IsInterviewLocked)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Title = "Interview Locked",
+                Detail = _localizer["Interview.Locked"]
+            });
+        }
+
+        // COMPLETELY CANCEL the existing session instead of resetting it
+        // This ensures no cached state or progress tracking issues
+        session.Status = "cancelled";
+        session.FinishedAt = DateTime.UtcNow;
+
+        // Delete all Q&As for the old session
+        var qasToDelete = await _context.InterviewQAs
+            .Where(qa => qa.SessionId == request.SessionId)
+            .ToListAsync().ConfigureAwait(false);
+
+        _context.InterviewQAs.RemoveRange(qasToDelete);
+
+        // Create a BRAND NEW session with a new ID
+        var newSession = new InterviewSession
+        {
+            Id = Guid.NewGuid(), // Completely new session ID
+            UserId = userId,
+            CaseId = session.CaseId, // Same case, but fresh session
+            Status = "active",
+            StartedAt = DateTime.UtcNow
+        };
+
+        _context.InterviewSessions.Add(newSession);
+
+        // Update case activity
+        session.Case.LastActivityAt = DateTimeOffset.UtcNow;
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        _logger.LogInformation($"Interview reset: cancelled session {request.SessionId}, created new session {newSession.Id}");
+
+        return Ok(new InterviewStartResponse
+        {
+            SessionId = newSession.Id, // Return the NEW session ID
+            Status = newSession.Status,
+            StartedAt = newSession.StartedAt
+        });
+    }
+
+    /// <summary>
     /// Get interview history for current user
     /// </summary>
     /// <returns>Interview history</returns>
@@ -537,7 +620,8 @@ public class InterviewController : ControllerBase
             session.Status = "completed";
             session.FinishedAt = DateTime.UtcNow;
 
-            // Update case activity
+            // Update case with assigned visa type
+            session.Case.VisaTypeId = recommendation.VisaTypeId;
             session.Case.LastActivityAt = DateTimeOffset.UtcNow;
 
             await _context.SaveChangesAsync().ConfigureAwait(false);
@@ -545,13 +629,16 @@ public class InterviewController : ControllerBase
             // Get visa type name for response
             var visaType = await _context.VisaTypes.FindAsync(recommendation.VisaTypeId).ConfigureAwait(false);
 
+            _logger.LogInformation("Returning recommendation: VisaTypeId={VisaTypeId}, Code={Code}, Name={Name}",
+                recommendation.VisaTypeId, visaType?.Code, visaType?.Name);
+
             return Ok(new InterviewNextQuestionResponse
             {
                 IsComplete = true,
                 Question = null,
                 Recommendation = new InterviewRecommendation
                 {
-                    VisaType = visaType?.Name ?? "Unknown",
+                    VisaType = visaType?.Code ?? "Unknown",  // Return Code (L-1A, L-1B) not Name
                     Rationale = recommendation.Rationale
                 }
             });
@@ -572,9 +659,89 @@ public class InterviewController : ControllerBase
                     Description = o.Description
                 }).ToList(),
                 Required = nextQuestion.Required,
-                RemainingVisaTypes = nextQuestion.RemainingVisaTypes
+                RemainingVisaTypes = nextQuestion.RemainingVisaTypes,
+                RemainingVisaCodes = nextQuestion.RemainingVisaCodes
             },
             Recommendation = null
+        });
+    }
+
+    /// <summary>
+    /// Select a specific visa type directly (skip remaining interview questions)
+    /// </summary>
+    /// <param name="request">Session ID and selected visa type code</param>
+    /// <returns>Confirmation with selected visa type</returns>
+    [HttpPost("select-visa-type")]
+    [ProducesResponseType<InterviewNextQuestionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SelectVisaType([FromBody] SelectVisaTypeRequest request)
+    {
+        var userId = GetCurrentUserId();
+
+        // Get the session
+        var session = await _context.InterviewSessions
+            .Include(s => s.Case)
+            .FirstOrDefaultAsync(s => s.Id == request.SessionId)
+            .ConfigureAwait(false);
+
+        if (session == null)
+        {
+            return NotFound(new ProblemDetails { Title = "Session not found" });
+        }
+
+        // Verify user owns this session
+        if (session.Case.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        // Get the visa type
+        var visaType = await _context.VisaTypes
+            .FirstOrDefaultAsync(v => v.Code == request.VisaTypeCode)
+            .ConfigureAwait(false);
+
+        if (visaType == null)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid visa type",
+                Detail = $"Visa type {request.VisaTypeCode} not found"
+            });
+        }
+
+        // Update the case with selected visa type
+        session.Case.VisaTypeId = visaType.Id;
+        session.Case.LastActivityAt = DateTimeOffset.UtcNow;
+
+        // Mark session as completed
+        session.Status = "completed";
+        session.FinishedAt = DateTime.UtcNow;
+
+        // Create a recommendation record
+        var recommendation = new VisaRecommendation
+        {
+            CaseId = session.CaseId,
+            VisaTypeId = visaType.Id,
+            Rationale = $"User selected {visaType.Code} ({visaType.Name}) directly during the interview process. This is a suggested starting point for working with legal professionals.",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.VisaRecommendations.Add(recommendation);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        _logger.LogInformation("User {UserId} selected visa type {VisaCode} for session {SessionId}",
+            userId, visaType.Code, session.Id);
+
+        return Ok(new InterviewNextQuestionResponse
+        {
+            IsComplete = true,
+            Question = null,
+            Recommendation = new InterviewRecommendation
+            {
+                VisaType = visaType.Code,
+                Rationale = recommendation.Rationale
+            }
         });
     }
 }

@@ -20,6 +20,7 @@ public class InterviewQuestion
     public List<InterviewOption> Options { get; set; } = new();
     public bool Required { get; set; } = true;
     public int RemainingVisaTypes { get; set; }
+    public List<string> RemainingVisaCodes { get; set; } = new();
 }
 
 public class InterviewOption
@@ -42,13 +43,31 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
 
     public async Task<InterviewQuestion> GetNextQuestionAsync(Dictionary<string, string> answers, User? user = null)
     {
-        // Merge user profile data with interview answers
+        // Merge user profile data with interview answers (ALWAYS do this, even for first question!)
         var enrichedAnswers = EnrichAnswersWithUserData(answers, user);
+
+        // CRITICAL FIX: If no answers exist yet, always return the purpose question first
+        if (answers == null || answers.Count == 0)
+        {
+            var questions = GetPossibleQuestions();
+            var purposeQuestion = questions.FirstOrDefault(q => q.Key == "purpose");
+            if (purposeQuestion != null)
+            {
+                // Get visa types filtered by demographics (age, marital status, etc.)
+                var demographicFilteredVisaTypes = await GetPossibleVisaTypesAsync(enrichedAnswers).ConfigureAwait(false);
+                purposeQuestion.RemainingVisaTypes = demographicFilteredVisaTypes.Count;
+                purposeQuestion.RemainingVisaCodes = demographicFilteredVisaTypes.Select(v => v.Code).OrderBy(c => c).ToList();
+                _logger.LogInformation("Interview starting - returning purpose question with {Count} visa types after demographic filtering", demographicFilteredVisaTypes.Count);
+                return purposeQuestion;
+            }
+        }
 
         // Get remaining possible visa types based on current answers
         var possibleVisaTypes = await GetPossibleVisaTypesAsync(enrichedAnswers).ConfigureAwait(false);
 
         _logger.LogInformation($"Current answers: {string.Join(", ", answers.Select(kvp => $"{kvp.Key}={kvp.Value}"))}");
+        _logger.LogInformation($"Enriched answers: {string.Join(", ", enrichedAnswers.Select(kvp => $"{kvp.Key}={kvp.Value}"))}");
+        _logger.LogInformation($"User citizenship: {user?.Citizenship ?? "null"}, nationality: {user?.Nationality ?? "null"}");
         _logger.LogInformation($"Remaining visa types: {possibleVisaTypes.Count}");
 
         // If only one visa type remains, we're done
@@ -74,7 +93,9 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         // Determine the best question to narrow down the remaining visa types
-        return await GetBestDiscriminatingQuestionAsync(possibleVisaTypes, enrichedAnswers).ConfigureAwait(false);
+        var nextQuestion = await GetBestDiscriminatingQuestionAsync(possibleVisaTypes, enrichedAnswers).ConfigureAwait(false);
+        nextQuestion.RemainingVisaCodes = possibleVisaTypes.Select(v => v.Code).OrderBy(c => c).ToList();
+        return nextQuestion;
     }
 
     public async Task<bool> IsCompleteAsync(Dictionary<string, string> answers, User? user = null)
@@ -96,13 +117,79 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         var purpose = enrichedAnswers.GetValueOrDefault("purpose", "");
 
         // Check for early completion - if a specific visa type has all required criteria
-        if (CheckForEarlyCompletion(enrichedAnswers, possibleVisaTypes))
+        var shouldComplete = CheckForEarlyCompletion(enrichedAnswers, possibleVisaTypes);
+        _logger.LogInformation("CheckForEarlyCompletion returned: {ShouldComplete}, Remaining visas: {VisaCount}",
+            shouldComplete, possibleVisaTypes.Count);
+        if (shouldComplete)
         {
             return true;
         }
 
-        // Force completion when we have 2 or fewer visa types for diplomatic cases
-        if (possibleVisaTypes.Count <= 2 && (purpose == "diplomatic" || purpose == "official" || purpose == "employment"))
+        // CRITICAL A-1 CHECK: For diplomatic cases, MUST ask all 3 questions before completion
+        // Check for diplomatic purpose using actual stored values
+        var isDiplomaticPurpose = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                 purpose.ToLowerInvariant().Contains("nato");
+
+        if (isDiplomaticPurpose)
+        {
+            // A-1 requires: diplomat=yes AND governmentOfficial=yes AND internationalOrg=no
+            // NEVER complete until we have all 3 answers
+            var hasDiplomat = enrichedAnswers.ContainsKey("diplomat");
+            var hasGovernmentOfficial = enrichedAnswers.ContainsKey("governmentOfficial");
+            var hasInternationalOrg = enrichedAnswers.ContainsKey("internationalOrg");
+
+            // If we're missing ANY of the 3 critical questions, DO NOT complete
+            if (!hasDiplomat || !hasGovernmentOfficial || !hasInternationalOrg)
+            {
+                return false; // MUST continue asking questions
+            }
+
+            // All 3 diplomatic questions answered - check if A-1 criteria are met
+            var diplomat = enrichedAnswers.GetValueOrDefault("diplomat", "").ToLowerInvariant();
+            var governmentOfficial = enrichedAnswers.GetValueOrDefault("governmentOfficial", "").ToLowerInvariant();
+            var internationalOrg = enrichedAnswers.GetValueOrDefault("internationalOrg", "").ToLowerInvariant();
+
+            // If this matches A-1 criteria exactly, complete the interview
+            if (diplomat == "yes" && governmentOfficial == "yes" && internationalOrg == "no")
+            {
+                return true; // Perfect A-1 match - complete now
+            }
+
+            // Check for potential A-3 case: diplomat=no, governmentOfficial=no, internationalOrg=no
+            // A-3 requires additional questions: workingForDiplomat=yes, workingForInternationalOrg=no
+            if (diplomat == "no" && governmentOfficial == "no" && internationalOrg == "no")
+            {
+                var hasWorkingForDiplomat = enrichedAnswers.ContainsKey("workingForDiplomat");
+                var hasWorkingForInternationalOrg = enrichedAnswers.ContainsKey("workingForInternationalOrg");
+
+                // If we haven't asked about working for diplomat/international org yet, don't complete
+                if (!hasWorkingForDiplomat || !hasWorkingForInternationalOrg)
+                {
+                    return false; // Need to ask A-3 specific questions
+                }
+
+                // All A-3 questions answered, can complete now
+                return true;
+            }
+
+            // For A-2 or other diplomatic cases, can complete after basic questions
+            return true;
+        }
+
+        // CRITICAL: Check for L-1A/L-1B before forcing completion
+        // If both L-1A and L-1B are possible, we MUST ask managerialRole question first
+        if (purpose == "employment" && possibleVisaTypes.Any(v => v.Code == "L-1A") && possibleVisaTypes.Any(v => v.Code == "L-1B"))
+        {
+            if (!enrichedAnswers.ContainsKey("managerialRole"))
+            {
+                _logger.LogInformation("IsCompleteAsync: Blocking completion - both L-1A and L-1B present, managerialRole not answered");
+                return false; // MUST ask managerialRole before completing
+            }
+        }
+
+        // Force completion when we have 2 or fewer visa types for employment cases
+        if (possibleVisaTypes.Count <= 2 && purpose == "employment")
         {
             return true;
         }
@@ -139,6 +226,11 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         var recommendedVisa = SelectBestVisaType(possibleVisaTypes, enrichedAnswers);
+        _logger.LogInformation("GetRecommendationAsync: Selected visa {VisaCode} from {Count} possible visas: {Codes}",
+            recommendedVisa.Code,
+            possibleVisaTypes.Count,
+            string.Join(", ", possibleVisaTypes.Select(v => v.Code)));
+
         var rationale = GenerateRationale(recommendedVisa, enrichedAnswers);
 
         return new RecommendationResult
@@ -148,17 +240,144 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         };
     }
 
-    private async Task<List<VisaType>> GetPossibleVisaTypesAsync(Dictionary<string, string> answers)
+    private async Task<List<VisaType>> GetPossibleVisaTypesAsync(Dictionary<string, string> enrichedAnswers)
     {
-        var allVisaTypes = await _context.VisaTypes.Where(v => v.IsActive).ToListAsync().ConfigureAwait(false);
+        // Get user's nationality/country
+        var nationality = enrichedAnswers.GetValueOrDefault("nationality", "");
 
-        // Apply filtering rules based on answers
-        return allVisaTypes.Where(visa => IsVisaTypePossible(visa, answers)).ToList();
+        List<VisaType> countryVisaTypes;
+
+        if (!string.IsNullOrEmpty(nationality))
+        {
+            // Normalize nationality for case-insensitive comparison
+            var normalizedNationality = nationality.ToLowerInvariant();
+
+            // Get all active country visa types with related data
+            var allCountryVisaTypes = await _context.CountryVisaTypes
+                .Include(cvt => cvt.VisaType)
+                .Include(cvt => cvt.Country)
+                .Where(cvt => cvt.IsActive && cvt.VisaType.IsActive)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            // Filter by country name case-insensitively in memory
+            countryVisaTypes = allCountryVisaTypes
+                .Where(cvt => cvt.Country.Name.Equals(nationality, StringComparison.OrdinalIgnoreCase))
+                .Select(cvt => cvt.VisaType)
+                .ToList();
+
+            if (countryVisaTypes.Count == 0)
+            {
+                _logger.LogWarning("No visa types found for country: {Country}. Falling back to all visa types.", nationality);
+                // Fallback to all visa types if country not found or has no associations
+                countryVisaTypes = await _context.VisaTypes.Where(v => v.IsActive).ToListAsync().ConfigureAwait(false);
+            }
+        }
+        else
+        {
+            // If nationality not provided yet, return all visa types
+            countryVisaTypes = await _context.VisaTypes.Where(v => v.IsActive).ToListAsync().ConfigureAwait(false);
+        }
+
+        // Load CategoryClasses for purpose-based filtering
+        var categoryClasses = await _context.CategoryClasses
+            .Where(cc => cc.IsActive)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        // Apply additional filtering rules based on interview answers (using enriched answers!)
+        var filteredVisas = countryVisaTypes.Where(visa => IsVisaTypePossible(visa, enrichedAnswers, categoryClasses)).ToList();
+
+        _logger.LogInformation("After filtering - Remaining {Count} visas: {Codes}",
+            filteredVisas.Count,
+            string.Join(", ", filteredVisas.Select(v => v.Code)));
+
+        return filteredVisas;
     }
 
-    private static bool IsVisaTypePossible(VisaType visa, Dictionary<string, string> answers)
+    private static bool IsVisaTypePossible(VisaType visa, Dictionary<string, string> answers, List<CategoryClass> categoryClasses)
     {
+        // ============================================================
+        // PURPOSE-BASED FILTERING - Extract visa class code and match with CategoryClass
+        // ============================================================
         var purpose = answers.GetValueOrDefault("purpose", "").ToLowerInvariant();
+
+        if (!string.IsNullOrEmpty(purpose))
+        {
+            // Extract the class code from visa code (e.g., "H-1B" -> "H", "EB-1" -> "EB", "IR-1" -> "IR")
+            var visaClassCode = ExtractClassCode(visa.Code);
+
+            if (!string.IsNullOrEmpty(visaClassCode))
+            {
+                var categoryClass = categoryClasses.FirstOrDefault(cc => cc.ClassCode.Equals(visaClassCode, StringComparison.OrdinalIgnoreCase));
+
+                if (categoryClass != null)
+                {
+                    // Use the CategoryClass.MatchesPurpose method to filter
+                    if (!categoryClass.MatchesPurpose(purpose))
+                    {
+                        return false; // Eliminate this visa type based on purpose mismatch
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // DEMOGRAPHIC FILTERS - Applied AFTER purpose filtering
+        // ============================================================
+
+        // AGE-BASED FILTERING
+        if (answers.TryGetValue("age", out var ageStr) && int.TryParse(ageStr, out var age))
+        {
+            // Minor-only visas (under 21)
+            if (age >= 21)
+            {
+                // IR-2, F-2B, F-4 are for unmarried children under 21
+                if (visa.Code == "IR-2" || visa.Code == "F-2B" || visa.Code == "F-4")
+                    return false;
+            }
+
+            // Child visas typically under 18
+            if (age >= 18)
+            {
+                // J-2, H-4, L-2 derivatives for children (dependent visas)
+                var childDependentVisas = new[] { "J-2", "H-4", "L-2", "E-2", "TN-2" };
+                if (childDependentVisas.Any(code => visa.Code == code && visa.Name?.ToLowerInvariant().Contains("child") == true))
+                    return false;
+            }
+        }
+
+        // MARITAL STATUS FILTERING
+        var maritalStatus = answers.GetValueOrDefault("maritalStatus", "").ToLowerInvariant();
+        if (!string.IsNullOrEmpty(maritalStatus))
+        {
+            // Spouse-only visas require being married
+            if (maritalStatus != "married")
+            {
+                if (visa.Code == "CR-1" || visa.Code == "IR-1" || visa.Code == "F-2A" || visa.Code == "K-3")
+                    return false;
+            }
+
+            // Fiancé visa requires NOT being married
+            if (maritalStatus == "married")
+            {
+                if (visa.Code == "K-1")
+                    return false;
+            }
+
+            // Some family visas require unmarried status
+            if (maritalStatus == "married")
+            {
+                if (visa.Code == "F-2B") // Unmarried sons/daughters of permanent residents
+                    return false;
+            }
+        }
+
+        // ============================================================
+        // END DEMOGRAPHIC FILTERS
+        // ============================================================
+
+        // Note: purpose is already extracted at the top of this method for category filtering
         var employerSponsor = answers.GetValueOrDefault("employerSponsor", "").ToLowerInvariant();
         var isGovernmentOfficial = answers.GetValueOrDefault("governmentOfficial", "").ToLowerInvariant();
         var isDiplomat = answers.GetValueOrDefault("diplomat", "").ToLowerInvariant();
@@ -176,7 +395,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         if (visa.Code.StartsWith("A-"))
         {
             // If purpose is diplomatic/official, keep A visas possible until we ask specific questions
-            if (purpose == "diplomatic" || purpose == "official")
+            var isDiplomaticPurposeForAVisas = purpose == "diplomatic" || purpose == "official" ||
+                                     purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                     purpose.ToLowerInvariant().Contains("nato");
+            if (isDiplomaticPurposeForAVisas)
             {
                 if (visa.Code == "A-1")
                 {
@@ -203,7 +425,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                     // A-3 requires diplomatic purpose AND working for diplomat AND NOT being a diplomat/official yourself AND NOT international org
                     if (!answers.ContainsKey("purpose"))
                         return true;
-                    if (purpose != "diplomatic")
+                    var isDiplomaticPurposeForA3 = purpose == "diplomatic" || purpose == "official" ||
+                                             purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                             purpose.ToLowerInvariant().Contains("nato");
+                    if (!isDiplomaticPurposeForA3)
                         return false;
                     if (!answers.ContainsKey("workingForDiplomat") || !answers.ContainsKey("diplomat") || !answers.ContainsKey("governmentOfficial"))
                         return true;
@@ -222,7 +447,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         if (visa.Code.StartsWith("G-"))
         {
             // G visas can be for diplomatic or official purposes with international organizations
-            if (purpose == "diplomatic" || purpose == "official" || purpose == "employment")
+            var isDiplomaticPurposeForGVisas = purpose == "diplomatic" || purpose == "official" ||
+                                     purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                     purpose.ToLowerInvariant().Contains("nato");
+            if (isDiplomaticPurposeForGVisas || purpose == "employment")
             {
                 if (visa.Code == "G-1")
                 {
@@ -262,6 +490,11 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                     // G-3 requires working for international org - if not asked yet, keep possible
                     if (!answers.ContainsKey("workingForInternationalOrg"))
                         return true;
+
+                    // If working for diplomat is explicitly yes, then this is A-3, not G-3
+                    if (answers.ContainsKey("workingForDiplomat") && answers["workingForDiplomat"] == "yes")
+                        return false;
+
                     return answers["workingForInternationalOrg"] == "yes";
                 }
                 if (visa.Code == "G-4")
@@ -315,37 +548,69 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                    visa.Code.StartsWith("F-") || visa.Code.Contains("Family");
         }
 
-        // Tourism purpose - ONLY tourism/visitor visas are possible
+        // Tourism purpose - eliminate clearly incompatible visas, but keep potentially related ones
         if (purpose == "tourism" || purpose == "visit" || purpose == "medical")
         {
-            return visa.Code == "B-2" || visa.Code.Contains("Tourist") || visa.Code.Contains("Visitor");
+            // Eliminate employment, student, diplomatic, and other clearly incompatible categories
+            if (visa.Code.StartsWith("H-") || visa.Code.StartsWith("L-") || visa.Code.StartsWith("O-") ||
+                visa.Code.StartsWith("P-") || visa.Code.StartsWith("EB-") || visa.Code.StartsWith("E-3") ||
+                visa.Code.StartsWith("F-") || visa.Code.StartsWith("M-") || visa.Code.StartsWith("J-") ||
+                visa.Code.StartsWith("A-") || visa.Code.StartsWith("G-"))
+                return false;
+
+            // Keep B-2, C visas, and any other visitor-related visas
+            return true;
         }
 
-        // Business purpose - ONLY business visitor visas (without employment), including treaty business visas
+        // Business purpose - eliminate clearly incompatible, keep business and some employment options
         if (purpose == "business")
         {
-            return visa.Code == "B-1" || visa.Code == "E-1" || visa.Code == "E-2" ||
-                   (visa.Code.Contains("Business") && employerSponsor != "yes");
+            // Eliminate student, tourist (B-2), family, diplomatic visas
+            if (visa.Code == "B-2" || visa.Code.StartsWith("F-") || visa.Code.StartsWith("M-") ||
+                visa.Code.StartsWith("J-") || visa.Code.StartsWith("K-") || visa.Code.StartsWith("IR-") ||
+                visa.Code.StartsWith("CR-") || visa.Code.StartsWith("A-") || visa.Code.StartsWith("G-"))
+                return false;
+
+            // Keep B-1, E-1, E-2, and potentially employment visas (user might have job offer)
+            return true;
         }
 
-        // Study purpose - ONLY student visas are possible
+        // Study purpose - eliminate clearly incompatible, keep student and exchange visas
         if (purpose == "study")
         {
-            return visa.Code == "F-1" || visa.Code == "M-1" || visa.Code == "J-1" ||
-                   visa.Code.Contains("Student") || visa.Code.Contains("Study");
+            // Eliminate employment, business, tourist, family, diplomatic visas
+            if (visa.Code.StartsWith("H-") || visa.Code.StartsWith("L-") || visa.Code.StartsWith("O-") ||
+                visa.Code.StartsWith("P-") || visa.Code.StartsWith("EB-") || visa.Code == "B-1" || visa.Code == "B-2" ||
+                visa.Code.StartsWith("E-") || visa.Code.StartsWith("K-") || visa.Code.StartsWith("IR-") ||
+                visa.Code.StartsWith("CR-") || visa.Code.StartsWith("A-") || visa.Code.StartsWith("G-"))
+                return false;
+
+            // Keep F-1, M-1, J-1, and other student-related visas
+            return true;
         }
 
-        // Investment purpose - ONLY investment visas are possible
+        // Investment purpose - eliminate incompatible, keep investment and business visas
         if (purpose == "investment")
         {
-            return visa.Code == "EB-5" || visa.Code == "E-1" || visa.Code == "E-2" ||
-                   visa.Code.Contains("Investor") || visa.Code.Contains("Investment");
+            // Eliminate student, tourist, family, diplomatic, regular employment visas
+            if (visa.Code.StartsWith("F-") || visa.Code.StartsWith("M-") || visa.Code.StartsWith("J-") ||
+                visa.Code == "B-2" || visa.Code.StartsWith("H-") || visa.Code.StartsWith("L-") ||
+                visa.Code.StartsWith("K-") || visa.Code.StartsWith("IR-") || visa.Code.StartsWith("CR-") ||
+                visa.Code.StartsWith("A-") || visa.Code.StartsWith("G-"))
+                return false;
+
+            // Keep EB-5, E-1, E-2, B-1, and other investment-related visas
+            return true;
         }
 
         // Diplomatic/Official purpose - ONLY diplomatic visas are possible
-        if (purpose == "diplomatic" || purpose == "official")
+        var isDiplomaticPurpose = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                 purpose.ToLowerInvariant().Contains("nato");
+        if (isDiplomaticPurpose)
         {
-            return visa.Code.StartsWith("A-") || visa.Code.Contains("Diplomatic") || visa.Code.Contains("Official");
+            return visa.Code.StartsWith("A-") || visa.Code.StartsWith("G-") ||
+                   visa.Code.Contains("Diplomatic") || visa.Code.Contains("Official");
         }
 
         // Transit purpose - ONLY transit visas are possible
@@ -354,10 +619,18 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             return visa.Code.StartsWith("C-") || visa.Code.Contains("Transit");
         }
 
-        // Exchange purpose - ONLY exchange visas are possible
+        // Exchange purpose - keep exchange and some student visas
         if (purpose == "exchange")
         {
-            return visa.Code == "J-1" || visa.Code.Contains("Exchange");
+            // Eliminate employment, business, tourist, family, diplomatic visas
+            if (visa.Code.StartsWith("H-") || visa.Code.StartsWith("L-") || visa.Code.StartsWith("O-") ||
+                visa.Code.StartsWith("P-") || visa.Code.StartsWith("EB-") || visa.Code == "B-1" || visa.Code == "B-2" ||
+                visa.Code.StartsWith("E-") || visa.Code.StartsWith("K-") || visa.Code.StartsWith("IR-") ||
+                visa.Code.StartsWith("CR-") || visa.Code.StartsWith("A-") || visa.Code.StartsWith("G-"))
+                return false;
+
+            // Keep J-1, F-1 (academic exchange), and other exchange-related visas
+            return true;
         }
 
         // === Enhanced B/C Series Visa Logic ===
@@ -404,16 +677,65 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         if (visa.Code == "M-1") return isStudent == "yes" && studyLevel == "vocational";
         if (visa.Code == "J-1") return purpose == "exchange" || answers.GetValueOrDefault("exchangeProgram", "") == "yes";
 
-        // Employment purpose - ONLY employment-based visas are possible
+        // Employment purpose - eliminate clearly incompatible visas
         if (purpose == "employment")
         {
-            // ONLY employment-based visas are possible when purpose is employment
-            // NOTE: E-1/E-2 are business visas, not employment visas
-            bool isEmploymentVisa = visa.Code.StartsWith("H-") || visa.Code.StartsWith("L-") || visa.Code.StartsWith("O-") ||
-                   visa.Code.StartsWith("P-") || visa.Code.StartsWith("EB-") || visa.Code == "E-3" ||
-                   visa.Code == "D" || visa.Code.Contains("Work") || visa.Code.Contains("Employment");
+            // If transferring within same company, ONLY L-1A and L-1B are valid
+            if (answers.ContainsKey("sameCompany") && answers["sameCompany"] == "yes")
+            {
+                if (visa.Code != "L-1A" && visa.Code != "L-1B")
+                    return false; // Eliminate all non-transfer visas
+            }
 
-            if (!isEmploymentVisa) return false;
+            // If NOT transferring (answered no to same company), eliminate L-1 visas
+            if (answers.ContainsKey("sameCompany") && answers["sameCompany"] == "no")
+            {
+                if (visa.Code == "L-1A" || visa.Code == "L-1B")
+                    return false; // Eliminate transfer visas
+            }
+
+            // Eliminate citizenship-specific employment visas if user doesn't have the required citizenship
+            // E-3: Australian citizens only
+            if (visa.Code == "E-3")
+            {
+                var isAustralian = answers.GetValueOrDefault("australian", "no");
+                if (isAustralian == "no") return false;
+            }
+
+            // TN: Canadian or Mexican citizens only
+            if (visa.Code == "TN" || visa.Code.StartsWith("TN-"))
+            {
+                var isCanadian = answers.GetValueOrDefault("canadian", "no");
+                var isMexican = answers.GetValueOrDefault("mexican", "no");
+                if (isCanadian == "no" && isMexican == "no") return false;
+            }
+
+            // H-1B1: Chilean or Singaporean citizens only
+            if (visa.Code == "H-1B1")
+            {
+                var isChilean = answers.GetValueOrDefault("chilean", "no");
+                var isSingaporean = answers.GetValueOrDefault("singaporean", "no");
+                if (isChilean == "no" && isSingaporean == "no") return false;
+            }
+
+            // Eliminate student, tourist, family, diplomatic, business-only visas
+            if (visa.Code == "B-1" || visa.Code == "B-2" || visa.Code == "E-1" || visa.Code == "E-2" ||
+                visa.Code.StartsWith("F-") || visa.Code.StartsWith("M-") || visa.Code.StartsWith("J-") ||
+                visa.Code.StartsWith("K-") || visa.Code.StartsWith("IR-") || visa.Code.StartsWith("CR-") ||
+                visa.Code.StartsWith("A-") || visa.Code.StartsWith("G-") || visa.Code.StartsWith("C-"))
+                return false;
+
+            // Eliminate derivative (dependent) visas - these are for family members, not primary employment
+            if (visa.Code == "H-4" || visa.Code == "L-2" || visa.Code == "O-3" || visa.Code == "P-4" ||
+                visa.Code == "E-3D" || visa.Code == "TN-2")
+                return false;
+
+            // Eliminate Diversity lottery - not an employment visa
+            if (visa.Code == "Diversity")
+                return false;
+
+            // Keep H-, L-, O-, P-, EB-, E-3, TN and other employment-related visas
+            // This allows the system to ask follow-up questions about skills, sponsorship, etc.
 
             // Work visas require employer sponsorship, but only filter out if we have that answer
             if (visa.Code.StartsWith("H-") || visa.Code.StartsWith("L-") || visa.Code.StartsWith("O-") || visa.Code.StartsWith("P-") ||
@@ -431,35 +753,192 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             // This allows specific visa requirements (like O-1 extraordinary ability) to be enforced
         }
 
-        // Work visas require employer sponsorship (legacy check for non-employment purposes)
+        // Work visas require employer sponsorship - but only eliminate if explicitly "no"
+        // Don't return true early - let specific visa checks below handle detailed requirements
         if (visa.Code.StartsWith("H-") || visa.Code.StartsWith("L-") || visa.Code.StartsWith("O-") || visa.Code.StartsWith("P-"))
         {
-            if (employerSponsor != "yes" && hasJobOffer != "yes") return false;
+            // Only eliminate if we've asked about sponsorship/job offer AND the answer is explicitly "no"
+            if ((answers.ContainsKey("employerSponsor") && employerSponsor == "no") ||
+                (answers.ContainsKey("hasJobOffer") && hasJobOffer == "no" && !answers.ContainsKey("employerSponsor")))
+                return false;
+
+            // Don't return true here - fall through to specific visa checks below
+            // This allows H-1B to check education level, L-1 to check same company, etc.
         }
 
         // H-1B: Specialty occupation
         if (visa.Code == "H-1B")
         {
-            return purpose == "employment" && employerSponsor == "yes" &&
-                   (educationLevel == "bachelor" || educationLevel == "master" || educationLevel == "phd");
+            // Must be employment purpose
+            if (purpose != "employment") return false;
+
+            // If we've asked about employer sponsor and it's no, eliminate
+            if (answers.ContainsKey("employerSponsor") && employerSponsor != "yes") return false;
+
+            // If we've asked about education and they don't have bachelor+, eliminate
+            if (answers.ContainsKey("educationLevel"))
+            {
+                if (educationLevel != "bachelor" && educationLevel != "master" && educationLevel != "phd")
+                    return false;
+            }
+
+            // Otherwise keep it possible until we have more info
+            return true;
         }
 
         // H-2A/H-2B: Temporary agricultural/non-agricultural workers
-        if (visa.Code == "H-2A") return purpose == "employment" && answers.GetValueOrDefault("workType", "") == "agricultural";
-        if (visa.Code == "H-2B") return purpose == "employment" && answers.GetValueOrDefault("workType", "") == "seasonal";
-
-        // L-1: Intracompany transferee
-        if (visa.Code == "L-1")
+        // These are for unskilled/semi-skilled labor - eliminate if applicant has a Bachelor's degree
+        if (visa.Code == "H-2A")
         {
-            return purpose == "employment" && employerSponsor == "yes" &&
-                   answers.GetValueOrDefault("sameCompany", "") == "yes";
+            if (purpose != "employment") return false;
+
+            // Eliminate if applicant has bachelor's degree or higher (inappropriate for degree holders)
+            if (answers.ContainsKey("educationLevel"))
+            {
+                if (educationLevel == "bachelor" || educationLevel == "master" || educationLevel == "phd")
+                    return false;
+            }
+
+            if (answers.ContainsKey("workType") && answers["workType"] != "agricultural") return false;
+            return true;
+        }
+
+        if (visa.Code == "H-2B")
+        {
+            if (purpose != "employment") return false;
+
+            // Eliminate if applicant has bachelor's degree or higher (inappropriate for degree holders)
+            if (answers.ContainsKey("educationLevel"))
+            {
+                if (educationLevel == "bachelor" || educationLevel == "master" || educationLevel == "phd")
+                    return false;
+            }
+
+            if (answers.ContainsKey("workType") && answers["workType"] != "seasonal") return false;
+            return true;
+        }
+
+        // L-1A/L-1B: Intracompany transferee
+        if (visa.Code == "L-1A" || visa.Code == "L-1B")
+        {
+            // Must be employment purpose
+            if (purpose != "employment") return false;
+
+            // If we've asked about employer sponsor and it's no, eliminate
+            if (answers.ContainsKey("employerSponsor") && employerSponsor != "yes") return false;
+
+            // If we've asked about same company and it's no, eliminate
+            if (answers.ContainsKey("sameCompany") && answers["sameCompany"] != "yes") return false;
+
+            // Distinguish between L-1A (executive/manager) and L-1B (specialized knowledge)
+            if (answers.ContainsKey("managerialRole"))
+            {
+                var role = answers["managerialRole"];
+                if (visa.Code == "L-1A" && role != "executive") return false;
+                if (visa.Code == "L-1B" && role != "specialized") return false;
+            }
+
+            // Otherwise keep it possible until we have more info
+            return true;
         }
 
         // O-1: Extraordinary ability
         if (visa.Code == "O-1")
         {
-            return purpose == "employment" && employerSponsor == "yes" &&
-                   answers.GetValueOrDefault("extraordinaryAbility", "") == "yes";
+            // Must be employment purpose
+            if (purpose != "employment") return false;
+
+            // If we've asked about employer sponsor and it's no, eliminate
+            if (answers.ContainsKey("employerSponsor") && employerSponsor != "yes") return false;
+
+            // If we've asked about extraordinary ability and it's no, eliminate
+            if (answers.ContainsKey("extraordinaryAbility") && answers["extraordinaryAbility"] != "yes") return false;
+
+            // Otherwise keep it possible until we have more info
+            return true;
+        }
+
+        // P-1: Athletes, entertainers, and their support personnel
+        if (visa.Code == "P-1")
+        {
+            // Must be employment purpose
+            if (purpose != "employment") return false;
+
+            // Requires employer sponsorship
+            if (answers.ContainsKey("employerSponsor") && employerSponsor != "yes") return false;
+
+            // Requires athlete or entertainer status
+            if (answers.ContainsKey("athleteOrEntertainer") && answers["athleteOrEntertainer"] != "yes") return false;
+
+            // Otherwise keep it possible
+            return true;
+        }
+
+        // P-2: Artists/entertainers in reciprocal exchange programs
+        if (visa.Code == "P-2")
+        {
+            // Must be employment purpose
+            if (purpose != "employment") return false;
+
+            // Requires employer sponsorship
+            if (answers.ContainsKey("employerSponsor") && employerSponsor != "yes") return false;
+
+            // Requires athlete or entertainer status
+            if (answers.ContainsKey("athleteOrEntertainer") && answers["athleteOrEntertainer"] != "yes") return false;
+
+            // Requires reciprocal exchange program
+            if (answers.ContainsKey("reciprocalExchange") && answers["reciprocalExchange"] != "yes") return false;
+
+            // Otherwise keep it possible
+            return true;
+        }
+
+        // P-3: Artists/entertainers in culturally unique programs
+        if (visa.Code == "P-3")
+        {
+            // Must be employment purpose
+            if (purpose != "employment") return false;
+
+            // Requires employer sponsorship
+            if (answers.ContainsKey("employerSponsor") && employerSponsor != "yes") return false;
+
+            // Requires athlete or entertainer status
+            if (answers.ContainsKey("athleteOrEntertainer") && answers["athleteOrEntertainer"] != "yes") return false;
+
+            // Requires culturally unique program
+            if (answers.ContainsKey("culturallyUnique") && answers["culturallyUnique"] != "yes") return false;
+
+            // Otherwise keep it possible
+            return true;
+        }
+
+        // H-1B1: Specialty occupation for Chilean and Singaporean citizens
+        if (visa.Code == "H-1B1")
+        {
+            // Must be employment purpose
+            if (purpose != "employment") return false;
+
+            // Requires employer sponsorship
+            if (answers.ContainsKey("employerSponsor") && employerSponsor != "yes") return false;
+
+            // Requires bachelor's degree or higher
+            if (answers.ContainsKey("educationLevel"))
+            {
+                if (educationLevel != "bachelor" && educationLevel != "master" && educationLevel != "phd")
+                    return false;
+            }
+
+            // Must be Chilean or Singaporean citizen
+            var isChilean = answers.GetValueOrDefault("chilean", "") == "yes";
+            var isSingaporean = answers.GetValueOrDefault("singaporean", "") == "yes";
+
+            if (!isChilean && !isSingaporean) return false;
+
+            // Requires specialty occupation
+            if (answers.ContainsKey("specialtyOccupation") && answers["specialtyOccupation"] != "yes") return false;
+
+            // Otherwise keep it possible
+            return true;
         }
 
         // Investment visas (EB-5, E-1, E-2)
@@ -549,8 +1028,20 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                     return true;
                 }
 
-                // If we have both answers, apply full criteria
-                return treatyCountry == "yes" && investment == "yes";
+                // If we have both treaty and investment answers, check investment criteria
+                if (answers.ContainsKey("investment"))
+                {
+                    // E-2 requires investment=yes and tradeActivity=no (if tradeActivity was asked)
+                    var tradeActivity = answers.GetValueOrDefault("tradeActivity", "");
+                    if (answers.ContainsKey("tradeActivity") && tradeActivity == "yes")
+                    {
+                        return false; // Can't be E-2 if doing trade activity (that's E-1)
+                    }
+                    return treatyCountry == "yes" && investment == "yes";
+                }
+
+                // If treatyCountry is yes but investment hasn't been asked yet, keep possible
+                return treatyCountry == "yes";
             }
 
             return false;
@@ -562,6 +1053,29 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             return purpose == "employment" && answers.GetValueOrDefault("employerSponsor", "") == "yes" &&
                    answers.GetValueOrDefault("australian", "") == "yes" &&
                    answers.GetValueOrDefault("specialtyOccupation", "") == "yes";
+        }
+
+        // TN: NAFTA/USMCA Professional (Canadian or Mexican citizens only)
+        if (visa.Code == "TN" || visa.Code.StartsWith("TN-"))
+        {
+            // Must be employment purpose
+            if (purpose != "employment") return false;
+
+            // Must be Canadian or Mexican citizen
+            var isCanadian = answers.GetValueOrDefault("canadian", "") == "yes";
+            var isMexican = answers.GetValueOrDefault("mexican", "") == "yes";
+
+            if (!isCanadian && !isMexican) return false;
+
+            // TN-2 is for dependents, not primary employment
+            if (visa.Code == "TN-2") return false;
+
+            // If we have employer sponsor info, must have it
+            if (answers.ContainsKey("employerSponsor") && answers["employerSponsor"] != "yes")
+                return false;
+
+            // Otherwise keep TN possible
+            return true;
         }
 
         // EB-1: Priority Workers (immigrant)
@@ -596,13 +1110,18 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         // The specific filtering happens in the individual visa checks above
         if (purpose == "employment")
         {
+            // EB- visas are IMMIGRATION (permanent residence), not temporary employment
+            // Eliminate EB- visas when purpose is employment
+            if (visa.Code.StartsWith("EB-"))
+                return false;
+
             bool isEmploymentVisa = visa.Code.StartsWith("H-") || visa.Code.StartsWith("L-") || visa.Code.StartsWith("O-") ||
-                   visa.Code.StartsWith("P-") || visa.Code.StartsWith("EB-") || visa.Code.StartsWith("E-") ||
-                   visa.Code == "D" || visa.Code.Contains("Work") || visa.Code.Contains("Employment");
+                   visa.Code.StartsWith("P-") || visa.Code.StartsWith("E-") ||
+                   visa.Code == "D" || visa.Code == "TN" || visa.Code.Contains("Work") || visa.Code.Contains("Employment");
 
             if (isEmploymentVisa)
             {
-                // Allow employment visas to pass through - specific filtering happens above
+                // Allow temporary employment visas to pass through - specific filtering happens above
                 return true;
             }
         }
@@ -620,7 +1139,55 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         var workingForDiplomat = answers.GetValueOrDefault("workingForDiplomat", "").ToLowerInvariant();
         var workingForInternationalOrg = answers.GetValueOrDefault("workingForInternationalOrg", "").ToLowerInvariant();
 
+        // CRITICAL A-1 PROTECTION: If this is diplomatic/official purpose, NEVER complete early
+        // until we have answered diplomat, governmentOfficial, and internationalOrg questions
+        var isDiplomaticPurpose = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                 purpose.ToLowerInvariant().Contains("nato");
+
+        if (isDiplomaticPurpose)
+        {
+            var hasDiplomat = answers.ContainsKey("diplomat");
+            var hasGovernmentOfficial = answers.ContainsKey("governmentOfficial");
+            var hasInternationalOrg = answers.ContainsKey("internationalOrg");
+
+            // If we're missing ANY of the 3 critical questions, NEVER complete early
+            if (!hasDiplomat || !hasGovernmentOfficial || !hasInternationalOrg)
+            {
+                return false; // Block ALL early completion for diplomatic cases
+            }
+
+            // Check for potential A-3 case: diplomat=no, governmentOfficial=no, internationalOrg=no
+            var diplomat = answers.GetValueOrDefault("diplomat", "").ToLowerInvariant();
+            var governmentOfficial = answers.GetValueOrDefault("governmentOfficial", "").ToLowerInvariant();
+            var internationalOrgValue = answers.GetValueOrDefault("internationalOrg", "").ToLowerInvariant();
+
+            if (diplomat == "no" && governmentOfficial == "no" && internationalOrgValue == "no")
+            {
+                var hasWorkingForDiplomat = answers.ContainsKey("workingForDiplomat");
+                var hasWorkingForInternationalOrg = answers.ContainsKey("workingForInternationalOrg");
+
+                // If we haven't asked about working for diplomat/international org yet, don't complete early
+                if (!hasWorkingForDiplomat || !hasWorkingForInternationalOrg)
+                {
+                    return false; // Need to ask A-3 specific questions
+                }
+            }
+        }
+
         // PRIORITY COMPLETION CHECKS FIRST - Handle new visa types that need early completion
+
+        // PREVENT early completion when both L-1A and L-1B are possible - need to ask managerialRole
+        if (purpose == "employment" && possibleVisaTypes.Any(v => v.Code == "L-1A") && possibleVisaTypes.Any(v => v.Code == "L-1B"))
+        {
+            // Both L-1A and L-1B are possible - must ask managerialRole question before completing
+            if (!answers.ContainsKey("managerialRole"))
+            {
+                // Log to verify this check is running
+                Console.WriteLine("BLOCKING COMPLETION: Both L-1A and L-1B present, managerialRole not answered");
+                return false; // Block completion until we ask managerialRole
+            }
+        }
 
         // Check D visa completion criteria (employment purpose, crew member, ship/aircraft) - HIGHEST PRIORITY
         if (purpose == "employment" && answers.GetValueOrDefault("crewMember", "") == "yes" &&
@@ -645,6 +1212,17 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
 
         // Aggressive completion for diplomatic visas - if we have enough info to determine visa type uniquely
 
+        // Check A-1 completion criteria (diplomatic purpose, diplomat, government official, not international org)
+        if ((purpose == "diplomatic" || purpose.ToLowerInvariant().Contains("diplomatic") || purpose.ToLowerInvariant().Contains("nato")) &&
+            isDiplomat == "yes" && isGovernmentOfficial == "yes" && internationalOrg == "no")
+        {
+            // A-1 has all required answers - force completion if A-1 is in possible types
+            if (possibleVisaTypes.Any(v => v.Code == "A-1"))
+            {
+                return true;
+            }
+        }
+
         // Check A-2 completion criteria (official purpose, government official, not diplomat, not international org, not working for diplomat)
         if (purpose == "official" && isDiplomat == "no" && isGovernmentOfficial == "yes" && internationalOrg == "no" && workingForDiplomat == "no")
         {
@@ -656,7 +1234,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         // Check A-3 completion criteria (diplomatic purpose, not diplomat, not government official, not international org, working for diplomat)
-        if (purpose == "diplomatic" && isDiplomat == "no" && isGovernmentOfficial == "no" && internationalOrg == "no" && workingForDiplomat == "yes")
+        var isDiplomaticPurposeForA3Check = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                 purpose.ToLowerInvariant().Contains("nato");
+        if (isDiplomaticPurposeForA3Check && isDiplomat == "no" && isGovernmentOfficial == "no" && internationalOrg == "no" && workingForDiplomat == "yes")
         {
             // A-3 has all required answers - force completion if A-3 is in possible types
             if (possibleVisaTypes.Any(v => v.Code == "A-3"))
@@ -666,7 +1247,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         // Check G-1 completion criteria (employment/diplomatic/official purpose, international org, working for international org)
-        if ((purpose == "employment" || purpose == "diplomatic" || purpose == "official") && internationalOrg == "yes" && workingForInternationalOrg == "yes")
+        var isDiplomaticPurposeForG1Check = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                 purpose.ToLowerInvariant().Contains("nato");
+        if ((purpose == "employment" || isDiplomaticPurposeForG1Check) && internationalOrg == "yes" && workingForInternationalOrg == "yes")
         {
             // G-1 has all required answers - force completion if G-1 is in possible types
             if (possibleVisaTypes.Any(v => v.Code == "G-1"))
@@ -676,7 +1260,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         }
 
         // Check G-2 completion criteria (official/diplomatic purpose, international org, working for international org, not diplomat, not government official)
-        if ((purpose == "official" || purpose == "diplomatic") && internationalOrg == "yes" && workingForInternationalOrg == "yes" && isDiplomat == "no" && isGovernmentOfficial == "no")
+        var isDiplomaticPurposeForG2Check = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                 purpose.ToLowerInvariant().Contains("nato");
+        if (isDiplomaticPurposeForG2Check && internationalOrg == "yes" && workingForInternationalOrg == "yes" && isDiplomat == "no" && isGovernmentOfficial == "no")
         {
             // G-2 has all required answers - force completion if G-2 is in possible types
             if (possibleVisaTypes.Any(v => v.Code == "G-2"))
@@ -689,9 +1276,9 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
 
         var employerSponsor = answers.GetValueOrDefault("employerSponsor", "");
 
-        // Check B-1 completion criteria (business purpose, no employer sponsor)
+        // Check B-1 completion criteria (business purpose, prioritize treaty check)
         // IMPORTANT: For business purposes, we must check E-1/E-2 eligibility first before settling on B-1
-        if (purpose == "business" && employerSponsor == "no")
+        if (purpose == "business")
         {
             // Only complete with B-1 if we've already eliminated E-1/E-2 by checking business-specific questions
             var treatyCountry = answers.GetValueOrDefault("treatyCountry", "");
@@ -706,7 +1293,16 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             // If treatyCountry is "no", then E-1/E-2 are not possible, so B-1 is appropriate
             if (treatyCountry == "no")
             {
-                if (possibleVisaTypes.Any(v => v.Code == "B-1") && possibleVisaTypes.Count == 1)
+                if (possibleVisaTypes.Any(v => v.Code == "B-1"))
+                {
+                    return true;
+                }
+            }
+
+            // Alternative completion: if we have employerSponsor="no", B-1 is appropriate
+            if (employerSponsor == "no" && hasCheckedTreatyCountry && treatyCountry == "no")
+            {
+                if (possibleVisaTypes.Any(v => v.Code == "B-1"))
                 {
                     return true;
                 }
@@ -759,14 +1355,25 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             // This ensures we don't complete prematurely when C-2 is also possible
             var isUNRelatedAnswered = answers.ContainsKey("isUNRelated");
             var isUNRelatedValue = answers.GetValueOrDefault("isUNRelated", "");
+            var crewMemberAnswered = answers.ContainsKey("crewMember");
+            var crewMemberValue = answers.GetValueOrDefault("crewMember", "");
 
-            if (isUNRelatedAnswered && isUNRelatedValue != "yes" && possibleVisaTypes.Any(v => v.Code == "C-1"))
+            // Enhanced C-1 completion: Complete when we have all necessary C-1 answers
+            if (isUNRelatedAnswered && isUNRelatedValue != "yes" &&
+                crewMemberAnswered && crewMemberValue != "yes" &&
+                possibleVisaTypes.Any(v => v.Code == "C-1"))
             {
                 return true;
             }
 
             // If isUNRelated hasn't been asked yet and both C-1 and C-2 are possible, don't complete yet
             if (!isUNRelatedAnswered && possibleVisaTypes.Any(v => v.Code == "C-1") && possibleVisaTypes.Any(v => v.Code == "C-2"))
+            {
+                return false;
+            }
+
+            // If crewMember hasn't been asked yet and C-1/D is possible, don't complete yet
+            if (!crewMemberAnswered && possibleVisaTypes.Any(v => v.Code == "C-1" || v.Code == "C-1/D"))
             {
                 return false;
             }
@@ -816,9 +1423,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             }
         }
 
-        // Check E-1 completion criteria (business purpose, treaty country, trade activity)
+        // Check E-1 completion criteria (business purpose, treaty country, trade activity, NOT investment)
         if (purpose == "business" && answers.GetValueOrDefault("treatyCountry", "") == "yes" &&
-            answers.GetValueOrDefault("tradeActivity", "") == "yes")
+            answers.GetValueOrDefault("tradeActivity", "") == "yes" &&
+            answers.GetValueOrDefault("investment", "") == "no")
         {
             if (possibleVisaTypes.Any(v => v.Code == "E-1"))
             {
@@ -826,9 +1434,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             }
         }
 
-        // Check E-2 completion criteria (business purpose, treaty country, investment)
+        // Check E-2 completion criteria (business purpose, treaty country, investment, NOT trade activity)
         if (purpose == "business" && answers.GetValueOrDefault("treatyCountry", "") == "yes" &&
-            answers.GetValueOrDefault("investment", "") == "yes")
+            answers.GetValueOrDefault("investment", "") == "yes" &&
+            answers.GetValueOrDefault("tradeActivity", "") == "no")
         {
             if (possibleVisaTypes.Any(v => v.Code == "E-2"))
             {
@@ -917,8 +1526,11 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         var questions = GetPossibleQuestions();
 
         // For diplomatic/official purposes, bypass discrimination scoring and use direct fallback order
-        var purpose = answers.GetValueOrDefault("purpose", "");
-        if (purpose == "diplomatic" || purpose == "official")
+        var purpose = answers.GetValueOrDefault("purpose", "").ToLowerInvariant();
+        var isDiplomaticPurpose = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.Contains("diplomatic") ||
+                                 purpose.Contains("nato");
+        if (isDiplomaticPurpose)
         {
             // Direct diplomatic question order - skip discrimination algorithm
             var diplomaticOrder = new[] { "diplomat", "governmentOfficial", "internationalOrg", "workingForInternationalOrg", "workingForDiplomat", "workingForG4" };
@@ -958,8 +1570,8 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         // For business purposes, use business question order
         if (purpose == "business")
         {
-            // Business question order - first ask employer sponsor, then prioritize treaty business visas (E-1, E-2) over general business (B-1)
-            var businessOrder = new[] { "employerSponsor", "treatyCountry", "tradeActivity", "investment" };
+            // Business question order - first ask treaty country to distinguish E-1/E-2 from B-1, then dive into treaty specifics
+            var businessOrder = new[] { "treatyCountry", "tradeActivity", "investment", "employerSponsor" };
             foreach (var questionKey in businessOrder)
             {
                 if (!answers.ContainsKey(questionKey))
@@ -970,10 +1582,7 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                         question.RemainingVisaTypes = possibleVisaTypes.Count;
                         return Task.FromResult(question);
                     }
-                    else
-                    {
-                        _logger.LogWarning($"Business question not found: {questionKey}");
-                    }
+                    // Business question not found - continue to next
                 }
             }
         }
@@ -981,17 +1590,82 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         // For employment purposes, use employment question order
         if (purpose == "employment")
         {
-            // Employment question order - prioritize employer-sponsored jobs first, then specialty questions
-            var employmentOrder = new[] { "employerSponsor", "australian", "specialtyOccupation", "crewMember", "shipOrAircraft", "priorityWorker", "extraordinaryAbility" };
+            // Employment question order - ask discriminating questions that separate different employment visas
+            // Order is critical: ask broadest questions first, then narrow down with specific qualifications
+            var employmentOrder = new[] {
+                "employerSponsor",      // Separates sponsored (H, L, O, P) from self-petition (EB-1A, EB-5)
+                "educationLevel",       // Separates H-1B (bachelor+) from H-2A/H-2B (no requirement)
+                "sameCompany",          // Identifies L-1 (intracompany transfer)
+                "managerialRole",       // Distinguishes L-1A (executive/manager) from L-1B (specialized knowledge)
+                "extraordinaryAbility", // Identifies O-1 and EB-1
+                "athleteOrEntertainer", // Identifies P-1, P-2, P-3 visas
+                "reciprocalExchange",   // Distinguishes P-2 from P-1/P-3
+                "culturallyUnique",     // Distinguishes P-3 from P-1/P-2
+                "specialtyOccupation",  // Further refines H-1B (no need to ask citizenship - auto-enriched)
+                "crewMember",           // Identifies D visa
+                "shipOrAircraft",       // Refines D visa
+                "priorityWorker"        // Identifies EB-1, EB-2, EB-3
+            };
+
             foreach (var questionKey in employmentOrder)
             {
                 if (!answers.ContainsKey(questionKey))
                 {
+                    // Skip managerialRole question if neither L-1A nor L-1B are possible
+                    if (questionKey == "managerialRole")
+                    {
+                        var hasL1 = possibleVisaTypes.Any(v => v.Code == "L-1A" || v.Code == "L-1B");
+                        if (!hasL1)
+                        {
+                            Console.WriteLine("Skipping managerialRole question - no L-1 visas possible");
+                            continue; // Skip this question
+                        }
+                    }
+
+                    // Skip athleteOrEntertainer question if no P visas are possible
+                    if (questionKey == "athleteOrEntertainer")
+                    {
+                        var hasP = possibleVisaTypes.Any(v => v.Code == "P-1" || v.Code == "P-2" || v.Code == "P-3");
+                        if (!hasP)
+                        {
+                            Console.WriteLine("Skipping athleteOrEntertainer question - no P visas possible");
+                            continue; // Skip this question
+                        }
+                    }
+
+                    // Skip reciprocalExchange question if P-2 is not possible
+                    if (questionKey == "reciprocalExchange")
+                    {
+                        var hasP2 = possibleVisaTypes.Any(v => v.Code == "P-2");
+                        if (!hasP2)
+                        {
+                            Console.WriteLine("Skipping reciprocalExchange question - P-2 not possible");
+                            continue; // Skip this question
+                        }
+                    }
+
+                    // Skip culturallyUnique question if P-3 is not possible
+                    if (questionKey == "culturallyUnique")
+                    {
+                        var hasP3 = possibleVisaTypes.Any(v => v.Code == "P-3");
+                        if (!hasP3)
+                        {
+                            Console.WriteLine("Skipping culturallyUnique question - P-3 not possible");
+                            continue; // Skip this question
+                        }
+                    }
+
+                    Console.WriteLine($"Employment question needed: {questionKey}");
                     var question = questions.FirstOrDefault(q => q.Key == questionKey);
                     if (question != null)
                     {
+                        Console.WriteLine($"Returning question: {questionKey}");
                         question.RemainingVisaTypes = possibleVisaTypes.Count;
                         return Task.FromResult(question);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"WARNING: Question {questionKey} not found in questions list!");
                     }
                 }
             }
@@ -1024,7 +1698,8 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                 if (answers.ContainsKey(question.Key)) continue; // Already answered
 
                 // Calculate how well this question discriminates between remaining visa types
-                var discriminationScore = CalculateDiscriminationScore(question, possibleVisaTypes, answers);
+                // Note: Passing empty list for categoryClasses since this is used for scoring only, not filtering
+                var discriminationScore = CalculateDiscriminationScore(question, possibleVisaTypes, answers, new List<CategoryClass>());
                 if (discriminationScore > 0)
                 {
                     question.RemainingVisaTypes = possibleVisaTypes.Count;
@@ -1045,7 +1720,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         // Prioritize questions based on the stated purpose
         string[] fallbackOrder;
 
-        if (purpose == "diplomatic" || purpose == "official")
+        var isDiplomaticPurposeForQuestionOrder = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.ToLowerInvariant().Contains("diplomatic") ||
+                                 purpose.ToLowerInvariant().Contains("nato");
+        if (isDiplomaticPurposeForQuestionOrder)
         {
             // Prioritize diplomatic-specific questions only - ask main questions first, then refinement questions
             fallbackOrder = new[] { "diplomat", "governmentOfficial", "internationalOrg", "workingForDiplomat", "workingForInternationalOrg", "workingForG4" };
@@ -1094,14 +1772,17 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             }
         }
 
-        // If all else fails, return a generic question but NOT nationality (since we have it from profile)
+        // If we've asked all relevant questions and still have multiple visa types remaining,
+        // return completion signal. The frontend should show the remaining visa types
+        // and let the user proceed to next steps (case creation, attorney consultation, etc.)
         return Task.FromResult(new InterviewQuestion
         {
-            Key = "additionalInfo",
-            Question = "Please provide any additional information about your travel purpose.",
-            Type = "text",
+            Key = "complete",
+            Question = "Based on your answers, we've identified the visa types that may be suitable for you.",
+            Type = "complete",
             Required = false,
-            RemainingVisaTypes = possibleVisaTypes.Count
+            RemainingVisaTypes = possibleVisaTypes.Count,
+            RemainingVisaCodes = possibleVisaTypes.Select(v => v.Code).OrderBy(c => c).ToList()
         });
     }
 
@@ -1243,6 +1924,50 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                 {
                     new() { Value = "yes", Label = "Yes", Description = "I will transfer within the same company" },
                     new() { Value = "no", Label = "No", Description = "I will work for a different company" }
+                }
+            },
+            new()
+            {
+                Key = "managerialRole",
+                Question = "What is your role in the company?",
+                Type = "radio",
+                Options = new()
+                {
+                    new() { Value = "executive", Label = "Executive/Manager", Description = "I manage people or a major function/department" },
+                    new() { Value = "specialized", Label = "Specialized Knowledge", Description = "I have specialized knowledge of the company's products, services, or processes" }
+                }
+            },
+            new()
+            {
+                Key = "athleteOrEntertainer",
+                Question = "Are you a professional athlete or entertainer?",
+                Type = "radio",
+                Options = new()
+                {
+                    new() { Value = "yes", Label = "Yes", Description = "I am a professional athlete, artist, or entertainer" },
+                    new() { Value = "no", Label = "No", Description = "I am not in athletics or entertainment" }
+                }
+            },
+            new()
+            {
+                Key = "reciprocalExchange",
+                Question = "Are you participating in a reciprocal exchange program?",
+                Type = "radio",
+                Options = new()
+                {
+                    new() { Value = "yes", Label = "Yes", Description = "I am part of a reciprocal exchange program between U.S. and foreign organizations" },
+                    new() { Value = "no", Label = "No", Description = "I am not in a reciprocal exchange program" }
+                }
+            },
+            new()
+            {
+                Key = "culturallyUnique",
+                Question = "Are you performing in a culturally unique program?",
+                Type = "radio",
+                Options = new()
+                {
+                    new() { Value = "yes", Label = "Yes", Description = "I will participate in a cultural event, competition, or performance that is unique to my country or culture" },
+                    new() { Value = "no", Label = "No", Description = "My performance is not culturally unique" }
                 }
             },
             new()
@@ -1510,7 +2235,7 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         };
     }
 
-    private static double CalculateDiscriminationScore(InterviewQuestion question, List<VisaType> possibleVisaTypes, Dictionary<string, string> answers)
+    private static double CalculateDiscriminationScore(InterviewQuestion question, List<VisaType> possibleVisaTypes, Dictionary<string, string> answers, List<CategoryClass> categoryClasses)
     {
         // Simple scoring: return 1 if the question helps discriminate, 0 if not useful
         var testAnswers = new Dictionary<string, string>(answers);
@@ -1519,7 +2244,7 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         foreach (var option in question.Options)
         {
             testAnswers[question.Key] = option.Value;
-            var remainingTypes = possibleVisaTypes.Where(v => IsVisaTypePossible(v, testAnswers)).Count();
+            var remainingTypes = possibleVisaTypes.Where(v => IsVisaTypePossible(v, testAnswers, categoryClasses)).Count();
             var score = possibleVisaTypes.Count - remainingTypes;
             if (score > bestScore) bestScore = score;
         }
@@ -1527,12 +2252,15 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         return bestScore;
     }
 
-    private static Dictionary<string, string> EnrichAnswersWithUserData(Dictionary<string, string> answers, User? user)
+    private Dictionary<string, string> EnrichAnswersWithUserData(Dictionary<string, string> answers, User? user)
     {
-        var enriched = new Dictionary<string, string>(answers);
+        var enriched = new Dictionary<string, string>(answers ?? new Dictionary<string, string>());
 
         if (user != null)
         {
+            _logger.LogInformation("ENRICHMENT: User ID {UserId}, DOB {DOB}, MaritalStatus {MaritalStatus}",
+                user.Id, user.DateOfBirth, user.MaritalStatus);
+
             // Add user profile data if not already answered in interview
             if (!enriched.ContainsKey("nationality") && !string.IsNullOrEmpty(user.Nationality))
                 enriched["nationality"] = user.Nationality.ToLowerInvariant();
@@ -1544,18 +2272,52 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
                 enriched["country"] = user.Country.ToLowerInvariant();
 
             if (!enriched.ContainsKey("maritalStatus") && !string.IsNullOrEmpty(user.MaritalStatus))
+            {
                 enriched["maritalStatus"] = user.MaritalStatus.ToLowerInvariant();
+                _logger.LogInformation("ENRICHMENT: Added maritalStatus = {MaritalStatus}", enriched["maritalStatus"]);
+            }
 
             if (!enriched.ContainsKey("dateOfBirth") && user.DateOfBirth.HasValue)
             {
                 var age = DateTime.Now.Year - user.DateOfBirth.Value.Year;
                 if (DateTime.Now.DayOfYear < user.DateOfBirth.Value.DayOfYear) age--;
                 enriched["age"] = age.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                _logger.LogInformation("ENRICHMENT: Added age = {Age}", enriched["age"]);
             }
-
             // Guardian information for minors
             if (!enriched.ContainsKey("hasGuardian") && !string.IsNullOrEmpty(user.GuardianEmail))
                 enriched["hasGuardian"] = "yes";
+
+            // Auto-answer country-specific citizenship questions based on user's citizenship or nationality
+            var citizenshipOrNationality = !string.IsNullOrEmpty(user.Citizenship) ? user.Citizenship.ToLowerInvariant() :
+                                          !string.IsNullOrEmpty(user.Nationality) ? user.Nationality.ToLowerInvariant() : "";
+
+            if (!string.IsNullOrEmpty(citizenshipOrNationality))
+            {
+                // Australian citizenship for E-3 visa
+                if (!enriched.ContainsKey("australian"))
+                    enriched["australian"] = (citizenshipOrNationality.Contains("australia") || citizenshipOrNationality == "au") ? "yes" : "no";
+
+                // Canadian citizenship for TN visa
+                if (!enriched.ContainsKey("canadian"))
+                    enriched["canadian"] = (citizenshipOrNationality.Contains("canada") || citizenshipOrNationality == "ca") ? "yes" : "no";
+
+                // Mexican citizenship for TN visa
+                if (!enriched.ContainsKey("mexican"))
+                    enriched["mexican"] = (citizenshipOrNationality.Contains("mexico") || citizenshipOrNationality == "mx") ? "yes" : "no";
+
+                // Chilean citizenship for H-1B1 visa
+                if (!enriched.ContainsKey("chilean"))
+                    enriched["chilean"] = (citizenshipOrNationality.Contains("chile") || citizenshipOrNationality == "cl") ? "yes" : "no";
+
+                // Singaporean citizenship for H-1B1 visa
+                if (!enriched.ContainsKey("singaporean"))
+                    enriched["singaporean"] = (citizenshipOrNationality.Contains("singapore") || citizenshipOrNationality == "sg") ? "yes" : "no";
+            }
+        }
+        else
+        {
+            _logger.LogWarning("ENRICHMENT: User is NULL!");
         }
 
         return enriched;
@@ -1574,7 +2336,8 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             "B-2" => "Based on your tourism or personal visit purpose, a B-2 Tourist Visa is recommended for temporary pleasure travel.",
             "F-1" => "Based on your study plans at an academic institution, an F-1 Academic Student Visa is recommended.",
             "H-1B" => "Based on your employment purpose with employer sponsorship and professional qualifications, an H-1B Specialty Occupation Visa is recommended.",
-            "L-1" => "Based on your intracompany transfer with the same employer, an L-1 Intracompany Transferee Visa is recommended.",
+            "L-1A" => "Based on your intracompany transfer with the same employer in a managerial or executive position, an L-1A Intracompany Transferee Visa is recommended.",
+            "L-1B" => "Based on your intracompany transfer with the same employer with specialized knowledge, an L-1B Intracompany Transferee Visa is recommended.",
             "O-1" => "Based on your extraordinary ability and employer sponsorship, an O-1 Extraordinary Ability Visa is recommended.",
             "EB-5" => "Based on your significant investment plans, an EB-5 Immigrant Investor Visa is recommended.",
             "K-1" => "Based on your engagement to a U.S. citizen, a K-1 Fiancé(e) Visa is recommended to enter the U.S. for marriage.",
@@ -1599,7 +2362,10 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
         var isUNRelated = enrichedAnswers.GetValueOrDefault("isUNRelated", "").ToLowerInvariant();
 
         // Diplomatic purpose logic - use context to distinguish between A-1, A-2, A-3
-        if (purpose == "diplomatic" || purpose == "official")
+        var isDiplomaticPurpose = purpose == "diplomatic" || purpose == "official" ||
+                                 purpose.Contains("diplomatic") ||
+                                 purpose.Contains("nato");
+        if (isDiplomaticPurpose)
         {
             // For international organizations - G-series
             if (internationalOrg == "yes")
@@ -1671,19 +2437,25 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             }
         }
 
-        // Business purpose logic - prioritize treaty business visas over general business
+        // Business purpose logic - select based on specific treaty activities
         if (purpose == "business")
         {
-            // E-1: Treaty Trader (highest priority for business)
-            if (possibleVisaTypes.Any(v => v.Code == "E-1"))
-            {
-                return possibleVisaTypes.First(v => v.Code == "E-1");
-            }
+            var treatyCountry = enrichedAnswers.GetValueOrDefault("treatyCountry", "").ToLowerInvariant();
+            var tradeActivity = enrichedAnswers.GetValueOrDefault("tradeActivity", "").ToLowerInvariant();
+            var investment = enrichedAnswers.GetValueOrDefault("investment", "").ToLowerInvariant();
 
-            // E-2: Treaty Investor (second priority for business)
-            if (possibleVisaTypes.Any(v => v.Code == "E-2"))
+            // E-2: Treaty Investor (investment = yes, trade = no)
+            if (treatyCountry == "yes" && investment == "yes" && tradeActivity == "no" &&
+                possibleVisaTypes.Any(v => v.Code == "E-2"))
             {
                 return possibleVisaTypes.First(v => v.Code == "E-2");
+            }
+
+            // E-1: Treaty Trader (trade = yes, investment = no)
+            if (treatyCountry == "yes" && tradeActivity == "yes" && investment == "no" &&
+                possibleVisaTypes.Any(v => v.Code == "E-1"))
+            {
+                return possibleVisaTypes.First(v => v.Code == "E-1");
             }
 
             // B-1: General business visitor (fallback)
@@ -1708,7 +2480,7 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             }
 
             // Other employment visas in priority order
-            var employmentOrder = new[] { "H-1B", "L-1", "O-1", "E-3" };
+            var employmentOrder = new[] { "H-1B", "L-1A", "L-1B", "O-1", "E-3" };
             foreach (var code in employmentOrder)
             {
                 if (possibleVisaTypes.Any(v => v.Code == code))
@@ -1724,11 +2496,12 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
             "A-1", "A-3", "A-2",
             "G-1", "G-2", "G-3", "G-4", "G-5",
             "C-2", "C-3", "C-1/D", "C-1", "D",
+            "E-1", "E-2", // Move treaty visas before B-1 to prioritize them
             "B-1", "B-2",
             "F-1", "M-1", "J-1",
-            "H-1B", "L-1", "O-1", "E-3",
+            "H-1B", "L-1A", "L-1B", "O-1", "E-3",
             "EB-1", "EB-2", "EB-3", "EB-4", "EB-5",
-            "E-1", "E-2", "Diversity"
+            "Diversity"
         };
 
         foreach (var code in priorityOrder)
@@ -1742,5 +2515,25 @@ public class AdaptiveInterviewService : IAdaptiveInterviewService
 
         // Fallback: return first available (should not reach here normally)
         return possibleVisaTypes.First();
+    }
+
+    /// <summary>
+    /// Extracts the visa class code from a visa type code
+    /// Examples: "H-1B" -> "H", "EB-1" -> "EB", "IR-1" -> "IR", "F-1" -> "F"
+    /// </summary>
+    private static string ExtractClassCode(string visaCode)
+    {
+        if (string.IsNullOrEmpty(visaCode))
+            return string.Empty;
+
+        // Handle hyphenated codes (e.g., "H-1B" -> "H", "EB-1" -> "EB")
+        var hyphenIndex = visaCode.IndexOf('-');
+        if (hyphenIndex > 0)
+        {
+            return visaCode.Substring(0, hyphenIndex);
+        }
+
+        // Handle non-hyphenated codes - return the whole code (e.g., "VWP", "TPS", "SIJS")
+        return visaCode;
     }
 }

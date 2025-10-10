@@ -45,6 +45,11 @@ public class InterviewRerunRequest
     public CaseId CaseId { get; set; }
 }
 
+public class InterviewResetRequest
+{
+    public Guid SessionId { get; set; }
+}
+
 public class InterviewLockRequest
 {
     public CaseId CaseId { get; set; }
@@ -87,6 +92,7 @@ public class InterviewQuestionDto
     public List<InterviewOptionDto> Options { get; set; } = new();
     public bool Required { get; set; }
     public int RemainingVisaTypes { get; set; }
+    public List<string> RemainingVisaCodes { get; set; } = new();
 }
 
 public class InterviewOptionDto
@@ -106,4 +112,10 @@ public class InterviewHistoryResponse
 {
     public List<InterviewSessionSummary> Sessions { get; set; } = new List<InterviewSessionSummary>();
     public VisaRecommendationSummary? LatestRecommendation { get; set; }
+}
+
+public class SelectVisaTypeRequest
+{
+    public Guid SessionId { get; set; }
+    public string VisaTypeCode { get; set; } = string.Empty;
 }

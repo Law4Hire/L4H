@@ -12,7 +12,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/cases")]
+[Route("api/v1/cases")]
 [Authorize]
 [Tags("Cases")]
 public class CasesController : ControllerBase
@@ -24,6 +24,17 @@ public class CasesController : ControllerBase
     {
         _context = context;
         _localizer = localizer;
+    }
+
+    /// <summary>
+    /// Get the current user's cases (default endpoint)
+    /// </summary>
+    /// <returns>List of user's cases</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(CaseResponse[]), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CaseResponse[]>> GetCases()
+    {
+        return await GetMyCases().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -238,6 +249,60 @@ public class CasesController : ControllerBase
 
         _context.AuditLogs.Add(auditLog);
         await _context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Reset the visa type for a case (allows user to retake interview)
+    /// </summary>
+    /// <param name="id">Case ID</param>
+    /// <returns>Success response</returns>
+    [HttpPost("{id}/reset-visa-type")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ResetVisaType(Guid id)
+    {
+        var caseId = new CaseId(id);
+        var userId = GetCurrentUserId();
+
+        var caseEntity = await _context.Cases
+            .FirstOrDefaultAsync(c => c.Id == caseId && c.UserId == userId)
+            .ConfigureAwait(false);
+
+        if (caseEntity == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Not Found",
+                Detail = "Case not found or you don't have permission to access it"
+            });
+        }
+
+        // Reset visa type
+        caseEntity.VisaTypeId = null;
+        caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+
+        // Remove all interview sessions and recommendations for this case
+        var sessionsToRemove = await _context.InterviewSessions
+            .Where(s => s.CaseId == caseId)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var recommendationsToRemove = await _context.VisaRecommendations
+            .Where(r => r.CaseId == caseId)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        _context.InterviewSessions.RemoveRange(sessionsToRemove);
+        _context.VisaRecommendations.RemoveRange(recommendationsToRemove);
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Audit log
+        await LogAuditAsync("case", "reset_visa_type", "Case", caseId.Value.ToString(),
+            new { caseId = caseId.Value }).ConfigureAwait(false);
+
+        return Ok(new { message = "Visa type reset successfully" });
     }
 }
 
