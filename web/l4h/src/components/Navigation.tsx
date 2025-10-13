@@ -49,11 +49,11 @@ export const Navigation: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div 
             style={{ width: '48px', height: '48px', background: '#2563eb', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
           >
             <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.2rem' }}>🇺🇸</span>
           </div>
-          <div style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+          <div style={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>{t('brand:title', 'US Immigration Help')}</h1>
             <p style={{ fontSize: '0.875rem', color: '#666', margin: 0 }}>{t('brand:subtitle', 'Powered by Law4Hire')}</p>
           </div>

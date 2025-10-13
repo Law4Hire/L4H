@@ -79,7 +79,7 @@ export const Layout: React.FC<LayoutProps> = ({
             <div className="flex items-center space-x-4">
               <div 
                 className="flex items-center space-x-3 cursor-pointer"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/dashboard')}
               >
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg">🇺🇸</span>
