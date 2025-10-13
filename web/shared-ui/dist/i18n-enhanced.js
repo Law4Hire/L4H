@@ -6099,14 +6099,8 @@ const initPromise = i18n
 });
 // Ensure i18n is ready and register interview resources
 export const i18nReady = initPromise.then(async () => {
-    // Register interview resources from CSV after i18n is initialized
-    try {
-        const { registerInterviewResources } = await import('./interview-i18n-loader');
-        await registerInterviewResources(i18n);
-    }
-    catch (error) {
-        console.warn('Failed to load interview i18n resources:', error);
-    }
+    // Interview resources are now loaded via the new i18n-config system
+    // No need to load from CSV anymore
     // Expose i18n to window for debugging
     if (typeof window !== 'undefined') {
         window.i18next = i18n;

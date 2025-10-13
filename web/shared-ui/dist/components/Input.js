@@ -17,6 +17,11 @@ export const Input = forwardRef(({ variant = 'default', size = 'md', label, erro
     return (_jsxs("div", { className: "w-full", children: [label && (_jsx("label", { htmlFor: inputId, className: "block text-sm font-medium text-gray-700 mb-1", children: label })), _jsx("input", { ref: ref, id: inputId, className: clsx(
                 // Base styles
                 'block w-full rounded-md border shadow-sm transition-colors', 'focus:outline-none focus:ring-1', 'disabled:opacity-50 disabled:cursor-not-allowed', 'placeholder:text-gray-400', 
+                // RTL support
+                'rtl:text-right ltr:text-left', 
+                // Special handling for specific input types that should remain LTR
+                (props.type === 'email' || props.type === 'url' || props.type === 'tel' || props.type === 'number') &&
+                    'rtl:text-left rtl:direction-ltr', 
                 // Variant styles
                 variantClasses[currentVariant], 
                 // Size styles

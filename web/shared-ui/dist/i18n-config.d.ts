@@ -1,0 +1,16 @@
+import i18n from 'i18next';
+export declare const RTL_LANGUAGES: string[];
+export declare const SUPPORTED_LANGUAGES: string[];
+export declare const CULTURE_NAMES: Record<string, string>;
+export declare const NAMESPACES: readonly ["common", "interview", "errors"];
+export type Namespace = typeof NAMESPACES[number];
+export declare const DEFAULT_NAMESPACE = "common";
+export declare const FALLBACK_LANGUAGE = "en-US";
+export declare function setRTLDirection(language: string): void;
+export declare function isRTL(language: string): boolean;
+export declare function getTextDirection(language: string): 'ltr' | 'rtl';
+export declare function getTextAlign(language: string, align?: 'start' | 'end' | 'left' | 'right' | 'center'): string;
+export declare function formatNumber(value: number, language: string, options?: Intl.NumberFormatOptions): string;
+export declare function formatDate(date: Date, language: string, options?: Intl.DateTimeFormatOptions): string;
+export declare const i18nReady: Promise<import("i18next").i18n>;
+export default i18n;

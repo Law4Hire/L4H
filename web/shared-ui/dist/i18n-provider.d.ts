@@ -1,10 +1,18 @@
 import { ReactNode } from 'react';
-import { Culture } from './i18n-enhanced';
+export interface Culture {
+    code: string;
+    displayName: string;
+}
 interface I18nContextType {
     cultures: Culture[];
     currentCulture: string;
     setCurrentCulture: (culture: string) => Promise<void>;
     isLoading: boolean;
+    isRTL: boolean;
+    supportedLanguages: string[];
+    hasTranslationErrors: boolean;
+    isFallbackActive: boolean;
+    retryTranslations: () => Promise<boolean>;
 }
 interface I18nProviderProps {
     children: ReactNode;

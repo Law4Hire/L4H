@@ -22,6 +22,6 @@ export const Button = forwardRef(({ variant = 'primary', size = 'md', loading = 
         // Variant styles
         variantClasses[variant], 
         // Size styles
-        sizeClasses[size], className), ...props, children: [loading && (_jsx(Loader2, { className: "mr-2 h-4 w-4 animate-spin", "data-testid": "spinner", "aria-hidden": "true" })), children] }));
+        sizeClasses[size], className), ...props, children: [loading && (_jsx(Loader2, { className: "rtl:ml-2 rtl:mr-0 ltr:mr-2 ltr:ml-0 h-4 w-4 animate-spin", "data-testid": "spinner", "aria-hidden": "true" })), children] }));
 });
 Button.displayName = 'Button';
