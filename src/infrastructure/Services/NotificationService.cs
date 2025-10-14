@@ -33,7 +33,7 @@ public class NotificationService : INotificationService
             if (typePreference != null && (!typePreference.InAppEnabled || priority < typePreference.MinimumPriority))
             {
                 _logger.LogDebug("Notification skipped for user {UserId} due to preferences", userId);
-                return null;
+                return null!;
             }
 
             var notification = new Notification

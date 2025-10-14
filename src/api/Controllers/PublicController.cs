@@ -27,10 +27,10 @@ public class PublicController : ControllerBase
             .Where(v => v.IsActive)
             .Select(v => new VisaTypeInfo
             {
-                Code = v.Code,
-                Name = v.Name,
-                GeneralCategory = v.GeneralCategory,
-                Description = GetVisaDescription(v.Code)
+                Code = v.Code ?? string.Empty,
+                Name = v.Name ?? string.Empty,
+                GeneralCategory = v.GeneralCategory ?? string.Empty,
+                Description = GetVisaDescription(v.Code ?? string.Empty)
             })
             .OrderBy(v => v.GeneralCategory)
             .ThenBy(v => v.Name)

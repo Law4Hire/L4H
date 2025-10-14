@@ -8,7 +8,7 @@ public class UserNotificationPreference
     
     [Required]
     public int UserId { get; set; }
-    public User User { get; set; }
+    public User User { get; set; } = null!;
     
     [Required]
     public NotificationType NotificationType { get; set; }

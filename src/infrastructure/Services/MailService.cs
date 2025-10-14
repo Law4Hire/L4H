@@ -24,9 +24,10 @@ namespace L4H.Infrastructure.Services
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
-            var from = _configuration["Email:From"];
-            var host = _configuration["Email:Host"];
-            var port = int.Parse(_configuration["Email:Port"], System.Globalization.CultureInfo.InvariantCulture);
+            var from = _configuration["Email:From"] ?? throw new InvalidOperationException("Email:From configuration is missing");
+            var host = _configuration["Email:Host"] ?? throw new InvalidOperationException("Email:Host configuration is missing");
+            var portString = _configuration["Email:Port"] ?? throw new InvalidOperationException("Email:Port configuration is missing");
+            var port = int.Parse(portString, System.Globalization.CultureInfo.InvariantCulture);
             var username = _configuration["Email:Username"];
             var password = _configuration["Email:Password"];
 

@@ -30,7 +30,7 @@ public class RateLimitingService : IRateLimitingService
         _logger = logger;
     }
 
-    public async Task<Result<bool>> CheckRateLimitAsync(string key, int maxRequests, TimeSpan window, CancellationToken cancellationToken = default)
+    public Task<Result<bool>> CheckRateLimitAsync(string key, int maxRequests, TimeSpan window, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -39,8 +39,10 @@ public class RateLimitingService : IRateLimitingService
             var windowStart = now - window;
 
             // Get existing requests from cache
-            if (_cache.TryGetValue(cacheKey, out List<DateTime>? requests))
+            List<DateTime> requests;
+            if (_cache.TryGetValue(cacheKey, out List<DateTime>? cachedRequests) && cachedRequests != null)
             {
+                requests = cachedRequests;
                 // Remove expired requests
                 requests.RemoveAll(r => r < windowStart);
             }
@@ -52,10 +54,10 @@ public class RateLimitingService : IRateLimitingService
             // Check if we're at the limit
             if (requests.Count >= maxRequests)
             {
-                _logger.LogWarning("Rate limit exceeded for key {Key}. Current count: {Count}, Max: {Max}", 
+                _logger.LogWarning("Rate limit exceeded for key {Key}. Current count: {Count}, Max: {Max}",
                     key, requests.Count, maxRequests);
-                
-                return Result<bool>.Failure(_localizer["Auth.RateLimitExceeded"]);
+
+                return Task.FromResult(Result<bool>.Failure(_localizer["Auth.RateLimitExceeded"]));
             }
 
             // Add current request
@@ -68,13 +70,13 @@ public class RateLimitingService : IRateLimitingService
             };
             _cache.Set(cacheKey, requests, cacheOptions);
 
-            return Result<bool>.Success(true);
+            return Task.FromResult(Result<bool>.Success(true));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error checking rate limit for key {Key}", key);
             // Fail open - allow request if rate limiting fails
-            return Result<bool>.Success(true);
+            return Task.FromResult(Result<bool>.Success(true));
         }
     }
 

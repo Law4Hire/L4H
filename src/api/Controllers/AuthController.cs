@@ -112,7 +112,10 @@ public class AuthController : ControllerBase
         }
 
         // Create a session for the user
-        var session = await _sessionManagementService.CreateSessionAsync(result.Value.UserId.Value, HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown", Request.Headers["User-Agent"].ToString()).ConfigureAwait(false);
+        if (result.Value?.UserId.HasValue == true)
+        {
+            var session = await _sessionManagementService.CreateSessionAsync(result.Value.UserId.Value, HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown", Request.Headers.UserAgent.ToString() ?? string.Empty).ConfigureAwait(false);
+        }
 
         return Ok(result.Value);
     }

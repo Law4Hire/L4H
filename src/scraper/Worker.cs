@@ -117,20 +117,20 @@ public class Worker : BackgroundService
         }
     }
 
-    private static async Task<List<string>> GetActiveCountriesAsync(L4HDbContext context, CancellationToken cancellationToken)
+    private static Task<List<string>> GetActiveCountriesAsync(L4HDbContext context, CancellationToken cancellationToken)
     {
         // For now, return a predefined list of countries
         // In production, this would come from configuration or database
         var countries = new List<string> { "ES", "FR", "DE", "IT", "AD" };
-        
+
         // You could also query from existing cases or other sources
         // var activeCases = await context.Cases
         //     .Where(c => c.Status == "active")
         //     .Select(c => c.CountryCode)
         //     .Distinct()
         //     .ToListAsync(cancellationToken);
-        
-        return countries;
+
+        return Task.FromResult(countries);
     }
 
     private int GetMaxConcurrency()

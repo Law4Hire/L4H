@@ -142,28 +142,28 @@ public class FileUploadService : IFileUploadService
         }
     }
 
-    public async Task<bool> DeleteFileAsync(string filePath)
+    public Task<bool> DeleteFileAsync(string filePath)
     {
         try
         {
             if (string.IsNullOrEmpty(filePath))
-                return false;
+                return Task.FromResult(false);
 
             // Convert relative URL to physical path
             var physicalPath = Path.Combine(_environment.WebRootPath, filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-            
+
             if (File.Exists(physicalPath))
             {
                 File.Delete(physicalPath);
-                return true;
+                return Task.FromResult(true);
             }
-            
-            return false;
+
+            return Task.FromResult(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting file {FilePath}", filePath);
-            return false;
+            return Task.FromResult(false);
         }
     }
 
@@ -362,10 +362,10 @@ public class FileUploadService : IFileUploadService
         return await File.ReadAllBytesAsync(physicalPath);
     }
 
-    public async Task<bool> FileExistsAsync(string filePath)
+    public Task<bool> FileExistsAsync(string filePath)
     {
         var physicalPath = Path.Combine(_environment.WebRootPath, filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-        return File.Exists(physicalPath);
+        return Task.FromResult(File.Exists(physicalPath));
     }
 
     public bool IsValidImageFile(IFormFile file)

@@ -352,14 +352,7 @@
   <data name="Error.InvalidRequest" xml:space="preserve">
     <value>Solicitud inválida: {0}</value>
   </data>
-  <!-- Workflow Lookup Resources -->
-  <data name="Workflow.LookupNotFound" xml:space="preserve">
-    <value>No se encontró el flujo de trabajo.</value>
-  </data>
-  <data name="Workflow.LookupOk" xml:space="preserve">
-    <value>Búsqueda de flujo de trabajo exitosa para tipo de visa '{0}', país '{1}', versión '{2}'.</value>
-  </data>
-  
+
   <!-- GraphMail Resources -->
   <data name="GraphMail.TestEmailSent" xml:space="preserve">
     <value>Correo enviado exitosamente</value>

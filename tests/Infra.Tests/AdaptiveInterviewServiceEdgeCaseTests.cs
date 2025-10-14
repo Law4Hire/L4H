@@ -470,7 +470,7 @@ namespace L4H.Tests.Infrastructure
             var user = new User
             {
                 Id = new UserId(Guid.NewGuid()),
-                MaritalStatus = null, // Null marital status
+                MaritalStatus = null!, // Null marital status
                 Email = "test@test.com",
                 FirstName = "Test",
                 LastName = "User"

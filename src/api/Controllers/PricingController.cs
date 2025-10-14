@@ -105,15 +105,15 @@ public class PricingController : ControllerBase
 
         var response = new PricingResponse
         {
-            VisaType = visaType,
-            Country = country,
+            VisaType = visaType ?? string.Empty,
+            Country = country ?? string.Empty,
             Packages = packages
         };
 
         return Ok(response);
     }
 
-    private async Task<ActionResult<PricingResponse>> GetDefaultPricing()
+    private Task<ActionResult<PricingResponse>> GetDefaultPricing()
     {
         // Return sample packages for general display when no specific visa type is selected
         var packages = new List<PricingPackageResponse>
@@ -187,7 +187,7 @@ public class PricingController : ControllerBase
             Packages = packages.ToArray()
         };
 
-        return Ok(response);
+        return Task.FromResult<ActionResult<PricingResponse>>(Ok(response));
     }
 
     private static string[] GetPackageFeatures(string packageCode)

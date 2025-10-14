@@ -8,15 +8,15 @@ public class Notification
     
     [Required]
     public int UserId { get; set; }
-    public User User { get; set; }
-    
+    public User User { get; set; } = null!;
+
     [Required]
     [MaxLength(200)]
-    public string Title { get; set; }
-    
+    public string Title { get; set; } = string.Empty;
+
     [Required]
     [MaxLength(1000)]
-    public string Message { get; set; }
+    public string Message { get; set; } = string.Empty;
     
     [Required]
     public NotificationType Type { get; set; }
