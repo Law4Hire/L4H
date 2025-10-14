@@ -71,14 +71,21 @@ namespace L4H.Infrastructure.Services
         {
             try
             {
-                _logger.LogInformation("Getting recommendation for user {UserId} with {AnswerCount} answers", 
+                _logger.LogInformation("Getting recommendation for user {UserId} with {AnswerCount} answers",
                     user?.Id, answers?.Count ?? 0);
 
                 var result = await _recommender.GetRecommendationAsync(answers ?? new Dictionary<string, string>(), user?.Nationality).ConfigureAwait(false);
-                
-                _logger.LogInformation("Recommendation generated: VisaTypeId={VisaTypeId}, Rationale={Rationale}", 
-                    result.VisaTypeId, result.Rationale);
-                
+
+                if (result != null)
+                {
+                    _logger.LogInformation("Recommendation generated: VisaTypeId={VisaTypeId}, Rationale={Rationale}",
+                        result.VisaTypeId, result.Rationale);
+                }
+                else
+                {
+                    _logger.LogWarning("Recommender returned null result for user {UserId}", user?.Id);
+                }
+
                 return result;
             }
             catch (Exception ex)
@@ -792,14 +799,15 @@ namespace L4H.Infrastructure.Services
 
         private static bool IsVisaApplicableForFamilyRelationship(string visaCode, string relationship)
         {
+            // Family relationship filtering should allow appropriate family visas AND non-family visas (like B-2 for visiting)
             return relationship.ToLowerInvariant() switch
             {
-                "spouse" => new[] { "IR-1", "F-2A", "K-1", "K-3" }.Contains(visaCode),
-                "parent" => new[] { "IR-5" }.Contains(visaCode),
-                "child" => new[] { "IR-2", "F-1", "F-2B", "F-3", "F-4" }.Contains(visaCode),
-                "child_minor" => new[] { "IR-2", "F-2B" }.Contains(visaCode),
-                "sibling" => new[] { "F-4" }.Contains(visaCode),
-                "other_relative" => new[] { "F-3", "F-4" }.Contains(visaCode),
+                "spouse" => new[] { "IR-1", "K-1", "K-3", "F-2A", "B-2" }.Contains(visaCode),
+                "parent" => new[] { "IR-5", "B-2" }.Contains(visaCode),
+                "child" => new[] { "IR-2", "F-1", "F-2B", "F-3", "F-4", "B-2" }.Contains(visaCode),
+                "child_minor" => new[] { "IR-2", "F-2B", "B-2" }.Contains(visaCode),
+                "sibling" => new[] { "F-4", "B-2" }.Contains(visaCode),
+                "other_relative" => new[] { "F-3", "F-4", "B-2" }.Contains(visaCode),
                 "none" => true, // All non-family visas available
                 _ => true
             };
