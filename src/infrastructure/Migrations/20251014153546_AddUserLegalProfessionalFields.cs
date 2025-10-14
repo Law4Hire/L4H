@@ -403,7 +403,7 @@ namespace L4H.Infrastructure.Migrations
                         column: x => x.UploadId,
                         principalTable: "Uploads",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
