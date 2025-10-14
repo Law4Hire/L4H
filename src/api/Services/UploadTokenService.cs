@@ -65,9 +65,18 @@ public class UploadTokenService
     {
         // Remove path traversal attempts and invalid characters
         var filename = Path.GetFileName(originalFilename);
+
+        // Replace OS-specific invalid characters from Path.GetInvalidFileNameChars()
         var invalidChars = Path.GetInvalidFileNameChars();
-        
         foreach (var c in invalidChars)
+        {
+            filename = filename.Replace(c, '_');
+        }
+
+        // Also explicitly replace additional unsafe characters that might be valid on some OS
+        // but are problematic for cross-platform file operations: < > : " | ? *
+        var additionalUnsafeChars = new[] { '<', '>', ':', '"', '|', '?', '*' };
+        foreach (var c in additionalUnsafeChars)
         {
             filename = filename.Replace(c, '_');
         }

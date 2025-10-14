@@ -96,23 +96,30 @@ public class UploadTokenService
             return "upload";
 
         var filename = originalFilename;
-        
+
         // For path traversal attempts like "../../../etc/passwd", just take the base filename
         if (filename.Contains("../") || filename.Contains("..\\"))
         {
             filename = Path.GetFileName(filename);
         }
-        
-        // Replace invalid characters and path separators with underscores
+
+        // Replace OS-specific invalid characters from Path.GetInvalidFileNameChars()
         var invalidChars = Path.GetInvalidFileNameChars();
-        
         foreach (var c in invalidChars)
         {
             filename = filename.Replace(c, '_');
         }
-        
+
         // Also replace explicit path separators that might not be in invalid chars
         filename = filename.Replace('\\', '_').Replace('/', '_');
+
+        // Also explicitly replace additional unsafe characters that might be valid on some OS
+        // but are problematic for cross-platform file operations: < > : " | ? *
+        var additionalUnsafeChars = new[] { '<', '>', ':', '"', '|', '?', '*' };
+        foreach (var c in additionalUnsafeChars)
+        {
+            filename = filename.Replace(c, '_');
+        }
 
         // Additional security: remove leading dots and limit length
         filename = filename.TrimStart('.').Trim();
