@@ -759,7 +759,7 @@ namespace L4H.Infrastructure.Services
             return purpose.ToLowerInvariant() switch
             {
                 "tourism" => new[] { "B-1", "B-2", "ESTA" }.Contains(visaCode),
-                "business" => new[] { "B-1", "B-2", "E-1", "E-2", "L-1A", "L-1B" }.Contains(visaCode),
+                "business" => new[] { "B-1", "E-1", "E-2", "L-1A", "L-1B" }.Contains(visaCode),
                 "employment" => new[] { "H-1B", "H-2A", "H-2B", "L-1A", "L-1B", "O-1", "P-1", "E-1", "E-2", "EB-1", "EB-2", "EB-3" }.Contains(visaCode),
                 "study" => new[] { "F-1", "J-1", "M-1" }.Contains(visaCode),
                 "family" => new[] { "B-2", "IR-1", "IR-2", "IR-3", "IR-4", "IR-5", "K-1", "K-3", "F-1", "F-2A", "F-2B", "F-3", "F-4" }.Contains(visaCode),
