@@ -26,7 +26,7 @@ jobs:
           MSSQL_PID: Developer
         ports:
           - 14333:1433
-        options: --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P SecureTest123! -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P SecureTest123! -Q 'SELECT 1' || /opt/mssql-tools/bin/sqlcmd -C -S localhost -U sa -P SecureTest123! -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
     - name: Checkout code
@@ -63,9 +63,15 @@ jobs:
 
     - name: Wait for SQL Server
       run: |
+        echo "Waiting for SQL Server to be ready..."
         for i in {1..30}; do
-          if /opt/mssql-tools/bin/sqlcmd -S localhost,14333 -U sa -P SecureTest123! -Q "SELECT 1" &> /dev/null; then
-            echo "SQL Server is ready"
+          if /opt/mssql-tools18/bin/sqlcmd -C -S localhost,14333 -U sa -P SecureTest123! -Q "SELECT 1" &> /dev/null; then
+            echo "SQL Server is ready!"
+            /opt/mssql-tools18/bin/sqlcmd -C -S localhost,14333 -U sa -P SecureTest123! -Q "SELECT @@VERSION"
+            break
+          elif /opt/mssql-tools/bin/sqlcmd -C -S localhost,14333 -U sa -P SecureTest123! -Q "SELECT 1" &> /dev/null; then
+            echo "SQL Server is ready!"
+            /opt/mssql-tools/bin/sqlcmd -C -S localhost,14333 -U sa -P SecureTest123! -Q "SELECT @@VERSION"
             break
           fi
           echo "Waiting for SQL Server... ($i/30)"
