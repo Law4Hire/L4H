@@ -12,7 +12,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/appointments")]
+[Route("v1/appointments")]
 [Authorize]
 [Tags("Appointments")]
 public class SchedulingController : ControllerBase

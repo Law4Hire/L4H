@@ -9,7 +9,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/attorneys")]
+[Route("v1/attorneys")]
 [Tags("Attorneys")]
 public class AttorneysController : ControllerBase
 {

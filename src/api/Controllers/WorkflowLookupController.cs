@@ -18,7 +18,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/workflows")]
+[Route("v1/workflows")]
 [Authorize]
 public class WorkflowLookupController : ControllerBase
 {

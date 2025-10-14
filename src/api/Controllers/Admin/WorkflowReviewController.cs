@@ -11,7 +11,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers.Admin;
 
 [ApiController]
-[Route("api/v1/admin/workflows")]
+[Route("v1/admin/workflows")]
 [Authorize(Policy = "IsAdmin")]
 public class WorkflowReviewController : ControllerBase
 {

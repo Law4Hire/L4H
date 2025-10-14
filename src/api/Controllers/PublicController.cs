@@ -5,7 +5,7 @@ using L4H.Infrastructure.Data;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/public")]
+[Route("v1/public")]
 [Tags("Public Information")]
 public class PublicController : ControllerBase
 {

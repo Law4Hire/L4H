@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/staff")]
+[Route("v1/staff")]
 [Authorize]
 [Tags("Staff Availability")]
 public class StaffAvailabilityController : ControllerBase

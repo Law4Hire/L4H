@@ -12,7 +12,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/pricing")]
+[Route("v1/pricing")]
 [Tags("Pricing")]
 public class PricingController : ControllerBase
 {

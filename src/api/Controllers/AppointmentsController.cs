@@ -10,7 +10,7 @@ using L4H.Api.Configuration;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/meetings")]
+[Route("v1/meetings")]
 [Authorize]
 [Tags("Meetings")]
 public class AppointmentsController : ControllerBase

@@ -7,7 +7,7 @@ using L4H.Infrastructure.Entities;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/services")]
+[Route("v1/services")]
 [Tags("Legal Services")]
 public class ServicesController : ControllerBase
 {

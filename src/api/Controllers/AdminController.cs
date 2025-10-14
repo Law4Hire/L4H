@@ -13,7 +13,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/admin")]
+[Route("v1/admin")]
 [Authorize(Policy = "IsAdmin")]
 [Tags("Admin")]
 public class AdminController : ControllerBase

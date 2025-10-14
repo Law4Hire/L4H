@@ -7,7 +7,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/countries")]
+[Route("v1/countries")]
 public class CountriesController : ControllerBase
 {
     private readonly L4HDbContext _context;

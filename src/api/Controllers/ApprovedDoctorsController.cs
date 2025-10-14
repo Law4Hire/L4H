@@ -11,7 +11,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/approved-doctors")]
+[Route("v1/approved-doctors")]
 [Tags("Approved Doctors")]
 public class ApprovedDoctorsController : ControllerBase
 {

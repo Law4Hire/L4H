@@ -12,7 +12,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/cases")]
+[Route("v1/cases")]
 [Authorize]
 [Tags("Cases")]
 public class CasesController : ControllerBase

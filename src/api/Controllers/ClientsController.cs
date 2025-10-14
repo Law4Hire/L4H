@@ -9,7 +9,7 @@ using L4H.Api.Authorization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/clients")]
+[Route("v1/clients")]
 [Tags("Clients")]
 [Authorize]
 public class ClientsController : ControllerBase

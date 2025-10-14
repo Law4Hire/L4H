@@ -11,7 +11,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/graph/mail")]
+[Route("v1/graph/mail")]
 [Authorize]
 [Tags("Graph Mail")]
 public class GraphMailController : ControllerBase

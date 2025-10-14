@@ -7,7 +7,7 @@ using L4H.Infrastructure.Services.Graph;
 namespace L4H.Api.Controllers.Admin;
 
 [ApiController]
-[Route("api/v1/admin/graph")]
+[Route("v1/admin/graph")]
 [Authorize(Policy = "IsAdmin")]
 [Tags("Admin")]
 public class GraphController : ControllerBase

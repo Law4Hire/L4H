@@ -8,7 +8,7 @@ using L4H.Api.Services.Providers;
 namespace L4H.Api.Controllers.Admin;
 
 [ApiController]
-[Route("api/v1/admin/providers")]
+[Route("v1/admin/providers")]
 [Authorize(Policy = "IsAdmin")]
 [Tags("Admin")]
 public class ProvidersController : ControllerBase

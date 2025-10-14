@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/time-tracking")]
+[Route("v1/time-tracking")]
 [Tags("Time Tracking")]
 [Authorize]
 public class TimeTrackingController : ControllerBase

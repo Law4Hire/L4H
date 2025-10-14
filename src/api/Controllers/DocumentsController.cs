@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/documents")]
+[Route("v1/documents")]
 [Tags("Documents")]
 [Authorize]
 public class DocumentsController : ControllerBase

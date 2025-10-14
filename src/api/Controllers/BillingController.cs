@@ -8,7 +8,7 @@ using System.Text;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/billing")]
+[Route("v1/billing")]
 [Tags("Billing")]
 [Authorize(Policy = "IsAdmin")]
 public class BillingController : ControllerBase

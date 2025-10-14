@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/auth")]
+[Route("v1/auth")]
 [Tags("Authentication")]
 public class AuthController : ControllerBase
 {

@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/interview")]
+[Route("v1/interview")]
 [Tags("Interview")]
 [Authorize]
 public class InterviewController : ControllerBase
