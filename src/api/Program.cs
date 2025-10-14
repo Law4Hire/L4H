@@ -201,6 +201,7 @@ builder.Services.AddScoped<CountriesSeeder>();
 builder.Services.AddScoped<IInterviewRecommender, RuleBasedRecommender>();
 builder.Services.AddScoped<IAdaptiveInterviewService, AdaptiveInterviewService>();
 builder.Services.AddScoped<ICitizenshipCaseService, CitizenshipCaseService>();
+builder.Services.AddScoped<IAdoptionCaseService, AdoptionCaseService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<CannlawConfigurationService>();
 
