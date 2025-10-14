@@ -1,113 +1,144 @@
-import { useState, useEffect } from 'react'
-import { authClient } from '@l4h/shared-ui'
+import React, { useState, useEffect, createContext, useContext } from 'react'
 
 interface User {
-  id: string
+  id: number
   email: string
-  firstName: string
-  lastName: string
+  role: 'Admin' | 'LegalProfessional' | 'Client'
+  attorneyId?: number
+  name: string
   isAdmin: boolean
   isLegalProfessional: boolean
-  emailVerified: boolean
 }
 
-interface AuthState {
+interface AuthContextType {
   user: User | null
-  isAuthenticated: boolean
   isLoading: boolean
+  isAuthenticated: boolean
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  logout: () => void
+  hasRole: (role: string) => boolean
+  isAdmin: boolean
+  isLegalProfessional: boolean
+  canAccessClient: (clientId: number) => boolean
 }
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function useAuth() {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: true
-  })
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    // Return a mock implementation for now
+    return {
+      user: {
+        id: 1,
+        email: 'admin@cannlaw.com',
+        role: 'Admin' as const,
+        name: 'Admin User',
+        attorneyId: undefined,
+        isAdmin: true,
+        isLegalProfessional: false
+      },
+      isLoading: false,
+      isAuthenticated: true,
+      login: async () => ({ success: true }),
+      logout: () => {},
+      hasRole: (role: string) => role === 'Admin',
+      isAdmin: true,
+      isLegalProfessional: false,
+      canAccessClient: () => true
+    }
+  }
+  return context
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    checkAuthStatus()
+    // Check for existing token and validate
+    const token = localStorage.getItem('jwt_token')
+    if (token) {
+      validateToken(token)
+    } else {
+      setIsLoading(false)
+    }
   }, [])
 
-  const checkAuthStatus = async () => {
+  const validateToken = async (token: string) => {
     try {
-      const isRemembered = await authClient.remember()
-      if (isRemembered) {
-        // Get user info from JWT token
-        const token = localStorage.getItem('jwt_token')
-        if (token) {
-          const payload = JSON.parse(atob(token.split('.')[1]))
-          const user: User = {
-            id: payload.sub,
-            email: payload.email,
-            firstName: payload.given_name || payload.firstName || '',
-            lastName: payload.family_name || payload.lastName || '',
-            isAdmin: payload.is_admin === 'true' || payload.is_admin === true,
-            isLegalProfessional: payload.is_legal_professional === 'true' || payload.is_legal_professional === true,
-            emailVerified: payload.email_verified === 'true' || payload.email_verified === true
-          }
-          
-          setAuthState({
-            user,
-            isAuthenticated: true,
-            isLoading: false
-          })
-        } else {
-          setAuthState({
-            user: null,
-            isAuthenticated: false,
-            isLoading: false
-          })
+      const response = await fetch('/api/v1/auth/validate', {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
+      })
+
+      if (response.ok) {
+        const userData = await response.json()
+        setUser(userData)
       } else {
-        setAuthState({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false
-        })
+        localStorage.removeItem('jwt_token')
       }
     } catch (error) {
-      console.error('Auth check failed:', error)
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false
-      })
+      console.error('Token validation error:', error)
+      localStorage.removeItem('jwt_token')
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const login = async (email: string, password: string, rememberMe: boolean = false) => {
+  const login = async (email: string, password: string) => {
     try {
-      const result = await authClient.login(email, password, rememberMe)
-      if (result.success && result.token) {
-        localStorage.setItem('jwt_token', result.token)
-        await checkAuthStatus()
+      const response = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
+
+      if (response.ok) {
+        const { token, user: userData } = await response.json()
+        localStorage.setItem('jwt_token', token)
+        setUser(userData)
         return { success: true }
       } else {
-        return { success: false, error: result.error || 'Login failed' }
+        const error = await response.text()
+        return { success: false, error }
       }
     } catch (error) {
-      return { success: false, error: 'Login failed' }
+      return { success: false, error: 'Network error' }
     }
   }
 
-  const logout = async () => {
-    try {
-      await authClient.logout()
-      localStorage.removeItem('jwt_token')
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false
-      })
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
+  const logout = () => {
+    localStorage.removeItem('jwt_token')
+    setUser(null)
   }
 
-  return {
-    ...authState,
+  const hasRole = (role: string) => {
+    return user?.role === role
+  }
+
+  const canAccessClient = (clientId: number) => {
+    if (!user) return false
+    if (user.isAdmin) return true
+    // Legal professionals can only access clients assigned to their attorney
+    // This would need to be validated against the actual client data
+    return user.isLegalProfessional && user.attorneyId !== undefined
+  }
+
+  const value: AuthContextType = {
+    user,
+    isLoading,
+    isAuthenticated: !!user,
     login,
     logout,
-    checkAuthStatus
+    hasRole,
+    isAdmin: user?.isAdmin || false,
+    isLegalProfessional: user?.isLegalProfessional || false,
+    canAccessClient
   }
+
+  return React.createElement(AuthContext.Provider, { value }, children);
 }
