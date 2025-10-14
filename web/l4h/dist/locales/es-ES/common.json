@@ -1,0 +1,183 @@
+{
+  "loading": "Cargando...",
+  "error": "Error",
+  "success": "Éxito",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "delete": "Eliminar",
+  "edit": "Editar",
+  "view": "Ver",
+  "close": "Cerrar",
+  "back": "Atrás",
+  "next": "Siguiente",
+  "previous": "Anterior",
+  "search": "Buscar",
+  "filter": "Filtrar",
+  "sort": "Ordenar",
+  "refresh": "Actualizar",
+  "retry": "Reintentar",
+  "confirm": "Confirmar",
+  "yes": "Sí",
+  "no": "No",
+  "required": "Requerido",
+  "optional": "Opcional",
+  "all": "Todos",
+  "none": "Ninguno",
+  "select": "Seleccionar",
+  "clear": "Limpiar",
+  "upload": "Subir",
+  "download": "Descargar",
+  "print": "Imprimir",
+  "share": "Compartir",
+  "copy": "Copiar",
+  "paste": "Pegar",
+  "cut": "Cortar",
+  "undo": "Deshacer",
+  "redo": "Rehacer",
+  "getStarted": "Comenzar",
+  
+  "nav": {
+    "dashboard": "Panel de Control",
+    "pricing": "Precios",
+    "appointments": "Citas",
+    "messages": "Mensajes",
+    "uploads": "Subidas",
+    "invoices": "Facturas",
+    "visaLibrary": "Biblioteca de Visas",
+    "interview": "Entrevista",
+    "scheduling": "Programar Entrevista",
+    "admin": "Administración",
+    "hello": "Hola",
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "help": "Ayuda",
+    "support": "Soporte"
+  },
+  
+  "auth": {
+    "login": "Iniciar Sesión",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "confirmPassword": "Confirmar Contraseña",
+    "createAccount": "Crear Cuenta",
+    "remember": "Recordarme",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "resetPassword": "Restablecer contraseña",
+    "changePassword": "Cambiar contraseña",
+    "verifyEmail": "Verificar correo electrónico",
+    "emailVerified": "Correo electrónico verificado",
+    "loginFailed": "Error al iniciar sesión",
+    "invalidCredentials": "Credenciales inválidas",
+    "accountLocked": "Cuenta bloqueada",
+    "emailRequired": "El correo electrónico es requerido",
+    "passwordRequired": "La contraseña es requerida",
+    "firstNameRequired": "El nombre es requerido",
+    "lastNameRequired": "El apellido es requerido",
+    "passwordConfirmRequired": "La confirmación de contraseña es requerida",
+    "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "emailInvalid": "Por favor ingrese un correo electrónico válido",
+    "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+    "passwordNeedsSpecialChar": "La contraseña debe contener al menos un carácter especial",
+    "passwordNeedsMoreClasses": "La contraseña debe contener al menos {{count}} tipos de caracteres diferentes",
+    "rateLimitExceeded": "Demasiadas solicitudes. Por favor intente más tarde.",
+    "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "signUpNow": "Regístrate ahora",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "register": "Registrarse",
+    "signup": "Crear Cuenta",
+    "registrationSuccess": "¡Registro exitoso! Bienvenido a Law4Hire.",
+    "registrationFailed": "Error en el registro. Por favor intente de nuevo."
+  },
+  
+  "dashboard": {
+    "title": "Panel de Control",
+    "welcome": "¡Bienvenido de vuelta!",
+    "quickLinks": "Enlaces Rápidos",
+    "interview": "Entrevista de Visa",
+    "pricing": "Precios",
+    "appointments": "Citas",
+    "messages": "Mensajes",
+    "caseStatus": "Estado del Caso"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "Inactivo",
+      "active": "Activo",
+      "pending": "Pendiente",
+      "completed": "Completado",
+      "closed": "Cerrado"
+    },
+    "detail": {
+      "title": "Detalles del Caso"
+    }
+  },
+  
+  "appointments": {
+    "title": "Citas",
+    "createAppointment": "Crear Cita",
+    "noAppointments": "No hay citas programadas",
+    "appointmentCreated": "Cita creada exitosamente",
+    "duration": "minutos",
+    "caseId": "ID del Caso",
+    "date": "Fecha y Hora",
+    "notes": "Notas",
+    "scheduleFirst": "Programe su primera cita para comenzar",
+    "durationHelper": "Duración en minutos"
+  },
+  
+  "messages": {
+    "title": "Mensajes",
+    "compose": "Redactar",
+    "inbox": "Bandeja de Entrada",
+    "noMessages": "No hay mensajes",
+    "messageSent": "Mensaje enviado exitosamente",
+    "newMessage": "Nuevo Mensaje",
+    "subject": "Asunto",
+    "recipient": "Destinatario",
+    "message": "Mensaje",
+    "startConversation": "Iniciar una conversación",
+    "selectConversation": "Seleccionar una conversación",
+    "chooseThread": "Elija un hilo de mensajes para ver la conversación",
+    "recipientPlaceholder": "Ingrese el correo electrónico o ID del destinatario"
+  },
+  
+  "validation": {
+    "requiredFields": "Por favor complete todos los campos requeridos"
+  },
+  
+  "admin": {
+    "userManagement": "Gestión de Usuarios",
+    "userDetails": "Detalles del Usuario",
+    "pricingManagement": "Gestión de Precios",
+    "caseManagement": "Gestión de Casos"
+  },
+  
+  "visaLibrary": {
+    "title": "Biblioteca de Tipos de Visa de EE.UU.",
+    "description": "Explora información completa sobre diferentes categorías de visa de EE.UU. Haz clic en cualquier tipo de visa para conocer los requisitos de elegibilidad, el proceso de solicitud y los beneficios.",
+    "loading": "Cargando información de visas...",
+    "learnMore": "Aprender Más",
+    "categories": {
+      "nonimmigrant": "Visas de No Inmigrante",
+      "immigrant": "Visas de Inmigrante"
+    },
+    "modal": {
+      "category": "Categoría",
+      "description": "Descripción",
+      "nextSteps": "Siguientes Pasos",
+      "readyToApply": "¿Listo para solicitar la visa {{code}}? Nuestros abogados de inmigración pueden guiarte a través de todo el proceso.",
+      "applyFor": "Solicitar Visa {{code}}"
+    },
+    "cta": {
+      "title": "¿Necesitas ayuda eligiendo la visa correcta?",
+      "description": "Nuestros expertos en inmigración pueden ayudarte a determinar qué categoría de visa se adapta mejor a tu situación.",
+      "button": "Iniciar Tu Solicitud"
+    }
+  }
+}

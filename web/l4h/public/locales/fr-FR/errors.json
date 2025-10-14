@@ -1,0 +1,82 @@
+{
+  "network": {
+    "timeout": "La demande a expiré. Veuillez réessayer.",
+    "offline": "Vous semblez être hors ligne. Veuillez vérifier votre connexion internet.",
+    "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
+    "connectionFailed": "Échec de la connexion au serveur.",
+    "badRequest": "Demande invalide. Veuillez vérifier votre saisie.",
+    "unauthorized": "Vous n'êtes pas autorisé à effectuer cette action.",
+    "forbidden": "Accès refusé. Vous n'avez pas la permission d'accéder à cette ressource.",
+    "notFound": "La ressource demandée n'a pas été trouvée.",
+    "conflict": "Un conflit s'est produit. La ressource peut avoir été modifiée par un autre utilisateur.",
+    "tooManyRequests": "Trop de demandes. Veuillez attendre avant de réessayer.",
+    "internalServerError": "Erreur interne du serveur. Veuillez contacter le support si le problème persiste."
+  },
+  
+  "translation": {
+    "loadFailed": "Échec du chargement des traductions pour cette langue.",
+    "fallbackActive": "Certaines traductions ne sont pas disponibles. Affichage de l'anglais en secours.",
+    "missingKey": "Traduction non trouvée pour ce texte.",
+    "parsingError": "Erreur d'analyse du fichier de traduction."
+  },
+  
+  "interview": {
+    "sessionExpired": "Votre session d'entretien a expiré. Veuillez commencer un nouvel entretien.",
+    "invalidAnswer": "Veuillez fournir une réponse valide pour continuer.",
+    "completionFailed": "Échec de la finalisation de l'entretien. Veuillez réessayer.",
+    "loadingFailed": "Échec du chargement des questions d'entretien.",
+    "submissionFailed": "Échec de l'envoi de votre réponse. Veuillez réessayer.",
+    "sessionInvalid": "Votre session d'entretien est invalide. Veuillez recommencer.",
+    "progressLost": "Votre progrès d'entretien peut avoir été perdu. Souhaitez-vous recommencer ?"
+  },
+  
+  "auth": {
+    "loginRequired": "Veuillez vous connecter pour continuer.",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "invalidCredentials": "E-mail ou mot de passe invalide.",
+    "accountLocked": "Votre compte a été verrouillé. Veuillez contacter le support.",
+    "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de continuer.",
+    "passwordExpired": "Votre mot de passe a expiré. Veuillez le réinitialiser.",
+    "twoFactorRequired": "L'authentification à deux facteurs est requise."
+  },
+  
+  "validation": {
+    "required": "Ce champ est requis.",
+    "email": "Veuillez saisir une adresse e-mail valide.",
+    "password": "Le mot de passe doit contenir au moins 8 caractères.",
+    "passwordMatch": "Les mots de passe ne correspondent pas.",
+    "phoneNumber": "Veuillez saisir un numéro de téléphone valide.",
+    "dateFormat": "Veuillez saisir une date valide.",
+    "fileSize": "La taille du fichier dépasse la limite maximale.",
+    "fileType": "Le type de fichier n'est pas pris en charge.",
+    "minLength": "Doit contenir au moins {{min}} caractères.",
+    "maxLength": "Ne doit pas dépasser {{max}} caractères.",
+    "numeric": "Veuillez saisir un nombre valide.",
+    "alphanumeric": "Seules les lettres et les chiffres sont autorisés."
+  },
+  
+  "api": {
+    "genericError": "Une erreur s'est produite lors du traitement de votre demande.",
+    "retryableError": "Une erreur temporaire s'est produite. Veuillez réessayer.",
+    "nonRetryableError": "Une erreur s'est produite qui ne peut pas être réessayée. Veuillez contacter le support.",
+    "maintenanceMode": "Le système est actuellement en maintenance. Veuillez réessayer plus tard.",
+    "rateLimitExceeded": "Vous avez dépassé la limite de taux. Veuillez attendre avant de faire plus de demandes."
+  },
+  
+  "file": {
+    "uploadFailed": "Échec du téléchargement du fichier. Veuillez réessayer.",
+    "downloadFailed": "Échec du téléchargement du fichier.",
+    "deleteFailed": "Échec de la suppression du fichier.",
+    "virusDetected": "Le fichier contient un virus et a été mis en quarantaine.",
+    "corruptFile": "Le fichier semble être corrompu.",
+    "unsupportedFormat": "Le format de fichier n'est pas pris en charge."
+  },
+  
+  "general": {
+    "unexpectedError": "Une erreur inattendue s'est produite. Veuillez actualiser la page et réessayer.",
+    "featureUnavailable": "Cette fonctionnalité n'est actuellement pas disponible.",
+    "maintenanceScheduled": "Maintenance programmée en cours.",
+    "browserNotSupported": "Votre navigateur n'est pas pris en charge. Veuillez utiliser un navigateur moderne.",
+    "javascriptRequired": "JavaScript est requis pour utiliser cette application."
+  }
+}

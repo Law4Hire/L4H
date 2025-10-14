@@ -1,0 +1,97 @@
+{
+  "title": "Vize Uygunluk Mülakatı",
+  "loading": "Mülakat yükleniyor...",
+  "selectOption": "Bir seçenek seçin",
+  "enterAnswer": "Cevabınızı girin",
+  "next": "Sonraki Soru",
+  "previous": "Önceki Soru",
+  "restart": "Mülakatı Sıfırla",
+  "complete": "Mülakatı Tamamla",
+  
+  "progress": {
+    "title": "Mülakat İlerlemesi",
+    "stats": "Soru {{current}} | {{remaining}} vize türü kaldı",
+    "currentQuestion": "Soru {{current}}",
+    "remainingVisas": "{{count}} vize türü kaldı",
+    "completionPercentage": "%{{percentage}} tamamlandı"
+  },
+  
+  "buttons": {
+    "next": "İleri",
+    "previous": "Geri",
+    "restart": "Yeniden Başla",
+    "complete": "Tamamla",
+    "skip": "Soruyu Atla"
+  },
+  
+  "messages": {
+    "selectOption": "Devam etmek için lütfen bir seçenek seçin",
+    "required": "Bu soru zorunludur",
+    "loading": "Sonraki soru yükleniyor...",
+    "error": "Soru yüklenirken bir hata oluştu",
+    "sessionExpired": "Mülakat oturumunuz sona erdi. Lütfen yeniden başlayın.",
+    "invalidAnswer": "Lütfen geçerli bir cevap verin",
+    "completionFailed": "Mülakat tamamlanamadı. Lütfen tekrar deneyin."
+  },
+  
+  "completion": {
+    "title": "Mülakat Tamamlandı",
+    "congratulations": "Tebrikler!",
+    "description": "Cevaplarınıza dayanarak, sizin için bir vize önerimiz var.",
+    "stats": "Cevaplanan sorular: {{count}} | 88+ vize türünden daraltıldı",
+    "recommendedVisa": "Önerilen Vize Türü",
+    "backToDashboard": "Kontrol Paneline Dön",
+    "viewPackages": "Hizmet Paketlerini Görüntüle",
+    "startApplication": "Başvuruyu Başlat"
+  },
+  
+  "categories": {
+    "visitTransit": "Ziyaret ve Transit",
+    "studyExchange": "Eğitim ve Değişim",
+    "workTalent": "İş ve Yetenek",
+    "familyFiance": "Aile ve Nişanlı",
+    "diplomaticIO": "Diplomatik, IO ve NATO",
+    "humanitarian": "İnsani ve Kolluk Kuvvetleri",
+    "immigration": "Göçmenlik (Daimi İkamet)",
+    "adoption": "Yabancı Evlat Edinme",
+    "citizenship": "Vatandaşlık (N-400)"
+  },
+  
+  "questions": {
+    "category": "Hangi kategori durumunuza en uygun?",
+    "purpose": "Amerika Birleşik Devletleri'ne ziyaretinizin temel amacı nedir?",
+    "duration": "Amerika Birleşik Devletleri'nde ne kadar kalmayı planlıyorsunuz?",
+    "employment": "ABD işvereninden iş teklifiniz var mı?",
+    "education": "Amerika Birleşik Devletleri'nde eğitim almayı planlıyor musunuz?",
+    "family": "ABD vatandaşı veya daimi ikamet sahibi yakın aile üyeleriniz var mı?",
+    "investment": "Amerika Birleşik Devletleri'nde yatırım yapmayı veya iş kurmayı planlıyor musunuz?",
+    "age": "Yaşınız kaç?",
+    "maritalStatus": "Medeni durumunuz nedir?",
+    "citizenship": "Vatandaşlık ülkeniz hangisi?",
+    "residence": "İkamet ülkeniz hangisi?"
+  },
+  
+  "options": {
+    "yes": "Evet",
+    "no": "Hayır",
+    "notSure": "Emin değilim",
+    "single": "Bekar",
+    "married": "Evli",
+    "divorced": "Boşanmış",
+    "widowed": "Dul",
+    "lessThan90Days": "90 günden az",
+    "90DaysTo1Year": "90 gün ile 1 yıl arası",
+    "1To3Years": "1 ile 3 yıl arası",
+    "moreThan3Years": "3 yıldan fazla",
+    "permanent": "Daimi ikamet"
+  },
+  
+  "errors": {
+    "loadingFailed": "Mülakat soruları yüklenemedi",
+    "submissionFailed": "Cevabınız gönderilemedi",
+    "sessionInvalid": "Mülakat oturumunuz geçersiz",
+    "networkError": "Ağ hatası oluştu. Lütfen bağlantınızı kontrol edin.",
+    "serverError": "Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.",
+    "unexpectedError": "Beklenmeyen bir hata oluştu"
+  }
+}

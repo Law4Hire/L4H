@@ -1,0 +1,82 @@
+{
+  "network": {
+    "timeout": "İstek zaman aşımına uğradı. Lütfen tekrar deneyin.",
+    "offline": "Çevrimdışı görünüyorsunuz. Lütfen internet bağlantınızı kontrol edin.",
+    "serverError": "Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.",
+    "connectionFailed": "Sunucuya bağlanılamadı.",
+    "badRequest": "Geçersiz istek. Lütfen girişinizi kontrol edin.",
+    "unauthorized": "Bu eylemi gerçekleştirme yetkiniz yok.",
+    "forbidden": "Erişim reddedildi. Bu kaynağa erişim izniniz yok.",
+    "notFound": "İstenen kaynak bulunamadı.",
+    "conflict": "Bir çakışma oluştu. Kaynak başka bir kullanıcı tarafından değiştirilmiş olabilir.",
+    "tooManyRequests": "Çok fazla istek. Lütfen tekrar denemeden önce bekleyin.",
+    "internalServerError": "İç sunucu hatası. Sorun devam ederse lütfen destek ile iletişime geçin."
+  },
+  
+  "translation": {
+    "loadFailed": "Bu dil için çeviriler yüklenemedi.",
+    "fallbackActive": "Bazı çeviriler mevcut değil. Yedek olarak İngilizce gösteriliyor.",
+    "missingKey": "Bu metin için çeviri bulunamadı.",
+    "parsingError": "Çeviri dosyası ayrıştırılırken hata oluştu."
+  },
+  
+  "interview": {
+    "sessionExpired": "Mülakat oturumunuz sona erdi. Lütfen yeni bir mülakat başlatın.",
+    "invalidAnswer": "Devam etmek için lütfen geçerli bir cevap verin.",
+    "completionFailed": "Mülakat tamamlanamadı. Lütfen tekrar deneyin.",
+    "loadingFailed": "Mülakat soruları yüklenemedi.",
+    "submissionFailed": "Cevabınız gönderilemedi. Lütfen tekrar deneyin.",
+    "sessionInvalid": "Mülakat oturumunuz geçersiz. Lütfen yeniden başlayın.",
+    "progressLost": "Mülakat ilerlemeniz kaybolmuş olabilir. Yeniden başlamak ister misiniz?"
+  },
+  
+  "auth": {
+    "loginRequired": "Devam etmek için lütfen giriş yapın.",
+    "sessionExpired": "Oturumunuz sona erdi. Lütfen tekrar giriş yapın.",
+    "invalidCredentials": "Geçersiz e-posta veya şifre.",
+    "accountLocked": "Hesabınız kilitlendi. Lütfen destek ile iletişime geçin.",
+    "emailNotVerified": "Devam etmeden önce lütfen e-posta adresinizi doğrulayın.",
+    "passwordExpired": "Şifrenizin süresi doldu. Lütfen sıfırlayın.",
+    "twoFactorRequired": "İki faktörlü kimlik doğrulama gerekli."
+  },
+  
+  "validation": {
+    "required": "Bu alan zorunludur.",
+    "email": "Lütfen geçerli bir e-posta adresi girin.",
+    "password": "Şifre en az 8 karakter olmalıdır.",
+    "passwordMatch": "Şifreler eşleşmiyor.",
+    "phoneNumber": "Lütfen geçerli bir telefon numarası girin.",
+    "dateFormat": "Lütfen geçerli bir tarih girin.",
+    "fileSize": "Dosya boyutu maksimum sınırı aşıyor.",
+    "fileType": "Dosya türü desteklenmiyor.",
+    "minLength": "En az {{min}} karakter olmalıdır.",
+    "maxLength": "{{max}} karakterden fazla olmamalıdır.",
+    "numeric": "Lütfen geçerli bir sayı girin.",
+    "alphanumeric": "Sadece harfler ve sayılara izin verilir."
+  },
+  
+  "api": {
+    "genericError": "İsteğiniz işlenirken bir hata oluştu.",
+    "retryableError": "Geçici bir hata oluştu. Lütfen tekrar deneyin.",
+    "nonRetryableError": "Tekrarlanamayan bir hata oluştu. Lütfen destek ile iletişime geçin.",
+    "maintenanceMode": "Sistem şu anda bakımda. Lütfen daha sonra tekrar deneyin.",
+    "rateLimitExceeded": "Hız sınırını aştınız. Daha fazla istek yapmadan önce lütfen bekleyin."
+  },
+  
+  "file": {
+    "uploadFailed": "Dosya yüklenemedi. Lütfen tekrar deneyin.",
+    "downloadFailed": "Dosya indirilemedi.",
+    "deleteFailed": "Dosya silinemedi.",
+    "virusDetected": "Dosya virüs içeriyor ve karantinaya alındı.",
+    "corruptFile": "Dosya bozuk görünüyor.",
+    "unsupportedFormat": "Dosya formatı desteklenmiyor."
+  },
+  
+  "general": {
+    "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen sayfayı yenileyin ve tekrar deneyin.",
+    "featureUnavailable": "Bu özellik şu anda kullanılamıyor.",
+    "maintenanceScheduled": "Planlanmış bakım devam ediyor.",
+    "browserNotSupported": "Tarayıcınız desteklenmiyor. Lütfen modern bir tarayıcı kullanın.",
+    "javascriptRequired": "Bu uygulamayı kullanmak için JavaScript gereklidir."
+  }
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "testCase": "G-1 Government Official International Organization",
+    "completed": false,
+    "recommendedVisa": null,
+    "expected": "G-1",
+    "match": false,
+    "error": "HTTP 404: Not Found"
+  },
+  {
+    "testCase": "Diversity Visa Lottery Winner",
+    "completed": false,
+    "recommendedVisa": null,
+    "expected": "Diversity",
+    "match": false,
+    "error": "HTTP 404: Not Found"
+  },
+  {
+    "testCase": "EB-1 Priority Worker",
+    "completed": false,
+    "recommendedVisa": null,
+    "expected": "EB-1",
+    "match": false,
+    "error": "HTTP 404: Not Found"
+  },
+  {
+    "testCase": "EB-2 Advanced Degree Professional",
+    "completed": false,
+    "recommendedVisa": null,
+    "expected": "EB-2",
+    "match": false,
+    "error": "HTTP 404: Not Found"
+  },
+  {
+    "testCase": "EB-3 Skilled Worker",
+    "completed": false,
+    "recommendedVisa": null,
+    "expected": "EB-3",
+    "match": false,
+    "error": "HTTP 404: Not Found"
+  },
+  {
+    "testCase": "EB-4 Religious Worker",
+    "completed": false,
+    "recommendedVisa": null,
+    "expected": "EB-4",
+    "match": false,
+    "error": "HTTP 404: Not Found"
+  }
+]

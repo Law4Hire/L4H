@@ -1,0 +1,86 @@
+{
+  "testDate": "2025-09-18T22:43:04.196Z",
+  "familyData": {
+    "ralph": {
+      "email": "TestUser465@testing.com",
+      "firstName": "Ralph",
+      "lastName": "Nielsen",
+      "age": 35,
+      "nationality": "Danish",
+      "country": "Denmark",
+      "purpose": "employment",
+      "role": "primary"
+    },
+    "helga": {
+      "email": "TestUser37794@testing.com",
+      "firstName": "Helga",
+      "lastName": "Nielsen",
+      "age": 32,
+      "nationality": "Danish",
+      "country": "Denmark",
+      "purpose": "family",
+      "role": "spouse",
+      "relationship": "spouse"
+    },
+    "glenda": {
+      "email": "TestUser40446@testing.com",
+      "firstName": "Glenda",
+      "lastName": "Nielsen",
+      "age": 12,
+      "nationality": "Danish",
+      "country": "Denmark",
+      "purpose": "family",
+      "role": "child",
+      "relationship": "child"
+    },
+    "gregg": {
+      "email": "TestUser32839@testing.com",
+      "firstName": "Gregg",
+      "lastName": "Nielsen",
+      "age": 4,
+      "nationality": "Danish",
+      "country": "Denmark",
+      "purpose": "family",
+      "role": "child",
+      "relationship": "child"
+    }
+  },
+  "results": {
+    "usersCreated": [
+      {
+        "name": "Ralph Nielsen",
+        "email": "TestUser465@testing.com",
+        "success": true
+      },
+      {
+        "name": "Helga Nielsen",
+        "email": "TestUser37794@testing.com",
+        "success": true
+      },
+      {
+        "name": "Glenda Nielsen",
+        "email": "TestUser40446@testing.com",
+        "success": true
+      },
+      {
+        "name": "Gregg Nielsen",
+        "email": "TestUser32839@testing.com",
+        "success": true
+      }
+    ],
+    "loginTests": [],
+    "interviewResults": [],
+    "errors": [
+      "Login failed for Ralph: Waiting for selector `input[type=\"email\"]` failed",
+      "Login failed for Helga: Waiting for selector `input[type=\"email\"]` failed",
+      "Login failed for Glenda: Waiting for selector `input[type=\"email\"]` failed",
+      "Login failed for Gregg: Waiting for selector `input[type=\"email\"]` failed"
+    ]
+  },
+  "summary": {
+    "usersCreated": 4,
+    "successfulLogins": 0,
+    "completedInterviews": 0,
+    "totalErrors": 4
+  }
+}

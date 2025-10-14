@@ -1,0 +1,183 @@
+{
+  "loading": "লোড হচ্ছে...",
+  "error": "ত্রুটি",
+  "success": "সফল",
+  "cancel": "বাতিল",
+  "save": "সংরক্ষণ",
+  "delete": "মুছুন",
+  "edit": "সম্পাদনা",
+  "view": "দেখুন",
+  "close": "বন্ধ",
+  "back": "পিছনে",
+  "next": "পরবর্তী",
+  "previous": "পূর্ববর্তী",
+  "search": "অনুসন্ধান",
+  "filter": "ফিল্টার",
+  "sort": "সাজান",
+  "refresh": "রিফ্রেশ",
+  "retry": "পুনরায় চেষ্টা",
+  "confirm": "নিশ্চিত",
+  "yes": "হ্যাঁ",
+  "no": "না",
+  "required": "প্রয়োজনীয়",
+  "optional": "ঐচ্ছিক",
+  "all": "সব",
+  "none": "কোনটি নয়",
+  "select": "নির্বাচন",
+  "clear": "পরিষ্কার",
+  "upload": "আপলোড",
+  "download": "ডাউনলোড",
+  "print": "প্রিন্ট",
+  "share": "শেয়ার",
+  "copy": "কপি",
+  "paste": "পেস্ট",
+  "cut": "কাট",
+  "undo": "পূর্বাবস্থা",
+  "redo": "পুনরায়",
+  "getStarted": "শুরু করুন",
+  
+  "nav": {
+    "dashboard": "ড্যাশবোর্ড",
+    "pricing": "মূল্য",
+    "appointments": "অ্যাপয়েন্টমেন্ট",
+    "messages": "বার্তা",
+    "uploads": "আপলোড",
+    "invoices": "চালান",
+    "visaLibrary": "ভিসা লাইব্রেরি",
+    "interview": "সাক্ষাৎকার",
+    "scheduling": "সাক্ষাৎকার নির্ধারণ",
+    "admin": "প্রশাসন",
+    "hello": "হ্যালো",
+    "login": "লগইন",
+    "logout": "লগআউট",
+    "profile": "প্রোফাইল",
+    "settings": "সেটিংস",
+    "help": "সাহায্য",
+    "support": "সহায়তা"
+  },
+  
+  "auth": {
+    "login": "লগইন",
+    "email": "ইমেইল",
+    "password": "পাসওয়ার্ড",
+    "firstName": "প্রথম নাম",
+    "lastName": "শেষ নাম",
+    "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
+    "createAccount": "অ্যাকাউন্ট তৈরি করুন",
+    "remember": "আমাকে মনে রাখুন",
+    "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+    "resetPassword": "পাসওয়ার্ড রিসেট করুন",
+    "changePassword": "পাসওয়ার্ড পরিবর্তন করুন",
+    "verifyEmail": "ইমেইল যাচাই করুন",
+    "emailVerified": "ইমেইল যাচাই করা হয়েছে",
+    "loginFailed": "লগইন ব্যর্থ",
+    "invalidCredentials": "অবৈধ পরিচয়পত্র",
+    "accountLocked": "অ্যাকাউন্ট লক",
+    "emailRequired": "ইমেইল প্রয়োজন",
+    "passwordRequired": "পাসওয়ার্ড প্রয়োজন",
+    "firstNameRequired": "প্রথম নাম প্রয়োজন",
+    "lastNameRequired": "শেষ নাম প্রয়োজন",
+    "passwordConfirmRequired": "পাসওয়ার্ড নিশ্চিতকরণ প্রয়োজন",
+    "passwordsDoNotMatch": "পাসওয়ার্ড মিলছে না",
+    "emailInvalid": "দয়া করে একটি বৈধ ইমেইল ঠিকানা লিখুন",
+    "passwordTooShort": "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে",
+    "passwordNeedsSpecialChar": "পাসওয়ার্ডে কমপক্ষে একটি বিশেষ অক্ষর থাকতে হবে",
+    "passwordNeedsMoreClasses": "পাসওয়ার্ডে কমপক্ষে {{count}}টি ভিন্ন ধরনের অক্ষর থাকতে হবে",
+    "rateLimitExceeded": "অনেক বেশি অনুরোধ। দয়া করে পরে চেষ্টা করুন।",
+    "passwordMinLength": "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে",
+    "dontHaveAccount": "অ্যাকাউন্ট নেই?",
+    "signUpNow": "এখনই সাইন আপ করুন",
+    "alreadyHaveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+    "register": "নিবন্ধন",
+    "signup": "অ্যাকাউন্ট তৈরি করুন",
+    "registrationSuccess": "নিবন্ধন সফল! Law4Hire-এ স্বাগতম।",
+    "registrationFailed": "নিবন্ধন ব্যর্থ। দয়া করে আবার চেষ্টা করুন।"
+  },
+  
+  "dashboard": {
+    "title": "ড্যাশবোর্ড",
+    "welcome": "ফিরে আসার জন্য স্বাগতম!",
+    "quickLinks": "দ্রুত লিঙ্ক",
+    "interview": "ভিসা সাক্ষাৎকার",
+    "pricing": "মূল্য",
+    "appointments": "অ্যাপয়েন্টমেন্ট",
+    "messages": "বার্তা",
+    "caseStatus": "কেস স্ট্যাটাস"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "নিষ্ক্রিয়",
+      "active": "সক্রিয়",
+      "pending": "অপেক্ষমান",
+      "completed": "সম্পন্ন",
+      "closed": "বন্ধ"
+    },
+    "detail": {
+      "title": "কেসের বিবরণ"
+    }
+  },
+  
+  "appointments": {
+    "title": "অ্যাপয়েন্টমেন্ট",
+    "createAppointment": "অ্যাপয়েন্টমেন্ট তৈরি করুন",
+    "noAppointments": "কোন অ্যাপয়েন্টমেন্ট নির্ধারিত নেই",
+    "appointmentCreated": "অ্যাপয়েন্টমেন্ট সফলভাবে তৈরি হয়েছে",
+    "duration": "মিনিট",
+    "caseId": "কেস আইডি",
+    "date": "তারিখ ও সময়",
+    "notes": "নোট",
+    "scheduleFirst": "শুরু করতে আপনার প্রথম অ্যাপয়েন্টমেন্ট নির্ধারণ করুন",
+    "durationHelper": "মিনিটে সময়কাল"
+  },
+  
+  "messages": {
+    "title": "বার্তা",
+    "compose": "লিখুন",
+    "inbox": "ইনবক্স",
+    "noMessages": "কোন বার্তা নেই",
+    "messageSent": "বার্তা সফলভাবে পাঠানো হয়েছে",
+    "newMessage": "নতুন বার্তা",
+    "subject": "বিষয়",
+    "recipient": "প্রাপক",
+    "message": "বার্তা",
+    "startConversation": "কথোপকথন শুরু করুন",
+    "selectConversation": "একটি কথোপকথন নির্বাচন করুন",
+    "chooseThread": "কথোপকথন দেখতে একটি বার্তা থ্রেড বেছে নিন",
+    "recipientPlaceholder": "প্রাপকের ইমেইল বা আইডি লিখুন"
+  },
+  
+  "validation": {
+    "requiredFields": "দয়া করে সব প্রয়োজনীয় ক্ষেত্র পূরণ করুন"
+  },
+  
+  "admin": {
+    "userManagement": "ব্যবহারকারী ব্যবস্থাপনা",
+    "userDetails": "ব্যবহারকারীর বিবরণ",
+    "pricingManagement": "মূল্য ব্যবস্থাপনা",
+    "caseManagement": "কেস ব্যবস্থাপনা"
+  },
+  
+  "visaLibrary": {
+    "title": "মার্কিন ভিসার ধরন লাইব্রেরি",
+    "description": "বিভিন্ন মার্কিন ভিসা বিভাগ সম্পর্কে বিস্তৃত তথ্য অন্বেষণ করুন। যোগ্যতার প্রয়োজনীয়তা, আবেদন প্রক্রিয়া এবং সুবিধা সম্পর্কে জানতে যেকোনো ভিসার ধরনে ক্লিক করুন।",
+    "loading": "ভিসার তথ্য লোড হচ্ছে...",
+    "learnMore": "আরও জানুন",
+    "categories": {
+      "nonimmigrant": "অ-অভিবাসী ভিসা",
+      "immigrant": "অভিবাসী ভিসা"
+    },
+    "modal": {
+      "category": "বিভাগ",
+      "description": "বর্ণনা",
+      "nextSteps": "পরবর্তী পদক্ষেপ",
+      "readyToApply": "{{code}} ভিসার জন্য আবেদন করতে প্রস্তুত? আমাদের অভিবাসন আইনজীবীরা সম্পূর্ণ প্রক্রিয়ায় আপনাকে গাইড করতে পারেন।",
+      "applyFor": "{{code}} ভিসার জন্য আবেদন করুন"
+    },
+    "cta": {
+      "title": "সঠিক ভিসা বেছে নিতে সাহায্য প্রয়োজন?",
+      "description": "আমাদের অভিবাসন বিশেষজ্ঞরা আপনার পরিস্থিতির জন্য কোন ভিসা বিভাগ সবচেয়ে উপযুক্ত তা নির্ধারণ করতে সাহায্য করতে পারেন।",
+      "button": "আপনার আবেদন শুরু করুন"
+    }
+  }
+}

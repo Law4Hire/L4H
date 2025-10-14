@@ -1,0 +1,129 @@
+{
+  "testRun": {
+    "timestamp": "2025-09-17T19:31:37.963Z",
+    "user": "gerry@testing.com",
+    "totalSteps": 4,
+    "passed": 4,
+    "failed": 0,
+    "duration": 38364
+  },
+  "results": [
+    {
+      "step": "Quick Login",
+      "status": "PASS",
+      "duration": 31431,
+      "result": {
+        "currentUrl": "http://localhost:5173/dashboard"
+      }
+    },
+    {
+      "step": "Click Visa Interview Card",
+      "status": "PASS",
+      "duration": 2633,
+      "result": {
+        "success": true,
+        "cardInfo": {
+          "tag": "DIV",
+          "className": ""
+        }
+      }
+    },
+    {
+      "step": "Select Family/Personal",
+      "status": "PASS",
+      "duration": 2653,
+      "result": {
+        "success": false,
+        "selectsFound": 0,
+        "inputsFound": 1
+      }
+    },
+    {
+      "step": "Check for Interview Questions",
+      "status": "PASS",
+      "duration": 1647,
+      "result": {
+        "questionMatches": [
+          {
+            "pattern": "\\?",
+            "count": 0
+          },
+          {
+            "pattern": "age",
+            "count": 1
+          },
+          {
+            "pattern": "country",
+            "count": 0
+          },
+          {
+            "pattern": "citizenship",
+            "count": 0
+          },
+          {
+            "pattern": "birth",
+            "count": 0
+          },
+          {
+            "pattern": "family",
+            "count": 0
+          },
+          {
+            "pattern": "relationship",
+            "count": 0
+          },
+          {
+            "pattern": "sponsor",
+            "count": 0
+          },
+          {
+            "pattern": "visa",
+            "count": 2
+          },
+          {
+            "pattern": "immigration",
+            "count": 2
+          }
+        ],
+        "formElements": [
+          {
+            "tag": "SELECT",
+            "type": "select-one",
+            "name": "",
+            "id": "",
+            "text": "العربية (السعودية)বাংলা (বাংলাদেশ)Deutsch (Deutschland)English (United States)Español (España)França"
+          }
+        ],
+        "hasQuestionMark": false,
+        "textLength": 581,
+        "sampleText": "\n    🇺🇸US Immigration HelpPowered by Law4HireVisa Libraryالعربية (السعودية)বাংলা (বাংলাদেশ)Deutsch (Deutschland)English (United States)Español (España)Français (France)हिन्दी (भारत)Bahasa Indonesia (Indonesia)Italiano (Italia)日本語 (日本)한국어 (대한민국)मराठी (भारत)Polski (Polska)Português (Portugal)Русский (Россия)தமிழ் (இந்தியா)తెలుగు (భారతదేశం)Türkçe (Türkiye)اردو (پاکستان)Tiếng Việt (Việt Nam)中文 (中国)Hello GeraldineWelcome back!Your Immigration Legal PartnerQuick Links🎤Visa Interview💰Pricing📅Appoi"
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "01-logged-in",
+      "description": "Logged in to dashboard",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\final-2025-09-17T19-31-30-609Z-01-logged-in.png",
+      "timestamp": "2025-09-17T19-31-30-609Z"
+    },
+    {
+      "name": "02-after-card-click",
+      "description": "After clicking Visa Interview card",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\final-2025-09-17T19-31-33-303Z-02-after-card-click.png",
+      "timestamp": "2025-09-17T19-31-33-303Z"
+    },
+    {
+      "name": "03-family-selection",
+      "description": "Family/Personal selection attempt",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\final-2025-09-17T19-31-35-938Z-03-family-selection.png",
+      "timestamp": "2025-09-17T19-31-35-938Z"
+    },
+    {
+      "name": "04-questions-check",
+      "description": "Checking for interview questions",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\final-2025-09-17T19-31-37-588Z-04-questions-check.png",
+      "timestamp": "2025-09-17T19-31-37-588Z"
+    }
+  ]
+}

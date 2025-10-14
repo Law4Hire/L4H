@@ -1,0 +1,18 @@
+PASTE THIS INTO CLAUDE CODER AFTER UPLOADING `routing_questions.csv`:
+
+You are Claude Coder acting as a full-stack engineer.
+
+Goal: Read `routing_questions.csv`, build a single-page decision UI that asks one question at a time and outputs a recommended visa code with the reasoning path.
+
+Requirements:
+- Parse CSV with columns: id, category, type, text, options_json, route_expr_json, tags, notes.
+- Build a data-driven state machine. Start at `root.category`.
+- For `type=question` or `type=router`:
+  - Render `text` and choices from `options_json` (JSON array).
+  - On selection, read `route_expr_json` to decide the next `id`.
+  - The special value `"__continue__"` means "return to the current branch's next step" (implement as a no-op so caller proceeds).
+- For `type=outcome`: show the `visa_code` from `route_expr_json`, the `notes`, and whether `attorney_flag` is true.
+- Provide a Restart button, Back navigation, keyboard support (Enter/Space).
+- Export the chosen path as JSON (array of `{id, text, answer}`) and the outcome.
+- Keep the engine reusable so we can swap CSVs without code changes.
+Deliverables: Source code + README with local run instructions.

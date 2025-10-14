@@ -1,0 +1,183 @@
+{
+  "loading": "لوڈ ہو رہا ہے...",
+  "error": "خرابی",
+  "success": "کامیابی",
+  "cancel": "منسوخ کریں",
+  "save": "محفوظ کریں",
+  "delete": "حذف کریں",
+  "edit": "ترمیم کریں",
+  "view": "دیکھیں",
+  "close": "بند کریں",
+  "back": "واپس",
+  "next": "اگلا",
+  "previous": "پچھلا",
+  "search": "تلاش کریں",
+  "filter": "فلٹر",
+  "sort": "ترتیب دیں",
+  "refresh": "تازہ کریں",
+  "retry": "دوبارہ کوشش کریں",
+  "confirm": "تصدیق کریں",
+  "yes": "ہاں",
+  "no": "نہیں",
+  "required": "ضروری",
+  "optional": "اختیاری",
+  "all": "تمام",
+  "none": "کوئی نہیں",
+  "select": "منتخب کریں",
+  "clear": "صاف کریں",
+  "upload": "اپ لوڈ",
+  "download": "ڈاؤن لوڈ",
+  "print": "پرنٹ",
+  "share": "شیئر",
+  "copy": "کاپی",
+  "paste": "پیسٹ",
+  "cut": "کٹ",
+  "undo": "واپس کریں",
+  "redo": "دوبارہ کریں",
+  "getStarted": "شروع کریں",
+  
+  "nav": {
+    "dashboard": "ڈیش بورڈ",
+    "pricing": "قیمتیں",
+    "appointments": "ملاقاتیں",
+    "messages": "پیغامات",
+    "uploads": "اپ لوڈز",
+    "invoices": "بل",
+    "visaLibrary": "ویزا لائبریری",
+    "interview": "انٹرویو",
+    "scheduling": "انٹرویو شیڈول کریں",
+    "admin": "ایڈمن",
+    "hello": "ہیلو",
+    "login": "لاگ ان",
+    "logout": "لاگ آؤٹ",
+    "profile": "پروفائل",
+    "settings": "سیٹنگز",
+    "help": "مدد",
+    "support": "سپورٹ"
+  },
+  
+  "auth": {
+    "login": "لاگ ان",
+    "email": "ای میل",
+    "password": "پاس ورڈ",
+    "firstName": "پہلا نام",
+    "lastName": "آخری نام",
+    "confirmPassword": "پاس ورڈ کی تصدیق کریں",
+    "createAccount": "اکاؤنٹ بنائیں",
+    "remember": "مجھے یاد رکھیں",
+    "forgotPassword": "پاس ورڈ بھول گئے؟",
+    "resetPassword": "پاس ورڈ ری سیٹ کریں",
+    "changePassword": "پاس ورڈ تبدیل کریں",
+    "verifyEmail": "ای میل کی تصدیق کریں",
+    "emailVerified": "ای میل کی تصدیق ہو گئی",
+    "loginFailed": "لاگ ان ناکام",
+    "invalidCredentials": "غلط کریڈنشلز",
+    "accountLocked": "اکاؤنٹ لاک ہے",
+    "emailRequired": "ای میل ضروری ہے",
+    "passwordRequired": "پاس ورڈ ضروری ہے",
+    "firstNameRequired": "پہلا نام ضروری ہے",
+    "lastNameRequired": "آخری نام ضروری ہے",
+    "passwordConfirmRequired": "پاس ورڈ کی تصدیق ضروری ہے",
+    "passwordsDoNotMatch": "پاس ورڈ میل نہیں کھاتے",
+    "emailInvalid": "براہ کرم درست ای میل ایڈریس داخل کریں",
+    "passwordTooShort": "پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے",
+    "passwordNeedsSpecialChar": "پاس ورڈ میں کم از کم ایک خاص حرف ہونا چاہیے",
+    "passwordNeedsMoreClasses": "پاس ورڈ میں کم از کم {{count}} مختلف قسم کے حروف ہونے چاہیے",
+    "rateLimitExceeded": "بہت زیادہ درخواستیں۔ براہ کرم بعد میں کوشش کریں۔",
+    "passwordMinLength": "پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے",
+    "dontHaveAccount": "اکاؤنٹ نہیں ہے؟",
+    "signUpNow": "ابھی سائن اپ کریں",
+    "alreadyHaveAccount": "پہلے سے اکاؤنٹ ہے؟",
+    "register": "رجسٹر",
+    "signup": "اکاؤنٹ بنائیں",
+    "registrationSuccess": "رجسٹریشن کامیاب! Law4Hire میں خوش آمدید۔",
+    "registrationFailed": "رجسٹریشن ناکام۔ براہ کرم دوبارہ کوشش کریں۔"
+  },
+  
+  "dashboard": {
+    "title": "ڈیش بورڈ",
+    "welcome": "واپس آنے پر خوش آمدید!",
+    "quickLinks": "فوری لنکس",
+    "interview": "ویزا انٹرویو",
+    "pricing": "قیمتیں",
+    "appointments": "ملاقاتیں",
+    "messages": "پیغامات",
+    "caseStatus": "کیس کی صورتحال"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "غیر فعال",
+      "active": "فعال",
+      "pending": "زیر التواء",
+      "completed": "مکمل",
+      "closed": "بند"
+    },
+    "detail": {
+      "title": "کیس کی تفصیلات"
+    }
+  },
+  
+  "appointments": {
+    "title": "ملاقاتیں",
+    "createAppointment": "ملاقات بنائیں",
+    "noAppointments": "کوئی ملاقات شیڈول نہیں",
+    "appointmentCreated": "ملاقات کامیابی سے بنائی گئی",
+    "duration": "منٹ",
+    "caseId": "کیس آئی ڈی",
+    "date": "تاریخ اور وقت",
+    "notes": "نوٹس",
+    "scheduleFirst": "شروع کرنے کے لیے اپنی پہلی ملاقات شیڈول کریں",
+    "durationHelper": "منٹوں میں مدت"
+  },
+  
+  "messages": {
+    "title": "پیغامات",
+    "compose": "لکھیں",
+    "inbox": "ان باکس",
+    "noMessages": "کوئی پیغام نہیں",
+    "messageSent": "پیغام کامیابی سے بھیجا گیا",
+    "newMessage": "نیا پیغام",
+    "subject": "موضوع",
+    "recipient": "وصول کنندہ",
+    "message": "پیغام",
+    "startConversation": "بات چیت شروع کریں",
+    "selectConversation": "بات چیت منتخب کریں",
+    "chooseThread": "بات چیت دیکھنے کے لیے پیغام تھریڈ منتخب کریں",
+    "recipientPlaceholder": "وصول کنندہ کا ای میل یا آئی ڈی داخل کریں"
+  },
+  
+  "validation": {
+    "requiredFields": "براہ کرم تمام ضروری فیلڈز بھریں"
+  },
+  
+  "admin": {
+    "userManagement": "صارف کا انتظام",
+    "userDetails": "صارف کی تفصیلات",
+    "pricingManagement": "قیمت کا انتظام",
+    "caseManagement": "کیس کا انتظام"
+  },
+  
+  "visaLibrary": {
+    "title": "امریکی ویزا اقسام کی لائبریری",
+    "description": "مختلف امریکی ویزا کیٹگریز کے بارے میں جامع معلومات دریافت کریں۔ اہلیت کی ضروریات، درخواست کے عمل اور فوائد کے بارے میں جاننے کے لیے کسی بھی ویزا قسم پر کلک کریں۔",
+    "loading": "ویزا کی معلومات لوڈ ہو رہی ہیں...",
+    "learnMore": "مزید جانیں",
+    "categories": {
+      "nonimmigrant": "غیر تارک وطن ویزا",
+      "immigrant": "تارک وطن ویزا"
+    },
+    "modal": {
+      "category": "کیٹگری",
+      "description": "تفصیل",
+      "nextSteps": "اگلے قدم",
+      "readyToApply": "{{code}} ویزا کے لیے درخواست دینے کے لیے تیار ہیں؟ ہمارے امیگریشن وکلاء پورے عمل میں آپ کی رہنمائی کر سکتے ہیں۔",
+      "applyFor": "{{code}} ویزا کے لیے درخواست دیں"
+    },
+    "cta": {
+      "title": "صحیح ویزا منتخب کرنے میں مدد چاہیے؟",
+      "description": "ہمارے امیگریشن ماہرین آپ کی صورتحال کے لیے کون سا ویزا کیٹگری بہترین ہے اس کا تعین کرنے میں مدد کر سکتے ہیں۔",
+      "button": "اپنی درخواست شروع کریں"
+    }
+  }
+}

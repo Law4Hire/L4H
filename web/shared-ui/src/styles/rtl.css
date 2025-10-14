@@ -1,0 +1,448 @@
+/* RTL Layout Support */
+
+/* CSS Custom Properties for RTL support */
+:root {
+  --text-align-start: left;
+  --text-align-end: right;
+  --margin-start: margin-left;
+  --margin-end: margin-right;
+  --padding-start: padding-left;
+  --padding-end: padding-right;
+  --border-start: border-left;
+  --border-end: border-right;
+  --inset-start: left;
+  --inset-end: right;
+}
+
+/* Base RTL styles */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+}
+
+/* Utility classes using CSS custom properties */
+.text-align-start {
+  text-align: var(--text-align-start);
+}
+
+.text-align-end {
+  text-align: var(--text-align-end);
+}
+
+.margin-start-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html[dir="rtl"] .margin-start-auto {
+  margin-right: auto;
+  margin-left: unset;
+}
+
+.margin-end-auto {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+html[dir="rtl"] .margin-end-auto {
+  margin-left: auto;
+  margin-right: unset;
+}
+
+/* RTL-specific utility classes */
+.rtl-flip {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .rtl-flip {
+  transform: scaleX(1);
+}
+
+/* Text alignment utilities */
+.text-start {
+  text-align: start;
+}
+
+.text-end {
+  text-align: end;
+}
+
+html[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+html[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* Margin and padding utilities for RTL */
+html[dir="rtl"] .ml-auto {
+  margin-left: unset;
+  margin-right: auto;
+}
+
+html[dir="rtl"] .mr-auto {
+  margin-right: unset;
+  margin-left: auto;
+}
+
+html[dir="rtl"] .pl-4 {
+  padding-left: unset;
+  padding-right: 1rem;
+}
+
+html[dir="rtl"] .pr-4 {
+  padding-right: unset;
+  padding-left: 1rem;
+}
+
+/* Border radius for RTL */
+html[dir="rtl"] .rounded-l {
+  border-top-left-radius: unset;
+  border-bottom-left-radius: unset;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+html[dir="rtl"] .rounded-r {
+  border-top-right-radius: unset;
+  border-bottom-right-radius: unset;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+/* Flexbox utilities for RTL */
+html[dir="rtl"] .flex-row-reverse {
+  flex-direction: row;
+}
+
+html[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+/* Position utilities for RTL */
+html[dir="rtl"] .left-0 {
+  left: unset;
+  right: 0;
+}
+
+html[dir="rtl"] .right-0 {
+  right: unset;
+  left: 0;
+}
+
+/* Transform utilities for RTL */
+html[dir="rtl"] .transform {
+  --tw-translate-x: 0;
+}
+
+html[dir="rtl"] .translate-x-full {
+  --tw-translate-x: -100%;
+}
+
+html[dir="rtl"] .-translate-x-full {
+  --tw-translate-x: 100%;
+}
+
+/* Custom RTL-aware components */
+.interview-progress-bar {
+  direction: ltr; /* Progress bars should always be LTR */
+}
+
+html[dir="rtl"] .interview-progress-bar {
+  direction: ltr;
+}
+
+/* Navigation menu RTL support */
+html[dir="rtl"] .nav-menu {
+  text-align: right;
+}
+
+html[dir="rtl"] .nav-menu .dropdown {
+  left: unset;
+  right: 0;
+}
+
+/* Form elements RTL support */
+html[dir="rtl"] .form-input {
+  text-align: right;
+}
+
+html[dir="rtl"] .form-input[type="number"] {
+  text-align: left; /* Numbers should remain LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+html[dir="rtl"] .form-input[type="email"] {
+  text-align: left; /* Email addresses should remain LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+html[dir="rtl"] .form-input[type="url"] {
+  text-align: left; /* URLs should remain LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+html[dir="rtl"] .form-input[type="tel"] {
+  text-align: left; /* Phone numbers should remain LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Enhanced number and currency formatting */
+.number-input {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: embed;
+}
+
+.currency-input {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: embed;
+}
+
+/* RTL-aware placeholder text */
+html[dir="rtl"] input::placeholder {
+  text-align: right;
+}
+
+html[dir="rtl"] input[type="number"]::placeholder,
+html[dir="rtl"] input[type="email"]::placeholder,
+html[dir="rtl"] input[type="url"]::placeholder,
+html[dir="rtl"] input[type="tel"]::placeholder {
+  text-align: left;
+}
+
+/* Button icons RTL support */
+html[dir="rtl"] .btn-icon-left {
+  order: 2;
+}
+
+html[dir="rtl"] .btn-icon-right {
+  order: 1;
+}
+
+html[dir="rtl"] .btn-text {
+  order: 1;
+}
+
+/* Modal and dialog RTL support */
+html[dir="rtl"] .modal-content {
+  text-align: right;
+}
+
+html[dir="rtl"] .modal-header {
+  text-align: right;
+}
+
+html[dir="rtl"] .modal-close {
+  left: 1rem;
+  right: unset;
+}
+
+/* Table RTL support */
+html[dir="rtl"] .table {
+  text-align: right;
+}
+
+html[dir="rtl"] .table th:first-child {
+  text-align: right;
+}
+
+html[dir="rtl"] .table td:first-child {
+  text-align: right;
+}
+
+/* Tooltip RTL support */
+html[dir="rtl"] .tooltip {
+  text-align: right;
+}
+
+/* Loading spinner - should remain centered regardless of direction */
+.loading-spinner {
+  direction: ltr;
+}
+
+/* Number formatting - always LTR */
+.number-display {
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Date formatting - context dependent */
+html[dir="rtl"] .date-display {
+  direction: rtl;
+}
+
+/* Code blocks - always LTR */
+.code-block,
+pre,
+code {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Email addresses and URLs - always LTR */
+.email,
+.url {
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Search input RTL support */
+html[dir="rtl"] .search-input {
+  padding-left: 2.5rem;
+  padding-right: 0.75rem;
+}
+
+html[dir="rtl"] .search-icon {
+  left: 0.75rem;
+  right: unset;
+}
+
+/* Breadcrumb RTL support */
+html[dir="rtl"] .breadcrumb {
+  direction: rtl;
+}
+
+html[dir="rtl"] .breadcrumb-separator {
+  transform: scaleX(-1);
+}
+
+/* Card layout RTL support */
+html[dir="rtl"] .card-header {
+  text-align: right;
+}
+
+html[dir="rtl"] .card-body {
+  text-align: right;
+}
+
+/* Interview specific RTL styles */
+html[dir="rtl"] .interview-question {
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-options {
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-option-button {
+  text-align: right;
+  justify-content: flex-start;
+}
+
+html[dir="rtl"] .interview-navigation {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .interview-progress-text {
+  text-align: right;
+}
+
+/* Enhanced interview progress indicators */
+html[dir="rtl"] .interview-progress-stats {
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-remaining-visas {
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-visa-chips {
+  justify-content: flex-end;
+}
+
+html[dir="rtl"] .interview-visa-chip {
+  text-align: center; /* Visa codes should be centered */
+}
+
+/* Interview form elements */
+html[dir="rtl"] .interview-form {
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-radio-group {
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-radio-option {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-radio-option input[type="radio"] {
+  margin-left: 0.75rem;
+  margin-right: 0;
+}
+
+html[dir="rtl"] .interview-select {
+  text-align: right;
+}
+
+/* Interview completion screen */
+html[dir="rtl"] .interview-complete {
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-recommendation {
+  text-align: right;
+}
+
+html[dir="rtl"] .interview-recommendation-title {
+  text-align: center; /* Visa type should be centered */
+}
+
+html[dir="rtl"] .interview-actions {
+  flex-direction: row-reverse;
+}
+
+/* Ensure proper font rendering for Arabic */
+html[dir="rtl"][lang^="ar"] {
+  font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* Ensure proper font rendering for Urdu */
+html[dir="rtl"][lang^="ur"] {
+  font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* Animation adjustments for RTL */
+@media (prefers-reduced-motion: no-preference) {
+  html[dir="rtl"] .slide-in-left {
+    animation: slide-in-right 0.3s ease-out;
+  }
+  
+  html[dir="rtl"] .slide-in-right {
+    animation: slide-in-left 0.3s ease-out;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

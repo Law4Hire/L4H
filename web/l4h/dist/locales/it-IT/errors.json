@@ -1,0 +1,82 @@
+{
+  "network": {
+    "timeout": "Richiesta scaduta. Riprova.",
+    "offline": "Sembri essere offline. Controlla la tua connessione internet.",
+    "serverError": "Si è verificato un errore del server. Riprova più tardi.",
+    "connectionFailed": "Impossibile connettersi al server.",
+    "badRequest": "Richiesta non valida. Controlla il tuo input.",
+    "unauthorized": "Non sei autorizzato a eseguire questa azione.",
+    "forbidden": "Accesso negato. Non hai il permesso di accedere a questa risorsa.",
+    "notFound": "La risorsa richiesta non è stata trovata.",
+    "conflict": "Si è verificato un conflitto. La risorsa potrebbe essere stata modificata da un altro utente.",
+    "tooManyRequests": "Troppe richieste. Attendi prima di riprovare.",
+    "internalServerError": "Errore interno del server. Contatta il supporto se il problema persiste."
+  },
+  
+  "translation": {
+    "loadFailed": "Impossibile caricare le traduzioni per questa lingua.",
+    "fallbackActive": "Alcune traduzioni non sono disponibili. Mostrando inglese come fallback.",
+    "missingKey": "Traduzione non trovata per questo testo.",
+    "parsingError": "Errore nell'analisi del file di traduzione."
+  },
+  
+  "interview": {
+    "sessionExpired": "La tua sessione di colloquio è scaduta. Inizia un nuovo colloquio.",
+    "invalidAnswer": "Fornisci una risposta valida per continuare.",
+    "completionFailed": "Impossibile completare il colloquio. Riprova.",
+    "loadingFailed": "Impossibile caricare le domande del colloquio.",
+    "submissionFailed": "Impossibile inviare la tua risposta. Riprova.",
+    "sessionInvalid": "La tua sessione di colloquio non è valida. Ricomincia.",
+    "progressLost": "Il progresso del tuo colloquio potrebbe essere andato perso. Vuoi ricominciare?"
+  },
+  
+  "auth": {
+    "loginRequired": "Accedi per continuare.",
+    "sessionExpired": "La tua sessione è scaduta. Accedi di nuovo.",
+    "invalidCredentials": "Email o password non valide.",
+    "accountLocked": "Il tuo account è stato bloccato. Contatta il supporto.",
+    "emailNotVerified": "Verifica il tuo indirizzo email prima di continuare.",
+    "passwordExpired": "La tua password è scaduta. Reimpostala.",
+    "twoFactorRequired": "È richiesta l'autenticazione a due fattori."
+  },
+  
+  "validation": {
+    "required": "Questo campo è obbligatorio.",
+    "email": "Inserisci un indirizzo email valido.",
+    "password": "La password deve essere di almeno 8 caratteri.",
+    "passwordMatch": "Le password non corrispondono.",
+    "phoneNumber": "Inserisci un numero di telefono valido.",
+    "dateFormat": "Inserisci una data valida.",
+    "fileSize": "La dimensione del file supera il limite massimo.",
+    "fileType": "Il tipo di file non è supportato.",
+    "minLength": "Deve essere di almeno {{min}} caratteri.",
+    "maxLength": "Non deve superare {{max}} caratteri.",
+    "numeric": "Inserisci un numero valido.",
+    "alphanumeric": "Sono consentiti solo lettere e numeri."
+  },
+  
+  "api": {
+    "genericError": "Si è verificato un errore durante l'elaborazione della tua richiesta.",
+    "retryableError": "Si è verificato un errore temporaneo. Riprova.",
+    "nonRetryableError": "Si è verificato un errore che non può essere ripetuto. Contatta il supporto.",
+    "maintenanceMode": "Il sistema è attualmente in manutenzione. Riprova più tardi.",
+    "rateLimitExceeded": "Hai superato il limite di velocità. Attendi prima di fare altre richieste."
+  },
+  
+  "file": {
+    "uploadFailed": "Impossibile caricare il file. Riprova.",
+    "downloadFailed": "Impossibile scaricare il file.",
+    "deleteFailed": "Impossibile eliminare il file.",
+    "virusDetected": "Il file contiene un virus ed è stato messo in quarantena.",
+    "corruptFile": "Il file sembra essere corrotto.",
+    "unsupportedFormat": "Il formato del file non è supportato."
+  },
+  
+  "general": {
+    "unexpectedError": "Si è verificato un errore imprevisto. Aggiorna la pagina e riprova.",
+    "featureUnavailable": "Questa funzionalità non è attualmente disponibile.",
+    "maintenanceScheduled": "Manutenzione programmata in corso.",
+    "browserNotSupported": "Il tuo browser non è supportato. Usa un browser moderno.",
+    "javascriptRequired": "JavaScript è richiesto per utilizzare questa applicazione."
+  }
+}

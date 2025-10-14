@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Suppress xUnit analyzer warnings in test projects -->
+    <NoWarn>$(NoWarn);xUnit1030;xUnit2020</NoWarn>
+  </PropertyGroup>
+</Project>

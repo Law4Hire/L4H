@@ -1,0 +1,70 @@
+    private static async Task CompleteProfile(IPage page, string country, string nationality, string dateOfBirth, string maritalStatus = "Single", string gender = "Male")
+    {
+        // Fill street address
+        await page.FillAsync("input[name='streetAddress']", "123 Test Street").ConfigureAwait(false);
+
+        // Fill city
+        await page.FillAsync("input[name='city']", "Test City").ConfigureAwait(false);
+
+        // Fill postal code
+        await page.FillAsync("input[name='postalCode']", "12345").ConfigureAwait(false);
+
+        // Select country (SearchableSelect) - using PressSequentially to trigger React onChange
+        var countryInput = await page.QuerySelectorAsync("input[placeholder*='Search and select your country']").ConfigureAwait(false);
+        if (countryInput != null)
+        {
+            await countryInput.ClickAsync().ConfigureAwait(false);
+            await page.WaitForTimeoutAsync(500).ConfigureAwait(false);
+
+            // Clear and type to trigger filter
+            await countryInput.PressSequentiallyAsync(country, new() { Delay = 50 }).ConfigureAwait(false);
+            await page.WaitForTimeoutAsync(1500).ConfigureAwait(false);
+
+            // Click the filtered country option
+            var countryOption = page.Locator($"li button span:text-is('{country}')").First;
+            await countryOption.ClickAsync().ConfigureAwait(false);
+            await page.WaitForTimeoutAsync(500).ConfigureAwait(false);
+        }
+
+        // If country is US, select a state
+        if (country == "United States" || country == "US")
+        {
+            await page.WaitForTimeoutAsync(1000).ConfigureAwait(false);
+            var stateSelect = await page.QuerySelectorAsync("select[name='stateProvince']").ConfigureAwait(false);
+            if (stateSelect != null)
+            {
+                await page.SelectOptionAsync("select[name='stateProvince']", "CA").ConfigureAwait(false);
+                await page.WaitForTimeoutAsync(500).ConfigureAwait(false);
+            }
+        }
+
+        // Select nationality (SearchableSelect) - using PressSequentially to trigger React onChange
+        var nationalityInput = await page.QuerySelectorAsync("input[placeholder*='Search and select your passport country']").ConfigureAwait(false);
+        if (nationalityInput != null)
+        {
+            await nationalityInput.ClickAsync().ConfigureAwait(false);
+            await page.WaitForTimeoutAsync(500).ConfigureAwait(false);
+
+            // Clear and type to trigger filter
+            await nationalityInput.PressSequentiallyAsync(nationality, new() { Delay = 50 }).ConfigureAwait(false);
+            await page.WaitForTimeoutAsync(1500).ConfigureAwait(false);
+
+            // Click the filtered nationality option
+            var nationalityOption = page.Locator($"li button span:text-is('{nationality}')").First;
+            await nationalityOption.ClickAsync().ConfigureAwait(false);
+            await page.WaitForTimeoutAsync(500).ConfigureAwait(false);
+        }
+
+        // Fill date of birth
+        await page.FillAsync("input[name='dateOfBirth']", dateOfBirth).ConfigureAwait(false);
+
+        // Select marital status
+        await page.SelectOptionAsync("select[name='maritalStatus']", maritalStatus).ConfigureAwait(false);
+
+        // Select gender
+        await page.SelectOptionAsync("select[name='gender']", gender).ConfigureAwait(false);
+
+        await page.WaitForTimeoutAsync(1000).ConfigureAwait(false);
+        await page.ClickAsync("button[type='submit']").ConfigureAwait(false);
+        await page.WaitForTimeoutAsync(5000).ConfigureAwait(false);
+    }

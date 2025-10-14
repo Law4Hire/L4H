@@ -1,0 +1,97 @@
+{
+  "title": "Colloquio di Idoneità per il Visto",
+  "loading": "Caricamento colloquio...",
+  "selectOption": "Seleziona un'opzione",
+  "enterAnswer": "Inserisci la tua risposta",
+  "next": "Domanda Successiva",
+  "previous": "Domanda Precedente",
+  "restart": "Reimposta Colloquio",
+  "complete": "Completa Colloquio",
+  
+  "progress": {
+    "title": "Progresso del Colloquio",
+    "stats": "Domanda {{current}} | {{remaining}} tipi di visto rimanenti",
+    "currentQuestion": "Domanda {{current}}",
+    "remainingVisas": "{{count}} tipi di visto rimanenti",
+    "completionPercentage": "{{percentage}}% completato"
+  },
+  
+  "buttons": {
+    "next": "Avanti",
+    "previous": "Precedente",
+    "restart": "Ricomincia",
+    "complete": "Completa",
+    "skip": "Salta Domanda"
+  },
+  
+  "messages": {
+    "selectOption": "Seleziona un'opzione per continuare",
+    "required": "Questa domanda è obbligatoria",
+    "loading": "Caricamento prossima domanda...",
+    "error": "Si è verificato un errore durante il caricamento della domanda",
+    "sessionExpired": "La tua sessione di colloquio è scaduta. Ricomincia.",
+    "invalidAnswer": "Fornisci una risposta valida",
+    "completionFailed": "Impossibile completare il colloquio. Riprova."
+  },
+  
+  "completion": {
+    "title": "Colloquio Completato",
+    "congratulations": "Congratulazioni!",
+    "description": "Basandoci sulle tue risposte, abbiamo una raccomandazione di visto per te.",
+    "stats": "Domande risposte: {{count}} | Ridotto da 88+ tipi di visto",
+    "recommendedVisa": "Tipo di Visto Raccomandato",
+    "backToDashboard": "Torna alla Dashboard",
+    "viewPackages": "Visualizza Pacchetti di Servizio",
+    "startApplication": "Inizia Richiesta"
+  },
+  
+  "categories": {
+    "visitTransit": "Visita e Transito",
+    "studyExchange": "Studio e Scambio",
+    "workTalent": "Lavoro e Talento",
+    "familyFiance": "Famiglia e Fidanzato/a",
+    "diplomaticIO": "Diplomatico, IO e NATO",
+    "humanitarian": "Umanitario e Forze dell'Ordine",
+    "immigration": "Immigrazione (Residenza Permanente)",
+    "adoption": "Adozione Straniera",
+    "citizenship": "Cittadinanza (N-400)"
+  },
+  
+  "questions": {
+    "category": "Quale categoria si adatta meglio alla tua situazione?",
+    "purpose": "Qual è lo scopo principale della tua visita negli Stati Uniti?",
+    "duration": "Quanto tempo prevedi di rimanere negli Stati Uniti?",
+    "employment": "Hai un'offerta di lavoro da un datore di lavoro statunitense?",
+    "education": "Stai pianificando di studiare negli Stati Uniti?",
+    "family": "Hai familiari stretti che sono cittadini statunitensi o residenti permanenti?",
+    "investment": "Stai pianificando di investire o avviare un'attività negli Stati Uniti?",
+    "age": "Qual è la tua età?",
+    "maritalStatus": "Qual è il tuo stato civile?",
+    "citizenship": "Qual è il tuo paese di cittadinanza?",
+    "residence": "Qual è il tuo paese di residenza?"
+  },
+  
+  "options": {
+    "yes": "Sì",
+    "no": "No",
+    "notSure": "Non sono sicuro",
+    "single": "Celibe/Nubile",
+    "married": "Sposato/a",
+    "divorced": "Divorziato/a",
+    "widowed": "Vedovo/a",
+    "lessThan90Days": "Meno di 90 giorni",
+    "90DaysTo1Year": "Da 90 giorni a 1 anno",
+    "1To3Years": "Da 1 a 3 anni",
+    "moreThan3Years": "Più di 3 anni",
+    "permanent": "Residenza permanente"
+  },
+  
+  "errors": {
+    "loadingFailed": "Impossibile caricare le domande del colloquio",
+    "submissionFailed": "Impossibile inviare la tua risposta",
+    "sessionInvalid": "La tua sessione di colloquio non è valida",
+    "networkError": "Si è verificato un errore di rete. Controlla la tua connessione.",
+    "serverError": "Si è verificato un errore del server. Riprova più tardi.",
+    "unexpectedError": "Si è verificato un errore imprevisto"
+  }
+}

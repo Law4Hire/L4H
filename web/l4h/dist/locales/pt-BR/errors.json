@@ -1,0 +1,82 @@
+{
+  "network": {
+    "timeout": "Solicitação expirou. Tente novamente.",
+    "offline": "Você parece estar offline. Verifique sua conexão com a internet.",
+    "serverError": "Erro do servidor ocorreu. Tente novamente mais tarde.",
+    "connectionFailed": "Falha ao conectar com o servidor.",
+    "badRequest": "Solicitação inválida. Verifique sua entrada.",
+    "unauthorized": "Você não está autorizado a realizar esta ação.",
+    "forbidden": "Acesso negado. Você não tem permissão para acessar este recurso.",
+    "notFound": "O recurso solicitado não foi encontrado.",
+    "conflict": "Ocorreu um conflito. O recurso pode ter sido modificado por outro usuário.",
+    "tooManyRequests": "Muitas solicitações. Aguarde antes de tentar novamente.",
+    "internalServerError": "Erro interno do servidor. Entre em contato com o suporte se o problema persistir."
+  },
+  
+  "translation": {
+    "loadFailed": "Falha ao carregar traduções para este idioma.",
+    "fallbackActive": "Algumas traduções não estão disponíveis. Mostrando inglês como alternativa.",
+    "missingKey": "Tradução não encontrada para este texto.",
+    "parsingError": "Erro ao analisar arquivo de tradução."
+  },
+  
+  "interview": {
+    "sessionExpired": "Sua sessão de entrevista expirou. Inicie uma nova entrevista.",
+    "invalidAnswer": "Forneça uma resposta válida para continuar.",
+    "completionFailed": "Falha ao concluir a entrevista. Tente novamente.",
+    "loadingFailed": "Falha ao carregar perguntas da entrevista.",
+    "submissionFailed": "Falha ao enviar sua resposta. Tente novamente.",
+    "sessionInvalid": "Sua sessão de entrevista é inválida. Comece novamente.",
+    "progressLost": "Seu progresso na entrevista pode ter sido perdido. Gostaria de começar novamente?"
+  },
+  
+  "auth": {
+    "loginRequired": "Faça login para continuar.",
+    "sessionExpired": "Sua sessão expirou. Faça login novamente.",
+    "invalidCredentials": "Email ou senha inválidos.",
+    "accountLocked": "Sua conta foi bloqueada. Entre em contato com o suporte.",
+    "emailNotVerified": "Verifique seu endereço de email antes de continuar.",
+    "passwordExpired": "Sua senha expirou. Redefina-a.",
+    "twoFactorRequired": "Autenticação de dois fatores é necessária."
+  },
+  
+  "validation": {
+    "required": "Este campo é obrigatório.",
+    "email": "Digite um endereço de email válido.",
+    "password": "A senha deve ter pelo menos 8 caracteres.",
+    "passwordMatch": "As senhas não coincidem.",
+    "phoneNumber": "Digite um número de telefone válido.",
+    "dateFormat": "Digite uma data válida.",
+    "fileSize": "O tamanho do arquivo excede o limite máximo.",
+    "fileType": "Tipo de arquivo não suportado.",
+    "minLength": "Deve ter pelo menos {{min}} caracteres.",
+    "maxLength": "Não deve ter mais de {{max}} caracteres.",
+    "numeric": "Digite um número válido.",
+    "alphanumeric": "Apenas letras e números são permitidos."
+  },
+  
+  "api": {
+    "genericError": "Ocorreu um erro ao processar sua solicitação.",
+    "retryableError": "Ocorreu um erro temporário. Tente novamente.",
+    "nonRetryableError": "Ocorreu um erro que não pode ser repetido. Entre em contato com o suporte.",
+    "maintenanceMode": "O sistema está atualmente em manutenção. Tente novamente mais tarde.",
+    "rateLimitExceeded": "Você excedeu o limite de taxa. Aguarde antes de fazer mais solicitações."
+  },
+  
+  "file": {
+    "uploadFailed": "Falha ao enviar arquivo. Tente novamente.",
+    "downloadFailed": "Falha ao baixar arquivo.",
+    "deleteFailed": "Falha ao excluir arquivo.",
+    "virusDetected": "O arquivo contém um vírus e foi colocado em quarentena.",
+    "corruptFile": "O arquivo parece estar corrompido.",
+    "unsupportedFormat": "Formato de arquivo não suportado."
+  },
+  
+  "general": {
+    "unexpectedError": "Ocorreu um erro inesperado. Atualize a página e tente novamente.",
+    "featureUnavailable": "Este recurso está atualmente indisponível.",
+    "maintenanceScheduled": "Manutenção programada em andamento.",
+    "browserNotSupported": "Seu navegador não é suportado. Use um navegador moderno.",
+    "javascriptRequired": "JavaScript é necessário para usar esta aplicação."
+  }
+}

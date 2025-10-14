@@ -1,0 +1,50 @@
+{
+  "testRun": {
+    "timestamp": "2025-09-17T19:23:43.842Z",
+    "user": "gerry@testing.com",
+    "totalSteps": 1,
+    "passed": 0,
+    "failed": 1,
+    "duration": 75692
+  },
+  "results": [
+    {
+      "step": "Login as Gerry",
+      "status": "FAIL",
+      "duration": 75692,
+      "error": "Navigation timeout of 30000 ms exceeded"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "01-landing-page",
+      "description": "Initial landing page",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-22-29-276Z-01-landing-page.png",
+      "timestamp": "2025-09-17T19-22-29-276Z"
+    },
+    {
+      "name": "02-login-page",
+      "description": "Login page loaded",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-22-39-148Z-02-login-page.png",
+      "timestamp": "2025-09-17T19-22-39-148Z"
+    },
+    {
+      "name": "03-credentials-filled",
+      "description": "Login credentials entered",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-23-07-705Z-03-credentials-filled.png",
+      "timestamp": "2025-09-17T19-23-07-705Z"
+    },
+    {
+      "name": "error-login-as-gerry",
+      "description": "Error in Login as Gerry",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-23-43-031Z-error-login-as-gerry.png",
+      "timestamp": "2025-09-17T19-23-43-031Z"
+    },
+    {
+      "name": "final-error",
+      "description": "Final error state",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-23-43-461Z-final-error.png",
+      "timestamp": "2025-09-17T19-23-43-461Z"
+    }
+  ]
+}

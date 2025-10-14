@@ -1,0 +1,69 @@
+{
+  "testDate": "2025-09-19T03:57:10.752Z",
+  "familyData": {
+    "ralph": {
+      "email": "TestUser22876@testing.com",
+      "firstName": "Ralph",
+      "lastName": "Nielsen",
+      "age": 35,
+      "nationality": "Danish",
+      "country": "Denmark",
+      "purpose": "employment",
+      "role": "primary"
+    },
+    "helga": {
+      "email": "TestUser88557@testing.com",
+      "firstName": "Helga",
+      "lastName": "Nielsen",
+      "age": 32,
+      "nationality": "Danish",
+      "country": "Denmark",
+      "purpose": "family",
+      "role": "spouse",
+      "relationship": "spouse"
+    },
+    "glenda": {
+      "email": "TestUser49768@testing.com",
+      "firstName": "Glenda",
+      "lastName": "Nielsen",
+      "age": 12,
+      "nationality": "Danish",
+      "country": "Denmark",
+      "purpose": "family",
+      "role": "child",
+      "relationship": "child"
+    },
+    "gregg": {
+      "email": "TestUser73567@testing.com",
+      "firstName": "Gregg",
+      "lastName": "Nielsen",
+      "age": 4,
+      "nationality": "Danish",
+      "country": "Denmark",
+      "purpose": "family",
+      "role": "child",
+      "relationship": "child"
+    }
+  },
+  "results": {
+    "usersCreated": [],
+    "loginTests": [],
+    "interviewResults": [],
+    "errors": [
+      "User creation failed for Ralph: Waiting for selector `input[type=\"email\"]` failed",
+      "User creation failed for Helga: Waiting for selector `input[type=\"email\"]` failed",
+      "User creation failed for Glenda: Waiting for selector `input[type=\"email\"]` failed",
+      "User creation failed for Gregg: Waiting for selector `input[type=\"email\"]` failed",
+      "Login failed for Ralph: Waiting for selector `input[type=\"email\"]` failed",
+      "Login failed for Helga: Waiting for selector `input[type=\"email\"]` failed",
+      "Login failed for Glenda: Waiting for selector `input[type=\"email\"]` failed",
+      "Login failed for Gregg: Waiting for selector `input[type=\"email\"]` failed"
+    ]
+  },
+  "summary": {
+    "usersCreated": 0,
+    "successfulLogins": 0,
+    "completedInterviews": 0,
+    "totalErrors": 8
+  }
+}

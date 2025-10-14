@@ -1,0 +1,97 @@
+{
+  "title": "Visa-Berechtigungs-Interview",
+  "loading": "Interview wird geladen...",
+  "selectOption": "Wählen Sie eine Option",
+  "enterAnswer": "Geben Sie Ihre Antwort ein",
+  "next": "Nächste Frage",
+  "previous": "Vorherige Frage",
+  "restart": "Interview neu starten",
+  "complete": "Interview abschließen",
+  
+  "progress": {
+    "title": "Interview-Fortschritt",
+    "stats": "Frage {{current}} | {{remaining}} Visa-Typen verbleibend",
+    "currentQuestion": "Frage {{current}}",
+    "remainingVisas": "{{count}} Visa-Typen verbleibend",
+    "completionPercentage": "{{percentage}}% abgeschlossen"
+  },
+  
+  "buttons": {
+    "next": "Weiter",
+    "previous": "Zurück",
+    "restart": "Neu beginnen",
+    "complete": "Abschließen",
+    "skip": "Frage überspringen"
+  },
+  
+  "messages": {
+    "selectOption": "Bitte wählen Sie eine Option, um fortzufahren",
+    "required": "Diese Frage ist erforderlich",
+    "loading": "Nächste Frage wird geladen...",
+    "error": "Beim Laden der Frage ist ein Fehler aufgetreten",
+    "sessionExpired": "Ihre Interview-Sitzung ist abgelaufen. Bitte beginnen Sie von vorn.",
+    "invalidAnswer": "Bitte geben Sie eine gültige Antwort an",
+    "completionFailed": "Interview konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
+  },
+  
+  "completion": {
+    "title": "Interview abgeschlossen",
+    "congratulations": "Herzlichen Glückwunsch!",
+    "description": "Basierend auf Ihren Antworten haben wir eine Visa-Empfehlung für Sie.",
+    "stats": "Beantwortete Fragen: {{count}} | Eingegrenzt von über 88 Visa-Typen",
+    "recommendedVisa": "Empfohlener Visa-Typ",
+    "backToDashboard": "Zurück zum Dashboard",
+    "viewPackages": "Service-Pakete anzeigen",
+    "startApplication": "Antrag starten"
+  },
+  
+  "categories": {
+    "visitTransit": "Besuch und Transit",
+    "studyExchange": "Studium und Austausch",
+    "workTalent": "Arbeit und Talent",
+    "familyFiance": "Familie und Verlobte",
+    "diplomaticIO": "Diplomatisch, IO und NATO",
+    "humanitarian": "Humanitär und Strafverfolgung",
+    "immigration": "Einwanderung (Daueraufenthalt)",
+    "adoption": "Auslandsadoption",
+    "citizenship": "Staatsbürgerschaft (N-400)"
+  },
+  
+  "questions": {
+    "category": "Welche Kategorie passt am besten zu Ihrer Situation?",
+    "purpose": "Was ist der Hauptzweck Ihres Besuchs in den Vereinigten Staaten?",
+    "duration": "Wie lange planen Sie, in den Vereinigten Staaten zu bleiben?",
+    "employment": "Haben Sie ein Jobangebot von einem US-Arbeitgeber?",
+    "education": "Planen Sie, in den Vereinigten Staaten zu studieren?",
+    "family": "Haben Sie unmittelbare Familienmitglieder, die US-Bürger oder Daueraufenthaltsberechtigte sind?",
+    "investment": "Planen Sie, in ein Unternehmen in den Vereinigten Staaten zu investieren oder eines zu gründen?",
+    "age": "Wie alt sind Sie?",
+    "maritalStatus": "Wie ist Ihr Familienstand?",
+    "citizenship": "Was ist Ihr Staatsangehörigkeitsland?",
+    "residence": "Was ist Ihr Wohnsitzland?"
+  },
+  
+  "options": {
+    "yes": "Ja",
+    "no": "Nein",
+    "notSure": "Nicht sicher",
+    "single": "Ledig",
+    "married": "Verheiratet",
+    "divorced": "Geschieden",
+    "widowed": "Verwitwet",
+    "lessThan90Days": "Weniger als 90 Tage",
+    "90DaysTo1Year": "90 Tage bis 1 Jahr",
+    "1To3Years": "1 bis 3 Jahre",
+    "moreThan3Years": "Mehr als 3 Jahre",
+    "permanent": "Daueraufenthalt"
+  },
+  
+  "errors": {
+    "loadingFailed": "Laden der Interview-Fragen fehlgeschlagen",
+    "submissionFailed": "Senden Ihrer Antwort fehlgeschlagen",
+    "sessionInvalid": "Ihre Interview-Sitzung ist ungültig",
+    "networkError": "Netzwerkfehler aufgetreten. Bitte überprüfen Sie Ihre Verbindung.",
+    "serverError": "Serverfehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
+  }
+}

@@ -1,0 +1,749 @@
+{
+  "testDate": "2025-09-22T14:17:27.864Z",
+  "testUsers": [
+    {
+      "email": "Testing1000A1@testing.com",
+      "password": "SecureTest123!",
+      "visaType": "A-1",
+      "profile": {
+        "country": "United Kingdom",
+        "age": 45,
+        "marital": "Married",
+        "city": "London"
+      },
+      "expectedAnswers": {
+        "purpose": "diplomatic",
+        "employerSponsor": "no",
+        "diplomat": "yes",
+        "governmentOfficial": "yes"
+      }
+    },
+    {
+      "email": "Testing1001A2@testing.com",
+      "password": "SecureTest123!",
+      "visaType": "A-2",
+      "profile": {
+        "country": "Germany",
+        "age": 42,
+        "marital": "Married",
+        "city": "Berlin"
+      },
+      "expectedAnswers": {
+        "purpose": "official",
+        "employerSponsor": "no",
+        "governmentOfficial": "yes"
+      }
+    },
+    {
+      "email": "Testing1002A3@testing.com",
+      "password": "SecureTest123!",
+      "visaType": "A-3",
+      "profile": {
+        "country": "Japan",
+        "age": 38,
+        "marital": "Single",
+        "city": "Tokyo"
+      },
+      "expectedAnswers": {
+        "purpose": "diplomatic",
+        "employerSponsor": "no",
+        "workingForDiplomat": "yes"
+      }
+    },
+    {
+      "email": "Testing1003G1@testing.com",
+      "password": "SecureTest123!",
+      "visaType": "G-1",
+      "profile": {
+        "country": "Switzerland",
+        "age": 50,
+        "marital": "Married",
+        "city": "Geneva"
+      },
+      "expectedAnswers": {
+        "purpose": "employment",
+        "employerSponsor": "yes",
+        "internationalOrg": "yes"
+      }
+    },
+    {
+      "email": "Testing1004G2@testing.com",
+      "password": "SecureTest123!",
+      "visaType": "G-2",
+      "profile": {
+        "country": "Austria",
+        "age": 48,
+        "marital": "Married",
+        "city": "Vienna"
+      },
+      "expectedAnswers": {
+        "purpose": "employment",
+        "employerSponsor": "yes",
+        "internationalOrg": "yes"
+      }
+    }
+  ],
+  "results": [
+    {
+      "success": false,
+      "email": "Testing1000A1@testing.com",
+      "visaType": "A-1",
+      "error": "Interview incomplete after 0 questions",
+      "apiCalls": []
+    },
+    {
+      "success": true,
+      "email": "Testing1001A2@testing.com",
+      "visaType": "A-2",
+      "recommendedVisa": "US",
+      "confidence": "Unknown",
+      "apiCalls": [
+        {
+          "endpoint": "start",
+          "status": 200,
+          "data": {
+            "sessionId": "04aaaa25-8c2e-4873-88f2-d76d89e859ad",
+            "status": "active",
+            "startedAt": "2025-09-22T14:16:48.2917859Z"
+          }
+        },
+        {
+          "endpoint": "next-question",
+          "status": 200,
+          "data": {
+            "isComplete": false,
+            "question": {
+              "key": "purpose",
+              "question": "What is your primary purpose for coming to the United States?",
+              "type": "select",
+              "options": [
+                {
+                  "value": "tourism",
+                  "label": "Tourism/Vacation",
+                  "description": "Leisure travel, sightseeing, visiting friends or family"
+                },
+                {
+                  "value": "business",
+                  "label": "Business",
+                  "description": "Meetings, conferences, negotiations, consulting"
+                },
+                {
+                  "value": "employment",
+                  "label": "Employment",
+                  "description": "Working in the United States"
+                },
+                {
+                  "value": "study",
+                  "label": "Study",
+                  "description": "Academic or vocational education"
+                },
+                {
+                  "value": "diplomatic",
+                  "label": "Diplomatic",
+                  "description": "Official government business"
+                },
+                {
+                  "value": "official",
+                  "label": "Official Government",
+                  "description": "Government employee on official duty"
+                },
+                {
+                  "value": "investment",
+                  "label": "Investment",
+                  "description": "Starting or investing in a business"
+                },
+                {
+                  "value": "exchange",
+                  "label": "Exchange Program",
+                  "description": "Cultural or educational exchange"
+                },
+                {
+                  "value": "transit",
+                  "label": "Transit",
+                  "description": "Passing through the US to another destination"
+                },
+                {
+                  "value": "medical",
+                  "label": "Medical Treatment",
+                  "description": "Seeking medical care in the US"
+                },
+                {
+                  "value": "family",
+                  "label": "Family/Personal",
+                  "description": "Joining family members or spouse in the US"
+                }
+              ],
+              "required": true,
+              "remainingVisaTypes": 42
+            },
+            "recommendation": null
+          }
+        },
+        {
+          "endpoint": "next-question",
+          "status": 200,
+          "data": {
+            "isComplete": false,
+            "question": {
+              "key": "purpose",
+              "question": "What is your primary purpose for coming to the United States?",
+              "type": "select",
+              "options": [
+                {
+                  "value": "tourism",
+                  "label": "Tourism/Vacation",
+                  "description": "Leisure travel, sightseeing, visiting friends or family"
+                },
+                {
+                  "value": "business",
+                  "label": "Business",
+                  "description": "Meetings, conferences, negotiations, consulting"
+                },
+                {
+                  "value": "employment",
+                  "label": "Employment",
+                  "description": "Working in the United States"
+                },
+                {
+                  "value": "study",
+                  "label": "Study",
+                  "description": "Academic or vocational education"
+                },
+                {
+                  "value": "diplomatic",
+                  "label": "Diplomatic",
+                  "description": "Official government business"
+                },
+                {
+                  "value": "official",
+                  "label": "Official Government",
+                  "description": "Government employee on official duty"
+                },
+                {
+                  "value": "investment",
+                  "label": "Investment",
+                  "description": "Starting or investing in a business"
+                },
+                {
+                  "value": "exchange",
+                  "label": "Exchange Program",
+                  "description": "Cultural or educational exchange"
+                },
+                {
+                  "value": "transit",
+                  "label": "Transit",
+                  "description": "Passing through the US to another destination"
+                },
+                {
+                  "value": "medical",
+                  "label": "Medical Treatment",
+                  "description": "Seeking medical care in the US"
+                },
+                {
+                  "value": "family",
+                  "label": "Family/Personal",
+                  "description": "Joining family members or spouse in the US"
+                }
+              ],
+              "required": true,
+              "remainingVisaTypes": 42
+            },
+            "recommendation": null
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "email": "Testing1002A3@testing.com",
+      "visaType": "A-3",
+      "recommendedVisa": "US",
+      "confidence": "Unknown",
+      "apiCalls": [
+        {
+          "endpoint": "start",
+          "status": 200,
+          "data": {
+            "sessionId": "9af1c70b-7526-4b8c-98cb-a866c16d7e1e",
+            "status": "active",
+            "startedAt": "2025-09-22T14:16:58.4949477Z"
+          }
+        },
+        {
+          "endpoint": "next-question",
+          "status": 200,
+          "data": {
+            "isComplete": false,
+            "question": {
+              "key": "purpose",
+              "question": "What is your primary purpose for coming to the United States?",
+              "type": "select",
+              "options": [
+                {
+                  "value": "tourism",
+                  "label": "Tourism/Vacation",
+                  "description": "Leisure travel, sightseeing, visiting friends or family"
+                },
+                {
+                  "value": "business",
+                  "label": "Business",
+                  "description": "Meetings, conferences, negotiations, consulting"
+                },
+                {
+                  "value": "employment",
+                  "label": "Employment",
+                  "description": "Working in the United States"
+                },
+                {
+                  "value": "study",
+                  "label": "Study",
+                  "description": "Academic or vocational education"
+                },
+                {
+                  "value": "diplomatic",
+                  "label": "Diplomatic",
+                  "description": "Official government business"
+                },
+                {
+                  "value": "official",
+                  "label": "Official Government",
+                  "description": "Government employee on official duty"
+                },
+                {
+                  "value": "investment",
+                  "label": "Investment",
+                  "description": "Starting or investing in a business"
+                },
+                {
+                  "value": "exchange",
+                  "label": "Exchange Program",
+                  "description": "Cultural or educational exchange"
+                },
+                {
+                  "value": "transit",
+                  "label": "Transit",
+                  "description": "Passing through the US to another destination"
+                },
+                {
+                  "value": "medical",
+                  "label": "Medical Treatment",
+                  "description": "Seeking medical care in the US"
+                },
+                {
+                  "value": "family",
+                  "label": "Family/Personal",
+                  "description": "Joining family members or spouse in the US"
+                }
+              ],
+              "required": true,
+              "remainingVisaTypes": 42
+            },
+            "recommendation": null
+          }
+        },
+        {
+          "endpoint": "next-question",
+          "status": 200,
+          "data": {
+            "isComplete": false,
+            "question": {
+              "key": "purpose",
+              "question": "What is your primary purpose for coming to the United States?",
+              "type": "select",
+              "options": [
+                {
+                  "value": "tourism",
+                  "label": "Tourism/Vacation",
+                  "description": "Leisure travel, sightseeing, visiting friends or family"
+                },
+                {
+                  "value": "business",
+                  "label": "Business",
+                  "description": "Meetings, conferences, negotiations, consulting"
+                },
+                {
+                  "value": "employment",
+                  "label": "Employment",
+                  "description": "Working in the United States"
+                },
+                {
+                  "value": "study",
+                  "label": "Study",
+                  "description": "Academic or vocational education"
+                },
+                {
+                  "value": "diplomatic",
+                  "label": "Diplomatic",
+                  "description": "Official government business"
+                },
+                {
+                  "value": "official",
+                  "label": "Official Government",
+                  "description": "Government employee on official duty"
+                },
+                {
+                  "value": "investment",
+                  "label": "Investment",
+                  "description": "Starting or investing in a business"
+                },
+                {
+                  "value": "exchange",
+                  "label": "Exchange Program",
+                  "description": "Cultural or educational exchange"
+                },
+                {
+                  "value": "transit",
+                  "label": "Transit",
+                  "description": "Passing through the US to another destination"
+                },
+                {
+                  "value": "medical",
+                  "label": "Medical Treatment",
+                  "description": "Seeking medical care in the US"
+                },
+                {
+                  "value": "family",
+                  "label": "Family/Personal",
+                  "description": "Joining family members or spouse in the US"
+                }
+              ],
+              "required": true,
+              "remainingVisaTypes": 42
+            },
+            "recommendation": null
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "email": "Testing1003G1@testing.com",
+      "visaType": "G-1",
+      "recommendedVisa": "US",
+      "confidence": "Unknown",
+      "apiCalls": [
+        {
+          "endpoint": "start",
+          "status": 200,
+          "data": {
+            "sessionId": "ab704786-0ad2-4580-8d56-6bc1b2451c73",
+            "status": "active",
+            "startedAt": "2025-09-22T14:17:08.7322459Z"
+          }
+        },
+        {
+          "endpoint": "next-question",
+          "status": 200,
+          "data": {
+            "isComplete": false,
+            "question": {
+              "key": "purpose",
+              "question": "What is your primary purpose for coming to the United States?",
+              "type": "select",
+              "options": [
+                {
+                  "value": "tourism",
+                  "label": "Tourism/Vacation",
+                  "description": "Leisure travel, sightseeing, visiting friends or family"
+                },
+                {
+                  "value": "business",
+                  "label": "Business",
+                  "description": "Meetings, conferences, negotiations, consulting"
+                },
+                {
+                  "value": "employment",
+                  "label": "Employment",
+                  "description": "Working in the United States"
+                },
+                {
+                  "value": "study",
+                  "label": "Study",
+                  "description": "Academic or vocational education"
+                },
+                {
+                  "value": "diplomatic",
+                  "label": "Diplomatic",
+                  "description": "Official government business"
+                },
+                {
+                  "value": "official",
+                  "label": "Official Government",
+                  "description": "Government employee on official duty"
+                },
+                {
+                  "value": "investment",
+                  "label": "Investment",
+                  "description": "Starting or investing in a business"
+                },
+                {
+                  "value": "exchange",
+                  "label": "Exchange Program",
+                  "description": "Cultural or educational exchange"
+                },
+                {
+                  "value": "transit",
+                  "label": "Transit",
+                  "description": "Passing through the US to another destination"
+                },
+                {
+                  "value": "medical",
+                  "label": "Medical Treatment",
+                  "description": "Seeking medical care in the US"
+                },
+                {
+                  "value": "family",
+                  "label": "Family/Personal",
+                  "description": "Joining family members or spouse in the US"
+                }
+              ],
+              "required": true,
+              "remainingVisaTypes": 42
+            },
+            "recommendation": null
+          }
+        },
+        {
+          "endpoint": "next-question",
+          "status": 200,
+          "data": {
+            "isComplete": false,
+            "question": {
+              "key": "purpose",
+              "question": "What is your primary purpose for coming to the United States?",
+              "type": "select",
+              "options": [
+                {
+                  "value": "tourism",
+                  "label": "Tourism/Vacation",
+                  "description": "Leisure travel, sightseeing, visiting friends or family"
+                },
+                {
+                  "value": "business",
+                  "label": "Business",
+                  "description": "Meetings, conferences, negotiations, consulting"
+                },
+                {
+                  "value": "employment",
+                  "label": "Employment",
+                  "description": "Working in the United States"
+                },
+                {
+                  "value": "study",
+                  "label": "Study",
+                  "description": "Academic or vocational education"
+                },
+                {
+                  "value": "diplomatic",
+                  "label": "Diplomatic",
+                  "description": "Official government business"
+                },
+                {
+                  "value": "official",
+                  "label": "Official Government",
+                  "description": "Government employee on official duty"
+                },
+                {
+                  "value": "investment",
+                  "label": "Investment",
+                  "description": "Starting or investing in a business"
+                },
+                {
+                  "value": "exchange",
+                  "label": "Exchange Program",
+                  "description": "Cultural or educational exchange"
+                },
+                {
+                  "value": "transit",
+                  "label": "Transit",
+                  "description": "Passing through the US to another destination"
+                },
+                {
+                  "value": "medical",
+                  "label": "Medical Treatment",
+                  "description": "Seeking medical care in the US"
+                },
+                {
+                  "value": "family",
+                  "label": "Family/Personal",
+                  "description": "Joining family members or spouse in the US"
+                }
+              ],
+              "required": true,
+              "remainingVisaTypes": 42
+            },
+            "recommendation": null
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "email": "Testing1004G2@testing.com",
+      "visaType": "G-2",
+      "recommendedVisa": "US",
+      "confidence": "Unknown",
+      "apiCalls": [
+        {
+          "endpoint": "start",
+          "status": 200,
+          "data": {
+            "sessionId": "706c0c7f-f9a0-4fa3-8ede-5548eceff340",
+            "status": "active",
+            "startedAt": "2025-09-22T14:17:18.9813866Z"
+          }
+        },
+        {
+          "endpoint": "next-question",
+          "status": 200,
+          "data": {
+            "isComplete": false,
+            "question": {
+              "key": "purpose",
+              "question": "What is your primary purpose for coming to the United States?",
+              "type": "select",
+              "options": [
+                {
+                  "value": "tourism",
+                  "label": "Tourism/Vacation",
+                  "description": "Leisure travel, sightseeing, visiting friends or family"
+                },
+                {
+                  "value": "business",
+                  "label": "Business",
+                  "description": "Meetings, conferences, negotiations, consulting"
+                },
+                {
+                  "value": "employment",
+                  "label": "Employment",
+                  "description": "Working in the United States"
+                },
+                {
+                  "value": "study",
+                  "label": "Study",
+                  "description": "Academic or vocational education"
+                },
+                {
+                  "value": "diplomatic",
+                  "label": "Diplomatic",
+                  "description": "Official government business"
+                },
+                {
+                  "value": "official",
+                  "label": "Official Government",
+                  "description": "Government employee on official duty"
+                },
+                {
+                  "value": "investment",
+                  "label": "Investment",
+                  "description": "Starting or investing in a business"
+                },
+                {
+                  "value": "exchange",
+                  "label": "Exchange Program",
+                  "description": "Cultural or educational exchange"
+                },
+                {
+                  "value": "transit",
+                  "label": "Transit",
+                  "description": "Passing through the US to another destination"
+                },
+                {
+                  "value": "medical",
+                  "label": "Medical Treatment",
+                  "description": "Seeking medical care in the US"
+                },
+                {
+                  "value": "family",
+                  "label": "Family/Personal",
+                  "description": "Joining family members or spouse in the US"
+                }
+              ],
+              "required": true,
+              "remainingVisaTypes": 42
+            },
+            "recommendation": null
+          }
+        },
+        {
+          "endpoint": "next-question",
+          "status": 200,
+          "data": {
+            "isComplete": false,
+            "question": {
+              "key": "purpose",
+              "question": "What is your primary purpose for coming to the United States?",
+              "type": "select",
+              "options": [
+                {
+                  "value": "tourism",
+                  "label": "Tourism/Vacation",
+                  "description": "Leisure travel, sightseeing, visiting friends or family"
+                },
+                {
+                  "value": "business",
+                  "label": "Business",
+                  "description": "Meetings, conferences, negotiations, consulting"
+                },
+                {
+                  "value": "employment",
+                  "label": "Employment",
+                  "description": "Working in the United States"
+                },
+                {
+                  "value": "study",
+                  "label": "Study",
+                  "description": "Academic or vocational education"
+                },
+                {
+                  "value": "diplomatic",
+                  "label": "Diplomatic",
+                  "description": "Official government business"
+                },
+                {
+                  "value": "official",
+                  "label": "Official Government",
+                  "description": "Government employee on official duty"
+                },
+                {
+                  "value": "investment",
+                  "label": "Investment",
+                  "description": "Starting or investing in a business"
+                },
+                {
+                  "value": "exchange",
+                  "label": "Exchange Program",
+                  "description": "Cultural or educational exchange"
+                },
+                {
+                  "value": "transit",
+                  "label": "Transit",
+                  "description": "Passing through the US to another destination"
+                },
+                {
+                  "value": "medical",
+                  "label": "Medical Treatment",
+                  "description": "Seeking medical care in the US"
+                },
+                {
+                  "value": "family",
+                  "label": "Family/Personal",
+                  "description": "Joining family members or spouse in the US"
+                }
+              ],
+              "required": true,
+              "remainingVisaTypes": 42
+            },
+            "recommendation": null
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "successful": 0,
+    "failed": 5,
+    "successRate": "0.0%"
+  }
+}

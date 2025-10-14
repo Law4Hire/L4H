@@ -1,0 +1,82 @@
+{
+  "network": {
+    "timeout": "Żądanie przekroczyło limit czasu. Spróbuj ponownie.",
+    "offline": "Wydaje się, że jesteś offline. Sprawdź swoje połączenie internetowe.",
+    "serverError": "Wystąpił błąd serwera. Spróbuj ponownie później.",
+    "connectionFailed": "Nie udało się połączyć z serwerem.",
+    "badRequest": "Nieprawidłowe żądanie. Sprawdź swoje dane wejściowe.",
+    "unauthorized": "Nie masz uprawnień do wykonania tej akcji.",
+    "forbidden": "Dostęp zabroniony. Nie masz uprawnień do tego zasobu.",
+    "notFound": "Żądany zasób nie został znaleziony.",
+    "conflict": "Wystąpił konflikt. Zasób mógł zostać zmodyfikowany przez innego użytkownika.",
+    "tooManyRequests": "Zbyt wiele żądań. Poczekaj przed ponowną próbą.",
+    "internalServerError": "Wewnętrzny błąd serwera. Skontaktuj się z pomocą techniczną, jeśli problem się utrzymuje."
+  },
+  
+  "translation": {
+    "loadFailed": "Nie udało się załadować tłumaczeń dla tego języka.",
+    "fallbackActive": "Niektóre tłumaczenia są niedostępne. Pokazywanie angielskiego jako zapasowego.",
+    "missingKey": "Nie znaleziono tłumaczenia dla tego tekstu.",
+    "parsingError": "Błąd podczas analizowania pliku tłumaczenia."
+  },
+  
+  "interview": {
+    "sessionExpired": "Twoja sesja rozmowy wygasła. Rozpocznij nową rozmowę.",
+    "invalidAnswer": "Podaj prawidłową odpowiedź, aby kontynuować.",
+    "completionFailed": "Nie udało się zakończyć rozmowy. Spróbuj ponownie.",
+    "loadingFailed": "Nie udało się załadować pytań rozmowy.",
+    "submissionFailed": "Nie udało się przesłać Twojej odpowiedzi. Spróbuj ponownie.",
+    "sessionInvalid": "Twoja sesja rozmowy jest nieprawidłowa. Zacznij od nowa.",
+    "progressLost": "Twój postęp w rozmowie mógł zostać utracony. Czy chcesz zacząć od nowa?"
+  },
+  
+  "auth": {
+    "loginRequired": "Zaloguj się, aby kontynuować.",
+    "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "invalidCredentials": "Nieprawidłowy email lub hasło.",
+    "accountLocked": "Twoje konto zostało zablokowane. Skontaktuj się z pomocą techniczną.",
+    "emailNotVerified": "Zweryfikuj swój adres email przed kontynuowaniem.",
+    "passwordExpired": "Twoje hasło wygasło. Zresetuj je.",
+    "twoFactorRequired": "Wymagana jest dwuskładnikowa autoryzacja."
+  },
+  
+  "validation": {
+    "required": "To pole jest wymagane.",
+    "email": "Wprowadź prawidłowy adres email.",
+    "password": "Hasło musi mieć co najmniej 8 znaków.",
+    "passwordMatch": "Hasła nie pasują.",
+    "phoneNumber": "Wprowadź prawidłowy numer telefonu.",
+    "dateFormat": "Wprowadź prawidłową datę.",
+    "fileSize": "Rozmiar pliku przekracza maksymalny limit.",
+    "fileType": "Typ pliku nie jest obsługiwany.",
+    "minLength": "Musi mieć co najmniej {{min}} znaków.",
+    "maxLength": "Nie może mieć więcej niż {{max}} znaków.",
+    "numeric": "Wprowadź prawidłową liczbę.",
+    "alphanumeric": "Dozwolone są tylko litery i cyfry."
+  },
+  
+  "api": {
+    "genericError": "Wystąpił błąd podczas przetwarzania Twojego żądania.",
+    "retryableError": "Wystąpił tymczasowy błąd. Spróbuj ponownie.",
+    "nonRetryableError": "Wystąpił błąd, którego nie można ponowić. Skontaktuj się z pomocą techniczną.",
+    "maintenanceMode": "System jest obecnie w trybie konserwacji. Spróbuj ponownie później.",
+    "rateLimitExceeded": "Przekroczyłeś limit żądań. Poczekaj przed wykonaniem kolejnych żądań."
+  },
+  
+  "file": {
+    "uploadFailed": "Nie udało się przesłać pliku. Spróbuj ponownie.",
+    "downloadFailed": "Nie udało się pobrać pliku.",
+    "deleteFailed": "Nie udało się usunąć pliku.",
+    "virusDetected": "Plik zawiera wirusa i został poddany kwarantannie.",
+    "corruptFile": "Plik wydaje się być uszkodzony.",
+    "unsupportedFormat": "Format pliku nie jest obsługiwany."
+  },
+  
+  "general": {
+    "unexpectedError": "Wystąpił nieoczekiwany błąd. Odśwież stronę i spróbuj ponownie.",
+    "featureUnavailable": "Ta funkcja jest obecnie niedostępna.",
+    "maintenanceScheduled": "Trwa zaplanowana konserwacja.",
+    "browserNotSupported": "Twoja przeglądarka nie jest obsługiwana. Użyj nowoczesnej przeglądarki.",
+    "javascriptRequired": "JavaScript jest wymagany do korzystania z tej aplikacji."
+  }
+}

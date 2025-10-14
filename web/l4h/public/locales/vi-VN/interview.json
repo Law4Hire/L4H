@@ -1,0 +1,97 @@
+{
+  "title": "Phỏng vấn đủ điều kiện Visa",
+  "loading": "Đang tải phỏng vấn...",
+  "selectOption": "Chọn một tùy chọn",
+  "enterAnswer": "Nhập câu trả lời của bạn",
+  "next": "Câu hỏi tiếp theo",
+  "previous": "Câu hỏi trước",
+  "restart": "Đặt lại phỏng vấn",
+  "complete": "Hoàn thành phỏng vấn",
+  
+  "progress": {
+    "title": "Tiến độ phỏng vấn",
+    "stats": "Câu hỏi {{current}} | {{remaining}} loại visa còn lại",
+    "currentQuestion": "Câu hỏi {{current}}",
+    "remainingVisas": "{{count}} loại visa còn lại",
+    "completionPercentage": "{{percentage}}% hoàn thành"
+  },
+  
+  "buttons": {
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "restart": "Bắt đầu lại",
+    "complete": "Hoàn thành",
+    "skip": "Bỏ qua câu hỏi"
+  },
+  
+  "messages": {
+    "selectOption": "Vui lòng chọn một tùy chọn để tiếp tục",
+    "required": "Câu hỏi này là bắt buộc",
+    "loading": "Đang tải câu hỏi tiếp theo...",
+    "error": "Đã xảy ra lỗi khi tải câu hỏi",
+    "sessionExpired": "Phiên phỏng vấn của bạn đã hết hạn. Vui lòng bắt đầu lại.",
+    "invalidAnswer": "Vui lòng cung cấp câu trả lời hợp lệ",
+    "completionFailed": "Không thể hoàn thành phỏng vấn. Vui lòng thử lại."
+  },
+  
+  "completion": {
+    "title": "Phỏng vấn hoàn thành",
+    "congratulations": "Chúc mừng!",
+    "description": "Dựa trên câu trả lời của bạn, chúng tôi có đề xuất visa cho bạn.",
+    "stats": "Câu hỏi đã trả lời: {{count}} | Thu hẹp từ 88+ loại visa",
+    "recommendedVisa": "Loại Visa được đề xuất",
+    "backToDashboard": "Quay lại bảng điều khiển",
+    "viewPackages": "Xem gói dịch vụ",
+    "startApplication": "Bắt đầu đăng ký"
+  },
+  
+  "categories": {
+    "visitTransit": "Thăm quan và quá cảnh",
+    "studyExchange": "Học tập và trao đổi",
+    "workTalent": "Làm việc và tài năng",
+    "familyFiance": "Gia đình và hôn phu/thê",
+    "diplomaticIO": "Ngoại giao, IO và NATO",
+    "humanitarian": "Nhân đạo và thực thi pháp luật",
+    "immigration": "Nhập cư (cư trú vĩnh viễn)",
+    "adoption": "Nhận con nuôi nước ngoài",
+    "citizenship": "Quốc tịch (N-400)"
+  },
+  
+  "questions": {
+    "category": "Danh mục nào phù hợp nhất với tình huống của bạn?",
+    "purpose": "Mục đích chính của chuyến thăm Hoa Kỳ của bạn là gì?",
+    "duration": "Bạn dự định ở lại Hoa Kỳ trong bao lâu?",
+    "employment": "Bạn có lời mời làm việc từ nhà tuyển dụng Mỹ không?",
+    "education": "Bạn có dự định học tập tại Hoa Kỳ không?",
+    "family": "Bạn có thành viên gia đình thân thiết là công dân Mỹ hoặc thường trú nhân không?",
+    "investment": "Bạn có dự định đầu tư hoặc khởi nghiệp tại Hoa Kỳ không?",
+    "age": "Tuổi của bạn là bao nhiêu?",
+    "maritalStatus": "Tình trạng hôn nhân của bạn là gì?",
+    "citizenship": "Quốc gia công dân của bạn là gì?",
+    "residence": "Quốc gia cư trú của bạn là gì?"
+  },
+  
+  "options": {
+    "yes": "Có",
+    "no": "Không",
+    "notSure": "Không chắc chắn",
+    "single": "Độc thân",
+    "married": "Đã kết hôn",
+    "divorced": "Đã ly hôn",
+    "widowed": "Góa",
+    "lessThan90Days": "Ít hơn 90 ngày",
+    "90DaysTo1Year": "90 ngày đến 1 năm",
+    "1To3Years": "1 đến 3 năm",
+    "moreThan3Years": "Hơn 3 năm",
+    "permanent": "Cư trú vĩnh viễn"
+  },
+  
+  "errors": {
+    "loadingFailed": "Không thể tải câu hỏi phỏng vấn",
+    "submissionFailed": "Không thể gửi câu trả lời của bạn",
+    "sessionInvalid": "Phiên phỏng vấn của bạn không hợp lệ",
+    "networkError": "Đã xảy ra lỗi mạng. Vui lòng kiểm tra kết nối của bạn.",
+    "serverError": "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.",
+    "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+  }
+}

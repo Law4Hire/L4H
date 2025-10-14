@@ -1,0 +1,135 @@
+{
+  "testRun": {
+    "timestamp": "2025-09-17T19:29:51.695Z",
+    "user": "gerry@testing.com",
+    "totalSteps": 4,
+    "passed": 4,
+    "failed": 0,
+    "duration": 56385
+  },
+  "results": [
+    {
+      "step": "Login as Gerry",
+      "status": "PASS",
+      "duration": 40603,
+      "result": {
+        "currentUrl": "http://localhost:5173/dashboard"
+      }
+    },
+    {
+      "step": "Click Visa Interview",
+      "status": "PASS",
+      "duration": 3019,
+      "result": {
+        "clicked": true,
+        "clickResult": {
+          "success": true,
+          "tagName": "DIV",
+          "className": "",
+          "text": "🇺🇸US Immigration HelpPowered by Law4HireVisa Libraryالعربية (السعودية)বাংলা (বাংলাদেশ)Deutsch (Deutschland)English (United States)Español (España)Français (France)हिन्दी (भारत)Bahasa Indonesia (Indonesia)Italiano (Italia)日本語 (日本)한국어 (대한민국)मराठी (भारत)Polski (Polska)Português (Portugal)Русский (Россия)தமிழ் (இந்தியா)తెలుగు (భారతదేశం)Türkçe (Türkiye)اردو (پاکستان)Tiếng Việt (Việt Nam)中文 (中国)Hello GeraldineWelcome back!Your Immigration Legal PartnerQuick Links🎤Visa Interview💰Pricing📅Appointments💬MessagesCase StatusCase #43402578Created: 9/17/2025PendingView"
+        },
+        "currentUrl": "http://localhost:5173/dashboard"
+      }
+    },
+    {
+      "step": "Select Family/Personal Option",
+      "status": "PASS",
+      "duration": 10023,
+      "result": {
+        "selectionMade": true,
+        "selectionResult": {
+          "method": "select",
+          "option": {
+            "value": "bn-BD",
+            "text": "বাংলা (বাংলাদেশ)"
+          },
+          "note": "fallback to first non-empty option"
+        },
+        "dropdownType": "select"
+      }
+    },
+    {
+      "step": "Check for Next Step",
+      "status": "PASS",
+      "duration": 2740,
+      "result": {
+        "hasNextButton": false,
+        "pageContent": {
+          "questionsFound": 3,
+          "questions": [
+            {
+              "text": "import { injectIntoGlobalHook } from \"/@react-refresh\";\ninjectIntoGlobalHook(window);\nwindow.$Refres",
+              "tagName": "HTML"
+            },
+            {
+              "text": "import { injectIntoGlobalHook } from \"/@react-refresh\";\ninjectIntoGlobalHook(window);\nwindow.$Refres",
+              "tagName": "HEAD"
+            },
+            {
+              "text": "*, ::before, ::after {\n  --tw-border-spacing-x: 0;\n  --tw-border-spacing-y: 0;\n  --tw-translate-x: 0",
+              "tagName": "STYLE"
+            }
+          ],
+          "bodyText": "\n    🇺🇸US ইমিগ্রেশন সহায়তাLaw4Hire দ্বারা চালিতভিসা লাইব্রেরিالعربية (السعودية)বাংলা (বাংলাদেশ)Deutsch (Deutschland)English (United States)Español (España)Français (France)हिन्दी (भारत)Bahasa Indonesia (Indonesia)Italiano (Italia)日本語 (日本)한국어 (대한민국)मराठी (भारत)Polski (Polska)Português (Portugal)Русский (Россия)தமிழ் (இந்தியா)తెలుగు (భారతదేశం)Türkçe (Türkiye)اردو (پاکستان)Tiếng Việt (Việt Nam)中文 (中国)নমস্কার Geraldineস্বাগতম!আপনার ইমিগ্রেশন আইনি সঙ্গীদ্রুত লিঙ্ক🎤ভিসা ইন্টারভিউ💰মূল্য📅অ্যাপয়েন্টমেন্ট💬বার্তামামলার অবস্থাCase #43402578Created: 9/17/2025অপেক্ষমানদেখুন\n    \n  \n\n"
+        },
+        "currentUrl": "http://localhost:5173/dashboard"
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "01-landing-page",
+      "description": "Landing page",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-28-59-090Z-01-landing-page.png",
+      "timestamp": "2025-09-17T19-28-59-090Z"
+    },
+    {
+      "name": "02-login-page",
+      "description": "Login page",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-29-03-459Z-02-login-page.png",
+      "timestamp": "2025-09-17T19-29-03-459Z"
+    },
+    {
+      "name": "03-credentials-filled",
+      "description": "Credentials filled",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-29-29-017Z-03-credentials-filled.png",
+      "timestamp": "2025-09-17T19-29-29-017Z"
+    },
+    {
+      "name": "04-after-login",
+      "description": "After login",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-29-35-538Z-04-after-login.png",
+      "timestamp": "2025-09-17T19-29-35-538Z"
+    },
+    {
+      "name": "05-before-visa-interview-click",
+      "description": "Before clicking Visa Interview",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-29-35-911Z-05-before-visa-interview-click.png",
+      "timestamp": "2025-09-17T19-29-35-911Z"
+    },
+    {
+      "name": "06-after-visa-interview-click",
+      "description": "After clicking Visa Interview",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-29-38-558Z-06-after-visa-interview-click.png",
+      "timestamp": "2025-09-17T19-29-38-558Z"
+    },
+    {
+      "name": "04-before-selection",
+      "description": "Before Family/Personal selection",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-29-44-315Z-04-before-selection.png",
+      "timestamp": "2025-09-17T19-29-44-315Z"
+    },
+    {
+      "name": "05-after-selection",
+      "description": "After Family/Personal selection",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-29-48-568Z-05-after-selection.png",
+      "timestamp": "2025-09-17T19-29-48-568Z"
+    },
+    {
+      "name": "07-final-state",
+      "description": "Final interview state",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-29-51-315Z-07-final-state.png",
+      "timestamp": "2025-09-17T19-29-51-315Z"
+    }
+  ]
+}

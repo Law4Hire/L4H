@@ -1,0 +1,103 @@
+{
+  "title": "Entretien d'Éligibilité de Visa",
+  "loading": "Chargement de l'entretien...",
+  "selectOption": "Sélectionnez une option",
+  "enterAnswer": "Entrez votre réponse",
+  "next": "Question Suivante",
+  "previous": "Question Précédente",
+  "restart": "Redémarrer l'Entretien",
+  "complete": "Terminer l'Entretien",
+  
+  "progress": {
+    "title": "Progression de l'Entretien Adaptatif",
+    "stats": "Question {{current}} | {{remaining}} types de visa restants",
+    "currentQuestion": "Question {{current}}",
+    "remainingVisas": "{{count}} types de visa restants",
+    "completionPercentage": "{{percentage}}% terminé"
+  },
+  
+  "buttons": {
+    "next": "Suivant",
+    "previous": "Précédent",
+    "restart": "Recommencer",
+    "complete": "Terminer",
+    "skip": "Passer la Question"
+  },
+  
+  "messages": {
+    "selectOption": "Veuillez sélectionner une option pour continuer",
+    "required": "Cette question est requise",
+    "loading": "Chargement de la question suivante...",
+    "error": "Une erreur s'est produite lors du chargement de la question",
+    "sessionExpired": "Votre session d'entretien a expiré. Veuillez recommencer.",
+    "invalidAnswer": "Veuillez fournir une réponse valide",
+    "completionFailed": "Échec de la finalisation de l'entretien. Veuillez réessayer.",
+    "selectVisaDirectly": "Cliquez sur un type de visa pour le sélectionner directement :",
+    "selectVisa": "Sélectionner le type de visa {{code}}",
+    "retrySuccess": "Reconnexion réussie ! Poursuite de votre entretien.",
+    "interviewRestarted": "L'entretien a été redémarré. Nouveau départ !",
+    "connectionLost": "Connexion perdue. Votre progression a été sauvegardée.",
+    "recoveringSession": "Récupération de votre session d'entretien..."
+  },
+  
+  "completion": {
+    "title": "Entretien Terminé",
+    "congratulations": "Félicitations !",
+    "description": "Basé sur vos réponses, nous avons une recommandation de visa pour vous.",
+    "stats": "Questions répondues : {{count}} | Réduit de plus de 88 types de visa",
+    "recommendedVisa": "Type de Visa Recommandé",
+    "backToDashboard": "Retour au Tableau de Bord",
+    "viewPackages": "Voir les Forfaits de Services",
+    "startApplication": "Commencer la Demande"
+  },
+  
+  "categories": {
+    "visitTransit": "Visite et Transit",
+    "studyExchange": "Étude et Échange",
+    "workTalent": "Travail et Talent",
+    "familyFiance": "Famille et Fiancé",
+    "diplomaticIO": "Diplomatique, OI et OTAN",
+    "humanitarian": "Humanitaire et Application de la Loi",
+    "immigration": "Immigration (Résidence Permanente)",
+    "adoption": "Adoption Étrangère",
+    "citizenship": "Citoyenneté (N-400)"
+  },
+  
+  "questions": {
+    "category": "Quelle catégorie correspond le mieux à votre situation ?",
+    "purpose": "Quel est l'objectif principal de votre visite aux États-Unis ?",
+    "duration": "Combien de temps prévoyez-vous rester aux États-Unis ?",
+    "employment": "Avez-vous une offre d'emploi d'un employeur américain ?",
+    "education": "Prévoyez-vous étudier aux États-Unis ?",
+    "family": "Avez-vous des membres de famille immédiate qui sont citoyens américains ou résidents permanents ?",
+    "investment": "Prévoyez-vous investir dans ou créer une entreprise aux États-Unis ?",
+    "age": "Quel est votre âge ?",
+    "maritalStatus": "Quel est votre statut matrimonial ?",
+    "citizenship": "Quel est votre pays de citoyenneté ?",
+    "residence": "Quel est votre pays de résidence ?"
+  },
+  
+  "options": {
+    "yes": "Oui",
+    "no": "Non",
+    "notSure": "Pas sûr",
+    "single": "Célibataire",
+    "married": "Marié",
+    "divorced": "Divorcé",
+    "widowed": "Veuf/Veuve",
+    "lessThan90Days": "Moins de 90 jours",
+    "90DaysTo1Year": "90 jours à 1 an",
+    "1To3Years": "1 à 3 ans",
+    "moreThan3Years": "Plus de 3 ans",
+    "permanent": "Résidence permanente"
+  },
+  
+  "errors": {
+    "loadingFailed": "Échec du chargement des questions d'entretien",
+    "submissionFailed": "Échec de l'envoi de votre réponse",
+    "sessionInvalid": "Votre session d'entretien est invalide",
+    "networkError": "Erreur réseau. Veuillez vérifier votre connexion.",
+    "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
+    "unexpectedError": "Une erreur inattendue s'est produite"
+  }
+}

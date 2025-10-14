@@ -1,0 +1,183 @@
+{
+  "loading": "Memuat...",
+  "error": "Kesalahan",
+  "success": "Berhasil",
+  "cancel": "Batal",
+  "save": "Simpan",
+  "delete": "Hapus",
+  "edit": "Edit",
+  "view": "Lihat",
+  "close": "Tutup",
+  "back": "Kembali",
+  "next": "Selanjutnya",
+  "previous": "Sebelumnya",
+  "search": "Cari",
+  "filter": "Filter",
+  "sort": "Urutkan",
+  "refresh": "Segarkan",
+  "retry": "Coba Lagi",
+  "confirm": "Konfirmasi",
+  "yes": "Ya",
+  "no": "Tidak",
+  "required": "Wajib",
+  "optional": "Opsional",
+  "all": "Semua",
+  "none": "Tidak Ada",
+  "select": "Pilih",
+  "clear": "Hapus",
+  "upload": "Unggah",
+  "download": "Unduh",
+  "print": "Cetak",
+  "share": "Bagikan",
+  "copy": "Salin",
+  "paste": "Tempel",
+  "cut": "Potong",
+  "undo": "Urungkan",
+  "redo": "Ulangi",
+  "getStarted": "Mulai",
+  
+  "nav": {
+    "dashboard": "Dasbor",
+    "pricing": "Harga",
+    "appointments": "Janji Temu",
+    "messages": "Pesan",
+    "uploads": "Unggahan",
+    "invoices": "Faktur",
+    "visaLibrary": "Perpustakaan Visa",
+    "interview": "Wawancara",
+    "scheduling": "Jadwalkan Wawancara",
+    "admin": "Admin",
+    "hello": "Halo",
+    "login": "Masuk",
+    "logout": "Keluar",
+    "profile": "Profil",
+    "settings": "Pengaturan",
+    "help": "Bantuan",
+    "support": "Dukungan"
+  },
+  
+  "auth": {
+    "login": "Masuk",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "firstName": "Nama Depan",
+    "lastName": "Nama Belakang",
+    "confirmPassword": "Konfirmasi Kata Sandi",
+    "createAccount": "Buat Akun",
+    "remember": "Ingat saya",
+    "forgotPassword": "Lupa kata sandi?",
+    "resetPassword": "Reset kata sandi",
+    "changePassword": "Ubah kata sandi",
+    "verifyEmail": "Verifikasi email",
+    "emailVerified": "Email terverifikasi",
+    "loginFailed": "Login gagal",
+    "invalidCredentials": "Kredensial tidak valid",
+    "accountLocked": "Akun terkunci",
+    "emailRequired": "Email diperlukan",
+    "passwordRequired": "Kata sandi diperlukan",
+    "firstNameRequired": "Nama depan diperlukan",
+    "lastNameRequired": "Nama belakang diperlukan",
+    "passwordConfirmRequired": "Konfirmasi kata sandi diperlukan",
+    "passwordsDoNotMatch": "Kata sandi tidak cocok",
+    "emailInvalid": "Silakan masukkan alamat email yang valid",
+    "passwordTooShort": "Kata sandi harus minimal 8 karakter",
+    "passwordNeedsSpecialChar": "Kata sandi harus mengandung setidaknya satu karakter khusus",
+    "passwordNeedsMoreClasses": "Kata sandi harus mengandung setidaknya {{count}} jenis karakter yang berbeda",
+    "rateLimitExceeded": "Terlalu banyak permintaan. Silakan coba lagi nanti.",
+    "passwordMinLength": "Kata sandi harus minimal 8 karakter",
+    "dontHaveAccount": "Tidak punya akun?",
+    "signUpNow": "Daftar sekarang",
+    "alreadyHaveAccount": "Sudah punya akun?",
+    "register": "Daftar",
+    "signup": "Buat Akun",
+    "registrationSuccess": "Pendaftaran berhasil! Selamat datang di Law4Hire.",
+    "registrationFailed": "Pendaftaran gagal. Silakan coba lagi."
+  },
+  
+  "dashboard": {
+    "title": "Dasbor",
+    "welcome": "Selamat datang kembali!",
+    "quickLinks": "Tautan Cepat",
+    "interview": "Wawancara Visa",
+    "pricing": "Harga",
+    "appointments": "Janji Temu",
+    "messages": "Pesan",
+    "caseStatus": "Status Kasus"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "Tidak Aktif",
+      "active": "Aktif",
+      "pending": "Tertunda",
+      "completed": "Selesai",
+      "closed": "Ditutup"
+    },
+    "detail": {
+      "title": "Detail Kasus"
+    }
+  },
+  
+  "appointments": {
+    "title": "Janji Temu",
+    "createAppointment": "Buat Janji Temu",
+    "noAppointments": "Tidak ada janji temu yang dijadwalkan",
+    "appointmentCreated": "Janji temu berhasil dibuat",
+    "duration": "menit",
+    "caseId": "ID Kasus",
+    "date": "Tanggal & Waktu",
+    "notes": "Catatan",
+    "scheduleFirst": "Jadwalkan janji temu pertama Anda untuk memulai",
+    "durationHelper": "Durasi dalam menit"
+  },
+  
+  "messages": {
+    "title": "Pesan",
+    "compose": "Tulis",
+    "inbox": "Kotak Masuk",
+    "noMessages": "Tidak ada pesan",
+    "messageSent": "Pesan berhasil dikirim",
+    "newMessage": "Pesan Baru",
+    "subject": "Subjek",
+    "recipient": "Penerima",
+    "message": "Pesan",
+    "startConversation": "Mulai percakapan",
+    "selectConversation": "Pilih percakapan",
+    "chooseThread": "Pilih thread pesan untuk melihat percakapan",
+    "recipientPlaceholder": "Masukkan email atau ID penerima"
+  },
+  
+  "validation": {
+    "requiredFields": "Silakan isi semua bidang yang diperlukan"
+  },
+  
+  "admin": {
+    "userManagement": "Manajemen Pengguna",
+    "userDetails": "Detail Pengguna",
+    "pricingManagement": "Manajemen Harga",
+    "caseManagement": "Manajemen Kasus"
+  },
+  
+  "visaLibrary": {
+    "title": "Perpustakaan Jenis Visa AS",
+    "description": "Jelajahi informasi komprehensif tentang berbagai kategori visa AS. Klik pada jenis visa apa pun untuk mempelajari persyaratan kelayakan, proses aplikasi, dan manfaat.",
+    "loading": "Memuat informasi visa...",
+    "learnMore": "Pelajari Lebih Lanjut",
+    "categories": {
+      "nonimmigrant": "Visa Non-Imigran",
+      "immigrant": "Visa Imigran"
+    },
+    "modal": {
+      "category": "Kategori",
+      "description": "Deskripsi",
+      "nextSteps": "Langkah Selanjutnya",
+      "readyToApply": "Siap mengajukan visa {{code}}? Pengacara imigrasi kami dapat memandu Anda melalui seluruh proses.",
+      "applyFor": "Ajukan Visa {{code}}"
+    },
+    "cta": {
+      "title": "Butuh Bantuan Memilih Visa yang Tepat?",
+      "description": "Ahli imigrasi kami dapat membantu Anda menentukan kategori visa mana yang paling sesuai dengan situasi Anda.",
+      "button": "Mulai Aplikasi Anda"
+    }
+  }
+}

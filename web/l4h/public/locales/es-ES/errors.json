@@ -1,0 +1,82 @@
+{
+  "network": {
+    "timeout": "La solicitud expiró. Por favor intente de nuevo.",
+    "offline": "Parece que está desconectado. Por favor verifique su conexión a internet.",
+    "serverError": "Error del servidor. Por favor intente más tarde.",
+    "connectionFailed": "Error al conectar con el servidor.",
+    "badRequest": "Solicitud inválida. Por favor verifique su entrada.",
+    "unauthorized": "No está autorizado para realizar esta acción.",
+    "forbidden": "Acceso denegado. No tiene permisos para acceder a este recurso.",
+    "notFound": "El recurso solicitado no fue encontrado.",
+    "conflict": "Ocurrió un conflicto. El recurso puede haber sido modificado por otro usuario.",
+    "tooManyRequests": "Demasiadas solicitudes. Por favor espere antes de intentar de nuevo.",
+    "internalServerError": "Error interno del servidor. Por favor contacte soporte si el problema persiste."
+  },
+  
+  "translation": {
+    "loadFailed": "Error al cargar las traducciones para este idioma.",
+    "fallbackActive": "Algunas traducciones no están disponibles. Mostrando inglés como respaldo.",
+    "missingKey": "Traducción no encontrada para este texto.",
+    "parsingError": "Error al analizar el archivo de traducción."
+  },
+  
+  "interview": {
+    "sessionExpired": "Su sesión de entrevista ha expirado. Por favor inicie una nueva entrevista.",
+    "invalidAnswer": "Por favor proporcione una respuesta válida para continuar.",
+    "completionFailed": "Error al completar la entrevista. Por favor intente de nuevo.",
+    "loadingFailed": "Error al cargar las preguntas de la entrevista.",
+    "submissionFailed": "Error al enviar su respuesta. Por favor intente de nuevo.",
+    "sessionInvalid": "Su sesión de entrevista es inválida. Por favor comience de nuevo.",
+    "progressLost": "Su progreso de la entrevista puede haberse perdido. ¿Le gustaría empezar de nuevo?"
+  },
+  
+  "auth": {
+    "loginRequired": "Por favor inicie sesión para continuar.",
+    "sessionExpired": "Su sesión ha expirado. Por favor inicie sesión de nuevo.",
+    "invalidCredentials": "Correo electrónico o contraseña inválidos.",
+    "accountLocked": "Su cuenta ha sido bloqueada. Por favor contacte soporte.",
+    "emailNotVerified": "Por favor verifique su dirección de correo electrónico antes de continuar.",
+    "passwordExpired": "Su contraseña ha expirado. Por favor restablézcala.",
+    "twoFactorRequired": "Se requiere autenticación de dos factores."
+  },
+  
+  "validation": {
+    "required": "Este campo es requerido.",
+    "email": "Por favor ingrese una dirección de correo electrónico válida.",
+    "password": "La contraseña debe tener al menos 8 caracteres.",
+    "passwordMatch": "Las contraseñas no coinciden.",
+    "phoneNumber": "Por favor ingrese un número de teléfono válido.",
+    "dateFormat": "Por favor ingrese una fecha válida.",
+    "fileSize": "El tamaño del archivo excede el límite máximo.",
+    "fileType": "El tipo de archivo no es compatible.",
+    "minLength": "Debe tener al menos {{min}} caracteres.",
+    "maxLength": "No debe tener más de {{max}} caracteres.",
+    "numeric": "Por favor ingrese un número válido.",
+    "alphanumeric": "Solo se permiten letras y números."
+  },
+  
+  "api": {
+    "genericError": "Ocurrió un error al procesar su solicitud.",
+    "retryableError": "Ocurrió un error temporal. Por favor intente de nuevo.",
+    "nonRetryableError": "Ocurrió un error que no se puede reintentar. Por favor contacte soporte.",
+    "maintenanceMode": "El sistema está actualmente en mantenimiento. Por favor intente más tarde.",
+    "rateLimitExceeded": "Ha excedido el límite de velocidad. Por favor espere antes de hacer más solicitudes."
+  },
+  
+  "file": {
+    "uploadFailed": "Error al subir el archivo. Por favor intente de nuevo.",
+    "downloadFailed": "Error al descargar el archivo.",
+    "deleteFailed": "Error al eliminar el archivo.",
+    "virusDetected": "El archivo contiene un virus y ha sido puesto en cuarentena.",
+    "corruptFile": "El archivo parece estar corrupto.",
+    "unsupportedFormat": "El formato del archivo no es compatible."
+  },
+  
+  "general": {
+    "unexpectedError": "Ocurrió un error inesperado. Por favor actualice la página e intente de nuevo.",
+    "featureUnavailable": "Esta función no está disponible actualmente.",
+    "maintenanceScheduled": "Mantenimiento programado en progreso.",
+    "browserNotSupported": "Su navegador no es compatible. Por favor use un navegador moderno.",
+    "javascriptRequired": "JavaScript es requerido para usar esta aplicación."
+  }
+}

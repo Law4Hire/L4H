@@ -1,0 +1,82 @@
+{
+  "network": {
+    "timeout": "Permintaan habis waktu. Silakan coba lagi.",
+    "offline": "Anda tampaknya sedang offline. Silakan periksa koneksi internet Anda.",
+    "serverError": "Terjadi kesalahan server. Silakan coba lagi nanti.",
+    "connectionFailed": "Gagal terhubung ke server.",
+    "badRequest": "Permintaan tidak valid. Silakan periksa input Anda.",
+    "unauthorized": "Anda tidak berwenang untuk melakukan tindakan ini.",
+    "forbidden": "Akses ditolak. Anda tidak memiliki izin untuk mengakses sumber daya ini.",
+    "notFound": "Sumber daya yang diminta tidak ditemukan.",
+    "conflict": "Terjadi konflik. Sumber daya mungkin telah dimodifikasi oleh pengguna lain.",
+    "tooManyRequests": "Terlalu banyak permintaan. Silakan tunggu sebelum mencoba lagi.",
+    "internalServerError": "Kesalahan server internal. Silakan hubungi dukungan jika masalah berlanjut."
+  },
+  
+  "translation": {
+    "loadFailed": "Gagal memuat terjemahan untuk bahasa ini.",
+    "fallbackActive": "Beberapa terjemahan tidak tersedia. Menampilkan bahasa Inggris sebagai cadangan.",
+    "missingKey": "Terjemahan tidak ditemukan untuk teks ini.",
+    "parsingError": "Kesalahan saat mengurai file terjemahan."
+  },
+  
+  "interview": {
+    "sessionExpired": "Sesi wawancara Anda telah berakhir. Silakan mulai wawancara baru.",
+    "invalidAnswer": "Silakan berikan jawaban yang valid untuk melanjutkan.",
+    "completionFailed": "Gagal menyelesaikan wawancara. Silakan coba lagi.",
+    "loadingFailed": "Gagal memuat pertanyaan wawancara.",
+    "submissionFailed": "Gagal mengirim jawaban Anda. Silakan coba lagi.",
+    "sessionInvalid": "Sesi wawancara Anda tidak valid. Silakan mulai ulang.",
+    "progressLost": "Kemajuan wawancara Anda mungkin hilang. Apakah Anda ingin mulai ulang?"
+  },
+  
+  "auth": {
+    "loginRequired": "Silakan masuk untuk melanjutkan.",
+    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk lagi.",
+    "invalidCredentials": "Email atau kata sandi tidak valid.",
+    "accountLocked": "Akun Anda telah dikunci. Silakan hubungi dukungan.",
+    "emailNotVerified": "Silakan verifikasi alamat email Anda sebelum melanjutkan.",
+    "passwordExpired": "Kata sandi Anda telah kedaluwarsa. Silakan reset.",
+    "twoFactorRequired": "Autentikasi dua faktor diperlukan."
+  },
+  
+  "validation": {
+    "required": "Bidang ini wajib diisi.",
+    "email": "Silakan masukkan alamat email yang valid.",
+    "password": "Kata sandi harus minimal 8 karakter.",
+    "passwordMatch": "Kata sandi tidak cocok.",
+    "phoneNumber": "Silakan masukkan nomor telepon yang valid.",
+    "dateFormat": "Silakan masukkan tanggal yang valid.",
+    "fileSize": "Ukuran file melebihi batas maksimum.",
+    "fileType": "Jenis file tidak didukung.",
+    "minLength": "Harus minimal {{min}} karakter.",
+    "maxLength": "Tidak boleh lebih dari {{max}} karakter.",
+    "numeric": "Silakan masukkan angka yang valid.",
+    "alphanumeric": "Hanya huruf dan angka yang diizinkan."
+  },
+  
+  "api": {
+    "genericError": "Terjadi kesalahan saat memproses permintaan Anda.",
+    "retryableError": "Terjadi kesalahan sementara. Silakan coba lagi.",
+    "nonRetryableError": "Terjadi kesalahan yang tidak dapat dicoba ulang. Silakan hubungi dukungan.",
+    "maintenanceMode": "Sistem sedang dalam pemeliharaan. Silakan coba lagi nanti.",
+    "rateLimitExceeded": "Anda telah melebihi batas tingkat. Silakan tunggu sebelum membuat lebih banyak permintaan."
+  },
+  
+  "file": {
+    "uploadFailed": "Gagal mengunggah file. Silakan coba lagi.",
+    "downloadFailed": "Gagal mengunduh file.",
+    "deleteFailed": "Gagal menghapus file.",
+    "virusDetected": "File mengandung virus dan telah dikarantina.",
+    "corruptFile": "File tampaknya rusak.",
+    "unsupportedFormat": "Format file tidak didukung."
+  },
+  
+  "general": {
+    "unexpectedError": "Terjadi kesalahan yang tidak terduga. Silakan segarkan halaman dan coba lagi.",
+    "featureUnavailable": "Fitur ini saat ini tidak tersedia.",
+    "maintenanceScheduled": "Pemeliharaan terjadwal sedang berlangsung.",
+    "browserNotSupported": "Browser Anda tidak didukung. Silakan gunakan browser modern.",
+    "javascriptRequired": "JavaScript diperlukan untuk menggunakan aplikasi ini."
+  }
+}

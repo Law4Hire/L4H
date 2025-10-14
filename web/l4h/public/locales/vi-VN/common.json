@@ -1,0 +1,183 @@
+{
+  "loading": "Đang tải...",
+  "error": "Lỗi",
+  "success": "Thành công",
+  "cancel": "Hủy",
+  "save": "Lưu",
+  "delete": "Xóa",
+  "edit": "Chỉnh sửa",
+  "view": "Xem",
+  "close": "Đóng",
+  "back": "Quay lại",
+  "next": "Tiếp theo",
+  "previous": "Trước đó",
+  "search": "Tìm kiếm",
+  "filter": "Lọc",
+  "sort": "Sắp xếp",
+  "refresh": "Làm mới",
+  "retry": "Thử lại",
+  "confirm": "Xác nhận",
+  "yes": "Có",
+  "no": "Không",
+  "required": "Bắt buộc",
+  "optional": "Tùy chọn",
+  "all": "Tất cả",
+  "none": "Không có",
+  "select": "Chọn",
+  "clear": "Xóa",
+  "upload": "Tải lên",
+  "download": "Tải xuống",
+  "print": "In",
+  "share": "Chia sẻ",
+  "copy": "Sao chép",
+  "paste": "Dán",
+  "cut": "Cắt",
+  "undo": "Hoàn tác",
+  "redo": "Làm lại",
+  "getStarted": "Bắt đầu",
+  
+  "nav": {
+    "dashboard": "Bảng điều khiển",
+    "pricing": "Giá cả",
+    "appointments": "Cuộc hẹn",
+    "messages": "Tin nhắn",
+    "uploads": "Tải lên",
+    "invoices": "Hóa đơn",
+    "visaLibrary": "Thư viện Visa",
+    "interview": "Phỏng vấn",
+    "scheduling": "Lên lịch phỏng vấn",
+    "admin": "Quản trị",
+    "hello": "Xin chào",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "help": "Trợ giúp",
+    "support": "Hỗ trợ"
+  },
+  
+  "auth": {
+    "login": "Đăng nhập",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "createAccount": "Tạo tài khoản",
+    "remember": "Ghi nhớ tôi",
+    "forgotPassword": "Quên mật khẩu?",
+    "resetPassword": "Đặt lại mật khẩu",
+    "changePassword": "Đổi mật khẩu",
+    "verifyEmail": "Xác minh email",
+    "emailVerified": "Email đã được xác minh",
+    "loginFailed": "Đăng nhập thất bại",
+    "invalidCredentials": "Thông tin đăng nhập không hợp lệ",
+    "accountLocked": "Tài khoản bị khóa",
+    "emailRequired": "Email là bắt buộc",
+    "passwordRequired": "Mật khẩu là bắt buộc",
+    "firstNameRequired": "Tên là bắt buộc",
+    "lastNameRequired": "Họ là bắt buộc",
+    "passwordConfirmRequired": "Xác nhận mật khẩu là bắt buộc",
+    "passwordsDoNotMatch": "Mật khẩu không khớp",
+    "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+    "passwordTooShort": "Mật khẩu phải có ít nhất 8 ký tự",
+    "passwordNeedsSpecialChar": "Mật khẩu phải chứa ít nhất một ký tự đặc biệt",
+    "passwordNeedsMoreClasses": "Mật khẩu phải chứa ít nhất {{count}} loại ký tự khác nhau",
+    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau.",
+    "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+    "dontHaveAccount": "Chưa có tài khoản?",
+    "signUpNow": "Đăng ký ngay",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "register": "Đăng ký",
+    "signup": "Tạo tài khoản",
+    "registrationSuccess": "Đăng ký thành công! Chào mừng đến với Law4Hire.",
+    "registrationFailed": "Đăng ký thất bại. Vui lòng thử lại."
+  },
+  
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "welcome": "Chào mừng trở lại!",
+    "quickLinks": "Liên kết nhanh",
+    "interview": "Phỏng vấn Visa",
+    "pricing": "Giá cả",
+    "appointments": "Cuộc hẹn",
+    "messages": "Tin nhắn",
+    "caseStatus": "Trạng thái vụ việc"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "Không hoạt động",
+      "active": "Hoạt động",
+      "pending": "Đang chờ",
+      "completed": "Hoàn thành",
+      "closed": "Đã đóng"
+    },
+    "detail": {
+      "title": "Chi tiết vụ việc"
+    }
+  },
+  
+  "appointments": {
+    "title": "Cuộc hẹn",
+    "createAppointment": "Tạo cuộc hẹn",
+    "noAppointments": "Không có cuộc hẹn nào được lên lịch",
+    "appointmentCreated": "Cuộc hẹn đã được tạo thành công",
+    "duration": "phút",
+    "caseId": "ID vụ việc",
+    "date": "Ngày và giờ",
+    "notes": "Ghi chú",
+    "scheduleFirst": "Lên lịch cuộc hẹn đầu tiên để bắt đầu",
+    "durationHelper": "Thời lượng tính bằng phút"
+  },
+  
+  "messages": {
+    "title": "Tin nhắn",
+    "compose": "Soạn",
+    "inbox": "Hộp thư đến",
+    "noMessages": "Không có tin nhắn",
+    "messageSent": "Tin nhắn đã được gửi thành công",
+    "newMessage": "Tin nhắn mới",
+    "subject": "Chủ đề",
+    "recipient": "Người nhận",
+    "message": "Tin nhắn",
+    "startConversation": "Bắt đầu cuộc trò chuyện",
+    "selectConversation": "Chọn cuộc trò chuyện",
+    "chooseThread": "Chọn chuỗi tin nhắn để xem cuộc trò chuyện",
+    "recipientPlaceholder": "Nhập email hoặc ID người nhận"
+  },
+  
+  "validation": {
+    "requiredFields": "Vui lòng điền tất cả các trường bắt buộc"
+  },
+  
+  "admin": {
+    "userManagement": "Quản lý người dùng",
+    "userDetails": "Chi tiết người dùng",
+    "pricingManagement": "Quản lý giá cả",
+    "caseManagement": "Quản lý vụ việc"
+  },
+  
+  "visaLibrary": {
+    "title": "Thư viện các loại Visa Mỹ",
+    "description": "Khám phá thông tin toàn diện về các danh mục visa Mỹ khác nhau. Nhấp vào bất kỳ loại visa nào để tìm hiểu về yêu cầu đủ điều kiện, quy trình đăng ký và lợi ích.",
+    "loading": "Đang tải thông tin visa...",
+    "learnMore": "Tìm hiểu thêm",
+    "categories": {
+      "nonimmigrant": "Visa không định cư",
+      "immigrant": "Visa định cư"
+    },
+    "modal": {
+      "category": "Danh mục",
+      "description": "Mô tả",
+      "nextSteps": "Các bước tiếp theo",
+      "readyToApply": "Sẵn sàng đăng ký visa {{code}}? Các luật sư nhập cư của chúng tôi có thể hướng dẫn bạn trong toàn bộ quá trình.",
+      "applyFor": "Đăng ký Visa {{code}}"
+    },
+    "cta": {
+      "title": "Cần trợ giúp chọn Visa phù hợp?",
+      "description": "Các chuyên gia nhập cư của chúng tôi có thể giúp bạn xác định danh mục visa nào phù hợp nhất với tình huống của bạn.",
+      "button": "Bắt đầu đăng ký của bạn"
+    }
+  }
+}

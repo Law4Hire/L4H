@@ -1,0 +1,183 @@
+{
+  "loading": "Carregando...",
+  "error": "Erro",
+  "success": "Sucesso",
+  "cancel": "Cancelar",
+  "save": "Salvar",
+  "delete": "Excluir",
+  "edit": "Editar",
+  "view": "Visualizar",
+  "close": "Fechar",
+  "back": "Voltar",
+  "next": "Próximo",
+  "previous": "Anterior",
+  "search": "Pesquisar",
+  "filter": "Filtrar",
+  "sort": "Ordenar",
+  "refresh": "Atualizar",
+  "retry": "Tentar Novamente",
+  "confirm": "Confirmar",
+  "yes": "Sim",
+  "no": "Não",
+  "required": "Obrigatório",
+  "optional": "Opcional",
+  "all": "Todos",
+  "none": "Nenhum",
+  "select": "Selecionar",
+  "clear": "Limpar",
+  "upload": "Enviar",
+  "download": "Baixar",
+  "print": "Imprimir",
+  "share": "Compartilhar",
+  "copy": "Copiar",
+  "paste": "Colar",
+  "cut": "Recortar",
+  "undo": "Desfazer",
+  "redo": "Refazer",
+  "getStarted": "Começar",
+  
+  "nav": {
+    "dashboard": "Painel",
+    "pricing": "Preços",
+    "appointments": "Consultas",
+    "messages": "Mensagens",
+    "uploads": "Uploads",
+    "invoices": "Faturas",
+    "visaLibrary": "Biblioteca de Vistos",
+    "interview": "Entrevista",
+    "scheduling": "Agendar Entrevista",
+    "admin": "Administração",
+    "hello": "Olá",
+    "login": "Entrar",
+    "logout": "Sair",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "help": "Ajuda",
+    "support": "Suporte"
+  },
+  
+  "auth": {
+    "login": "Entrar",
+    "email": "Email",
+    "password": "Senha",
+    "firstName": "Nome",
+    "lastName": "Sobrenome",
+    "confirmPassword": "Confirmar Senha",
+    "createAccount": "Criar Conta",
+    "remember": "Lembrar de mim",
+    "forgotPassword": "Esqueceu a senha?",
+    "resetPassword": "Redefinir senha",
+    "changePassword": "Alterar senha",
+    "verifyEmail": "Verificar email",
+    "emailVerified": "Email verificado",
+    "loginFailed": "Login falhou",
+    "invalidCredentials": "Credenciais inválidas",
+    "accountLocked": "Conta bloqueada",
+    "emailRequired": "Email é obrigatório",
+    "passwordRequired": "Senha é obrigatória",
+    "firstNameRequired": "Nome é obrigatório",
+    "lastNameRequired": "Sobrenome é obrigatório",
+    "passwordConfirmRequired": "Confirmação de senha é obrigatória",
+    "passwordsDoNotMatch": "Senhas não coincidem",
+    "emailInvalid": "Digite um endereço de email válido",
+    "passwordTooShort": "A senha deve ter pelo menos 8 caracteres",
+    "passwordNeedsSpecialChar": "A senha deve conter pelo menos um caractere especial",
+    "passwordNeedsMoreClasses": "A senha deve conter pelo menos {{count}} tipos diferentes de caracteres",
+    "rateLimitExceeded": "Muitas solicitações. Tente novamente mais tarde.",
+    "passwordMinLength": "A senha deve ter pelo menos 8 caracteres",
+    "dontHaveAccount": "Não tem uma conta?",
+    "signUpNow": "Cadastre-se agora",
+    "alreadyHaveAccount": "Já tem uma conta?",
+    "register": "Registrar",
+    "signup": "Criar Conta",
+    "registrationSuccess": "Registro bem-sucedido! Bem-vindo ao Law4Hire.",
+    "registrationFailed": "Registro falhou. Tente novamente."
+  },
+  
+  "dashboard": {
+    "title": "Painel",
+    "welcome": "Bem-vindo de volta!",
+    "quickLinks": "Links Rápidos",
+    "interview": "Entrevista de Visto",
+    "pricing": "Preços",
+    "appointments": "Consultas",
+    "messages": "Mensagens",
+    "caseStatus": "Status do Caso"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "Inativo",
+      "active": "Ativo",
+      "pending": "Pendente",
+      "completed": "Concluído",
+      "closed": "Fechado"
+    },
+    "detail": {
+      "title": "Detalhes do Caso"
+    }
+  },
+  
+  "appointments": {
+    "title": "Consultas",
+    "createAppointment": "Criar Consulta",
+    "noAppointments": "Nenhuma consulta agendada",
+    "appointmentCreated": "Consulta criada com sucesso",
+    "duration": "minutos",
+    "caseId": "ID do Caso",
+    "date": "Data e Hora",
+    "notes": "Notas",
+    "scheduleFirst": "Agende sua primeira consulta para começar",
+    "durationHelper": "Duração em minutos"
+  },
+  
+  "messages": {
+    "title": "Mensagens",
+    "compose": "Escrever",
+    "inbox": "Caixa de Entrada",
+    "noMessages": "Nenhuma mensagem",
+    "messageSent": "Mensagem enviada com sucesso",
+    "newMessage": "Nova Mensagem",
+    "subject": "Assunto",
+    "recipient": "Destinatário",
+    "message": "Mensagem",
+    "startConversation": "Iniciar conversa",
+    "selectConversation": "Selecionar conversa",
+    "chooseThread": "Escolha uma thread de mensagem para ver a conversa",
+    "recipientPlaceholder": "Digite o email ou ID do destinatário"
+  },
+  
+  "validation": {
+    "requiredFields": "Preencha todos os campos obrigatórios"
+  },
+  
+  "admin": {
+    "userManagement": "Gerenciamento de Usuários",
+    "userDetails": "Detalhes do Usuário",
+    "pricingManagement": "Gerenciamento de Preços",
+    "caseManagement": "Gerenciamento de Casos"
+  },
+  
+  "visaLibrary": {
+    "title": "Biblioteca de Tipos de Visto dos EUA",
+    "description": "Explore informações abrangentes sobre diferentes categorias de visto dos EUA. Clique em qualquer tipo de visto para saber sobre requisitos de elegibilidade, processo de aplicação e benefícios.",
+    "loading": "Carregando informações do visto...",
+    "learnMore": "Saiba Mais",
+    "categories": {
+      "nonimmigrant": "Vistos de Não-Imigrante",
+      "immigrant": "Vistos de Imigrante"
+    },
+    "modal": {
+      "category": "Categoria",
+      "description": "Descrição",
+      "nextSteps": "Próximos Passos",
+      "readyToApply": "Pronto para solicitar o visto {{code}}? Nossos advogados de imigração podem guiá-lo através de todo o processo.",
+      "applyFor": "Solicitar Visto {{code}}"
+    },
+    "cta": {
+      "title": "Precisa de Ajuda para Escolher o Visto Certo?",
+      "description": "Nossos especialistas em imigração podem ajudá-lo a determinar qual categoria de visto melhor se adequa à sua situação.",
+      "button": "Iniciar Sua Aplicação"
+    }
+  }
+}

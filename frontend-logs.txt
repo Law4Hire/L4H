@@ -1,0 +1,221 @@
+
+> l4h-client@1.0.0 dev
+> vite --port 5173
+
+
+  [32m[1mVITE[22m v7.1.9[39m  [2mready in [0m[1m602[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m3:54:51 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/supp[2m8:45:56 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DashboardPage.tsx, /src/index.css[22m
+[2m8:46:11 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DashboardPage.tsx, /src/index.css[22m
+[2m8:46:40 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DashboardPage.tsx, /src/index.css[22m
+[2m8:47:03 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m8:48:09 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m8:48:20 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m8:48:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m8:48:41 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m8:48:55 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m8:49:18 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m8:50:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/AuthClient.js[22m
+[2m8:50:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/Api.js[22m
+[2m8:50:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/api-client.js[22m
+[2m8:50:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/formatters.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n-enhanced.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/Icon.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Button.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Input.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/SearchableSelect.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Modal.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Card.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/LanguageSwitcher.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/ThemeProvider.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Layout.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Container.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr u[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Toast.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/RouteGuard.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/query-provider.js[22m
+[2m8:50:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/index.js[22m
+[2m8:57:43 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m9:12:20 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m9:12:38 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m9:12:50 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m9:13:07 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m9:13:16 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/InterviewPage.tsx, /src/index.css[22m
+[2m9:57:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/formatters.js[22m
+[2m9:57:41 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/AuthClient.js[22m
+[2m9:57:41 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/api-client.js[22m
+[2m9:57:41 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n-enhanced.js[22m
+[2m2:21:19 PM[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m2:21:19 PM[22m [36m[1m[vite][22m[39m server restarted.
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5175[22m/law4hire/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m2:34:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m2:39:28 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m8:38:57 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:38:57 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:00 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:00 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:02 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:02 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:08 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:08 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:10 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:10 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:11[2m8:44:20 AM[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+X [ERROR] Expected ";" but found ")"
+
+    vite.config.ts:26:1:
+      26 │ })
+         │  ^
+         ╵  ;
+
+[31mfailed to load config from C:\programming\L4HProject\web\l4h\vite.config.ts[39m
+[2m8:44:20 AM[22m [31m[1m[vite][22m[39m Build failed with 1 error:
+vite.config.ts:26:1: ERROR: Expected ";" but found ")"
+[2m8:44:20 AM[22m [31m[1m[vite][22m[39m server restart failed
+[2m8:44:26 AM[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m8:44:26 AM[22m [36m[1m[vite][22m[39m server restarted.
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/AuthClient.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/Api.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/api-client.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/formatters.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/translation-error-handler.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n-config.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/hooks/useRTL.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/Icon.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Button.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Input.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/SearchableSelect.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Modal.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Card.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/TranslationErrorNotification.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/LanguageSwitcher.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/ThemeProvider.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Layout.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Container.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/EmptyState.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Toast.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/RTLNumber.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/RTLDemo.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/RouteGuard.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/query-provider.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/index.js[22m
+m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:46 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:46 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:49 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:49 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:51 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:39:51 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1139:18)
+    at afterConnectMultiple (node:net:1714:7)
+[2m8:44:20 AM[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+X [ERROR] Expected ";" but found ")"
+
+    vite.config.ts:26:1:
+      26 │ })
+         │  ^
+         ╵  ;
+
+[31mfailed to load config from C:\programming\L4HProject\web\l4h\vite.config.ts[39m
+[2m8:44:20 AM[22m [31m[1m[vite][22m[39m Build failed with 1 error:
+vite.config.ts:26:1: ERROR: Expected ";" but found ")"
+[2m8:44:20 AM[22m [31m[1m[vite][22m[39m server restart failed
+[2m8:44:26 AM[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m8:44:26 AM[22m [36m[1m[vite][22m[39m server restarted.
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5175[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/AuthClient.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/Api.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/api-client.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/formatters.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/translation-error-handler.js[22m
+[2m8:38:23 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n-config.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/hooks/useRTL.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/Icon.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Button.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Input.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/SearchableSelect.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Modal.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Card.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/TranslationErrorNotification.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/LanguageSwitcher.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/ThemeProvider.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Layout.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Container.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/EmptyState.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Toast.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/RTLNumber.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/RTLDemo.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/RouteGuard.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/query-provider.js[22m
+[2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/index.js[22m

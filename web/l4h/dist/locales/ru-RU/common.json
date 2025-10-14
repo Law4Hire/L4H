@@ -1,0 +1,183 @@
+{
+  "loading": "Загрузка...",
+  "error": "Ошибка",
+  "success": "Успех",
+  "cancel": "Отмена",
+  "save": "Сохранить",
+  "delete": "Удалить",
+  "edit": "Редактировать",
+  "view": "Просмотр",
+  "close": "Закрыть",
+  "back": "Назад",
+  "next": "Далее",
+  "previous": "Предыдущий",
+  "search": "Поиск",
+  "filter": "Фильтр",
+  "sort": "Сортировка",
+  "refresh": "Обновить",
+  "retry": "Повторить",
+  "confirm": "Подтвердить",
+  "yes": "Да",
+  "no": "Нет",
+  "required": "Обязательно",
+  "optional": "Необязательно",
+  "all": "Все",
+  "none": "Нет",
+  "select": "Выбрать",
+  "clear": "Очистить",
+  "upload": "Загрузить",
+  "download": "Скачать",
+  "print": "Печать",
+  "share": "Поделиться",
+  "copy": "Копировать",
+  "paste": "Вставить",
+  "cut": "Вырезать",
+  "undo": "Отменить",
+  "redo": "Повторить",
+  "getStarted": "Начать",
+  
+  "nav": {
+    "dashboard": "Панель управления",
+    "pricing": "Цены",
+    "appointments": "Встречи",
+    "messages": "Сообщения",
+    "uploads": "Загрузки",
+    "invoices": "Счета",
+    "visaLibrary": "Библиотека виз",
+    "interview": "Интервью",
+    "scheduling": "Запланировать интервью",
+    "admin": "Администрирование",
+    "hello": "Привет",
+    "login": "Войти",
+    "logout": "Выйти",
+    "profile": "Профиль",
+    "settings": "Настройки",
+    "help": "Помощь",
+    "support": "Поддержка"
+  },
+  
+  "auth": {
+    "login": "Войти",
+    "email": "Email",
+    "password": "Пароль",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "confirmPassword": "Подтвердить пароль",
+    "createAccount": "Создать аккаунт",
+    "remember": "Запомнить меня",
+    "forgotPassword": "Забыли пароль?",
+    "resetPassword": "Сбросить пароль",
+    "changePassword": "Изменить пароль",
+    "verifyEmail": "Подтвердить email",
+    "emailVerified": "Email подтвержден",
+    "loginFailed": "Вход не удался",
+    "invalidCredentials": "Неверные учетные данные",
+    "accountLocked": "Аккаунт заблокирован",
+    "emailRequired": "Email обязателен",
+    "passwordRequired": "Пароль обязателен",
+    "firstNameRequired": "Имя обязательно",
+    "lastNameRequired": "Фамилия обязательна",
+    "passwordConfirmRequired": "Подтверждение пароля обязательно",
+    "passwordsDoNotMatch": "Пароли не совпадают",
+    "emailInvalid": "Введите действительный адрес электронной почты",
+    "passwordTooShort": "Пароль должен содержать не менее 8 символов",
+    "passwordNeedsSpecialChar": "Пароль должен содержать хотя бы один специальный символ",
+    "passwordNeedsMoreClasses": "Пароль должен содержать не менее {{count}} различных типов символов",
+    "rateLimitExceeded": "Слишком много запросов. Попробуйте позже.",
+    "passwordMinLength": "Пароль должен содержать не менее 8 символов",
+    "dontHaveAccount": "Нет аккаунта?",
+    "signUpNow": "Зарегистрируйтесь сейчас",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "register": "Регистрация",
+    "signup": "Создать аккаунт",
+    "registrationSuccess": "Регистрация успешна! Добро пожаловать в Law4Hire.",
+    "registrationFailed": "Регистрация не удалась. Попробуйте еще раз."
+  },
+  
+  "dashboard": {
+    "title": "Панель управления",
+    "welcome": "Добро пожаловать обратно!",
+    "quickLinks": "Быстрые ссылки",
+    "interview": "Интервью по визе",
+    "pricing": "Цены",
+    "appointments": "Встречи",
+    "messages": "Сообщения",
+    "caseStatus": "Статус дела"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "Неактивный",
+      "active": "Активный",
+      "pending": "Ожидающий",
+      "completed": "Завершенный",
+      "closed": "Закрытый"
+    },
+    "detail": {
+      "title": "Детали дела"
+    }
+  },
+  
+  "appointments": {
+    "title": "Встречи",
+    "createAppointment": "Создать встречу",
+    "noAppointments": "Нет запланированных встреч",
+    "appointmentCreated": "Встреча успешно создана",
+    "duration": "минуты",
+    "caseId": "ID дела",
+    "date": "Дата и время",
+    "notes": "Заметки",
+    "scheduleFirst": "Запланируйте свою первую встречу для начала",
+    "durationHelper": "Продолжительность в минутах"
+  },
+  
+  "messages": {
+    "title": "Сообщения",
+    "compose": "Написать",
+    "inbox": "Входящие",
+    "noMessages": "Нет сообщений",
+    "messageSent": "Сообщение успешно отправлено",
+    "newMessage": "Новое сообщение",
+    "subject": "Тема",
+    "recipient": "Получатель",
+    "message": "Сообщение",
+    "startConversation": "Начать разговор",
+    "selectConversation": "Выбрать разговор",
+    "chooseThread": "Выберите цепочку сообщений для просмотра разговора",
+    "recipientPlaceholder": "Введите email или ID получателя"
+  },
+  
+  "validation": {
+    "requiredFields": "Заполните все обязательные поля"
+  },
+  
+  "admin": {
+    "userManagement": "Управление пользователями",
+    "userDetails": "Детали пользователя",
+    "pricingManagement": "Управление ценами",
+    "caseManagement": "Управление делами"
+  },
+  
+  "visaLibrary": {
+    "title": "Библиотека типов виз США",
+    "description": "Изучите исчерпывающую информацию о различных категориях виз США. Нажмите на любой тип визы, чтобы узнать о требованиях к получению, процессе подачи заявления и преимуществах.",
+    "loading": "Загрузка информации о визе...",
+    "learnMore": "Узнать больше",
+    "categories": {
+      "nonimmigrant": "Неиммиграционные визы",
+      "immigrant": "Иммиграционные визы"
+    },
+    "modal": {
+      "category": "Категория",
+      "description": "Описание",
+      "nextSteps": "Следующие шаги",
+      "readyToApply": "Готовы подать заявление на визу {{code}}? Наши иммиграционные адвокаты могут провести вас через весь процесс.",
+      "applyFor": "Подать заявление на визу {{code}}"
+    },
+    "cta": {
+      "title": "Нужна помощь в выборе правильной визы?",
+      "description": "Наши эксперты по иммиграции могут помочь вам определить, какая категория визы лучше всего подходит для вашей ситуации.",
+      "button": "Начать вашу заявку"
+    }
+  }
+}

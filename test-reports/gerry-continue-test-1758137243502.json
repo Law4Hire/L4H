@@ -1,0 +1,46 @@
+{
+  "testRun": {
+    "timestamp": "2025-09-17T19:27:23.502Z",
+    "user": "gerry@testing.com",
+    "totalSteps": 2,
+    "passed": 1,
+    "failed": 1,
+    "duration": 8217
+  },
+  "results": [
+    {
+      "step": "Navigate to Site",
+      "status": "PASS",
+      "duration": 4277,
+      "result": {
+        "currentUrl": "http://localhost:5173/"
+      }
+    },
+    {
+      "step": "Click Visa Interview",
+      "status": "FAIL",
+      "duration": 3940,
+      "error": "Could not find or click Visa Interview element"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "01-current-state",
+      "description": "Current page state",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-27-18-305Z-01-current-state.png",
+      "timestamp": "2025-09-17T19-27-18-305Z"
+    },
+    {
+      "name": "error-click-visa-interview",
+      "description": "Error in Click Visa Interview",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-27-22-711Z-error-click-visa-interview.png",
+      "timestamp": "2025-09-17T19-27-22-711Z"
+    },
+    {
+      "name": "final-error",
+      "description": "Final error state",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-27-23-123Z-final-error.png",
+      "timestamp": "2025-09-17T19-27-23-123Z"
+    }
+  ]
+}

@@ -1,0 +1,183 @@
+{
+  "loading": "लोड होत आहे...",
+  "error": "त्रुटी",
+  "success": "यशस्वी",
+  "cancel": "रद्द करा",
+  "save": "जतन करा",
+  "delete": "हटवा",
+  "edit": "संपादित करा",
+  "view": "पहा",
+  "close": "बंद करा",
+  "back": "मागे",
+  "next": "पुढे",
+  "previous": "मागील",
+  "search": "शोधा",
+  "filter": "फिल्टर",
+  "sort": "क्रमवारी",
+  "refresh": "रिफ्रेश",
+  "retry": "पुन्हा प्रयत्न करा",
+  "confirm": "पुष्टी करा",
+  "yes": "होय",
+  "no": "नाही",
+  "required": "आवश्यक",
+  "optional": "पर्यायी",
+  "all": "सर्व",
+  "none": "काहीही नाही",
+  "select": "निवडा",
+  "clear": "साफ करा",
+  "upload": "अपलोड",
+  "download": "डाउनलोड",
+  "print": "प्रिंट",
+  "share": "शेअर",
+  "copy": "कॉपी",
+  "paste": "पेस्ट",
+  "cut": "कट",
+  "undo": "पूर्ववत करा",
+  "redo": "पुन्हा करा",
+  "getStarted": "सुरुवात करा",
+  
+  "nav": {
+    "dashboard": "डॅशबोर्ड",
+    "pricing": "किंमत",
+    "appointments": "भेटी",
+    "messages": "संदेश",
+    "uploads": "अपलोड्स",
+    "invoices": "बीले",
+    "visaLibrary": "व्हिसा लायब्ररी",
+    "interview": "मुलाखत",
+    "scheduling": "मुलाखत नियोजित करा",
+    "admin": "प्रशासन",
+    "hello": "नमस्कार",
+    "login": "लॉगिन",
+    "logout": "लॉगआउट",
+    "profile": "प्रोफाइल",
+    "settings": "सेटिंग्ज",
+    "help": "मदत",
+    "support": "सहाय्य"
+  },
+  
+  "auth": {
+    "login": "लॉगिन",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "firstName": "पहिले नाव",
+    "lastName": "आडनाव",
+    "confirmPassword": "पासवर्डची पुष्टी करा",
+    "createAccount": "खाते तयार करा",
+    "remember": "मला लक्षात ठेवा",
+    "forgotPassword": "पासवर्ड विसरलात?",
+    "resetPassword": "पासवर्ड रीसेट करा",
+    "changePassword": "पासवर्ड बदला",
+    "verifyEmail": "ईमेल सत्यापित करा",
+    "emailVerified": "ईमेल सत्यापित झाला",
+    "loginFailed": "लॉगिन अयशस्वी",
+    "invalidCredentials": "अवैध क्रेडेन्शियल्स",
+    "accountLocked": "खाते लॉक केले",
+    "emailRequired": "ईमेल आवश्यक आहे",
+    "passwordRequired": "पासवर्ड आवश्यक आहे",
+    "firstNameRequired": "पहिले नाव आवश्यक आहे",
+    "lastNameRequired": "आडनाव आवश्यक आहे",
+    "passwordConfirmRequired": "पासवर्डची पुष्टी आवश्यक आहे",
+    "passwordsDoNotMatch": "पासवर्ड जुळत नाहीत",
+    "emailInvalid": "कृपया वैध ईमेल पत्ता प्रविष्ट करा",
+    "passwordTooShort": "पासवर्ड किमान ८ अक्षरांचा असावा",
+    "passwordNeedsSpecialChar": "पासवर्डमध्ये किमान एक विशेष वर्ण असावा",
+    "passwordNeedsMoreClasses": "पासवर्डमध्ये किमान {{count}} वेगवेगळ्या प्रकारचे वर्ण असावेत",
+    "rateLimitExceeded": "खूप जास्त विनंत्या. कृपया नंतर प्रयत्न करा.",
+    "passwordMinLength": "पासवर्ड किमान ८ अक्षरांचा असावा",
+    "dontHaveAccount": "खाते नाही?",
+    "signUpNow": "आता साइन अप करा",
+    "alreadyHaveAccount": "आधीच खाते आहे?",
+    "register": "नोंदणी",
+    "signup": "खाते तयार करा",
+    "registrationSuccess": "नोंदणी यशस्वी! Law4Hire मध्ये आपले स्वागत आहे.",
+    "registrationFailed": "नोंदणी अयशस्वी. कृपया पुन्हा प्रयत्न करा."
+  },
+  
+  "dashboard": {
+    "title": "डॅशबोर्ड",
+    "welcome": "परत आल्याबद्दल स्वागत!",
+    "quickLinks": "द्रुत दुवे",
+    "interview": "व्हिसा मुलाखत",
+    "pricing": "किंमत",
+    "appointments": "भेटी",
+    "messages": "संदेश",
+    "caseStatus": "केसची स्थिती"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "निष्क्रिय",
+      "active": "सक्रिय",
+      "pending": "प्रलंबित",
+      "completed": "पूर्ण",
+      "closed": "बंद"
+    },
+    "detail": {
+      "title": "केसचे तपशील"
+    }
+  },
+  
+  "appointments": {
+    "title": "भेटी",
+    "createAppointment": "भेट तयार करा",
+    "noAppointments": "कोणत्याही भेटी नियोजित नाहीत",
+    "appointmentCreated": "भेट यशस्वीरित्या तयार झाली",
+    "duration": "मिनिटे",
+    "caseId": "केस आयडी",
+    "date": "दिनांक आणि वेळ",
+    "notes": "टिपा",
+    "scheduleFirst": "सुरुवात करण्यासाठी आपली पहिली भेट नियोजित करा",
+    "durationHelper": "मिनिटांमध्ये कालावधी"
+  },
+  
+  "messages": {
+    "title": "संदेश",
+    "compose": "लिहा",
+    "inbox": "इनबॉक्स",
+    "noMessages": "कोणते संदेश नाहीत",
+    "messageSent": "संदेश यशस्वीरित्या पाठवला",
+    "newMessage": "नवीन संदेश",
+    "subject": "विषय",
+    "recipient": "प्राप्तकर्ता",
+    "message": "संदेश",
+    "startConversation": "संभाषण सुरू करा",
+    "selectConversation": "संभाषण निवडा",
+    "chooseThread": "संभाषण पाहण्यासाठी संदेश थ्रेड निवडा",
+    "recipientPlaceholder": "प्राप्तकर्त्याचा ईमेल किंवा आयडी प्रविष्ट करा"
+  },
+  
+  "validation": {
+    "requiredFields": "कृपया सर्व आवश्यक फील्ड भरा"
+  },
+  
+  "admin": {
+    "userManagement": "वापरकर्ता व्यवस्थापन",
+    "userDetails": "वापरकर्त्याचे तपशील",
+    "pricingManagement": "किंमत व्यवस्थापन",
+    "caseManagement": "केस व्यवस्थापन"
+  },
+  
+  "visaLibrary": {
+    "title": "यूएस व्हिसा प्रकार लायब्ररी",
+    "description": "विविध यूएस व्हिसा श्रेणींबद्दल सर्वसमावेशक माहिती एक्सप्लोर करा. पात्रता आवश्यकता, अर्ज प्रक्रिया आणि फायदे जाणून घेण्यासाठी कोणत्याही व्हिसा प्रकारावर क्लिक करा.",
+    "loading": "व्हिसा माहिती लोड होत आहे...",
+    "learnMore": "अधिक जाणून घ्या",
+    "categories": {
+      "nonimmigrant": "गैर-स्थलांतरित व्हिसा",
+      "immigrant": "स्थलांतरित व्हिसा"
+    },
+    "modal": {
+      "category": "श्रेणी",
+      "description": "वर्णन",
+      "nextSteps": "पुढील पायऱ्या",
+      "readyToApply": "{{code}} व्हिसासाठी अर्ज करण्यास तयार आहात? आमचे इमिग्रेशन वकील संपूर्ण प्रक्रियेत आपले मार्गदर्शन करू शकतात.",
+      "applyFor": "{{code}} व्हिसासाठी अर्ज करा"
+    },
+    "cta": {
+      "title": "योग्य व्हिसा निवडण्यासाठी मदत हवी आहे?",
+      "description": "आमचे इमिग्रेशन तज्ञ आपल्या परिस्थितीसाठी कोणती व्हिसा श्रेणी सर्वोत्तम आहे हे ठरवण्यात मदत करू शकतात.",
+      "button": "आपला अर्ज सुरू करा"
+    }
+  }
+}

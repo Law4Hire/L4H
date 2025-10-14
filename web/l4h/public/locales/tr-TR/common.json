@@ -1,0 +1,183 @@
+{
+  "loading": "Yükleniyor...",
+  "error": "Hata",
+  "success": "Başarılı",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "delete": "Sil",
+  "edit": "Düzenle",
+  "view": "Görüntüle",
+  "close": "Kapat",
+  "back": "Geri",
+  "next": "İleri",
+  "previous": "Önceki",
+  "search": "Ara",
+  "filter": "Filtrele",
+  "sort": "Sırala",
+  "refresh": "Yenile",
+  "retry": "Tekrar Dene",
+  "confirm": "Onayla",
+  "yes": "Evet",
+  "no": "Hayır",
+  "required": "Gerekli",
+  "optional": "İsteğe Bağlı",
+  "all": "Tümü",
+  "none": "Hiçbiri",
+  "select": "Seç",
+  "clear": "Temizle",
+  "upload": "Yükle",
+  "download": "İndir",
+  "print": "Yazdır",
+  "share": "Paylaş",
+  "copy": "Kopyala",
+  "paste": "Yapıştır",
+  "cut": "Kes",
+  "undo": "Geri Al",
+  "redo": "Yinele",
+  "getStarted": "Başla",
+  
+  "nav": {
+    "dashboard": "Kontrol Paneli",
+    "pricing": "Fiyatlandırma",
+    "appointments": "Randevular",
+    "messages": "Mesajlar",
+    "uploads": "Yüklemeler",
+    "invoices": "Faturalar",
+    "visaLibrary": "Vize Kütüphanesi",
+    "interview": "Mülakat",
+    "scheduling": "Mülakat Planla",
+    "admin": "Yönetim",
+    "hello": "Merhaba",
+    "login": "Giriş Yap",
+    "logout": "Çıkış Yap",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "help": "Yardım",
+    "support": "Destek"
+  },
+  
+  "auth": {
+    "login": "Giriş Yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "confirmPassword": "Şifreyi Onayla",
+    "createAccount": "Hesap Oluştur",
+    "remember": "Beni Hatırla",
+    "forgotPassword": "Şifremi unuttum?",
+    "resetPassword": "Şifreyi sıfırla",
+    "changePassword": "Şifreyi değiştir",
+    "verifyEmail": "E-postayı doğrula",
+    "emailVerified": "E-posta doğrulandı",
+    "loginFailed": "Giriş başarısız",
+    "invalidCredentials": "Geçersiz kimlik bilgileri",
+    "accountLocked": "Hesap kilitli",
+    "emailRequired": "E-posta gerekli",
+    "passwordRequired": "Şifre gerekli",
+    "firstNameRequired": "Ad gerekli",
+    "lastNameRequired": "Soyad gerekli",
+    "passwordConfirmRequired": "Şifre onayı gerekli",
+    "passwordsDoNotMatch": "Şifreler eşleşmiyor",
+    "emailInvalid": "Lütfen geçerli bir e-posta adresi girin",
+    "passwordTooShort": "Şifre en az 8 karakter olmalı",
+    "passwordNeedsSpecialChar": "Şifre en az bir özel karakter içermeli",
+    "passwordNeedsMoreClasses": "Şifre en az {{count}} farklı karakter türü içermeli",
+    "rateLimitExceeded": "Çok fazla istek. Lütfen daha sonra tekrar deneyin.",
+    "passwordMinLength": "Şifre en az 8 karakter olmalı",
+    "dontHaveAccount": "Hesabınız yok mu?",
+    "signUpNow": "Şimdi kaydolun",
+    "alreadyHaveAccount": "Zaten hesabınız var mı?",
+    "register": "Kayıt Ol",
+    "signup": "Hesap Oluştur",
+    "registrationSuccess": "Kayıt başarılı! Law4Hire'a hoş geldiniz.",
+    "registrationFailed": "Kayıt başarısız. Lütfen tekrar deneyin."
+  },
+  
+  "dashboard": {
+    "title": "Kontrol Paneli",
+    "welcome": "Tekrar hoş geldiniz!",
+    "quickLinks": "Hızlı Bağlantılar",
+    "interview": "Vize Mülakatı",
+    "pricing": "Fiyatlandırma",
+    "appointments": "Randevular",
+    "messages": "Mesajlar",
+    "caseStatus": "Dava Durumu"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "Pasif",
+      "active": "Aktif",
+      "pending": "Beklemede",
+      "completed": "Tamamlandı",
+      "closed": "Kapatıldı"
+    },
+    "detail": {
+      "title": "Dava Detayları"
+    }
+  },
+  
+  "appointments": {
+    "title": "Randevular",
+    "createAppointment": "Randevu Oluştur",
+    "noAppointments": "Planlanmış randevu yok",
+    "appointmentCreated": "Randevu başarıyla oluşturuldu",
+    "duration": "dakika",
+    "caseId": "Dava ID",
+    "date": "Tarih ve Saat",
+    "notes": "Notlar",
+    "scheduleFirst": "Başlamak için ilk randevunuzu planlayın",
+    "durationHelper": "Dakika cinsinden süre"
+  },
+  
+  "messages": {
+    "title": "Mesajlar",
+    "compose": "Yaz",
+    "inbox": "Gelen Kutusu",
+    "noMessages": "Mesaj yok",
+    "messageSent": "Mesaj başarıyla gönderildi",
+    "newMessage": "Yeni Mesaj",
+    "subject": "Konu",
+    "recipient": "Alıcı",
+    "message": "Mesaj",
+    "startConversation": "Sohbet başlat",
+    "selectConversation": "Sohbet seç",
+    "chooseThread": "Sohbeti görüntülemek için mesaj dizisini seçin",
+    "recipientPlaceholder": "Alıcının e-postasını veya ID'sini girin"
+  },
+  
+  "validation": {
+    "requiredFields": "Lütfen tüm gerekli alanları doldurun"
+  },
+  
+  "admin": {
+    "userManagement": "Kullanıcı Yönetimi",
+    "userDetails": "Kullanıcı Detayları",
+    "pricingManagement": "Fiyat Yönetimi",
+    "caseManagement": "Dava Yönetimi"
+  },
+  
+  "visaLibrary": {
+    "title": "ABD Vize Türleri Kütüphanesi",
+    "description": "Farklı ABD vize kategorileri hakkında kapsamlı bilgileri keşfedin. Uygunluk gereksinimleri, başvuru süreci ve faydalar hakkında bilgi edinmek için herhangi bir vize türüne tıklayın.",
+    "loading": "Vize bilgileri yükleniyor...",
+    "learnMore": "Daha Fazla Öğren",
+    "categories": {
+      "nonimmigrant": "Göçmen Olmayan Vizeler",
+      "immigrant": "Göçmen Vizeleri"
+    },
+    "modal": {
+      "category": "Kategori",
+      "description": "Açıklama",
+      "nextSteps": "Sonraki Adımlar",
+      "readyToApply": "{{code}} vizesi için başvurmaya hazır mısınız? Göçmenlik avukatlarımız tüm süreç boyunca size rehberlik edebilir.",
+      "applyFor": "{{code}} Vizesi İçin Başvur"
+    },
+    "cta": {
+      "title": "Doğru Vizeyi Seçmek İçin Yardıma İhtiyacınız Var mı?",
+      "description": "Göçmenlik uzmanlarımız durumunuza en uygun vize kategorisini belirlemenizde yardımcı olabilir.",
+      "button": "Başvurunuzu Başlatın"
+    }
+  }
+}

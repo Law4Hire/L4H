@@ -1,0 +1,82 @@
+{
+  "network": {
+    "timeout": "Yêu cầu đã hết thời gian chờ. Vui lòng thử lại.",
+    "offline": "Bạn có vẻ đang ngoại tuyến. Vui lòng kiểm tra kết nối internet của bạn.",
+    "serverError": "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.",
+    "connectionFailed": "Không thể kết nối với máy chủ.",
+    "badRequest": "Yêu cầu không hợp lệ. Vui lòng kiểm tra đầu vào của bạn.",
+    "unauthorized": "Bạn không được phép thực hiện hành động này.",
+    "forbidden": "Truy cập bị từ chối. Bạn không có quyền truy cập tài nguyên này.",
+    "notFound": "Không tìm thấy tài nguyên được yêu cầu.",
+    "conflict": "Đã xảy ra xung đột. Tài nguyên có thể đã được sửa đổi bởi người dùng khác.",
+    "tooManyRequests": "Quá nhiều yêu cầu. Vui lòng đợi trước khi thử lại.",
+    "internalServerError": "Lỗi máy chủ nội bộ. Vui lòng liên hệ hỗ trợ nếu vấn đề vẫn tiếp tục."
+  },
+  
+  "translation": {
+    "loadFailed": "Không thể tải bản dịch cho ngôn ngữ này.",
+    "fallbackActive": "Một số bản dịch không có sẵn. Hiển thị tiếng Anh làm dự phòng.",
+    "missingKey": "Không tìm thấy bản dịch cho văn bản này.",
+    "parsingError": "Lỗi khi phân tích tệp dịch."
+  },
+  
+  "interview": {
+    "sessionExpired": "Phiên phỏng vấn của bạn đã hết hạn. Vui lòng bắt đầu phỏng vấn mới.",
+    "invalidAnswer": "Vui lòng cung cấp câu trả lời hợp lệ để tiếp tục.",
+    "completionFailed": "Không thể hoàn thành phỏng vấn. Vui lòng thử lại.",
+    "loadingFailed": "Không thể tải câu hỏi phỏng vấn.",
+    "submissionFailed": "Không thể gửi câu trả lời của bạn. Vui lòng thử lại.",
+    "sessionInvalid": "Phiên phỏng vấn của bạn không hợp lệ. Vui lòng bắt đầu lại.",
+    "progressLost": "Tiến độ phỏng vấn của bạn có thể đã bị mất. Bạn có muốn bắt đầu lại không?"
+  },
+  
+  "auth": {
+    "loginRequired": "Vui lòng đăng nhập để tiếp tục.",
+    "sessionExpired": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại.",
+    "invalidCredentials": "Email hoặc mật khẩu không hợp lệ.",
+    "accountLocked": "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ.",
+    "emailNotVerified": "Vui lòng xác minh địa chỉ email của bạn trước khi tiếp tục.",
+    "passwordExpired": "Mật khẩu của bạn đã hết hạn. Vui lòng đặt lại.",
+    "twoFactorRequired": "Yêu cầu xác thực hai yếu tố."
+  },
+  
+  "validation": {
+    "required": "Trường này là bắt buộc.",
+    "email": "Vui lòng nhập địa chỉ email hợp lệ.",
+    "password": "Mật khẩu phải có ít nhất 8 ký tự.",
+    "passwordMatch": "Mật khẩu không khớp.",
+    "phoneNumber": "Vui lòng nhập số điện thoại hợp lệ.",
+    "dateFormat": "Vui lòng nhập ngày hợp lệ.",
+    "fileSize": "Kích thước tệp vượt quá giới hạn tối đa.",
+    "fileType": "Loại tệp không được hỗ trợ.",
+    "minLength": "Phải có ít nhất {{min}} ký tự.",
+    "maxLength": "Không được vượt quá {{max}} ký tự.",
+    "numeric": "Vui lòng nhập số hợp lệ.",
+    "alphanumeric": "Chỉ cho phép chữ cái và số."
+  },
+  
+  "api": {
+    "genericError": "Đã xảy ra lỗi khi xử lý yêu cầu của bạn.",
+    "retryableError": "Đã xảy ra lỗi tạm thời. Vui lòng thử lại.",
+    "nonRetryableError": "Đã xảy ra lỗi không thể thử lại. Vui lòng liên hệ hỗ trợ.",
+    "maintenanceMode": "Hệ thống hiện đang bảo trì. Vui lòng thử lại sau.",
+    "rateLimitExceeded": "Bạn đã vượt quá giới hạn tốc độ. Vui lòng đợi trước khi thực hiện thêm yêu cầu."
+  },
+  
+  "file": {
+    "uploadFailed": "Không thể tải lên tệp. Vui lòng thử lại.",
+    "downloadFailed": "Không thể tải xuống tệp.",
+    "deleteFailed": "Không thể xóa tệp.",
+    "virusDetected": "Tệp chứa virus và đã được cách ly.",
+    "corruptFile": "Tệp có vẻ bị hỏng.",
+    "unsupportedFormat": "Định dạng tệp không được hỗ trợ."
+  },
+  
+  "general": {
+    "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng làm mới trang và thử lại.",
+    "featureUnavailable": "Tính năng này hiện không có sẵn.",
+    "maintenanceScheduled": "Bảo trì theo lịch trình đang diễn ra.",
+    "browserNotSupported": "Trình duyệt của bạn không được hỗ trợ. Vui lòng sử dụng trình duyệt hiện đại.",
+    "javascriptRequired": "JavaScript là bắt buộc để sử dụng ứng dụng này."
+  }
+}

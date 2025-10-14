@@ -1,0 +1,12 @@
+{
+  "email": "pierre.dubois.1758397784660@test-france.com",
+  "password": "SecureTest123!",
+  "firstName": "Pierre",
+  "lastName": "Dubois",
+  "dateOfBirth": "1989-03-15",
+  "citizenship": "French",
+  "nationality": "French",
+  "country": "France",
+  "city": "Paris",
+  "maritalStatus": "married"
+}

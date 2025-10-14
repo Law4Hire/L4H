@@ -1,0 +1,183 @@
+{
+  "loading": "Ładowanie...",
+  "error": "Błąd",
+  "success": "Sukces",
+  "cancel": "Anuluj",
+  "save": "Zapisz",
+  "delete": "Usuń",
+  "edit": "Edytuj",
+  "view": "Zobacz",
+  "close": "Zamknij",
+  "back": "Wstecz",
+  "next": "Dalej",
+  "previous": "Poprzedni",
+  "search": "Szukaj",
+  "filter": "Filtruj",
+  "sort": "Sortuj",
+  "refresh": "Odśwież",
+  "retry": "Spróbuj ponownie",
+  "confirm": "Potwierdź",
+  "yes": "Tak",
+  "no": "Nie",
+  "required": "Wymagane",
+  "optional": "Opcjonalne",
+  "all": "Wszystkie",
+  "none": "Żadne",
+  "select": "Wybierz",
+  "clear": "Wyczyść",
+  "upload": "Prześlij",
+  "download": "Pobierz",
+  "print": "Drukuj",
+  "share": "Udostępnij",
+  "copy": "Kopiuj",
+  "paste": "Wklej",
+  "cut": "Wytnij",
+  "undo": "Cofnij",
+  "redo": "Ponów",
+  "getStarted": "Rozpocznij",
+  
+  "nav": {
+    "dashboard": "Panel",
+    "pricing": "Cennik",
+    "appointments": "Spotkania",
+    "messages": "Wiadomości",
+    "uploads": "Przesłane",
+    "invoices": "Faktury",
+    "visaLibrary": "Biblioteka Wiz",
+    "interview": "Rozmowa",
+    "scheduling": "Zaplanuj Rozmowę",
+    "admin": "Administracja",
+    "hello": "Cześć",
+    "login": "Zaloguj",
+    "logout": "Wyloguj",
+    "profile": "Profil",
+    "settings": "Ustawienia",
+    "help": "Pomoc",
+    "support": "Wsparcie"
+  },
+  
+  "auth": {
+    "login": "Zaloguj",
+    "email": "Email",
+    "password": "Hasło",
+    "firstName": "Imię",
+    "lastName": "Nazwisko",
+    "confirmPassword": "Potwierdź Hasło",
+    "createAccount": "Utwórz Konto",
+    "remember": "Zapamiętaj mnie",
+    "forgotPassword": "Zapomniałeś hasła?",
+    "resetPassword": "Resetuj hasło",
+    "changePassword": "Zmień hasło",
+    "verifyEmail": "Zweryfikuj email",
+    "emailVerified": "Email zweryfikowany",
+    "loginFailed": "Logowanie nieudane",
+    "invalidCredentials": "Nieprawidłowe dane",
+    "accountLocked": "Konto zablokowane",
+    "emailRequired": "Email jest wymagany",
+    "passwordRequired": "Hasło jest wymagane",
+    "firstNameRequired": "Imię jest wymagane",
+    "lastNameRequired": "Nazwisko jest wymagane",
+    "passwordConfirmRequired": "Potwierdzenie hasła jest wymagane",
+    "passwordsDoNotMatch": "Hasła nie pasują",
+    "emailInvalid": "Wprowadź prawidłowy adres email",
+    "passwordTooShort": "Hasło musi mieć co najmniej 8 znaków",
+    "passwordNeedsSpecialChar": "Hasło musi zawierać co najmniej jeden znak specjalny",
+    "passwordNeedsMoreClasses": "Hasło musi zawierać co najmniej {{count}} różnych typów znaków",
+    "rateLimitExceeded": "Zbyt wiele żądań. Spróbuj ponownie później.",
+    "passwordMinLength": "Hasło musi mieć co najmniej 8 znaków",
+    "dontHaveAccount": "Nie masz konta?",
+    "signUpNow": "Zarejestruj się teraz",
+    "alreadyHaveAccount": "Masz już konto?",
+    "register": "Zarejestruj",
+    "signup": "Utwórz Konto",
+    "registrationSuccess": "Rejestracja udana! Witamy w Law4Hire.",
+    "registrationFailed": "Rejestracja nieudana. Spróbuj ponownie."
+  },
+  
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Witamy z powrotem!",
+    "quickLinks": "Szybkie Linki",
+    "interview": "Rozmowa o Wizę",
+    "pricing": "Cennik",
+    "appointments": "Spotkania",
+    "messages": "Wiadomości",
+    "caseStatus": "Status Sprawy"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "Nieaktywny",
+      "active": "Aktywny",
+      "pending": "Oczekujący",
+      "completed": "Zakończony",
+      "closed": "Zamknięty"
+    },
+    "detail": {
+      "title": "Szczegóły Sprawy"
+    }
+  },
+  
+  "appointments": {
+    "title": "Spotkania",
+    "createAppointment": "Utwórz Spotkanie",
+    "noAppointments": "Brak zaplanowanych spotkań",
+    "appointmentCreated": "Spotkanie utworzone pomyślnie",
+    "duration": "minuty",
+    "caseId": "ID Sprawy",
+    "date": "Data i Czas",
+    "notes": "Notatki",
+    "scheduleFirst": "Zaplanuj swoje pierwsze spotkanie, aby rozpocząć",
+    "durationHelper": "Czas trwania w minutach"
+  },
+  
+  "messages": {
+    "title": "Wiadomości",
+    "compose": "Napisz",
+    "inbox": "Skrzynka",
+    "noMessages": "Brak wiadomości",
+    "messageSent": "Wiadomość wysłana pomyślnie",
+    "newMessage": "Nowa Wiadomość",
+    "subject": "Temat",
+    "recipient": "Odbiorca",
+    "message": "Wiadomość",
+    "startConversation": "Rozpocznij rozmowę",
+    "selectConversation": "Wybierz rozmowę",
+    "chooseThread": "Wybierz wątek wiadomości, aby zobaczyć rozmowę",
+    "recipientPlaceholder": "Wprowadź email lub ID odbiorcy"
+  },
+  
+  "validation": {
+    "requiredFields": "Wypełnij wszystkie wymagane pola"
+  },
+  
+  "admin": {
+    "userManagement": "Zarządzanie Użytkownikami",
+    "userDetails": "Szczegóły Użytkownika",
+    "pricingManagement": "Zarządzanie Cennikiem",
+    "caseManagement": "Zarządzanie Sprawami"
+  },
+  
+  "visaLibrary": {
+    "title": "Biblioteka Typów Wiz USA",
+    "description": "Poznaj kompleksowe informacje o różnych kategoriach wiz USA. Kliknij na dowolny typ wizy, aby dowiedzieć się o wymaganiach kwalifikacyjnych, procesie aplikacji i korzyściach.",
+    "loading": "Ładowanie informacji o wizie...",
+    "learnMore": "Dowiedz Się Więcej",
+    "categories": {
+      "nonimmigrant": "Wizy Nieimigracyjne",
+      "immigrant": "Wizy Imigracyjne"
+    },
+    "modal": {
+      "category": "Kategoria",
+      "description": "Opis",
+      "nextSteps": "Następne Kroki",
+      "readyToApply": "Gotowy do złożenia wniosku o wizę {{code}}? Nasi prawnicy imigracyjni mogą poprowadzić Cię przez cały proces.",
+      "applyFor": "Złóż Wniosek o Wizę {{code}}"
+    },
+    "cta": {
+      "title": "Potrzebujesz Pomocy w Wyborze Właściwej Wizy?",
+      "description": "Nasi eksperci imigracyjni mogą pomóc Ci określić, która kategoria wizy najlepiej pasuje do Twojej sytuacji.",
+      "button": "Rozpocznij Swoją Aplikację"
+    }
+  }
+}

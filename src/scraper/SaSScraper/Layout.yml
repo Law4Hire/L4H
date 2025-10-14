@@ -1,0 +1,113 @@
+You are an expert full-stack developer and AI Workflow Orchestration Engineer. Your task is to act as the primary compiler and execution engine for a Service-as-Software (SaS) Agent.
+
+Your complete process must be executed in four distinct phases:
+
+### Phase 1: Specification Ingestion and Design
+1.  **READ:** Read the entire YAML specification provided below this prompt (from the `agent_id` to the end of the `output_schema`).
+2.  **INTERPRET:** Acknowledge and confirm the three required `inputs` (`country_of_residence`, `visa_type`, and `return_types`) and the five possible `output_schema` keys.
+3.  **DESIGN:** Design a Python-based, deployable **Service-as-Software (SaS) tool** named `VisaWorkflowAgent`. This tool must be structured as a class or a robust function that accepts the three defined inputs and adheres strictly to the four-step `workflow` defined in the specification.
+
+### Phase 2: Tool Generation (Python Code)
+1.  **MOCK DEPENDENCIES:** Since you cannot execute live web scraping or interact with the State Department's internal APIs, **MOCK** the entire `workflow` execution. Create internal mock functions for `step_1_source_identification`, `step_2_core_data_retrieval`, and `step_3_panel_physician_search`.
+2.  **MOCK DATA:** Create a comprehensive, hard-coded `MOCK_DATA_SOURCE` dictionary or JSON object that simulates the output of the web-scraping steps for the **Country of Residence: 'Andorra'** and **Visa Type: 'IR-1'**. This mock data must contain complete, realistic information for all five possible `output_schema` keys (`Steps`, `GovDocs`, `UserDocs`, `GovLinks`, `Doctors`).
+3.  **IMPLEMENT STRUCTURE:** Implement the `step_4_structuring_and_delivery` function, which takes the `MOCK_DATA_SOURCE` and the `return_types` list as input. This function must filter the mock data to return **only** the keys requested in the `return_types` parameter.
+4.  **DELIVER CODE:** Present the complete, professional-grade Python code for the `VisaWorkflowAgent` class and all its components in a single, well-commented code block.
+
+### Phase 3: Test Case Generation
+1.  **CREATE TEST:** Generate a single, comprehensive unit test function named `test_vwa_andorra_ir1`.
+2.  **ASSERTIONS:** This test must instantiate the `VisaWorkflowAgent` and call its main execution method with the following parameters:
+    * `country_of_residence`: "Andorra"
+    * `visa_type`: "IR-1"
+    * `return_types`: **["Steps", "Doctors", "GovLinks"]**
+3.  **VALIDATE OUTPUT:** Use `assert` statements to confirm the following properties of the test result:
+    * The returned dictionary contains **exactly 3** top-level keys.
+    * The returned dictionary **does not contain** the "GovDocs" or "UserDocs" keys.
+    * The length of the "Steps" list is greater than 3.
+    * The length of the "Doctors" list is greater than 1 (as per the Andorra/Spain requirement).
+
+### Phase 4: Execution and Delivery
+1.  **EXECUTE TEST:** Run the generated test case against the `VisaWorkflowAgent` class using the mock data.
+2.  **PRESENT OUTPUT:** Present the final output of the test execution, confirming that the tool is functional according to the provided specification.
+
+---
+**BEGIN YAML SPECIFICATION BELOW (DO NOT EDIT THIS SECTION):**
+
+
+# ----------------------------------------------------------------------
+# AGENT DEFINITION: Visa Workflow Agent (VWA)
+# ----------------------------------------------------------------------
+agent_id: "vwa-001"
+agent_name: "Visa Workflow Agent (Service-as-Software)"
+description: "Autonomously gathers and structures U.S. Visa application requirements (steps, documents, and doctors) based on country and visa type by sourcing data from US State Department and US Embassy websites."
+paradigm: "Service-as-Software (SaS)"
+# The Agent requires a sophisticated LLM (like GPT-4 or Claude 3) with web scraping/action capabilities.
+llm_model_requirement: "Advanced Generative AI with RAG/Web-Action capabilities"
+
+# ----------------------------------------------------------------------
+# INPUT PARAMETERS
+# These are the required inputs for the Agent's service request.
+# ----------------------------------------------------------------------
+inputs:
+  - name: "country_of_residence"
+    type: "string"
+    required: true
+    example: "Andorra"
+    description: "The country where the applicant will apply, used to determine the correct Embassy/Consulate."
+
+  - name: "visa_type"
+    type: "string"
+    required: true
+    example: "IR-1"
+    description: "The specific U.S. Visa classification (e.g., K-1, F-1, H-1B, IR-1)."
+
+  - name: "return_types"
+    type: "list_of_strings"
+    required: true
+    example: ["Steps", "Doctors"]
+    validation_options: ["Steps", "GovDocs", "UserDocs", "GovLinks", "Doctors"]
+    description: "A list specifying which categories of information to return."
+
+# ----------------------------------------------------------------------
+# EXECUTION WORKFLOW (The Agent's Intelligence Pipeline)
+# The logical steps the autonomous agent must follow to deliver the service.
+# ----------------------------------------------------------------------
+workflow:
+  - step_id: "1_source_identification"
+    action: "Intelligent Web Mapping"
+    details: "Use the 'country_of_residence' to identify the exact processing U.S. Embassy or Consulate. Must handle complex referrals (e.g., countries without an embassy deferring to a regional post)."
+
+  - step_id: "2_core_data_retrieval"
+    action: "Targeted Scraping and Extraction"
+    details: "Search the State Department and determined Embassy websites for the specific 'visa_type' workflow and required documents (steps, forms, user evidence)."
+
+  - step_id: "3_panel_physician_search"
+    action: "Focused Information Retrieval"
+    details: "Locate and extract the official, approved Panel Physician list and instructions required for the medical examination in that jurisdiction."
+
+  - step_id: "4_structuring_and_delivery"
+    action: "LLM-Powered Structuring and Filtering"
+    details: "Process all raw text/data into the structured JSON format defined in the output schema, filtering the final return payload based *only* on the requested 'return_types' input."
+
+# ----------------------------------------------------------------------
+# OUTPUT SCHEMA DEFINITION
+# Defines the precise structure and fields for the Agent's service delivery.
+# ----------------------------------------------------------------------
+output_schema:
+  Steps:
+    type: "list_of_strings"
+    description: "A chronological, step-by-step list of the application process (e.g., '1. File Petition...', '2. Pay Fees...', '3. Attend Interview...')."
+  GovDocs:
+    type: "list_of_objects"
+    object_keys: ["Name", "Link", "Description"]
+    description: "Government-provided documents (forms, instructions) the applicant must interact with."
+  UserDocs:
+    type: "list_of_strings"
+    description: "A list of civil and other supporting documents the user must collect (e.g., 'Birth Certificate', 'Police Certificate', 'Tax Transcripts')."
+  GovLinks:
+    type: "list_of_objects"
+    object_keys: ["Name", "Link", "Purpose"]
+    description: "Critical external links for scheduling, payment, or document submission (e.g., CEAC login, payment portal)."
+  Doctors:
+    type: "list_of_objects"
+    object_keys: ["Name", "Address", "Phone", "InstructionsLink"]
+    description: "The list of approved panel physicians/clinics for the medical exam in the country/jurisdiction."

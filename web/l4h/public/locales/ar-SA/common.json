@@ -1,0 +1,183 @@
+{
+  "loading": "جاري التحميل...",
+  "error": "خطأ",
+  "success": "نجح",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "delete": "حذف",
+  "edit": "تعديل",
+  "view": "عرض",
+  "close": "إغلاق",
+  "back": "رجوع",
+  "next": "التالي",
+  "previous": "السابق",
+  "search": "بحث",
+  "filter": "تصفية",
+  "sort": "ترتيب",
+  "refresh": "تحديث",
+  "retry": "إعادة المحاولة",
+  "confirm": "تأكيد",
+  "yes": "نعم",
+  "no": "لا",
+  "required": "مطلوب",
+  "optional": "اختياري",
+  "all": "الكل",
+  "none": "لا شيء",
+  "select": "اختيار",
+  "clear": "مسح",
+  "upload": "رفع",
+  "download": "تحميل",
+  "print": "طباعة",
+  "share": "مشاركة",
+  "copy": "نسخ",
+  "paste": "لصق",
+  "cut": "قص",
+  "undo": "تراجع",
+  "redo": "إعادة",
+  "getStarted": "البدء",
+  
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "pricing": "الأسعار",
+    "appointments": "المواعيد",
+    "messages": "الرسائل",
+    "uploads": "الملفات المرفوعة",
+    "invoices": "الفواتير",
+    "visaLibrary": "مكتبة التأشيرات",
+    "interview": "المقابلة",
+    "scheduling": "جدولة المقابلة",
+    "admin": "الإدارة",
+    "hello": "مرحباً",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "help": "المساعدة",
+    "support": "الدعم"
+  },
+  
+  "auth": {
+    "login": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "createAccount": "إنشاء حساب",
+    "remember": "تذكرني",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "changePassword": "تغيير كلمة المرور",
+    "verifyEmail": "تحقق من البريد الإلكتروني",
+    "emailVerified": "تم التحقق من البريد الإلكتروني",
+    "loginFailed": "فشل تسجيل الدخول",
+    "invalidCredentials": "بيانات اعتماد غير صحيحة",
+    "accountLocked": "الحساب مقفل",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "firstNameRequired": "الاسم الأول مطلوب",
+    "lastNameRequired": "اسم العائلة مطلوب",
+    "passwordConfirmRequired": "تأكيد كلمة المرور مطلوب",
+    "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+    "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+    "passwordTooShort": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "passwordNeedsSpecialChar": "يجب أن تحتوي كلمة المرور على حرف خاص واحد على الأقل",
+    "passwordNeedsMoreClasses": "يجب أن تحتوي كلمة المرور على {{count}} أنواع مختلفة من الأحرف على الأقل",
+    "rateLimitExceeded": "طلبات كثيرة جداً. يرجى المحاولة لاحقاً.",
+    "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "signUpNow": "سجل الآن",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "register": "التسجيل",
+    "signup": "إنشاء حساب",
+    "registrationSuccess": "تم التسجيل بنجاح! مرحباً بك في Law4Hire.",
+    "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى."
+  },
+  
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً بعودتك!",
+    "quickLinks": "روابط سريعة",
+    "interview": "مقابلة التأشيرة",
+    "pricing": "الأسعار",
+    "appointments": "المواعيد",
+    "messages": "الرسائل",
+    "caseStatus": "حالة القضية"
+  },
+  
+  "case": {
+    "status": {
+      "inactive": "غير نشط",
+      "active": "نشط",
+      "pending": "في الانتظار",
+      "completed": "مكتمل",
+      "closed": "مغلق"
+    },
+    "detail": {
+      "title": "تفاصيل القضية"
+    }
+  },
+  
+  "appointments": {
+    "title": "المواعيد",
+    "createAppointment": "إنشاء موعد",
+    "noAppointments": "لا توجد مواعيد مجدولة",
+    "appointmentCreated": "تم إنشاء الموعد بنجاح",
+    "duration": "دقائق",
+    "caseId": "معرف القضية",
+    "date": "التاريخ والوقت",
+    "notes": "ملاحظات",
+    "scheduleFirst": "جدول موعدك الأول للبدء",
+    "durationHelper": "المدة بالدقائق"
+  },
+  
+  "messages": {
+    "title": "الرسائل",
+    "compose": "إنشاء",
+    "inbox": "صندوق الوارد",
+    "noMessages": "لا توجد رسائل",
+    "messageSent": "تم إرسال الرسالة بنجاح",
+    "newMessage": "رسالة جديدة",
+    "subject": "الموضوع",
+    "recipient": "المستلم",
+    "message": "الرسالة",
+    "startConversation": "بدء محادثة",
+    "selectConversation": "اختيار محادثة",
+    "chooseThread": "اختر سلسلة رسائل لعرض المحادثة",
+    "recipientPlaceholder": "أدخل البريد الإلكتروني أو المعرف للمستلم"
+  },
+  
+  "validation": {
+    "requiredFields": "يرجى ملء جميع الحقول المطلوبة"
+  },
+  
+  "admin": {
+    "userManagement": "إدارة المستخدمين",
+    "userDetails": "تفاصيل المستخدم",
+    "pricingManagement": "إدارة الأسعار",
+    "caseManagement": "إدارة القضايا"
+  },
+  
+  "visaLibrary": {
+    "title": "مكتبة أنواع التأشيرات الأمريكية",
+    "description": "استكشف معلومات شاملة حول فئات التأشيرات الأمريكية المختلفة. انقر على أي نوع تأشيرة لمعرفة متطلبات الأهلية وعملية التقديم والفوائد.",
+    "loading": "جاري تحميل معلومات التأشيرة...",
+    "learnMore": "تعلم المزيد",
+    "categories": {
+      "nonimmigrant": "تأشيرات غير المهاجرين",
+      "immigrant": "تأشيرات المهاجرين"
+    },
+    "modal": {
+      "category": "الفئة",
+      "description": "الوصف",
+      "nextSteps": "الخطوات التالية",
+      "readyToApply": "مستعد للتقدم للحصول على تأشيرة {{code}}؟ يمكن لمحامي الهجرة لدينا إرشادك خلال العملية بأكملها.",
+      "applyFor": "التقدم للحصول على تأشيرة {{code}}"
+    },
+    "cta": {
+      "title": "تحتاج مساعدة في اختيار التأشيرة المناسبة؟",
+      "description": "يمكن لخبراء الهجرة لدينا مساعدتك في تحديد فئة التأشيرة التي تناسب وضعك بشكل أفضل.",
+      "button": "ابدأ طلبك"
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "title": "Wawancara Kelayakan Visa",
+  "loading": "Memuat wawancara...",
+  "selectOption": "Pilih opsi",
+  "enterAnswer": "Masukkan jawaban Anda",
+  "next": "Pertanyaan Selanjutnya",
+  "previous": "Pertanyaan Sebelumnya",
+  "restart": "Reset Wawancara",
+  "complete": "Selesaikan Wawancara",
+  
+  "progress": {
+    "title": "Kemajuan Wawancara",
+    "stats": "Pertanyaan {{current}} | {{remaining}} jenis visa tersisa",
+    "currentQuestion": "Pertanyaan {{current}}",
+    "remainingVisas": "{{count}} jenis visa tersisa",
+    "completionPercentage": "{{percentage}}% selesai"
+  },
+  
+  "buttons": {
+    "next": "Selanjutnya",
+    "previous": "Sebelumnya",
+    "restart": "Mulai Ulang",
+    "complete": "Selesai",
+    "skip": "Lewati Pertanyaan"
+  },
+  
+  "messages": {
+    "selectOption": "Silakan pilih opsi untuk melanjutkan",
+    "required": "Pertanyaan ini wajib dijawab",
+    "loading": "Memuat pertanyaan selanjutnya...",
+    "error": "Terjadi kesalahan saat memuat pertanyaan",
+    "sessionExpired": "Sesi wawancara Anda telah berakhir. Silakan mulai ulang.",
+    "invalidAnswer": "Silakan berikan jawaban yang valid",
+    "completionFailed": "Gagal menyelesaikan wawancara. Silakan coba lagi."
+  },
+  
+  "completion": {
+    "title": "Wawancara Selesai",
+    "congratulations": "Selamat!",
+    "description": "Berdasarkan jawaban Anda, kami memiliki rekomendasi visa untuk Anda.",
+    "stats": "Pertanyaan dijawab: {{count}} | Dipersempit dari 88+ jenis visa",
+    "recommendedVisa": "Jenis Visa yang Direkomendasikan",
+    "backToDashboard": "Kembali ke Dasbor",
+    "viewPackages": "Lihat Paket Layanan",
+    "startApplication": "Mulai Aplikasi"
+  },
+  
+  "categories": {
+    "visitTransit": "Kunjungan & Transit",
+    "studyExchange": "Studi & Pertukaran",
+    "workTalent": "Kerja & Bakat",
+    "familyFiance": "Keluarga & Tunangan",
+    "diplomaticIO": "Diplomatik, IO & NATO",
+    "humanitarian": "Kemanusiaan & Penegakan Hukum",
+    "immigration": "Imigrasi (Tinggal Permanen)",
+    "adoption": "Adopsi Asing",
+    "citizenship": "Kewarganegaraan (N-400)"
+  },
+  
+  "questions": {
+    "category": "Kategori mana yang paling sesuai dengan situasi Anda?",
+    "purpose": "Apa tujuan utama kunjungan Anda ke Amerika Serikat?",
+    "duration": "Berapa lama Anda berencana tinggal di Amerika Serikat?",
+    "employment": "Apakah Anda memiliki tawaran pekerjaan dari pemberi kerja AS?",
+    "education": "Apakah Anda berencana belajar di Amerika Serikat?",
+    "family": "Apakah Anda memiliki anggota keluarga dekat yang merupakan warga negara AS atau penduduk tetap?",
+    "investment": "Apakah Anda berencana berinvestasi atau memulai bisnis di Amerika Serikat?",
+    "age": "Berapa usia Anda?",
+    "maritalStatus": "Apa status pernikahan Anda?",
+    "citizenship": "Apa negara kewarganegaraan Anda?",
+    "residence": "Apa negara tempat tinggal Anda?"
+  },
+  
+  "options": {
+    "yes": "Ya",
+    "no": "Tidak",
+    "notSure": "Tidak yakin",
+    "single": "Lajang",
+    "married": "Menikah",
+    "divorced": "Bercerai",
+    "widowed": "Janda/Duda",
+    "lessThan90Days": "Kurang dari 90 hari",
+    "90DaysTo1Year": "90 hari hingga 1 tahun",
+    "1To3Years": "1 hingga 3 tahun",
+    "moreThan3Years": "Lebih dari 3 tahun",
+    "permanent": "Tinggal permanen"
+  },
+  
+  "errors": {
+    "loadingFailed": "Gagal memuat pertanyaan wawancara",
+    "submissionFailed": "Gagal mengirim jawaban Anda",
+    "sessionInvalid": "Sesi wawancara Anda tidak valid",
+    "networkError": "Terjadi kesalahan jaringan. Silakan periksa koneksi Anda.",
+    "serverError": "Terjadi kesalahan server. Silakan coba lagi nanti.",
+    "unexpectedError": "Terjadi kesalahan yang tidak terduga"
+  }
+}

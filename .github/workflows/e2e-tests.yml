@@ -1,0 +1,88 @@
+name: E2E Tests
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types:
+      - completed
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: SecureTest123!
+          MSSQL_PID: Developer
+        ports:
+          - 14333:1433
+        options: --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P SecureTest123! -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Cache .NET packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Wait for SQL Server
+      run: |
+        for i in {1..30}; do
+          if /opt/mssql-tools/bin/sqlcmd -S localhost,14333 -U sa -P SecureTest123! -Q "SELECT 1" &> /dev/null; then
+            echo "SQL Server is ready"
+            break
+          fi
+          echo "Waiting for SQL Server... ($i/30)"
+          sleep 2
+        done
+
+    - name: Run E2E tests
+      run: dotnet test --no-build --configuration Release --filter "Category=E2E" --verbosity normal
+      env:
+        ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_E2E;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
+
+    - name: Upload E2E test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-test-results
+        path: |
+          tests/**/TestResults/
+          tests/**/playwright-report/
+        retention-days: 7
+
+    - name: Upload E2E screenshots and videos
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: e2e-failures
+        path: |
+          tests/**/playwright-report/
+          tests/**/test-results/
+        retention-days: 14

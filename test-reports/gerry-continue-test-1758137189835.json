@@ -1,0 +1,32 @@
+{
+  "testRun": {
+    "timestamp": "2025-09-17T19:26:29.835Z",
+    "user": "gerry@testing.com",
+    "totalSteps": 1,
+    "passed": 0,
+    "failed": 1,
+    "duration": 1782
+  },
+  "results": [
+    {
+      "step": "Navigate to Site",
+      "status": "FAIL",
+      "duration": 1782,
+      "error": "this.page.waitForTimeout is not a function"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "error-navigate-to-site",
+      "description": "Error in Navigate to Site",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-26-28-984Z-error-navigate-to-site.png",
+      "timestamp": "2025-09-17T19-26-28-984Z"
+    },
+    {
+      "name": "final-error",
+      "description": "Final error state",
+      "filepath": "C:\\programming\\L4HProject\\test-screenshots\\screenshot-2025-09-17T19-26-29-450Z-final-error.png",
+      "timestamp": "2025-09-17T19-26-29-450Z"
+    }
+  ]
+}

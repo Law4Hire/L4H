@@ -1,0 +1,97 @@
+{
+  "title": "Rozmowa Kwalifikacyjna do Wizy",
+  "loading": "Ładowanie rozmowy...",
+  "selectOption": "Wybierz opcję",
+  "enterAnswer": "Wprowadź swoją odpowiedź",
+  "next": "Następne Pytanie",
+  "previous": "Poprzednie Pytanie",
+  "restart": "Resetuj Rozmowę",
+  "complete": "Zakończ Rozmowę",
+  
+  "progress": {
+    "title": "Postęp Rozmowy",
+    "stats": "Pytanie {{current}} | {{remaining}} typów wiz pozostało",
+    "currentQuestion": "Pytanie {{current}}",
+    "remainingVisas": "{{count}} typów wiz pozostało",
+    "completionPercentage": "{{percentage}}% ukończone"
+  },
+  
+  "buttons": {
+    "next": "Dalej",
+    "previous": "Wstecz",
+    "restart": "Zacznij Od Nowa",
+    "complete": "Zakończ",
+    "skip": "Pomiń Pytanie"
+  },
+  
+  "messages": {
+    "selectOption": "Wybierz opcję, aby kontynuować",
+    "required": "To pytanie jest wymagane",
+    "loading": "Ładowanie następnego pytania...",
+    "error": "Wystąpił błąd podczas ładowania pytania",
+    "sessionExpired": "Twoja sesja rozmowy wygasła. Zacznij od nowa.",
+    "invalidAnswer": "Podaj prawidłową odpowiedź",
+    "completionFailed": "Nie udało się zakończyć rozmowy. Spróbuj ponownie."
+  },
+  
+  "completion": {
+    "title": "Rozmowa Zakończona",
+    "congratulations": "Gratulacje!",
+    "description": "Na podstawie Twoich odpowiedzi mamy dla Ciebie rekomendację wizy.",
+    "stats": "Odpowiedziane pytania: {{count}} | Zawężone z 88+ typów wiz",
+    "recommendedVisa": "Rekomendowany Typ Wizy",
+    "backToDashboard": "Powrót do Panelu",
+    "viewPackages": "Zobacz Pakiety Usług",
+    "startApplication": "Rozpocznij Aplikację"
+  },
+  
+  "categories": {
+    "visitTransit": "Wizyta i Tranzyt",
+    "studyExchange": "Studia i Wymiana",
+    "workTalent": "Praca i Talent",
+    "familyFiance": "Rodzina i Narzeczony/a",
+    "diplomaticIO": "Dyplomatyczne, IO i NATO",
+    "humanitarian": "Humanitarne i Egzekwowanie Prawa",
+    "immigration": "Imigracja (Pobyt Stały)",
+    "adoption": "Adopcja Zagraniczna",
+    "citizenship": "Obywatelstwo (N-400)"
+  },
+  
+  "questions": {
+    "category": "Która kategoria najlepiej pasuje do Twojej sytuacji?",
+    "purpose": "Jaki jest główny cel Twojej wizyty w Stanach Zjednoczonych?",
+    "duration": "Jak długo planujesz pozostać w Stanach Zjednoczonych?",
+    "employment": "Czy masz ofertę pracy od amerykańskiego pracodawcy?",
+    "education": "Czy planujesz studiować w Stanach Zjednoczonych?",
+    "family": "Czy masz bliskich członków rodziny, którzy są obywatelami USA lub stałymi rezydentami?",
+    "investment": "Czy planujesz inwestować lub założyć firmę w Stanach Zjednoczonych?",
+    "age": "Ile masz lat?",
+    "maritalStatus": "Jaki jest Twój stan cywilny?",
+    "citizenship": "Jaki jest Twój kraj obywatelstwa?",
+    "residence": "Jaki jest Twój kraj zamieszkania?"
+  },
+  
+  "options": {
+    "yes": "Tak",
+    "no": "Nie",
+    "notSure": "Nie jestem pewny",
+    "single": "Kawaler/Panna",
+    "married": "Żonaty/Zamężna",
+    "divorced": "Rozwiedziony/a",
+    "widowed": "Wdowiec/Wdowa",
+    "lessThan90Days": "Mniej niż 90 dni",
+    "90DaysTo1Year": "90 dni do 1 roku",
+    "1To3Years": "1 do 3 lat",
+    "moreThan3Years": "Więcej niż 3 lata",
+    "permanent": "Pobyt stały"
+  },
+  
+  "errors": {
+    "loadingFailed": "Nie udało się załadować pytań rozmowy",
+    "submissionFailed": "Nie udało się przesłać Twojej odpowiedzi",
+    "sessionInvalid": "Twoja sesja rozmowy jest nieprawidłowa",
+    "networkError": "Wystąpił błąd sieci. Sprawdź swoje połączenie.",
+    "serverError": "Wystąpił błąd serwera. Spróbuj ponownie później.",
+    "unexpectedError": "Wystąpił nieoczekiwany błąd"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "title": "Entrevista de Elegibilidad de Visa",
+  "loading": "Cargando entrevista...",
+  "selectOption": "Seleccione una opción",
+  "enterAnswer": "Ingrese su respuesta",
+  "next": "Siguiente Pregunta",
+  "previous": "Pregunta Anterior",
+  "restart": "Reiniciar Entrevista",
+  "complete": "Completar Entrevista",
+  
+  "progress": {
+    "title": "Progreso de la Entrevista",
+    "stats": "Pregunta {{current}} | {{remaining}} tipos de visa restantes",
+    "currentQuestion": "Pregunta {{current}}",
+    "remainingVisas": "{{count}} tipos de visa restantes",
+    "completionPercentage": "{{percentage}}% completado"
+  },
+  
+  "buttons": {
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "restart": "Empezar de Nuevo",
+    "complete": "Completar",
+    "skip": "Saltar Pregunta"
+  },
+  
+  "messages": {
+    "selectOption": "Por favor seleccione una opción para continuar",
+    "required": "Esta pregunta es requerida",
+    "loading": "Cargando siguiente pregunta...",
+    "error": "Ocurrió un error al cargar la pregunta",
+    "sessionExpired": "Su sesión de entrevista ha expirado. Por favor comience de nuevo.",
+    "invalidAnswer": "Por favor proporcione una respuesta válida",
+    "completionFailed": "Error al completar la entrevista. Por favor intente de nuevo."
+  },
+  
+  "completion": {
+    "title": "Entrevista Completada",
+    "congratulations": "¡Felicitaciones!",
+    "description": "Basado en sus respuestas, tenemos una recomendación de visa para usted.",
+    "stats": "Preguntas respondidas: {{count}} | Reducido de más de 88 tipos de visa",
+    "recommendedVisa": "Tipo de Visa Recomendado",
+    "backToDashboard": "Volver al Panel de Control",
+    "viewPackages": "Ver Paquetes de Servicios",
+    "startApplication": "Iniciar Solicitud"
+  },
+  
+  "categories": {
+    "visitTransit": "Visita y Tránsito",
+    "studyExchange": "Estudio e Intercambio",
+    "workTalent": "Trabajo y Talento",
+    "familyFiance": "Familia y Prometido",
+    "diplomaticIO": "Diplomático, OI y OTAN",
+    "humanitarian": "Humanitario y Aplicación de la Ley",
+    "immigration": "Inmigración (Residencia Permanente)",
+    "adoption": "Adopción Extranjera",
+    "citizenship": "Ciudadanía (N-400)"
+  },
+  
+  "questions": {
+    "category": "¿Qué categoría se ajusta mejor a su situación?",
+    "purpose": "¿Cuál es el propósito principal de su visita a Estados Unidos?",
+    "duration": "¿Cuánto tiempo planea quedarse en Estados Unidos?",
+    "employment": "¿Tiene una oferta de trabajo de un empleador estadounidense?",
+    "education": "¿Planea estudiar en Estados Unidos?",
+    "family": "¿Tiene familiares inmediatos que sean ciudadanos estadounidenses o residentes permanentes?",
+    "investment": "¿Planea invertir en o iniciar un negocio en Estados Unidos?",
+    "age": "¿Cuál es su edad?",
+    "maritalStatus": "¿Cuál es su estado civil?",
+    "citizenship": "¿Cuál es su país de ciudadanía?",
+    "residence": "¿Cuál es su país de residencia?"
+  },
+  
+  "options": {
+    "yes": "Sí",
+    "no": "No",
+    "notSure": "No estoy seguro",
+    "single": "Soltero",
+    "married": "Casado",
+    "divorced": "Divorciado",
+    "widowed": "Viudo",
+    "lessThan90Days": "Menos de 90 días",
+    "90DaysTo1Year": "90 días a 1 año",
+    "1To3Years": "1 a 3 años",
+    "moreThan3Years": "Más de 3 años",
+    "permanent": "Residencia permanente"
+  },
+  
+  "errors": {
+    "loadingFailed": "Error al cargar las preguntas de la entrevista",
+    "submissionFailed": "Error al enviar su respuesta",
+    "sessionInvalid": "Su sesión de entrevista es inválida",
+    "networkError": "Error de red. Por favor verifique su conexión.",
+    "serverError": "Error del servidor. Por favor intente más tarde.",
+    "unexpectedError": "Ocurrió un error inesperado"
+  }
+}
