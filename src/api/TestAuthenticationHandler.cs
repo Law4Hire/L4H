@@ -54,14 +54,14 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
             claims.Add(new Claim(ClaimTypes.NameIdentifier, "E7654321-4321-4321-4321-210987654321"));
             claims.Add(new Claim("sub", "E7654321-4321-4321-4321-210987654321"));
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-            claims.Add(new Claim("IsAdmin", "true"));
+            claims.Add(new Claim("is_admin", "true")); // Changed from "IsAdmin" to "is_admin" to match authorization policy
         }
         
         // For staff availability tests, add staff claims
-        if (token == "mock-jwt-token-for-testing")
+        if (token == "mock-jwt-token-for-testing" || token.Contains("staff"))
         {
             claims.Add(new Claim(ClaimTypes.Role, "Staff"));
-            claims.Add(new Claim("IsStaff", "true"));
+            claims.Add(new Claim("is_staff", "true")); // Changed from "IsStaff" to "is_staff"
         }
 
         var identity = new ClaimsIdentity(claims, "Test");
