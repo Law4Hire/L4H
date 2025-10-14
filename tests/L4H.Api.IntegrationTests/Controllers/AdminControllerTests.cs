@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Xunit;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Api.Controllers;
@@ -200,6 +201,21 @@ public class AdminControllerTests : IClassFixture<WebApplicationFactory<Program>
 
         // Act
         var response = await _client.GetAsync("/v1/admin/pricing/packages");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetAdminUsers_WithNonAdmin_Returns403()
+    {
+        // Arrange
+        var token = await GetRegularUserJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = 
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        var response = await _client.GetAsync("/v1/admin/users");
 
         // Assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);

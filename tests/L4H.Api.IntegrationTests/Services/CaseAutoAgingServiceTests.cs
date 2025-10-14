@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Api.Services;

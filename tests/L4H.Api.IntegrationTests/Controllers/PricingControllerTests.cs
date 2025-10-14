@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Xunit;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Api.Controllers;

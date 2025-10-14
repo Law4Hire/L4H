@@ -1,0 +1,9 @@
+# EditorConfig for Integration Tests
+
+root = false
+
+[*.cs]
+# Disable ConfigureAwait warnings for test projects
+dotnet_diagnostic.CA2007.severity = none
+# Disable culture-specific formatting warnings for test projects  
+dotnet_diagnostic.CA1305.severity = none
