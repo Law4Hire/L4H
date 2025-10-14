@@ -137,6 +137,36 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
         }
     }
 
+    protected async Task<string> GetAuthTokenAsync(bool isAdmin = false)
+    {
+        using var scope = Factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+
+        var email = isAdmin ? "admin@example.com" : "test@example.com";
+        var userId = isAdmin
+            ? Guid.Parse("E7654321-4321-4321-4321-210987654321") // Admin user ID from TestAuthenticationHandler
+            : Guid.Parse("C0000000-1234-1234-1234-123456789012"); // Regular user ID from TestAuthenticationHandler
+
+        var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (existingUser == null)
+        {
+            var user = new L4H.Infrastructure.Entities.User
+            {
+                Id = new L4H.Shared.Models.UserId(userId),
+                Email = email,
+                PasswordHash = "hashed-password",
+                EmailVerified = true,
+                CreatedAt = DateTime.UtcNow,
+                PasswordUpdatedAt = DateTime.UtcNow
+            };
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+        }
+
+        // Return tokens that TestAuthenticationHandler recognizes
+        return isAdmin ? "admin-token" : "mock-jwt-token-for-testing";
+    }
+
     public void Dispose()
     {
         Dispose(true);

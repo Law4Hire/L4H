@@ -1,40 +1,22 @@
 using FluentAssertions;
 using L4H.Api.Tests.TestHelpers;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
 using System.Net;
 using System.Net.Http.Headers;
 using Xunit;
 
 namespace L4H.Api.Tests.Admin
 {
-    public class AdminAuthorizationTests : IClassFixture<WebApplicationFactory<Program>>
+    public class AdminAuthorizationTests : BaseIntegrationTest
     {
-        private readonly HttpClient _client;
-        private readonly WebApplicationFactory<Program> _factory;
-
-        public AdminAuthorizationTests(WebApplicationFactory<Program> factory)
+        public AdminAuthorizationTests(WebApplicationFactory<Program> factory) : base(factory)
         {
-            _factory = factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureAppConfiguration((context, conf) =>
-                {
-                    conf.AddJsonFile("appsettings.Testing.json");
-                });
-
-                builder.ConfigureServices(services =>
-                {
-                    // Here you can override services for tests, e.g., mock database
-                });
-            });
-            _client = _factory.CreateClient();
         }
 
         private async Task SetAuthToken(bool isAdmin)
         {
-            var token = await TestAuthHelper.GenerateToken(isAdmin);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var token = await GetAuthTokenAsync(isAdmin);
+            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         [Theory]
@@ -79,7 +61,7 @@ namespace L4H.Api.Tests.Admin
             }
 
             // Act
-            var response = await _client.SendAsync(request);
+            var response = await Client.SendAsync(request);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
