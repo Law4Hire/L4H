@@ -96,11 +96,14 @@
 
 
 
+
+
   - Remove all hardcoded English strings from InterviewPage and related components
   - Implement proper translation key usage throughout the interview UI
   - Add progress indicators and improved user experience elements
   - Integrate centralized API client service with proper error handling
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 5.4_
+
 
 - [x] 3.1 Remove hardcoded strings from InterviewPage component
 
@@ -112,17 +115,20 @@
   - Ensure consistent translation key naming convention throughout the component
   - _Requirements: 3.1, 3.2, 3.4_
 
+
 - [x] 3.2 Implement progress indicators and UX improvements
   - Add visual progress bar showing current question number and completion percentage
   - Display remaining visa types count to show interview progression
   - Implement smooth transitions between questions with loading states
   - Add clear restart/reset functionality with confirmation dialog
+
   - _Requirements: 5.1, 5.2, 5.3_
 
 - [x] 3.3 Create centralized API client service
   - Implement InterviewApiClient class with proper base URL and authentication headers
   - Add consistent error handling and retry logic for all API calls
   - Implement proper TypeScript interfaces for all API request/response models
+
   - Add request/response logging for debugging API communication issues
   - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
