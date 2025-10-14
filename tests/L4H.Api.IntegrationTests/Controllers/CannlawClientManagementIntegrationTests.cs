@@ -236,7 +236,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients/assign", assignmentRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients/assign", assignmentRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -262,7 +262,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients/assign", reassignmentRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients/assign", reassignmentRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -288,7 +288,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients/assign", assignmentRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients/assign", assignmentRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -308,7 +308,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients/assign", assignmentRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients/assign", assignmentRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -328,7 +328,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients/assign", assignmentRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients/assign", assignmentRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -346,7 +346,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync("/api/v1/clients");
+        var response = await client.GetAsync("v1/clients");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -366,7 +366,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("LegalProfessional", attorney1.Id);
 
         // Act
-        var response = await client.GetAsync("/api/v1/clients");
+        var response = await client.GetAsync("v1/clients");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -384,7 +384,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync("/api/v1/clients?search=Maria");
+        var response = await client.GetAsync("v1/clients?search=Maria");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -402,7 +402,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync($"/api/v1/clients?attorneyId={attorney2.Id}");
+        var response = await client.GetAsync($"v1/clients?attorneyId={attorney2.Id}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -420,7 +420,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync("/api/v1/clients?caseStatus=InProgress");
+        var response = await client.GetAsync("v1/clients?caseStatus=InProgress");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -438,7 +438,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync($"/api/v1/clients?attorneyId={attorney1.Id}&caseStatus=InProgress");
+        var response = await client.GetAsync($"v1/clients?attorneyId={attorney1.Id}&caseStatus=InProgress");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -467,7 +467,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
+        var response = await client.PutAsJsonAsync("v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -495,7 +495,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
+        var response = await client.PutAsJsonAsync("v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -516,7 +516,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
+        var response = await client.PutAsJsonAsync("v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -538,7 +538,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
+        var response = await client.PutAsJsonAsync("v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -568,7 +568,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
+        var response = await client.PutAsJsonAsync("v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -596,7 +596,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
+        var response = await client.PutAsJsonAsync("v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -621,7 +621,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
             Notes = "Payment received"
         };
         
-        await client.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdate1, _jsonOptions);
+        await client.PutAsJsonAsync("v1/clients/cases/status", statusUpdate1, _jsonOptions);
         
         // Wait a moment to ensure different timestamps
         await Task.Delay(100);
@@ -633,10 +633,10 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
             Notes = "Forms completed"
         };
         
-        await client.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdate2, _jsonOptions);
+        await client.PutAsJsonAsync("v1/clients/cases/status", statusUpdate2, _jsonOptions);
 
         // Act
-        var response = await client.GetAsync("/api/v1/clients/cases/1/history");
+        var response = await client.GetAsync("v1/clients/cases/1/history");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -658,7 +658,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("LegalProfessional", attorney1.Id);
 
         // Act - Try to access case history for client2 (assigned to attorney2)
-        var response = await client.GetAsync("/api/v1/clients/cases/2/history");
+        var response = await client.GetAsync("v1/clients/cases/2/history");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -676,7 +676,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync($"/api/v1/clients/{client1.Id}");
+        var response = await client.GetAsync($"v1/clients/{client1.Id}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -695,7 +695,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("LegalProfessional", attorney1.Id);
 
         // Act
-        var response = await client.GetAsync($"/api/v1/clients/{client1.Id}"); // client1 assigned to attorney1
+        var response = await client.GetAsync($"v1/clients/{client1.Id}"); // client1 assigned to attorney1
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -712,7 +712,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         var client = CreateAuthenticatedClient("LegalProfessional", attorney1.Id);
 
         // Act
-        var response = await client.GetAsync($"/api/v1/clients/{client2.Id}"); // client2 assigned to attorney2
+        var response = await client.GetAsync($"v1/clients/{client2.Id}"); // client2 assigned to attorney2
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -738,7 +738,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients", createRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients", createRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -768,7 +768,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients", createRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients", createRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -797,7 +797,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients", createRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients", createRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -822,7 +822,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/clients", createRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients", createRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -846,7 +846,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
         };
 
         // Act
-        var response = await client.PutAsJsonAsync($"/api/v1/clients/{client1.Id}", updateRequest, _jsonOptions);
+        var response = await client.PutAsJsonAsync($"v1/clients/{client1.Id}", updateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

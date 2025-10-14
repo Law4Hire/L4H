@@ -105,7 +105,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             DefaultHourlyRate = 325.00m
         };
 
-        var attorneyResponse = await adminClient.PostAsJsonAsync("/api/v1/attorneys", createAttorneyRequest, _jsonOptions);
+        var attorneyResponse = await adminClient.PostAsJsonAsync("v1/attorneys", createAttorneyRequest, _jsonOptions);
         attorneyResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         var attorney = await attorneyResponse.Content.ReadFromJsonAsync<AttorneyResponse>(_jsonOptions);
         attorney.Should().NotBeNull();
@@ -123,7 +123,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             AssignedAttorneyId = attorney!.Id
         };
 
-        var clientResponse = await adminClient.PostAsJsonAsync("/api/v1/clients", createClientRequest, _jsonOptions);
+        var clientResponse = await adminClient.PostAsJsonAsync("v1/clients", createClientRequest, _jsonOptions);
         clientResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         var client = await clientResponse.Content.ReadFromJsonAsync<ClientResponse>(_jsonOptions);
         client.Should().NotBeNull();
@@ -138,7 +138,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Notes = "Initial consultation completed"
         };
 
-        var caseResponse = await adminClient.PostAsJsonAsync("/api/v1/clients/cases", createCaseRequest, _jsonOptions);
+        var caseResponse = await adminClient.PostAsJsonAsync("v1/clients/cases", createCaseRequest, _jsonOptions);
         caseResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         var caseEntity = await caseResponse.Content.ReadFromJsonAsync<CaseResponse>(_jsonOptions);
         caseEntity.Should().NotBeNull();
@@ -153,7 +153,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Description = "Initial case review and document preparation"
         };
 
-        var timerResponse = await attorneyClient.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest, _jsonOptions);
+        var timerResponse = await attorneyClient.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest, _jsonOptions);
         timerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Step 5: Upload client documents
@@ -165,7 +165,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
         documentContent.Add(new StringContent("PersonalDocuments"), "category");
         documentContent.Add(new StringContent("Client's passport copy"), "description");
 
-        var documentResponse = await attorneyClient.PostAsync($"/api/v1/clients/{client.Id}/documents", documentContent);
+        var documentResponse = await attorneyClient.PostAsync($"v1/clients/{client.Id}/documents", documentContent);
         documentResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Step 6: Update case status to In Progress
@@ -176,7 +176,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Notes = "Documents received, case processing started"
         };
 
-        var statusResponse = await attorneyClient.PutAsJsonAsync("/api/v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
+        var statusResponse = await attorneyClient.PutAsJsonAsync("v1/clients/cases/status", statusUpdateRequest, _jsonOptions);
         statusResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Simulate work time (30 minutes)
@@ -194,7 +194,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Notes = "Completed initial document review and case setup"
         };
 
-        var stopResponse = await attorneyClient.PostAsJsonAsync("/api/v1/time-tracking/stop", stopTimerRequest, _jsonOptions);
+        var stopResponse = await attorneyClient.PostAsJsonAsync("v1/time-tracking/stop", stopTimerRequest, _jsonOptions);
         stopResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var timeEntry = await stopResponse.Content.ReadFromJsonAsync<TimeEntryResponse>(_jsonOptions);
         timeEntry.Should().NotBeNull();
@@ -219,12 +219,12 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
                 RequiresConfirmation = status == CaseStatus.Complete
             };
 
-            var updateResponse = await attorneyClient.PutAsJsonAsync("/api/v1/clients/cases/status", updateRequest, _jsonOptions);
+            var updateResponse = await attorneyClient.PutAsJsonAsync("v1/clients/cases/status", updateRequest, _jsonOptions);
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         // Step 9: Admin reviews billing information
-        var billingSummaryResponse = await adminClient.GetAsync("/api/v1/billing/summary");
+        var billingSummaryResponse = await adminClient.GetAsync("v1/billing/summary");
         billingSummaryResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var billingSummary = await billingSummaryResponse.Content.ReadFromJsonAsync<List<AttorneyBillingSummaryResponse>>(_jsonOptions);
         billingSummary.Should().NotBeNull();
@@ -234,14 +234,14 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
         billingSummary[0].TotalBillableAmount.Should().Be(162.50m);
 
         // Step 10: Verify case history
-        var historyResponse = await adminClient.GetAsync($"/api/v1/clients/cases/{caseEntity.Id}/history");
+        var historyResponse = await adminClient.GetAsync($"v1/clients/cases/{caseEntity.Id}/history");
         historyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var history = await historyResponse.Content.ReadFromJsonAsync<List<CaseStatusHistoryResponse>>(_jsonOptions);
         history.Should().NotBeNull();
         history!.Count.Should().BeGreaterOrEqualTo(4); // NotStarted -> InProgress -> Paid -> FormsCompleted -> Complete
 
         // Step 11: Verify final case state
-        var finalCaseResponse = await adminClient.GetAsync($"/api/v1/clients/{client.Id}");
+        var finalCaseResponse = await adminClient.GetAsync($"v1/clients/{client.Id}");
         finalCaseResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var finalClient = await finalCaseResponse.Content.ReadFromJsonAsync<ClientProfileResponse>(_jsonOptions);
         finalClient.Should().NotBeNull();
@@ -281,11 +281,11 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
         };
 
         // Admin should be able to create attorneys
-        var adminCreateResponse = await adminClient.PostAsJsonAsync("/api/v1/attorneys", createAttorneyRequest, _jsonOptions);
+        var adminCreateResponse = await adminClient.PostAsJsonAsync("v1/attorneys", createAttorneyRequest, _jsonOptions);
         adminCreateResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Legal professional should not be able to create attorneys
-        var attorneyCreateResponse = await attorneyClient.PostAsJsonAsync("/api/v1/attorneys", createAttorneyRequest, _jsonOptions);
+        var attorneyCreateResponse = await attorneyClient.PostAsJsonAsync("v1/attorneys", createAttorneyRequest, _jsonOptions);
         attorneyCreateResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
         // Test client management endpoints
@@ -301,29 +301,29 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
         };
 
         // Admin should be able to create clients
-        var adminClientCreateResponse = await adminClient.PostAsJsonAsync("/api/v1/clients", createClientRequest, _jsonOptions);
+        var adminClientCreateResponse = await adminClient.PostAsJsonAsync("v1/clients", createClientRequest, _jsonOptions);
         adminClientCreateResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Legal professional should not be able to create clients
-        var attorneyClientCreateResponse = await attorneyClient.PostAsJsonAsync("/api/v1/clients", createClientRequest, _jsonOptions);
+        var attorneyClientCreateResponse = await attorneyClient.PostAsJsonAsync("v1/clients", createClientRequest, _jsonOptions);
         attorneyClientCreateResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
         // Test client access restrictions
         // Attorney should be able to access assigned client
-        var assignedClientResponse = await attorneyClient.GetAsync($"/api/v1/clients/{client.Id}");
+        var assignedClientResponse = await attorneyClient.GetAsync($"v1/clients/{client.Id}");
         assignedClientResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Unauthorized attorney should not be able to access client
-        var unauthorizedClientResponse = await unauthorizedAttorneyClient.GetAsync($"/api/v1/clients/{client.Id}");
+        var unauthorizedClientResponse = await unauthorizedAttorneyClient.GetAsync($"v1/clients/{client.Id}");
         unauthorizedClientResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
         // Test billing access
         // Admin should see all billing information
-        var adminBillingResponse = await adminClient.GetAsync("/api/v1/billing/summary");
+        var adminBillingResponse = await adminClient.GetAsync("v1/billing/summary");
         adminBillingResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Attorney should only see their own billing
-        var attorneyBillingResponse = await attorneyClient.GetAsync("/api/v1/billing/summary");
+        var attorneyBillingResponse = await attorneyClient.GetAsync("v1/billing/summary");
         attorneyBillingResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var attorneyBilling = await attorneyBillingResponse.Content.ReadFromJsonAsync<List<AttorneyBillingSummaryResponse>>(_jsonOptions);
         attorneyBilling.Should().NotBeNull();
@@ -337,10 +337,10 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             AttorneyId = attorney.Id
         };
 
-        var adminAssignResponse = await adminClient.PostAsJsonAsync("/api/v1/clients/assign", assignmentRequest, _jsonOptions);
+        var adminAssignResponse = await adminClient.PostAsJsonAsync("v1/clients/assign", assignmentRequest, _jsonOptions);
         adminAssignResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var attorneyAssignResponse = await attorneyClient.PostAsJsonAsync("/api/v1/clients/assign", assignmentRequest, _jsonOptions);
+        var attorneyAssignResponse = await attorneyClient.PostAsJsonAsync("v1/clients/assign", assignmentRequest, _jsonOptions);
         attorneyAssignResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
@@ -380,12 +380,12 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
 
         foreach (var entry in timeEntries)
         {
-            var response = await attorneyClient.PostAsJsonAsync("/api/v1/time-tracking/entries", entry, _jsonOptions);
+            var response = await attorneyClient.PostAsJsonAsync("v1/time-tracking/entries", entry, _jsonOptions);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
         }
 
         // Verify billing calculations are consistent
-        var billingSummaryResponse = await adminClient.GetAsync("/api/v1/billing/summary");
+        var billingSummaryResponse = await adminClient.GetAsync("v1/billing/summary");
         var billingSummary = await billingSummaryResponse.Content.ReadFromJsonAsync<List<AttorneyBillingSummaryResponse>>(_jsonOptions);
         
         billingSummary.Should().NotBeNull();
@@ -394,7 +394,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
         billingSummary[0].TotalBillableAmount.Should().Be(1.5m * attorney.DefaultHourlyRate);
 
         // Verify detailed billing matches summary
-        var detailedBillingResponse = await adminClient.GetAsync($"/api/v1/billing/detailed?attorneyId={attorney.Id}");
+        var detailedBillingResponse = await adminClient.GetAsync($"v1/billing/detailed?attorneyId={attorney.Id}");
         var detailedBilling = await detailedBillingResponse.Content.ReadFromJsonAsync<DetailedBillingResponse>(_jsonOptions);
         
         detailedBilling.Should().NotBeNull();
@@ -410,7 +410,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             EffectiveDate = DateTime.UtcNow.Date.AddDays(1)
         };
 
-        var rateUpdateResponse = await adminClient.PostAsJsonAsync("/api/v1/billing/rates", updateRateRequest, _jsonOptions);
+        var rateUpdateResponse = await adminClient.PostAsJsonAsync("v1/billing/rates", updateRateRequest, _jsonOptions);
         rateUpdateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Create new time entry with updated rate
@@ -422,7 +422,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Date = DateTime.UtcNow.Date.AddDays(1)
         };
 
-        var newEntryResponse = await attorneyClient.PostAsJsonAsync("/api/v1/time-tracking/entries", newEntry, _jsonOptions);
+        var newEntryResponse = await attorneyClient.PostAsJsonAsync("v1/time-tracking/entries", newEntry, _jsonOptions);
         newEntryResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         var newTimeEntry = await newEntryResponse.Content.ReadFromJsonAsync<TimeEntryResponse>(_jsonOptions);
         
@@ -479,7 +479,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
                         Date = DateTime.UtcNow.Date.AddDays(-i)
                     };
 
-                    var response = await attorneyClient.PostAsJsonAsync("/api/v1/time-tracking/entries", entry, _jsonOptions);
+                    var response = await attorneyClient.PostAsJsonAsync("v1/time-tracking/entries", entry, _jsonOptions);
                     response.StatusCode.Should().Be(HttpStatusCode.Created);
                 }
             }
@@ -487,7 +487,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
 
         // Test search performance with large dataset
         var searchStartTime = DateTime.UtcNow;
-        var searchResponse = await adminClient.GetAsync("/api/v1/clients?search=Client");
+        var searchResponse = await adminClient.GetAsync("v1/clients?search=Client");
         var searchEndTime = DateTime.UtcNow;
         
         searchResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -500,7 +500,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
 
         // Test billing summary performance
         var billingStartTime = DateTime.UtcNow;
-        var billingResponse = await adminClient.GetAsync("/api/v1/billing/summary");
+        var billingResponse = await adminClient.GetAsync("v1/billing/summary");
         var billingEndTime = DateTime.UtcNow;
         
         billingResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -540,7 +540,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Date = DateTime.UtcNow.Date
         };
 
-        var invalidResponse = await attorneyClient.PostAsJsonAsync("/api/v1/time-tracking/entries", invalidTimeEntry, _jsonOptions);
+        var invalidResponse = await attorneyClient.PostAsJsonAsync("v1/time-tracking/entries", invalidTimeEntry, _jsonOptions);
         invalidResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         // Test duplicate email for client
@@ -555,7 +555,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             CountryOfOrigin = "Test Country"
         };
 
-        var duplicateResponse = await adminClient.PostAsJsonAsync("/api/v1/clients", duplicateClientRequest, _jsonOptions);
+        var duplicateResponse = await adminClient.PostAsJsonAsync("v1/clients", duplicateClientRequest, _jsonOptions);
         duplicateResponse.StatusCode.Should().Be(HttpStatusCode.Conflict);
 
         // Test invalid case status transition
@@ -566,7 +566,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Notes = "Invalid case"
         };
 
-        var invalidStatusResponse = await attorneyClient.PutAsJsonAsync("/api/v1/clients/cases/status", invalidStatusUpdate, _jsonOptions);
+        var invalidStatusResponse = await attorneyClient.PutAsJsonAsync("v1/clients/cases/status", invalidStatusUpdate, _jsonOptions);
         invalidStatusResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         // Test concurrent timer prevention
@@ -576,7 +576,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Description = "First timer"
         };
 
-        var timer1Response = await attorneyClient.PostAsJsonAsync("/api/v1/time-tracking/start", startTimer1, _jsonOptions);
+        var timer1Response = await attorneyClient.PostAsJsonAsync("v1/time-tracking/start", startTimer1, _jsonOptions);
         timer1Response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var startTimer2 = new StartTimerRequest
@@ -585,7 +585,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             Description = "Second timer"
         };
 
-        var timer2Response = await attorneyClient.PostAsJsonAsync("/api/v1/time-tracking/start", startTimer2, _jsonOptions);
+        var timer2Response = await attorneyClient.PostAsJsonAsync("v1/time-tracking/start", startTimer2, _jsonOptions);
         timer2Response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 
@@ -607,7 +607,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             DefaultHourlyRate = 350.00m
         };
 
-        var response = await client.PostAsJsonAsync("/api/v1/attorneys", request, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/attorneys", request, _jsonOptions);
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<AttorneyResponse>(_jsonOptions))!;
     }
@@ -626,7 +626,7 @@ public class CannlawSystemIntegrationTests : IClassFixture<WebApplicationFactory
             AssignedAttorneyId = attorneyId
         };
 
-        var response = await client.PostAsJsonAsync("/api/v1/clients", request, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/clients", request, _jsonOptions);
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<ClientResponse>(_jsonOptions))!;
     }

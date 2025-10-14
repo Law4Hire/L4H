@@ -121,7 +121,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -143,7 +143,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -168,7 +168,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var request = new InterviewStartRequest { CaseId = testCase.Id };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -183,11 +183,11 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Create first session
         var request = new InterviewStartRequest { CaseId = testCase.Id };
-        var firstResponse = await client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var firstResponse = await client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
         var firstResult = await firstResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Act - Create second session
-        var secondResponse = await client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var secondResponse = await client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
 
         // Assert
         secondResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -203,7 +203,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var request = new InterviewStartRequest { CaseId = new CaseId(Guid.NewGuid()) };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -222,7 +222,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -234,7 +234,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -260,7 +260,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -275,7 +275,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -287,7 +287,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -302,7 +302,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -314,7 +314,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -329,7 +329,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Submit first answer
@@ -340,7 +340,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
             QuestionKey = "purpose",
             AnswerValue = "tourism"
         };
-        await client.PostAsJsonAsync("/api/v1/interview/answer", firstAnswerRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/answer", firstAnswerRequest, _jsonOptions);
 
         // Update the same answer
         var updateAnswerRequest = new InterviewAnswerRequest
@@ -352,7 +352,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", updateAnswerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", updateAnswerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -373,7 +373,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview and answer questions
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Answer a question
@@ -384,7 +384,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
             QuestionKey = "purpose",
             AnswerValue = "tourism"
         };
-        await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         var completeRequest = new InterviewCompleteRequest
         {
@@ -392,7 +392,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/complete", completeRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/complete", completeRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -413,7 +413,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/complete", completeRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/complete", completeRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -428,7 +428,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start and complete interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -438,13 +438,13 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
             QuestionKey = "purpose",
             AnswerValue = "tourism"
         };
-        await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         var completeRequest = new InterviewCompleteRequest { SessionId = startResult.SessionId };
-        await client.PostAsJsonAsync("/api/v1/interview/complete", completeRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/complete", completeRequest, _jsonOptions);
 
         // Act - Try to complete again
-        var response = await client.PostAsJsonAsync("/api/v1/interview/complete", completeRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/complete", completeRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -463,7 +463,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview and answer questions
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -473,7 +473,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
             QuestionKey = "purpose",
             AnswerValue = "tourism"
         };
-        await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         var resetRequest = new InterviewResetRequest
         {
@@ -481,7 +481,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/reset", resetRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/reset", resetRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -502,7 +502,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/reset", resetRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/reset", resetRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -521,7 +521,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview and answer questions
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -531,10 +531,10 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
             QuestionKey = "purpose",
             AnswerValue = "tourism"
         };
-        await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Act
-        var response = await client.GetAsync($"/api/v1/interview/progress/{startResult.SessionId}");
+        var response = await client.GetAsync($"v1/interview/progress/{startResult.SessionId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -553,7 +553,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var client = CreateAuthenticatedClient();
 
         // Act
-        var response = await client.GetAsync($"/api/v1/interview/progress/{Guid.NewGuid()}");
+        var response = await client.GetAsync($"v1/interview/progress/{Guid.NewGuid()}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -576,7 +576,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/lock", lockRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/lock", lockRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -599,7 +599,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/lock", lockRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/lock", lockRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -618,7 +618,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Manually expire the session
@@ -639,7 +639,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -660,7 +660,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Test with invalid JSON
         var content = new StringContent("invalid json", System.Text.Encoding.UTF8, "application/json");
-        var response = await client.PostAsync("/api/v1/interview/start", content);
+        var response = await client.PostAsync("v1/interview/start", content);
         
         // Should return 400 for bad request, not 500 for unhandled exception
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -681,8 +681,8 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var request = new InterviewStartRequest { CaseId = testCase.Id };
 
         // Act - Start two sessions concurrently
-        var task1 = client1.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
-        var task2 = client2.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var task1 = client1.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
+        var task2 = client2.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
         
         var responses = await Task.WhenAll(task1, task2);
 
@@ -712,7 +712,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -727,7 +727,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -739,7 +739,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Assert
         // Should still work as step number is auto-generated
@@ -755,7 +755,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -767,7 +767,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -782,7 +782,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview without answering any questions
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var completeRequest = new InterviewCompleteRequest
@@ -791,7 +791,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/complete", completeRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/complete", completeRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -809,11 +809,11 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview without answering questions
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Act
-        var response = await client.GetAsync($"/api/v1/interview/progress/{startResult!.SessionId}");
+        var response = await client.GetAsync($"v1/interview/progress/{startResult!.SessionId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -834,10 +834,10 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var lockRequest = new InterviewLockRequest { CaseId = testCase.Id };
 
         // Lock the case first time
-        await client.PostAsJsonAsync("/api/v1/interview/lock", lockRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/lock", lockRequest, _jsonOptions);
 
         // Act - Lock again
-        var response = await client.PostAsJsonAsync("/api/v1/interview/lock", lockRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/lock", lockRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -858,7 +858,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var request = new InterviewStartRequest { CaseId = testCase1.Id };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -873,7 +873,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview with user1
         var startRequest = new InterviewStartRequest { CaseId = testCase1.Id };
-        var startResponse = await client1.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client1.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Try to answer with different user
@@ -889,7 +889,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client2.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        var response = await client2.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -904,7 +904,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview with user1
         var startRequest = new InterviewStartRequest { CaseId = testCase1.Id };
-        var startResponse = await client1.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client1.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Try to get progress with different user
@@ -912,7 +912,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var client2 = CreateAuthenticatedClient(user2Id);
 
         // Act
-        var response = await client2.GetAsync($"/api/v1/interview/progress/{startResult!.SessionId}");
+        var response = await client2.GetAsync($"v1/interview/progress/{startResult!.SessionId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -931,7 +931,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Submit first answer
@@ -942,7 +942,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
             QuestionKey = "purpose",
             AnswerValue = "tourism"
         };
-        await client.PostAsJsonAsync("/api/v1/interview/answer", firstAnswer, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/answer", firstAnswer, _jsonOptions);
 
         // Submit second answer to same question
         var secondAnswer = new InterviewAnswerRequest
@@ -954,7 +954,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/answer", secondAnswer, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/answer", secondAnswer, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -962,7 +962,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         result!.AnswerValue.Should().Be("business"); // Should be updated value
 
         // Verify only one answer exists for this question
-        var progressResponse = await client.GetAsync($"/api/v1/interview/progress/{startResult.SessionId}");
+        var progressResponse = await client.GetAsync($"v1/interview/progress/{startResult.SessionId}");
         var progress = await progressResponse.Content.ReadFromJsonAsync<InterviewProgressResponse>(_jsonOptions);
         progress!.TotalQuestionsAnswered.Should().Be(1); // Should still be 1, not 2
     }
@@ -976,7 +976,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview and answer questions
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         var answerRequest = new InterviewAnswerRequest
@@ -986,12 +986,12 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
             QuestionKey = "purpose",
             AnswerValue = "tourism"
         };
-        await client.PostAsJsonAsync("/api/v1/interview/answer", answerRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/interview/answer", answerRequest, _jsonOptions);
 
         var completeRequest = new InterviewCompleteRequest { SessionId = startResult.SessionId };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/interview/complete", completeRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/interview/complete", completeRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -1021,7 +1021,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
 
         // Act - Start multiple sessions simultaneously
         var tasks = clients.Select(client => 
-            client.PostAsJsonAsync("/api/v1/interview/start", request, _jsonOptions)
+            client.PostAsJsonAsync("v1/interview/start", request, _jsonOptions)
         ).ToArray();
 
         var responses = await Task.WhenAll(tasks);
@@ -1048,7 +1048,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         
         // Start interview
         var startRequest = new InterviewStartRequest { CaseId = testCase.Id };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/interview/start", startRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/interview/start", startRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<InterviewStartResponse>(_jsonOptions);
 
         // Prepare multiple answers
@@ -1061,7 +1061,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
 
         // Act - Submit answers rapidly
         var tasks = answers.Select(answer => 
-            client.PostAsJsonAsync("/api/v1/interview/answer", answer, _jsonOptions)
+            client.PostAsJsonAsync("v1/interview/answer", answer, _jsonOptions)
         ).ToArray();
 
         var responses = await Task.WhenAll(tasks);
@@ -1071,7 +1071,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
             response.StatusCode.Should().Be(HttpStatusCode.OK));
 
         // Verify all answers were recorded
-        var progressResponse = await client.GetAsync($"/api/v1/interview/progress/{startResult.SessionId}");
+        var progressResponse = await client.GetAsync($"v1/interview/progress/{startResult.SessionId}");
         var progress = await progressResponse.Content.ReadFromJsonAsync<InterviewProgressResponse>(_jsonOptions);
         progress!.TotalQuestionsAnswered.Should().Be(3);
     }
@@ -1089,7 +1089,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var content = new StringContent(malformedJson, System.Text.Encoding.UTF8, "application/json");
 
         // Act
-        var response = await client.PostAsync("/api/v1/interview/start", content);
+        var response = await client.PostAsync("v1/interview/start", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -1104,7 +1104,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var content = new StringContent(malformedJson, System.Text.Encoding.UTF8, "application/json");
 
         // Act
-        var response = await client.PostAsync("/api/v1/interview/answer", content);
+        var response = await client.PostAsync("v1/interview/answer", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -1119,7 +1119,7 @@ public class InterviewControllerTests : IClassFixture<WebApplicationFactory<Prog
         var content = new StringContent(malformedJson, System.Text.Encoding.UTF8, "application/json");
 
         // Act
-        var response = await client.PostAsync("/api/v1/interview/complete", content);
+        var response = await client.PostAsync("v1/interview/complete", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

@@ -154,7 +154,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(fileContent, "photo", "attorney-photo.png");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/attorneys/{attorney.Id}/photo", content);
+        var response = await httpClient.PostAsync($"v1/attorneys/{attorney.Id}/photo", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -184,7 +184,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(fileContent, "photo", "not-an-image.txt");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/attorneys/{attorney.Id}/photo", content);
+        var response = await httpClient.PostAsync($"v1/attorneys/{attorney.Id}/photo", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -205,7 +205,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(fileContent, "photo", "large-image.png");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/attorneys/{attorney.Id}/photo", content);
+        var response = await httpClient.PostAsync($"v1/attorneys/{attorney.Id}/photo", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -225,7 +225,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(fileContent, "photo", "attorney-photo.png");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/attorneys/{attorney.Id}/photo", content);
+        var response = await httpClient.PostAsync($"v1/attorneys/{attorney.Id}/photo", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -249,7 +249,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         var httpClient = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await httpClient.DeleteAsync($"/api/v1/attorneys/{attorney.Id}/photo");
+        var response = await httpClient.DeleteAsync($"v1/attorneys/{attorney.Id}/photo");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -281,7 +281,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(new StringContent("Client's passport copy"), "description");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/clients/{client.Id}/documents", content);
+        var response = await httpClient.PostAsync($"v1/clients/{client.Id}/documents", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -317,7 +317,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(new StringContent("ID card scan"), "description");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/clients/{client.Id}/documents", content);
+        var response = await httpClient.PostAsync($"v1/clients/{client.Id}/documents", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -386,7 +386,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(new StringContent("PersonalDocuments"), "category");
 
         // Act - Try to upload to client2 (assigned to attorney2)
-        var response = await httpClient.PostAsync("/api/v1/clients/2/documents", content);
+        var response = await httpClient.PostAsync("v1/clients/2/documents", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -407,7 +407,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(new StringContent("PersonalDocuments"), "category");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/clients/{client.Id}/documents", content);
+        var response = await httpClient.PostAsync($"v1/clients/{client.Id}/documents", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -463,7 +463,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         var httpClient = CreateAuthenticatedClient("LegalProfessional", attorney.Id);
 
         // Act
-        var response = await httpClient.GetAsync($"/api/v1/clients/{client.Id}/documents");
+        var response = await httpClient.GetAsync($"v1/clients/{client.Id}/documents");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -522,7 +522,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         var httpClient = CreateAuthenticatedClient("LegalProfessional", attorney.Id);
 
         // Act
-        var response = await httpClient.GetAsync($"/api/v1/clients/{client.Id}/documents?category=PersonalDocuments");
+        var response = await httpClient.GetAsync($"v1/clients/{client.Id}/documents?category=PersonalDocuments");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -566,7 +566,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         var httpClient = CreateAuthenticatedClient("LegalProfessional", attorney.Id);
 
         // Act
-        var response = await httpClient.GetAsync($"/api/v1/documents/{documentId}/download");
+        var response = await httpClient.GetAsync($"v1/documents/{documentId}/download");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -609,7 +609,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         var httpClient = CreateAuthenticatedClient("LegalProfessional", attorney.Id);
 
         // Act
-        var response = await httpClient.DeleteAsync($"/api/v1/documents/{documentId}");
+        var response = await httpClient.DeleteAsync($"v1/documents/{documentId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -640,7 +640,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(new StringContent("PersonalDocuments"), "category");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/clients/{client.Id}/documents", content);
+        var response = await httpClient.PostAsync($"v1/clients/{client.Id}/documents", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -665,7 +665,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(new StringContent("PersonalDocuments"), "category");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/clients/{client.Id}/documents", content);
+        var response = await httpClient.PostAsync($"v1/clients/{client.Id}/documents", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -695,7 +695,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         content.Add(new StringContent("PersonalDocuments"), "category");
 
         // Act
-        var response = await httpClient.PostAsync($"/api/v1/clients/{client.Id}/documents", content);
+        var response = await httpClient.PostAsync($"v1/clients/{client.Id}/documents", content);
 
         // Assert
         if (shouldSucceed)
@@ -752,7 +752,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         };
 
         // Act
-        var response = await httpClient.PutAsJsonAsync($"/api/v1/documents/{documentId}", updateRequest, _jsonOptions);
+        var response = await httpClient.PutAsJsonAsync($"v1/documents/{documentId}", updateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -823,7 +823,7 @@ public class CannlawFileUploadIntegrationTests : IClassFixture<WebApplicationFac
         var httpClient = CreateAuthenticatedClient("LegalProfessional", attorney.Id);
 
         // Act
-        var response = await httpClient.GetAsync($"/api/v1/clients/{client.Id}/documents/by-category");
+        var response = await httpClient.GetAsync($"v1/clients/{client.Id}/documents/by-category");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

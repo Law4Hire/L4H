@@ -192,7 +192,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -217,7 +217,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
             ClientId = client1.Id,
             Description = "First timer"
         };
-        await client.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest1, _jsonOptions);
+        await client.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest1, _jsonOptions);
 
         // Try to start second timer
         var startTimerRequest2 = new StartTimerRequest
@@ -227,7 +227,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest2, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest2, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -247,7 +247,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -266,7 +266,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
             ClientId = client1.Id,
             Description = "Document review"
         };
-        var startResponse = await client.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest, _jsonOptions);
+        var startResponse = await client.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest, _jsonOptions);
         var startResult = await startResponse.Content.ReadFromJsonAsync<TimerResponse>(_jsonOptions);
 
         // Simulate 8 minutes of work (should round to 12 minutes = 0.2 hours)
@@ -284,7 +284,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/time-tracking/stop", stopTimerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/time-tracking/stop", stopTimerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -309,7 +309,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/time-tracking/stop", stopTimerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/time-tracking/stop", stopTimerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -335,7 +335,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
             ClientId = client1.Id,
             Description = "Time increment test"
         };
-        await client.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest, _jsonOptions);
 
         // Set specific duration
         using (var scope = _factory.Services.CreateScope())
@@ -352,7 +352,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/time-tracking/stop", stopTimerRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/time-tracking/stop", stopTimerRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -383,7 +383,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/time-tracking/entries", createTimeEntryRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/time-tracking/entries", createTimeEntryRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -410,7 +410,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/time-tracking/entries", createTimeEntryRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/time-tracking/entries", createTimeEntryRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -462,7 +462,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var client = CreateAuthenticatedClient("LegalProfessional", attorney1.Id);
 
         // Act
-        var response = await client.GetAsync("/api/v1/time-tracking/entries");
+        var response = await client.GetAsync("v1/time-tracking/entries");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -520,7 +520,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
 
         // Act
-        var response = await client.GetAsync($"/api/v1/time-tracking/entries?startDate={today}&endDate={today}");
+        var response = await client.GetAsync($"v1/time-tracking/entries?startDate={today}&endDate={today}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -571,7 +571,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PutAsJsonAsync($"/api/v1/time-tracking/entries/{timeEntryId}", updateRequest, _jsonOptions);
+        var response = await client.PutAsJsonAsync($"v1/time-tracking/entries/{timeEntryId}", updateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -616,7 +616,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var client = CreateAuthenticatedClient("LegalProfessional", attorney1.Id);
 
         // Act
-        var response = await client.DeleteAsync($"/api/v1/time-tracking/entries/{timeEntryId}");
+        var response = await client.DeleteAsync($"v1/time-tracking/entries/{timeEntryId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -678,7 +678,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync("/api/v1/billing/summary");
+        var response = await client.GetAsync("v1/billing/summary");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -741,7 +741,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var client = CreateAuthenticatedClient("LegalProfessional", attorney1.Id);
 
         // Act
-        var response = await client.GetAsync("/api/v1/billing/summary");
+        var response = await client.GetAsync("v1/billing/summary");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -800,7 +800,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
 
         // Act
-        var response = await client.GetAsync($"/api/v1/billing/detailed?attorneyId={attorney1.Id}&startDate={today}&endDate={today}");
+        var response = await client.GetAsync($"v1/billing/detailed?attorneyId={attorney1.Id}&startDate={today}&endDate={today}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -843,7 +843,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync($"/api/v1/billing/export?attorneyId={attorney1.Id}");
+        var response = await client.GetAsync($"v1/billing/export?attorneyId={attorney1.Id}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -872,7 +872,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/billing/rates", updateRateRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/billing/rates", updateRateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -905,7 +905,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/billing/rates", updateRateRequest, _jsonOptions);
+        var response = await client.PostAsJsonAsync("v1/billing/rates", updateRateRequest, _jsonOptions);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -938,7 +938,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var client = CreateAuthenticatedClient("Admin");
 
         // Act
-        var response = await client.GetAsync($"/api/v1/billing/rates/{attorney1.Id}/history");
+        var response = await client.GetAsync($"v1/billing/rates/{attorney1.Id}/history");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -979,8 +979,8 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         };
 
         // Act - Start timers concurrently
-        var task1 = client1Http.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest1, _jsonOptions);
-        var task2 = client2Http.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest2, _jsonOptions);
+        var task1 = client1Http.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest1, _jsonOptions);
+        var task2 = client2Http.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest2, _jsonOptions);
         
         var responses = await Task.WhenAll(task1, task2);
 
@@ -1005,10 +1005,10 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
             ClientId = client1.Id,
             Description = "Active timer test"
         };
-        await client.PostAsJsonAsync("/api/v1/time-tracking/start", startTimerRequest, _jsonOptions);
+        await client.PostAsJsonAsync("v1/time-tracking/start", startTimerRequest, _jsonOptions);
 
         // Act
-        var response = await client.GetAsync("/api/v1/time-tracking/active");
+        var response = await client.GetAsync("v1/time-tracking/active");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -1027,7 +1027,7 @@ public class CannlawTimeTrackingBillingIntegrationTests : IClassFixture<WebAppli
         var client = CreateAuthenticatedClient("LegalProfessional", attorney1.Id);
 
         // Act
-        var response = await client.GetAsync("/api/v1/time-tracking/active");
+        var response = await client.GetAsync("v1/time-tracking/active");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
