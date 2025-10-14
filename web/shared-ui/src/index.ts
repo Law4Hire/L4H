@@ -1,6 +1,10 @@
 // Core exports
-export { default as i18n, getSupportedCultures, setCulture, setRTLDirection, isRTL } from './i18n-enhanced'
-export type { Culture } from './i18n-enhanced'
+export { default as i18n, CULTURE_NAMES, RTL_LANGUAGES, SUPPORTED_LANGUAGES, setRTLDirection, isRTL, i18nReady, getTextDirection, getTextAlign, formatNumber as formatNumberRTL, formatDate as formatDateRTL } from './i18n-config'
+export type { Namespace } from './i18n-config'
+
+// RTL Hooks
+export { useRTL, useRTLClasses, useRTLStyles } from './hooks/useRTL'
+export type { RTLUtils } from './hooks/useRTL'
 
 // API client
 export { 
@@ -38,6 +42,11 @@ export { Container } from './components/Container'
 export { EmptyState } from './components/EmptyState'
 export { Toast, ToastContainer, useToast } from './components/Toast'
 
+// RTL Components
+export { RTLNumber, RTLDate } from './components/RTLNumber'
+export type { RTLNumberProps, RTLDateProps } from './components/RTLNumber'
+export { RTLDemo } from './components/RTLDemo'
+
 // Icons
 export { Icon } from './Icon'
 export * from './Icon'
@@ -48,6 +57,8 @@ export { ThemeProvider, useTheme } from './ThemeProvider'
 // i18n
 export { LanguageSwitcher } from './LanguageSwitcher'
 export { I18nProvider, useI18n, useT, useTranslation } from './i18n-provider'
+export type { Culture } from './i18n-provider'
+export { loadSupportedCultures, setCulture } from './i18n'
 
 // Route Guard
 export { RouteGuard } from './RouteGuard'
@@ -68,5 +79,5 @@ export {
   formatList,
 } from './formatters'
 
-// CSS - commented out as it's handled by the consuming apps
-// import './index.css'
+// CSS - RTL styles should be imported by consuming apps
+// import './styles/rtl.css'

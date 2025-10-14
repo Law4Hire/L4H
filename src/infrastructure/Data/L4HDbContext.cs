@@ -47,6 +47,25 @@ public class L4HDbContext : DbContext
     // Security entities
     public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
     public DbSet<UserSession> UserSessions { get; set; }
+    
+    // Cannlaw entities
+    public DbSet<SiteConfiguration> SiteConfigurations { get; set; }
+    public DbSet<ServiceCategory> ServiceCategories { get; set; }
+    public DbSet<LegalService> LegalServices { get; set; }
+    public DbSet<Attorney> Attorneys { get; set; }
+    
+    // Cannlaw client billing system entities
+    public DbSet<Client> Clients { get; set; }
+    public DbSet<CannlawCase> CannlawCases { get; set; }
+    public DbSet<CaseStatusHistory> CaseStatusHistories { get; set; }
+    public DbSet<TimeEntry> TimeEntries { get; set; }
+    public DbSet<BillingRate> BillingRates { get; set; }
+    public DbSet<Document> Documents { get; set; }
+    
+    // Notification system entities
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
+    public DbSet<UserNotificationPreference> UserNotificationPreferences { get; set; }
 
     // Stripe payments entities
     public DbSet<Invoice> Invoices { get; set; }
@@ -67,6 +86,15 @@ public class L4HDbContext : DbContext
     // Approved doctors entity
     public DbSet<ApprovedDoctor> ApprovedDoctors { get; set; }
 
+    // Adoption workflow entities
+    public DbSet<AdoptionCase> AdoptionCases { get; set; }
+    public DbSet<AdoptionDocument> AdoptionDocuments { get; set; }
+
+    // Citizenship workflow entities
+    public DbSet<CitizenshipCase> CitizenshipCases { get; set; }
+    public DbSet<CitizenshipDocument> CitizenshipDocuments { get; set; }
+    public DbSet<CitizenshipTestResult> CitizenshipTestResults { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -83,6 +111,12 @@ public class L4HDbContext : DbContext
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.PasswordHash).HasMaxLength(500);
+            
+            // Configure Attorney relationship for legal professionals
+            entity.HasOne(e => e.Attorney)
+                .WithMany()
+                .HasForeignKey(e => e.AttorneyId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<Case>(entity =>
@@ -966,6 +1000,324 @@ public class L4HDbContext : DbContext
 
             entity.HasIndex(e => new { e.Service, e.FromCountry }).IsUnique();
             entity.HasIndex(e => e.ToCountry);
+        });
+
+        // Adoption workflow entity configurations
+        modelBuilder.Entity<AdoptionCase>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CaseId)
+                .HasConversion(
+                    v => v.Value,
+                    v => new CaseId(v));
+
+            // Child information
+            entity.Property(e => e.ChildFirstName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.ChildLastName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.ChildMiddleName).HasMaxLength(100);
+            entity.Property(e => e.ChildCountryOfBirth).HasMaxLength(100);
+            entity.Property(e => e.ChildCityOfBirth).HasMaxLength(100);
+            entity.Property(e => e.ChildGender).HasMaxLength(20);
+            entity.Property(e => e.ChildSpecialNeedsDescription).HasMaxLength(2000);
+            entity.Property(e => e.ChildMedicalConditions).HasMaxLength(2000);
+            entity.Property(e => e.ChildCurrentLocation).HasMaxLength(200);
+            entity.Property(e => e.ChildCaregiverInformation).HasMaxLength(1000);
+            entity.Property(e => e.ChildLanguages).HasMaxLength(500);
+            entity.Property(e => e.ChildCulturalBackground).HasMaxLength(1000);
+
+            // Agency information
+            entity.Property(e => e.AgencyName).HasMaxLength(200);
+            entity.Property(e => e.AgencyCountry).HasMaxLength(100);
+            entity.Property(e => e.AgencyLicenseNumber).HasMaxLength(100);
+            entity.Property(e => e.AgencyContactPersonName).HasMaxLength(100);
+            entity.Property(e => e.AgencyContactEmail).HasMaxLength(255);
+            entity.Property(e => e.AgencyContactPhone).HasMaxLength(50);
+            entity.Property(e => e.AgencyAccreditationNumber).HasMaxLength(100);
+            entity.Property(e => e.USPartnerAgency).HasMaxLength(200);
+
+            // Home study information
+            entity.Property(e => e.HomeStudyConductingAgency).HasMaxLength(200);
+            entity.Property(e => e.HomeStudySocialWorkerName).HasMaxLength(100);
+            entity.Property(e => e.HomeStudySocialWorkerLicense).HasMaxLength(100);
+            entity.Property(e => e.HomeStudyRecommendationStatus).HasMaxLength(50);
+            entity.Property(e => e.HomeStudyRequiredUpdates).HasMaxLength(2000);
+
+            // Adoptive parents information
+            entity.Property(e => e.PrimaryParentName).HasMaxLength(100);
+            entity.Property(e => e.SpouseName).HasMaxLength(100);
+            entity.Property(e => e.MotivationForAdoption).HasMaxLength(2000);
+            entity.Property(e => e.PreviousAdoptionDetails).HasMaxLength(2000);
+            entity.Property(e => e.PreferredChildAge).HasMaxLength(50);
+            entity.Property(e => e.PreferredChildGender).HasMaxLength(20);
+            entity.Property(e => e.AcceptableSpecialNeeds).HasMaxLength(1000);
+
+            // Assessment fields
+            entity.Property(e => e.EligibilityReason).HasMaxLength(1000);
+            entity.Property(e => e.RecommendationRationale).HasMaxLength(2000);
+            entity.Property(e => e.RequiredDocuments).HasMaxLength(2000);
+            entity.Property(e => e.NextSteps).HasMaxLength(2000);
+            entity.Property(e => e.PotentialIssues).HasMaxLength(2000);
+
+            // Audit fields
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(100);
+
+            entity.HasOne(e => e.Case)
+                .WithMany()
+                .HasForeignKey(e => e.CaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.CaseId).IsUnique();
+            entity.HasIndex(e => e.AdoptionType);
+            entity.HasIndex(e => e.RecommendedVisaType);
+            entity.HasIndex(e => e.ChildCountryOfBirth);
+            entity.HasIndex(e => e.CreatedAt);
+        });
+
+        modelBuilder.Entity<AdoptionDocument>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.DocumentName).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.DocumentDescription).HasMaxLength(1000);
+            entity.Property(e => e.FileName).HasMaxLength(255);
+            entity.Property(e => e.FilePath).HasMaxLength(1000);
+            entity.Property(e => e.ContentType).HasMaxLength(100);
+            entity.Property(e => e.IssuingAuthority).HasMaxLength(200);
+            entity.Property(e => e.DocumentNumber).HasMaxLength(100);
+            entity.Property(e => e.VerifiedBy).HasMaxLength(100);
+            entity.Property(e => e.VerificationNotes).HasMaxLength(1000);
+            entity.Property(e => e.ReviewedBy).HasMaxLength(100);
+            entity.Property(e => e.ReviewNotes).HasMaxLength(1000);
+            entity.Property(e => e.ReviewStatus).HasMaxLength(50);
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(100);
+
+            entity.HasOne(e => e.AdoptionCase)
+                .WithMany()
+                .HasForeignKey(e => e.AdoptionCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Upload)
+                .WithMany()
+                .HasForeignKey(e => e.UploadId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.AdoptionCaseId);
+            entity.HasIndex(e => e.DocumentType);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.ExpirationDate);
+            entity.HasIndex(e => e.CreatedAt);
+        });
+
+        // Configure Citizenship workflow entities
+        modelBuilder.Entity<CitizenshipCase>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CaseId)
+                .HasConversion(
+                    v => v.Value,
+                    v => new CaseId(v));
+            entity.Property(e => e.ApplicationType).HasConversion<string>().HasMaxLength(50);
+            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.CurrentLegalName).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.NameAtBirth).HasMaxLength(200);
+            entity.Property(e => e.CountryOfBirth).HasMaxLength(100);
+            entity.Property(e => e.CityOfBirth).HasMaxLength(100);
+            entity.Property(e => e.CurrentNationality).HasMaxLength(100);
+            entity.Property(e => e.MaritalStatus).HasMaxLength(50);
+            entity.Property(e => e.GreenCardNumber).HasMaxLength(50);
+            entity.Property(e => e.SpeakingLevel).HasConversion<string>().HasMaxLength(20);
+            entity.Property(e => e.ReadingLevel).HasConversion<string>().HasMaxLength(20);
+            entity.Property(e => e.WritingLevel).HasConversion<string>().HasMaxLength(20);
+            entity.Property(e => e.PreferredLanguage).HasMaxLength(50);
+            entity.Property(e => e.ExemptionReason).HasMaxLength(500);
+            entity.Property(e => e.RecommendedApplication).HasMaxLength(50);
+            entity.Property(e => e.Rationale).HasMaxLength(2000);
+            entity.Property(e => e.EligibilityReason).HasMaxLength(1000);
+            entity.Property(e => e.ProcessingTimeEstimate).HasMaxLength(200);
+
+            entity.HasOne(e => e.Case)
+                .WithOne()
+                .HasForeignKey<CitizenshipCase>(e => e.CaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.CaseId).IsUnique();
+            entity.HasIndex(e => e.ApplicationType);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.CreatedAt);
+        });
+
+        modelBuilder.Entity<CitizenshipDocument>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.DocumentType).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.FileName).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.FilePath).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+
+            entity.HasOne(e => e.CitizenshipCase)
+                .WithMany(e => e.Documents)
+                .HasForeignKey(e => e.CitizenshipCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.CitizenshipCaseId);
+            entity.HasIndex(e => e.DocumentType);
+            entity.HasIndex(e => e.IsRequired);
+        });
+
+        modelBuilder.Entity<CitizenshipTestResult>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TestType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.TestComponent).HasMaxLength(50);
+            entity.Property(e => e.TestLocation).HasMaxLength(200);
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+
+            entity.HasOne(e => e.CitizenshipCase)
+                .WithMany(e => e.TestResults)
+                .HasForeignKey(e => e.CitizenshipCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.CitizenshipCaseId);
+            entity.HasIndex(e => e.TestType);
+            entity.HasIndex(e => e.TestDate);
+        });
+
+        // Configure Cannlaw client billing system entities
+        modelBuilder.Entity<Client>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FirstName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.LastName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Email).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Phone).HasMaxLength(50);
+            entity.Property(e => e.Address).HasMaxLength(500);
+            entity.Property(e => e.CountryOfOrigin).HasMaxLength(100);
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(255);
+
+            entity.HasOne(e => e.AssignedAttorney)
+                .WithMany(e => e.AssignedClients)
+                .HasForeignKey(e => e.AssignedAttorneyId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.Email);
+            entity.HasIndex(e => e.AssignedAttorneyId);
+            entity.HasIndex(e => e.CreatedAt);
+        });
+
+        modelBuilder.Entity<CannlawCase>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CaseType).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Status).HasConversion<string>();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Notes).HasMaxLength(2000);
+            entity.Property(e => e.GovernmentCaseNumber).HasMaxLength(100);
+            entity.Property(e => e.RejectionReason).HasMaxLength(500);
+
+            entity.HasOne(e => e.Client)
+                .WithMany(e => e.Cases)
+                .HasForeignKey(e => e.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.StartDate);
+        });
+
+        modelBuilder.Entity<CaseStatusHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FromStatus).HasConversion<string>();
+            entity.Property(e => e.ToStatus).HasConversion<string>();
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+            entity.Property(e => e.ChangedBy).HasMaxLength(255);
+
+            entity.HasOne(e => e.Case)
+                .WithMany(e => e.StatusHistory)
+                .HasForeignKey(e => e.CaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.CaseId);
+            entity.HasIndex(e => e.ChangedAt);
+        });
+
+        modelBuilder.Entity<TimeEntry>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Duration).HasColumnType("decimal(5,2)");
+            entity.Property(e => e.Description).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+            entity.Property(e => e.HourlyRate).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.BillableAmount).HasColumnType("decimal(10,2)");
+
+            entity.HasOne(e => e.Client)
+                .WithMany(e => e.TimeEntries)
+                .HasForeignKey(e => e.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Attorney)
+                .WithMany(e => e.TimeEntries)
+                .HasForeignKey(e => e.AttorneyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.AttorneyId);
+            entity.HasIndex(e => e.StartTime);
+            entity.HasIndex(e => e.IsBilled);
+        });
+
+        modelBuilder.Entity<BillingRate>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ServiceType).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.HourlyRate).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(255);
+
+            entity.HasOne(e => e.Attorney)
+                .WithMany(e => e.BillingRates)
+                .HasForeignKey(e => e.AttorneyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.AttorneyId);
+            entity.HasIndex(e => e.EffectiveDate);
+            entity.HasIndex(e => e.IsActive);
+        });
+
+        modelBuilder.Entity<Document>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FileName).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.OriginalFileName).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.FileUrl).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.ContentType).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Category).HasConversion<string>();
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.UploadedBy).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.AccessNotes).HasMaxLength(500);
+            entity.Property(e => e.LastAccessedBy).HasMaxLength(255);
+
+            entity.HasOne(e => e.Client)
+                .WithMany(e => e.Documents)
+                .HasForeignKey(e => e.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.Category);
+            entity.HasIndex(e => e.UploadDate);
+            entity.HasIndex(e => e.IsConfidential);
+        });
+
+        // Enhanced Attorney entity configuration
+        modelBuilder.Entity<Attorney>(entity =>
+        {
+            entity.Property(e => e.DirectPhone).HasMaxLength(50);
+            entity.Property(e => e.DirectEmail).HasMaxLength(255);
+            entity.Property(e => e.OfficeLocation).HasMaxLength(255);
+            entity.Property(e => e.DefaultHourlyRate).HasColumnType("decimal(10,2)");
         });
     }
 }
