@@ -78,6 +78,14 @@ jobs:
           sleep 2
         done
 
+    - name: Install EF Core tools
+      run: dotnet tool install --global dotnet-ef || dotnet tool update --global dotnet-ef
+
+    - name: Run database migrations
+      run: dotnet ef database update --project src/infrastructure/L4H.Infrastructure.csproj --startup-project src/api/L4H.Api.csproj --no-build --configuration Release
+      env:
+        ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
+
     - name: Run .NET tests
       run: dotnet test --no-build --configuration Release --verbosity normal --filter "Category!=E2E"
       env:
