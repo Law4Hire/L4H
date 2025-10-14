@@ -12,7 +12,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/pricing")]
+[Route("api/v1/pricing")]
 [Tags("Pricing")]
 public class PricingController : ControllerBase
 {
@@ -36,9 +36,15 @@ public class PricingController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PricingResponse>> GetPricing(
-        [FromQuery] string visaType, 
-        [FromQuery] string country)
+        [FromQuery] string? visaType,
+        [FromQuery] string? country)
     {
+        // If no parameters provided, return default packages for general display
+        if (string.IsNullOrEmpty(visaType) && string.IsNullOrEmpty(country))
+        {
+            return await GetDefaultPricing().ConfigureAwait(false);
+        }
+
         if (string.IsNullOrEmpty(country))
         {
             return BadRequest(new ProblemDetails
@@ -64,9 +70,9 @@ public class PricingController : ControllerBase
         // Get all active pricing rules for this visa type and country
         var pricingRules = await _context.PricingRules
             .Include(pr => pr.Package)
-            .Where(pr => pr.VisaTypeId == visaTypeEntity.Id 
-                        && pr.CountryCode.ToUpper(CultureInfo.InvariantCulture) == country.ToUpper(CultureInfo.InvariantCulture)
-                        && pr.IsActive 
+            .Where(pr => pr.VisaTypeId == visaTypeEntity.Id
+                        && EF.Functions.Collate(pr.CountryCode, "SQL_Latin1_General_CP1_CI_AS") == EF.Functions.Collate(country, "SQL_Latin1_General_CP1_CI_AS")
+                        && pr.IsActive
                         && pr.Package.IsActive)
             .OrderBy(pr => pr.Package.SortOrder)
             .ToListAsync().ConfigureAwait(false);
@@ -82,15 +88,19 @@ public class PricingController : ControllerBase
 
         var packages = pricingRules.Select(pr => new PricingPackageResponse
         {
+            Id = pr.Package.Code, // Use code as ID for frontend compatibility
             PackageCode = pr.Package.Code,
+            Name = pr.Package.DisplayName,
             DisplayName = pr.Package.DisplayName,
             Description = pr.Package.Description,
+            Price = CalculateTotal(pr.BasePrice, pr.TaxRate, pr.FxSurchargeMode),
             BasePrice = pr.BasePrice,
             TaxRate = pr.TaxRate,
             Currency = pr.Currency,
             FxSurchargeMode = pr.FxSurchargeMode,
             Total = CalculateTotal(pr.BasePrice, pr.TaxRate, pr.FxSurchargeMode),
-            SortOrder = pr.Package.SortOrder
+            SortOrder = pr.Package.SortOrder,
+            Features = GetPackageFeatures(pr.Package.Code)
         }).ToArray();
 
         var response = new PricingResponse
@@ -101,6 +111,129 @@ public class PricingController : ControllerBase
         };
 
         return Ok(response);
+    }
+
+    private async Task<ActionResult<PricingResponse>> GetDefaultPricing()
+    {
+        // Return sample packages for general display when no specific visa type is selected
+        var packages = new List<PricingPackageResponse>
+        {
+            new()
+            {
+                Id = "H1B_BASIC",
+                PackageCode = "H1B_BASIC",
+                Name = "H-1B Basic Package",
+                DisplayName = "H-1B Basic Package",
+                Description = "Essential H-1B visa services for skilled workers",
+                Price = 2500.00m,
+                BasePrice = 2500.00m,
+                TaxRate = 0.0m,
+                Currency = "USD",
+                Total = 2500.00m,
+                SortOrder = 1,
+                Features = GetPackageFeatures("H1B_BASIC")
+            },
+            new()
+            {
+                Id = "H1B_PREMIUM",
+                PackageCode = "H1B_PREMIUM",
+                Name = "H-1B Premium Package",
+                DisplayName = "H-1B Premium Package",
+                Description = "Comprehensive H-1B services with priority processing",
+                Price = 3500.00m,
+                BasePrice = 3500.00m,
+                TaxRate = 0.0m,
+                Currency = "USD",
+                Total = 3500.00m,
+                SortOrder = 2,
+                Features = GetPackageFeatures("H1B_PREMIUM")
+            },
+            new()
+            {
+                Id = "EB2_STANDARD",
+                PackageCode = "EB2_STANDARD",
+                Name = "EB-2 Green Card Package",
+                DisplayName = "EB-2 Green Card Package",
+                Description = "Complete EB-2 permanent residence application",
+                Price = 5000.00m,
+                BasePrice = 5000.00m,
+                TaxRate = 0.0m,
+                Currency = "USD",
+                Total = 5000.00m,
+                SortOrder = 3,
+                Features = GetPackageFeatures("EB2_STANDARD")
+            },
+            new()
+            {
+                Id = "O1_ARTIST",
+                PackageCode = "O1_ARTIST",
+                Name = "O-1 Extraordinary Ability",
+                DisplayName = "O-1 Extraordinary Ability",
+                Description = "O-1 visa for individuals with extraordinary abilities",
+                Price = 4000.00m,
+                BasePrice = 4000.00m,
+                TaxRate = 0.0m,
+                Currency = "USD",
+                Total = 4000.00m,
+                SortOrder = 4,
+                Features = GetPackageFeatures("O1_ARTIST")
+            }
+        };
+
+        var response = new PricingResponse
+        {
+            VisaType = "GENERAL",
+            Country = "US",
+            Packages = packages.ToArray()
+        };
+
+        return Ok(response);
+    }
+
+    private static string[] GetPackageFeatures(string packageCode)
+    {
+        return packageCode switch
+        {
+            "H1B_BASIC" => new[]
+            {
+                "Form preparation and filing",
+                "Initial consultation",
+                "Basic document review",
+                "Email support"
+            },
+            "H1B_PREMIUM" => new[]
+            {
+                "Form preparation and filing",
+                "Initial consultation",
+                "Comprehensive document review",
+                "Priority email and phone support",
+                "Status tracking",
+                "Amendment filing included"
+            },
+            "EB2_STANDARD" => new[]
+            {
+                "Complete I-140 preparation",
+                "PERM labor certification",
+                "Priority date monitoring",
+                "Adjustment of status filing",
+                "Family member applications"
+            },
+            "O1_ARTIST" => new[]
+            {
+                "Extraordinary ability documentation",
+                "Expert consultation letters",
+                "Portfolio preparation",
+                "Form preparation and filing",
+                "Premium processing option"
+            },
+            _ => new[]
+            {
+                "Professional consultation",
+                "Document preparation",
+                "Form filing",
+                "Email support"
+            }
+        };
     }
 
     /// <summary>
@@ -173,7 +306,7 @@ public class PricingController : ControllerBase
         var pricingRule = await _context.PricingRules
             .FirstOrDefaultAsync(pr => pr.VisaTypeId == visaType.Id
                                       && pr.PackageId == package.Id
-                                      && pr.CountryCode.ToUpper(CultureInfo.InvariantCulture) == request.Country.ToUpper(CultureInfo.InvariantCulture)
+                                      && EF.Functions.Collate(pr.CountryCode, "SQL_Latin1_General_CP1_CI_AS") == EF.Functions.Collate(request.Country, "SQL_Latin1_General_CP1_CI_AS")
                                       && pr.IsActive).ConfigureAwait(false);
 
         if (pricingRule == null)
@@ -297,15 +430,19 @@ public class PricingResponse
 
 public class PricingPackageResponse
 {
+    public string Id { get; set; } = string.Empty; // Frontend compatibility
     public string PackageCode { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty; // Frontend compatibility
     public string DisplayName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public decimal Price { get; set; } // Frontend compatibility
     public decimal BasePrice { get; set; }
     public decimal TaxRate { get; set; }
     public string Currency { get; set; } = string.Empty;
     public string? FxSurchargeMode { get; set; }
     public decimal Total { get; set; }
     public int SortOrder { get; set; }
+    public string[] Features { get; set; } = Array.Empty<string>(); // Frontend compatibility
 }
 
 public class SelectPackageRequest

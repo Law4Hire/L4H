@@ -54,7 +54,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading && (
           <Loader2 
-            className="mr-2 h-4 w-4 animate-spin" 
+            className="rtl:ml-2 rtl:mr-0 ltr:mr-2 ltr:ml-0 h-4 w-4 animate-spin" 
             data-testid="spinner"
             aria-hidden="true"
           />

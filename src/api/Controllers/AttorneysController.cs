@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
+using L4H.Infrastructure.Services;
 using System.Text.Json;
 
 namespace L4H.Api.Controllers;
@@ -13,10 +14,12 @@ namespace L4H.Api.Controllers;
 public class AttorneysController : ControllerBase
 {
     private readonly L4HDbContext _context;
+    private readonly IFileUploadService _fileUploadService;
 
-    public AttorneysController(L4HDbContext context)
+    public AttorneysController(L4HDbContext context, IFileUploadService fileUploadService)
     {
         _context = context;
+        _fileUploadService = fileUploadService;
     }
 
     /// <summary>
@@ -111,6 +114,10 @@ public class AttorneysController : ControllerBase
         existingAttorney.PhotoUrl = attorney.PhotoUrl;
         existingAttorney.Email = attorney.Email;
         existingAttorney.Phone = attorney.Phone;
+        existingAttorney.DirectPhone = attorney.DirectPhone;
+        existingAttorney.DirectEmail = attorney.DirectEmail;
+        existingAttorney.OfficeLocation = attorney.OfficeLocation;
+        existingAttorney.DefaultHourlyRate = attorney.DefaultHourlyRate;
         existingAttorney.Credentials = attorney.Credentials;
         existingAttorney.PracticeAreas = attorney.PracticeAreas;
         existingAttorney.Languages = attorney.Languages;
@@ -120,6 +127,131 @@ public class AttorneysController : ControllerBase
         existingAttorney.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
+        return Ok();
+    }
+
+    /// <summary>
+    /// Upload attorney photo (Admin only)
+    /// </summary>
+    [HttpPost("{id}/photo")]
+    [Authorize(Policy = "IsAdmin")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> UploadAttorneyPhoto(int id, IFormFile photo)
+    {
+        var attorney = await _context.Attorneys
+            .FirstOrDefaultAsync(a => a.Id == id)
+            .ConfigureAwait(false);
+
+        if (attorney == null)
+        {
+            return NotFound();
+        }
+
+        if (photo == null || photo.Length == 0)
+        {
+            return BadRequest("No photo file provided");
+        }
+
+        if (!_fileUploadService.IsValidImageFile(photo))
+        {
+            return BadRequest("Invalid image file. Please upload JPG, PNG, or WebP files under 5MB");
+        }
+
+        try
+        {
+            // Delete old photo if exists
+            if (!string.IsNullOrEmpty(attorney.PhotoUrl))
+            {
+                await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl);
+            }
+
+            // Upload new photo
+            var photoUrl = await _fileUploadService.UploadAttorneyPhotoAsync(photo, attorney.Name);
+            
+            // Update attorney record
+            attorney.PhotoUrl = photoUrl;
+            attorney.UpdatedAt = DateTime.UtcNow;
+            
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            return Ok(new { photoUrl });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Failed to upload photo: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Delete attorney photo (Admin only)
+    /// </summary>
+    [HttpDelete("{id}/photo")]
+    [Authorize(Policy = "IsAdmin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> DeleteAttorneyPhoto(int id)
+    {
+        var attorney = await _context.Attorneys
+            .FirstOrDefaultAsync(a => a.Id == id)
+            .ConfigureAwait(false);
+
+        if (attorney == null)
+        {
+            return NotFound();
+        }
+
+        if (!string.IsNullOrEmpty(attorney.PhotoUrl))
+        {
+            await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl);
+            attorney.PhotoUrl = string.Empty;
+            attorney.UpdatedAt = DateTime.UtcNow;
+            
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Delete an attorney profile (Admin only)
+    /// </summary>
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "IsAdmin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> DeleteAttorney(int id)
+    {
+        var attorney = await _context.Attorneys
+            .Include(a => a.AssignedClients)
+            .FirstOrDefaultAsync(a => a.Id == id)
+            .ConfigureAwait(false);
+
+        if (attorney == null)
+        {
+            return NotFound();
+        }
+
+        // Check if attorney has assigned clients
+        if (attorney.AssignedClients.Any())
+        {
+            return BadRequest("Cannot delete attorney with assigned clients. Please reassign clients first.");
+        }
+
+        // Delete attorney photo if exists
+        if (!string.IsNullOrEmpty(attorney.PhotoUrl))
+        {
+            await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl);
+        }
+
+        _context.Attorneys.Remove(attorney);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
         return Ok();
     }
 

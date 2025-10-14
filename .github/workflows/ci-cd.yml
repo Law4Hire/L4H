@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master, develop ]
   workflow_dispatch:
   release:
     types: [ published ]
@@ -12,12 +12,25 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  DOTNET_ENVIRONMENT: Development
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: SecureTest123!
+          MSSQL_PID: Developer
+        ports:
+          - 14333:1433
+        options: --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P SecureTest123! -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -27,53 +40,92 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         cache-dependency-path: |
           web/l4h/package-lock.json
           web/cannlaw/package-lock.json
           web/shared-ui/package-lock.json
 
-    - name: Restore dependencies
+    - name: Cache .NET packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.fsproj', '**/*.vbproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore .NET dependencies
       run: dotnet restore
 
-    - name: Build
-      run: dotnet build --no-restore
+    - name: Build .NET solution
+      run: dotnet build --no-restore --configuration Release
 
-    - name: Test API and Infrastructure
-      run: dotnet test --no-build --verbosity normal
+    - name: Wait for SQL Server
+      run: |
+        for i in {1..30}; do
+          if /opt/mssql-tools/bin/sqlcmd -S localhost,14333 -U sa -P SecureTest123! -Q "SELECT 1" &> /dev/null; then
+            echo "SQL Server is ready"
+            break
+          fi
+          echo "Waiting for SQL Server... ($i/30)"
+          sleep 2
+        done
 
-    - name: Test UI Components
-      run: dotnet test tests/ui.wrap --no-build --verbosity normal
-
-    - name: Test E2E (optional)
-      if: env.E2E_UI == '1'
-      run: dotnet test tests/ui.e2e --no-build --verbosity normal
+    - name: Run .NET tests
+      run: dotnet test --no-build --configuration Release --verbosity normal --filter "Category!=E2E"
       env:
-        E2E_UI: ${{ vars.E2E_UI }}
+        ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
 
-    - name: Install UI dependencies
-      run: |
-        cd web/shared-ui && npm ci
-        cd ../l4h && npm ci
-        cd ../cannlaw && npm ci
+    - name: Install shared-ui dependencies
+      working-directory: web/shared-ui
+      run: npm ci
 
-    - name: Build UI artifacts
-      run: |
-        cd web/l4h && npm run build
-        cd ../cannlaw && npm run build
+    - name: Build shared-ui
+      working-directory: web/shared-ui
+      run: npm run build
+
+    - name: Test shared-ui
+      working-directory: web/shared-ui
+      run: npm test -- --run
+
+    - name: Install l4h dependencies
+      working-directory: web/l4h
+      run: npm ci
+
+    - name: Build l4h
+      working-directory: web/l4h
+      run: npm run build
+
+    - name: Install cannlaw dependencies
+      working-directory: web/cannlaw
+      run: npm ci
+
+    - name: Build cannlaw
+      working-directory: web/cannlaw
+      run: npm run build
 
     - name: Verify UI builds
       run: |
-        test -d web/l4h/dist
-        test -d web/cannlaw/dist
+        test -d web/l4h/dist || (echo "L4H build failed" && exit 1)
+        test -d web/cannlaw/dist || (echo "Cannlaw build failed" && exit 1)
+        echo "✅ All UI builds successful"
         ls -la web/l4h/dist/
         ls -la web/cannlaw/dist/
+
+    - name: Build and test Docker image
+      run: |
+        docker build -f src/api/Dockerfile -t ghcr.io/${{ github.repository_owner }}/l4h-api:${{ github.sha }} .
+        docker run --rm -d --name l4h-test -p 8080:8080 -e ASPNETCORE_ENVIRONMENT=Development ghcr.io/${{ github.repository_owner }}/l4h-api:${{ github.sha }}
+        sleep 15
+        curl -f http://localhost:8080/healthz || (docker logs l4h-test && exit 1)
+        docker stop l4h-test
+        echo "✅ Docker image test successful"
 
   docker-build-push:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     permissions:
       contents: read
       packages: write
@@ -85,7 +137,7 @@ jobs:
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
-        password: ${{ secrets.CR_PAT }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract metadata
       id: meta
@@ -93,8 +145,6 @@ jobs:
       with:
         images: |
           ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-upload-gateway
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-scraper
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -108,24 +158,6 @@ jobs:
         file: src/api/Dockerfile
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api:latest
-        labels: ${{ steps.meta.outputs.labels }}
-
-    - name: Build and push Upload Gateway image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: src/upload-gateway/Dockerfile
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-upload-gateway:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-upload-gateway:latest
-        labels: ${{ steps.meta.outputs.labels }}
-
-    - name: Build and push Scraper image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: src/scraper/Dockerfile
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-scraper:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-scraper:latest
         labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
@@ -146,16 +178,11 @@ jobs:
           web/cannlaw/package-lock.json
           web/shared-ui/package-lock.json
 
-    - name: Install UI dependencies
+    - name: Install and build UI artifacts
       run: |
-        cd web/shared-ui && npm ci
-        cd ../l4h && npm ci
-        cd ../cannlaw && npm ci
-
-    - name: Build UI artifacts
-      run: |
-        cd web/l4h && npm run build
-        cd ../cannlaw && npm run build
+        cd web/shared-ui && npm ci && npm run build
+        cd ../l4h && npm ci && npm run build
+        cd ../cannlaw && npm ci && npm run build
 
     - name: Deploy to server
       uses: appleboy/ssh-action@v1.0.3

@@ -22,8 +22,8 @@ public abstract class SqlServerDbTestBase : IDisposable
         _serviceProvider = services.BuildServiceProvider();
         DbContext = _serviceProvider.GetRequiredService<L4HDbContext>();
 
-        // Ensure the database is created
-        DbContext.Database.EnsureCreated();
+        // Apply migrations to create the database with the latest schema
+        DbContext.Database.Migrate();
     }
 
     public void Dispose()

@@ -296,6 +296,15 @@ public class AuthService : IAuthService
         if (!string.IsNullOrEmpty(request.Nationality))
             user.Nationality = request.Nationality;
 
+        if (request.DateOfBirth.HasValue)
+            user.DateOfBirth = request.DateOfBirth.Value;
+
+        if (!string.IsNullOrEmpty(request.MaritalStatus))
+            user.MaritalStatus = request.MaritalStatus;
+
+        if (!string.IsNullOrEmpty(request.Gender))
+            user.Gender = request.Gender;
+
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         return Result<MessageResponse>.Success(
@@ -311,6 +320,7 @@ public class AuthService : IAuthService
                !string.IsNullOrEmpty(user.City) &&
                !string.IsNullOrEmpty(user.PostalCode) &&
                !string.IsNullOrEmpty(user.MaritalStatus) &&
+               !string.IsNullOrEmpty(user.Gender) &&
                user.DateOfBirth.HasValue;
     }
 

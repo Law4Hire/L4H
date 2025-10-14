@@ -1,10 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
-  plugins: [react()],
-  base: '/law4hire/',
-  build: {
+export default defineConfig(({ mode }) => {
+  const isProduction = mode === 'production';
+
+  return {
+    plugins: [react()],
+    base: isProduction ? '/law4hire/' : '/',
+    build: {
     outDir: 'dist'
   },
   server: {
@@ -20,4 +23,4 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
   }
-})
+}});

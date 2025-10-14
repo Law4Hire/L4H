@@ -41,6 +41,16 @@ public class PublicController : ControllerBase
     }
 
     /// <summary>
+    /// Get all available visa types (alias for compatibility)
+    /// </summary>
+    [HttpGet("~/api/v1/visa-types")]
+    [ProducesResponseType<IEnumerable<VisaTypeInfo>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetVisaTypesAlias()
+    {
+        return await GetVisaTypes().ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Get simple list of all visa type codes and names
     /// </summary>
     [HttpGet("visa-list")]

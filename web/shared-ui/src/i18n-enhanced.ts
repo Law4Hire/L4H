@@ -84,6 +84,7 @@ const resources = {
       'nav.invoices': 'Invoices',
       'nav.visaLibrary': 'Visa Library',
       'nav.interview': 'Interview',
+      'nav.scheduling': 'Schedule Interview',
       'nav.admin': 'Admin',
       'nav.hello': 'Hello',
       'auth.login': 'Login',
@@ -186,6 +187,29 @@ const resources = {
       'visaLibrary.visas.EB4.description': 'Fourth preference employment-based green card for special immigrants.',
       'visaLibrary.visas.EB5.name': 'Immigrant Investors',
       'visaLibrary.visas.EB5.description': 'Fifth preference employment-based green card for investors.',
+      // Interview keys
+      'interview.title': 'Visa Eligibility Interview',
+      'interview.selectOption': 'Select an option',
+      'interview.next': 'Next Question',
+      'interview.loading': 'Loading...',
+      'interview.progress.title': 'Progress',
+      'interview.progress.stats': 'Question {current} | {remaining} remaining',
+      'interview.enterAnswer': 'Enter your answer',
+      'interview.restart': 'Reset',
+      'interview.complete.title': 'Interview Complete',
+      'interview.complete.congratulations': 'Congratulations!',
+      'interview.complete.description': 'Based on your answers, we have a visa recommendation for you.',
+      'interview.complete.stats': 'Questions asked: {count} | Adaptive system narrowed down from 88+ visa types',
+      'interview.recommended.visa': 'Recommended Visa Type',
+      'interview.backToDashboard': 'Back to Dashboard',
+      'interview.viewPackages': 'View Service Packages',
+      // Admin keys
+      'admin.userManagement': 'User Management',
+      'admin.userDetails': 'User Details',
+      'admin.pricingManagement': 'Pricing Management',
+      'admin.caseManagement': 'Case Management',
+      // Case keys
+      'case.detail.title': 'Case Details',
     },
     nav: {
       login: 'Login',
@@ -466,6 +490,38 @@ const resources = {
       profit: 'Profit',
       loss: 'Loss',
     },
+    interview: {
+      title: 'Visa Eligibility Interview',
+      question: 'Question',
+      nextQuestion: 'Next Question',
+      previousQuestion: 'Previous Question',
+      complete: 'Complete Interview',
+      restart: 'Reset',
+      selectOption: 'Select an option',
+      loading: 'Loading...',
+      progress: {
+        title: 'Adaptive Interview Progress',
+        stats: 'Question {{current}} | {{remaining}} visa types remaining'
+      },
+      next: 'Next Question'
+    },
+    questions: {
+      'q.root.category': 'Which category best fits your situation?'
+    },
+    options: {
+      'Visit & Transit': 'Visit & Transit',
+      'Study & Exchange': 'Study & Exchange',
+      'Work & Talent': 'Work & Talent',
+      'Family & Fiancé': 'Family & Fiancé',
+      'Diplomatic, IO & NATO': 'Diplomatic, IO & NATO',
+      'Humanitarian & Law Enforcement': 'Humanitarian & Law Enforcement',
+      'Immigration (Permanent Residence)': 'Immigration (Permanent Residence)',
+      'Foreign Adoption': 'Foreign Adoption',
+      'Citizenship (N-400)': 'Citizenship (N-400)'
+    },
+    outcomes: {
+      // Future visa recommendation outcomes
+    }
   },
   'es-ES': {
     common: {
@@ -894,6 +950,23 @@ const resources = {
       expenses: 'Gastos',
       profit: 'Ganancia',
       loss: 'Pérdida',
+    },
+    interview: {
+      title: 'Entrevista de Elegibilidad de Visa',
+      question: 'Pregunta',
+      nextQuestion: 'Siguiente Pregunta',
+      previousQuestion: 'Pregunta Anterior',
+      complete: 'Completar Entrevista',
+      restart: 'Reiniciar',
+      selectOption: 'Selecciona una opción',
+      loading: 'Cargando...',
+      progress: {
+        title: 'Progreso de Entrevista Adaptativa',
+        stats: 'Pregunta {{current}} | {{remaining}} tipos de visa restantes'
+      },
+      next: 'Siguiente Pregunta',
+      backToDashboard: 'Volver al Panel',
+      viewPackages: 'Ver Paquetes de Servicios'
     },
   },
   'ar-SA': {
@@ -2475,6 +2548,42 @@ const resources = {
       passwordNeedsMoreClasses: 'Le mot de passe doit contenir au moins {{count}} types de caractères différents',
       rateLimitExceeded: 'Trop de demandes. Veuillez réessayer plus tard.',
       alreadyHaveAccount: 'Vous avez déjà un compte?',
+      // Profile completion translations
+      completeProfile: 'Complétez votre profil',
+      profileCompletionDescription: 'Aidez-nous à mieux vous servir en complétant les informations de votre profil.',
+      profileCompleted: 'Profil complété avec succès !',
+      profileCompletionFailed: 'Échec de la finalisation du profil. Veuillez réessayer.',
+      countryOfResidence: 'Pays de résidence',
+      selectCountry: 'Rechercher et sélectionner votre pays...',
+      noCountriesFound: 'Aucun pays trouvé',
+      stateTerritory: 'État/Territoire',
+      selectState: 'Rechercher et sélectionner votre état...',
+      noStatesFound: 'Aucun état trouvé',
+      streetAddress: 'Adresse postale',
+      streetAddressRequired: 'L\'adresse postale est requise',
+      city: 'Ville',
+      cityRequired: 'La ville est requise',
+      postalCode: 'Code postal',
+      postalCodeRequired: 'Le code postal est requis',
+      passportCountry: 'Pays du passeport (Nationalité)',
+      selectPassportCountry: 'Rechercher et sélectionner votre pays de passeport...',
+      dateOfBirth: 'Date de naissance',
+      dateOfBirthRequired: 'La date de naissance est requise',
+      dateOfBirthInvalid: 'Veuillez entrer une date valide',
+      dateOfBirthTooOld: 'Veuillez entrer une date de naissance valide',
+      dateOfBirthFuture: 'La date de naissance ne peut pas être dans le futur',
+      maritalStatus: 'État civil',
+      maritalStatusRequired: 'L\'état civil est requis',
+      selectMaritalStatus: 'Sélectionner l\'état civil...',
+      single: 'Célibataire',
+      married: 'Marié(e)',
+      divorced: 'Divorcé(e)',
+      widowed: 'Veuf/Veuve',
+      guardianEmails: 'Adresses e-mail des parents/tuteurs',
+      guardianEmailsNote: 'Les tuteurs recevront des invitations pour consulter votre dossier',
+      guardianEmail: 'E-mail du tuteur',
+      addGuardianEmail: 'Ajouter un autre e-mail de tuteur',
+      skipForNow: 'Ignorer pour l\'instant',
     },
     login: {
       title: 'Se connecter à Law4Hire',
@@ -2693,6 +2802,40 @@ const resources = {
       expenses: 'Dépenses',
       profit: 'Profit',
       loss: 'Perte',
+    },
+    interview: {
+      title: 'Entretien d\'éligibilité de visa',
+      question: 'Question',
+      nextQuestion: 'Question suivante',
+      previousQuestion: 'Question précédente',
+      complete: 'Terminer l\'entretien',
+      restart: 'Recommencer',
+      selectOption: 'Sélectionnez une option',
+      loading: 'Chargement...',
+      progress: {
+        title: 'Progression de l\'entretien adaptatif',
+        stats: 'Question {{current}} | {{remaining}} types de visa restants'
+      },
+      next: 'Question suivante',
+      backToDashboard: 'Retour au tableau de bord',
+      viewPackages: 'Voir les packages de services'
+    },
+    questions: {
+      'q.root.category': 'Quelle catégorie correspond le mieux à votre situation ?'
+    },
+    options: {
+      'Visit & Transit': 'Visite et Transit',
+      'Study & Exchange': 'Études et Échange',
+      'Work & Talent': 'Travail et Talent',
+      'Family & Fiancé': 'Famille et Fiancé(e)',
+      'Diplomatic, IO & NATO': 'Diplomatique, OI et OTAN',
+      'Humanitarian & Law Enforcement': 'Humanitaire et Application de la Loi',
+      'Immigration (Permanent Residence)': 'Immigration (Résidence Permanente)',
+      'Foreign Adoption': 'Adoption Étrangère',
+      'Citizenship (N-400)': 'Citoyenneté (N-400)'
+    },
+    outcomes: {
+      // Add outcomes translations as needed
     },
   },
   'hi-IN': {
@@ -4192,6 +4335,23 @@ const resources = {
         exploreVisas: 'Poznaj Typy Wiz'
       }
     },
+    interview: {
+      title: 'Rozmowa Kwalifikacyjna na Wizę',
+      question: 'Pytanie',
+      nextQuestion: 'Następne Pytanie',
+      previousQuestion: 'Poprzednie Pytanie',
+      complete: 'Zakończ Rozmowę',
+      restart: 'Resetuj',
+      selectOption: 'Wybierz opcję',
+      loading: 'Ładowanie...',
+      progress: {
+        title: 'Postęp Adaptacyjnej Rozmowy',
+        stats: 'Pytanie {{current}} | pozostało {{remaining}} typów wiz'
+      },
+      next: 'Następne Pytanie',
+      backToDashboard: 'Powrót do Panelu',
+      viewPackages: 'Zobacz Pakiety Usług'
+    },
   },
   'pt-PT': {
     common: {
@@ -4596,6 +4756,23 @@ const resources = {
         exploreVisas: 'Изучить Типы Виз'
       }
     },
+    interview: {
+      title: 'Интервью на право получения визы',
+      question: 'Вопрос',
+      nextQuestion: 'Следующий вопрос',
+      previousQuestion: 'Предыдущий вопрос',
+      complete: 'Завершить интервью',
+      restart: 'Сбросить',
+      selectOption: 'Выберите вариант',
+      loading: 'Загрузка...',
+      progress: {
+        title: 'Прогресс адаптивного интервью',
+        stats: 'Вопрос {{current}} | осталось {{remaining}} типов виз'
+      },
+      next: 'Следующий вопрос',
+      backToDashboard: 'Назад к панели управления',
+      viewPackages: 'Посмотреть пакеты услуг'
+    },
   },
   'ta-IN': {
     common: {
@@ -4797,6 +4974,23 @@ const resources = {
         startCase: 'இன்றே உங்கள் வழக்கைத் தொடங்குங்கள்',
         exploreVisas: 'விசா வகைகளை ஆராயுங்கள்'
       }
+    },
+    interview: {
+      title: 'விசா தகுதி நேர்காணல்',
+      question: 'கேள்வி',
+      nextQuestion: 'அடுத்த கேள்வி',
+      previousQuestion: 'முந்தைய கேள்வி',
+      complete: 'நேர்காணலை முடிக்கவும்',
+      restart: 'மீட்டமைக்கவும்',
+      selectOption: 'ஒரு விருப்பத்தைத் தேர்ந்தெடுக்கவும்',
+      loading: 'ஏற்றுகிறது...',
+      progress: {
+        title: 'தகவமைப்பு நேர்காணல் முன்னேற்றம்',
+        stats: 'கேள்வி {{current}} | {{remaining}} விசா வகைகள் மீதமுள்ளன'
+      },
+      next: 'அடுத்த கேள்வி',
+      backToDashboard: 'டாஷ்போர்டுக்குத் திரும்பு',
+      viewPackages: 'சேவை தொகுப்புகளைப் பார்க்கவும்'
     },
   },
   'te-IN': {
@@ -5201,6 +5395,23 @@ const resources = {
         startCase: 'Davanızı Bugün Başlatın',
         exploreVisas: 'Vize Türlerini Keşfedin'
       }
+    },
+    interview: {
+      title: 'Vize Uygunluk Mülakatı',
+      question: 'Soru',
+      nextQuestion: 'Sonraki Soru',
+      previousQuestion: 'Önceki Soru',
+      complete: 'Mülakatı Tamamla',
+      restart: 'Sıfırla',
+      selectOption: 'Bir seçenek seçin',
+      loading: 'Yükleniyor...',
+      progress: {
+        title: 'Uyarlanabilir Mülakat İlerlemesi',
+        stats: 'Soru {{current}} | {{remaining}} vize türü kaldı'
+      },
+      next: 'Sonraki Soru',
+      backToDashboard: 'Panoya Dön',
+      viewPackages: 'Hizmet Paketlerini Görüntüle'
     },
   },
   'ur-PK': {
@@ -5808,7 +6019,70 @@ const resources = {
         exploreVisas: '探索签证类型'
       }
     },
+    interview: {
+      title: '签证资格面试',
+      question: '问题',
+      nextQuestion: '下一个问题',
+      previousQuestion: '上一个问题',
+      complete: '完成面试',
+      restart: '重置',
+      selectOption: '选择一个选项',
+      loading: '加载中...',
+      progress: {
+        title: '自适应面试进度',
+        stats: '问题 {{current}} | 剩余 {{remaining}} 种签证类型'
+      },
+      next: '下一个问题',
+      backToDashboard: '返回仪表板',
+      viewPackages: '查看服务套餐'
+    },
   },
+}
+
+// Cookie utility functions
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null
+  return null
+}
+
+function setCookie(name: string, value: string, days = 365): void {
+  if (typeof document === 'undefined') return
+
+  const expires = new Date()
+  expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000))
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`
+}
+
+// Get saved language from cookie or default to browser preference
+function getInitialLanguage(): string {
+  // First check for saved language in cookie
+  const savedLanguage = getCookie('l4h-language')
+  if (savedLanguage && Object.keys(CULTURE_NAMES).includes(savedLanguage)) {
+    return savedLanguage
+  }
+
+  // Fall back to browser language detection
+  if (typeof navigator !== 'undefined') {
+    const browserLang = navigator.language
+    // Check if we support the exact language
+    if (Object.keys(CULTURE_NAMES).includes(browserLang)) {
+      return browserLang
+    }
+
+    // Check if we support the language family (e.g., 'en' from 'en-GB')
+    const langFamily = browserLang.split('-')[0]
+    const supportedLang = Object.keys(CULTURE_NAMES).find(lang => lang.startsWith(langFamily))
+    if (supportedLang) {
+      return supportedLang
+    }
+  }
+
+  // Default to English
+  return 'en-US'
 }
 
 // Initialize i18next with all namespaces
@@ -5816,15 +6090,15 @@ const initPromise = i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en-US',
+    lng: getInitialLanguage(),
     fallbackLng: 'en-US',
     defaultNS: 'common',
-    ns: ['common', 'nav', 'auth', 'status', 'pricing', 'appointments', 'messages', 'uploads', 'admin', 'reports', 'login', 'app', 'brand', 'dashboard', 'case', 'landing'],
+    ns: ['common', 'nav', 'auth', 'status', 'pricing', 'appointments', 'messages', 'uploads', 'admin', 'reports', 'login', 'app', 'brand', 'dashboard', 'case', 'landing', 'interview', 'questions', 'options', 'outcomes'],
     interpolation: {
       escapeValue: false
     },
     react: {
-      useSuspense: false // Prevent render blocking
+      useSuspense: true // Enable suspense for proper loading
     },
     debug: true,
     returnEmptyString: false, // Always return the key if translation not found
@@ -5834,8 +6108,16 @@ const initPromise = i18n
     saveMissing: false
   })
 
-// Ensure i18n is ready
-export const i18nReady = initPromise
+// Ensure i18n is ready and register interview resources
+export const i18nReady = initPromise.then(async () => {
+  // Interview resources are now loaded via the new i18n-config system
+  // No need to load from CSV anymore
+  
+  // Expose i18n to window for debugging
+  if (typeof window !== 'undefined') {
+    (window as any).i18next = i18n
+  }
+})
 
 export default i18n
 
@@ -5857,6 +6139,8 @@ export function getSupportedCultures(): Culture[] {
 export async function setCulture(cultureCode: string): Promise<void> {
   await i18n.changeLanguage(cultureCode)
   setRTLDirection(cultureCode)
+  // Save language preference to cookie
+  setCookie('l4h-language', cultureCode)
 }
 
 // Note: CSRF token function removed as it's not used in local-only mode

@@ -22,6 +22,15 @@ public class CountriesSeeder : ISeedTask
     public async Task ExecuteAsync()
     {
         var existingCount = await _context.Countries.CountAsync().ConfigureAwait(false);
+
+        // If we have less than 214 countries, delete and reseed all
+        if (existingCount > 0 && existingCount < 214)
+        {
+            _logger.LogInformation("Found incomplete country data ({Count} records), clearing and reseeding all countries", existingCount);
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM Countries").ConfigureAwait(false);
+            existingCount = 0;
+        }
+
         if (existingCount > 0)
         {
             _logger.LogDebug("Countries already seeded ({Count} records), skipping", existingCount);

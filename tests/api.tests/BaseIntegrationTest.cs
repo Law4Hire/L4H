@@ -60,8 +60,8 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
         using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
         
-        // Create the database
-        context.Database.EnsureCreated();
+        // Apply migrations to create the database with the latest schema
+        context.Database.Migrate();
         
         // Seed essential reference data
         SeedEssentialData(context);

@@ -11,7 +11,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/messaging")]
+[Route("api/v1/messaging")]
 [Authorize]
 [Tags("Messages")]
 public class MessagingController : ControllerBase

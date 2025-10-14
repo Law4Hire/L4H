@@ -98,6 +98,7 @@
 
 
 
+
   - Remove all hardcoded English strings from InterviewPage and related components
   - Implement proper translation key usage throughout the interview UI
   - Add progress indicators and improved user experience elements

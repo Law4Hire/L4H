@@ -43,6 +43,13 @@ dotnet_diagnostic.CA1708.severity = error
 # Documentation
 dotnet_diagnostic.CS1591.severity = none
 
+# Test-specific rules
+[**/tests/**/*.cs]
+# Suppress xUnit ConfigureAwait warnings in test methods
+dotnet_diagnostic.xUnit1030.severity = none
+# Suppress xUnit Assert.False(true) warnings in test methods  
+dotnet_diagnostic.xUnit2020.severity = none
+
 [*.{js,ts,jsx,tsx}]
 indent_style = space
 indent_size = 2

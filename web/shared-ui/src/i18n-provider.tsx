@@ -1,13 +1,25 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
-import i18n, { CULTURE_NAMES, Culture, i18nReady } from './i18n-enhanced'
+import i18n, { CULTURE_NAMES, SUPPORTED_LANGUAGES, isRTL, i18nReady } from './i18n-config'
 import { i18n as i18nApi } from './api-client'
+import { useTranslationErrorHandling } from './hooks/useTranslationErrorHandling'
+import TranslationErrorNotification from './components/TranslationErrorNotification'
+
+export interface Culture {
+  code: string
+  displayName: string
+}
 
 interface I18nContextType {
   cultures: Culture[]
   currentCulture: string
   setCurrentCulture: (culture: string) => Promise<void>
   isLoading: boolean
+  isRTL: boolean
+  supportedLanguages: string[]
+  hasTranslationErrors: boolean
+  isFallbackActive: boolean
+  retryTranslations: () => Promise<boolean>
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined)
@@ -21,9 +33,19 @@ export function I18nProvider({ children }: I18nProviderProps) {
   const [currentCulture, setCurrentCultureState] = useState(i18n.language)
   const [isLoading, setIsLoading] = useState(true)
   const [i18nInitialized, setI18nInitialized] = useState(false)
-  // Use the explicitly imported i18n instance instead of getting it from useTranslation
-
-  // I18nProvider initialization - shared i18n instance is now properly connected
+  const [currentIsRTL, setCurrentIsRTL] = useState(false)
+  
+  // Use translation error handling
+  const {
+    hasErrors,
+    isFallbackActive,
+    retry,
+    showNotification,
+    dismissNotification
+  } = useTranslationErrorHandling(currentCulture, undefined, {
+    enableNotifications: true,
+    enableAutoRetry: true
+  })
 
   useEffect(() => {
     const initializeI18n = async () => {
@@ -38,14 +60,19 @@ export function I18nProvider({ children }: I18nProviderProps) {
           displayName
         }))
         setCultures(supportedCultures)
+        
+        // Set initial RTL state
+        setCurrentIsRTL(isRTL(i18n.language))
       } catch (error) {
         console.error('Failed to initialize i18n:', error)
         // Fallback to basic cultures
         setCultures([
           { code: 'en-US', displayName: 'English (United States)' },
           { code: 'es-ES', displayName: 'Español (España)' },
+          { code: 'fr-FR', displayName: 'Français (France)' },
           { code: 'ar-SA', displayName: 'العربية (السعودية)' }
         ])
+        setCurrentIsRTL(false)
       } finally {
         setIsLoading(false)
       }
@@ -58,6 +85,7 @@ export function I18nProvider({ children }: I18nProviderProps) {
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
       setCurrentCultureState(lng)
+      setCurrentIsRTL(isRTL(lng))
     }
 
     i18n.on('languageChanged', handleLanguageChange)
@@ -97,7 +125,12 @@ export function I18nProvider({ children }: I18nProviderProps) {
     cultures,
     currentCulture,
     setCurrentCulture,
-    isLoading
+    isLoading,
+    isRTL: currentIsRTL,
+    supportedLanguages: SUPPORTED_LANGUAGES,
+    hasTranslationErrors: hasErrors,
+    isFallbackActive,
+    retryTranslations: retry
   }
 
   // Don't render children until i18n is initialized
@@ -109,6 +142,13 @@ export function I18nProvider({ children }: I18nProviderProps) {
     <I18nextProvider i18n={i18n}>
       <I18nContext.Provider value={value}>
         {children}
+        {showNotification && (
+          <TranslationErrorNotification
+            language={currentCulture}
+            onRetry={retry}
+            onDismiss={dismissNotification}
+          />
+        )}
       </I18nContext.Provider>
     </I18nextProvider>
   )

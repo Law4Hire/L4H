@@ -90,7 +90,9 @@ public class VisaTypesSeeder : ISeedTask
             new() { Code = "H-1B", Name = "Specialty Occupation Worker", IsActive = true },
             new() { Code = "L-1", Name = "Intracompany Transferee", IsActive = true },
             new() { Code = "O-1", Name = "Extraordinary Ability", IsActive = true },
-            new() { Code = "EB-5", Name = "Immigrant Investor", IsActive = true }
+            new() { Code = "EB-5", Name = "Immigrant Investor", IsActive = true },
+            new() { Code = "IR-3", Name = "Immediate Relative - Adoption Completed Abroad", IsActive = true },
+            new() { Code = "IR-4", Name = "Immediate Relative - Adoption to be Completed in US", IsActive = true }
         };
     }
 

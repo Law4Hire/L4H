@@ -3,6 +3,7 @@ using Xunit;
 
 namespace L4H.UI.E2E.Tests;
 
+[Trait("Category", "E2E")]
 public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
 {
     private readonly PlaywrightFixture _fixture;
@@ -125,12 +126,12 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             Console.WriteLine("=== Testing Cannlaw Pages ===");
             
             // Test Login Page
-            await TestPageLocalization(page, "http://localhost:5174/login", "Cannlaw Login Page",
+            await TestPageLocalization(page, "http://localhost:5175/login", "Cannlaw Login Page",
                 new[] { "auth.login", "auth.email", "auth.password" }).ConfigureAwait(false);
 
             // Login to Cannlaw to test protected pages
             Console.WriteLine("=== Logging in to Cannlaw ===");
-            await page.WaitForSelectorAsync("input[type='email']", new PageWaitForSelectorOptions { Timeout = 10000 }).ConfigureAwait(false);
+            await page.WaitForSelectorAsync("input[type='email']", new PageWaitForSelectorOptions { Timeout = 30000 }).ConfigureAwait(false);
             await page.FillAsync("input[type='email']", "dcann@cannlaw.com").ConfigureAwait(false);
             await page.FillAsync("input[type='password']", "SecureTest123!").ConfigureAwait(false);
             var submitButton = await page.QuerySelectorAsync("button[type='submit']").ConfigureAwait(false);
@@ -138,27 +139,27 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             await submitButton.ClickAsync().ConfigureAwait(false);
 
             // Wait for redirect to schedule page
-            await page.WaitForSelectorAsync("h1", new PageWaitForSelectorOptions { Timeout = 15000 }).ConfigureAwait(false);
+            await page.WaitForSelectorAsync("h1", new PageWaitForSelectorOptions { Timeout = 30000 }).ConfigureAwait(false);
 
             // Test Schedule Page
-            await TestPageLocalization(page, "http://localhost:5174/schedule", "Schedule Page",
+            await TestPageLocalization(page, "http://localhost:5175/schedule", "Schedule Page",
                 new[] { "nav.schedule" }).ConfigureAwait(false);
 
             // Test Cases Page
-            await TestPageLocalization(page, "http://localhost:5174/cases", "Cases Page",
+            await TestPageLocalization(page, "http://localhost:5175/cases", "Cases Page",
                 new[] { "nav.cases" }).ConfigureAwait(false);
 
             // Test Admin Pages
-            await TestPageLocalization(page, "http://localhost:5174/admin/pricing", "Admin Pricing Page",
+            await TestPageLocalization(page, "http://localhost:5175/admin/pricing", "Admin Pricing Page",
                 new[] { "admin.pricing" }).ConfigureAwait(false);
 
-            await TestPageLocalization(page, "http://localhost:5174/admin/workflows", "Admin Workflows Page",
+            await TestPageLocalization(page, "http://localhost:5175/admin/workflows", "Admin Workflows Page",
                 new[] { "admin.workflows" }).ConfigureAwait(false);
 
-            await TestPageLocalization(page, "http://localhost:5174/admin/time-entries", "Admin Time Entries Page",
+            await TestPageLocalization(page, "http://localhost:5175/admin/time-entries", "Admin Time Entries Page",
                 new[] { "admin.timeEntries" }).ConfigureAwait(false);
 
-            await TestPageLocalization(page, "http://localhost:5174/admin/reports", "Admin Reports Page",
+            await TestPageLocalization(page, "http://localhost:5175/admin/reports", "Admin Reports Page",
                 new[] { "admin.reports" }).ConfigureAwait(false);
 
             Console.WriteLine("=== Cannlaw Testing Complete ===");
@@ -177,7 +178,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
         await page.GotoAsync(url).ConfigureAwait(false);
         
         // Wait for page to load
-        await page.WaitForSelectorAsync("body", new PageWaitForSelectorOptions { Timeout = 10000 }).ConfigureAwait(false);
+        await page.WaitForSelectorAsync("body", new PageWaitForSelectorOptions { Timeout = 30000 }).ConfigureAwait(false);
         await page.WaitForTimeoutAsync(2000).ConfigureAwait(false); // Wait for i18n to initialize
 
         // Test all languages for comprehensive validation

@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/auth")]
+[Route("api/v1/auth")]
 [Tags("Authentication")]
 public class AuthController : ControllerBase
 {
@@ -24,6 +24,7 @@ public class AuthController : ControllerBase
     private readonly IStringLocalizer<Shared> _localizer;
     private readonly AuthConfig _authConfig;
     private readonly ILogger<AuthController> _logger;
+    private readonly IMailService _mailService;
 
     public AuthController(
         IAuthService authService,
@@ -35,7 +36,8 @@ public class AuthController : ControllerBase
         IAccountLockoutService accountLockoutService,
         IStringLocalizer<Shared> localizer,
         IOptions<AuthConfig> authConfig,
-        ILogger<AuthController> logger)
+        ILogger<AuthController> logger,
+        IMailService mailService)
     {
         _authService = authService;
         _rememberMeTokenService = rememberMeTokenService;
@@ -47,6 +49,7 @@ public class AuthController : ControllerBase
         _localizer = localizer;
         _authConfig = authConfig.Value;
         _logger = logger;
+        _mailService = mailService;
     }
 
     /// <summary>
@@ -108,6 +111,9 @@ public class AuthController : ControllerBase
             _logger.LogInformation("Email verification token for {Email}: {Token}", request.Email, verificationToken);
         }
 
+        // Create a session for the user
+        var session = await _sessionManagementService.CreateSessionAsync(result.Value.UserId.Value, HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown", Request.Headers["User-Agent"].ToString()).ConfigureAwait(false);
+
         return Ok(result.Value);
     }
 
@@ -151,9 +157,19 @@ public class AuthController : ControllerBase
             {
                 await _accountLockoutService.RecordFailedLoginAsync(result.Value.UserId.Value).ConfigureAwait(false);
             }
-            
-            return Unauthorized(new ProblemDetails 
-            { 
+
+            // Check if this is a specific inactive account error
+            if (result.Error!.Contains("deactivated"))
+            {
+                return Unauthorized(new ProblemDetails
+                {
+                    Title = "Account Deactivated",
+                    Detail = result.Error
+                });
+            }
+
+            return Unauthorized(new ProblemDetails
+            {
                 Title = "Authentication Failed",
                 Detail = _localizer["Auth.LoginFailed"]
             });
@@ -381,7 +397,12 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
     {
         if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Profile update validation failed. Errors: {Errors}",
+                string.Join("; ", ModelState.SelectMany(x => x.Value?.Errors ?? [], (kvp, error) =>
+                    $"{kvp.Key}: {error.ErrorMessage}")));
             return BadRequest(ModelState);
+        }
 
         var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userIdGuid))
@@ -391,6 +412,11 @@ public class AuthController : ControllerBase
         var userId = new UserId(userIdGuid);
 
         var result = await _authService.UpdateProfileAsync(userId, request).ConfigureAwait(false);
+
+        if (request.GuardianEmail != null)
+        {
+            await _mailService.SendEmailAsync(request.GuardianEmail, "Guardian Invitation", "You have been invited as a guardian.").ConfigureAwait(false);
+        }
         
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });

@@ -409,8 +409,8 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
         
-        // Create the database
-        context.Database.EnsureCreated();
+        // Apply migrations to create the database with the latest schema
+        context.Database.Migrate();
         
         // Seed essential reference data
         SeedEssentialData(context);

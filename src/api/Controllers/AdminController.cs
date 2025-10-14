@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
+using L4H.Infrastructure.Services;
 using L4H.Shared.Models;
 using System.Security.Claims;
 using System.Text.Json;
@@ -12,18 +13,22 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/admin")]
-[Authorize]
+[Route("api/v1/admin")]
+[Authorize(Policy = "IsAdmin")]
 [Tags("Admin")]
 public class AdminController : ControllerBase
 {
     private readonly L4HDbContext _context;
     private readonly IStringLocalizer<Shared> _localizer;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IEmailVerificationService _emailVerificationService;
 
-    public AdminController(L4HDbContext context, IStringLocalizer<Shared> localizer)
+    public AdminController(L4HDbContext context, IStringLocalizer<Shared> localizer, IPasswordHasher passwordHasher, IEmailVerificationService emailVerificationService)
     {
         _context = context;
         _localizer = localizer;
+        _passwordHasher = passwordHasher;
+        _emailVerificationService = emailVerificationService;
     }
 
     /// <summary>
@@ -35,14 +40,6 @@ public class AdminController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<AdminVisaTypesResponse[]>> GetAdminVisaTypes()
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
 
         var visaTypes = await _context.VisaTypes
             .Include(vt => vt.PricingRules)
@@ -104,15 +101,6 @@ public class AdminController : ControllerBase
         int id, 
         [FromBody] UpdateVisaTypePricingRequest request)
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         var visaType = await _context.VisaTypes
             .Include(vt => vt.PricingRules)
             .FirstOrDefaultAsync(vt => vt.Id == id).ConfigureAwait(false);
@@ -201,15 +189,6 @@ public class AdminController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<AdminPackageResponse[]>> GetAdminPackages()
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         var packages = await _context.Packages
             .OrderBy(p => p.SortOrder)
             .ToListAsync().ConfigureAwait(false);
@@ -242,15 +221,6 @@ public class AdminController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<AdminUserResponse[]>> GetAdminUsers()
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         var users = await _context.Users
             .OrderBy(u => u.CreatedAt)
             .ToListAsync().ConfigureAwait(false);
@@ -263,6 +233,7 @@ public class AdminController : ControllerBase
             LastName = u.LastName,
             IsAdmin = u.IsAdmin,
             IsStaff = u.IsStaff,
+            IsActive = u.IsActive,
             EmailVerified = u.EmailVerified,
             CreatedAt = u.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
         }).ToArray();
@@ -288,15 +259,6 @@ public class AdminController : ControllerBase
         string id, 
         [FromBody] UpdateUserRolesRequest request)
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         if (!Guid.TryParse(id, out var userId))
         {
             return BadRequest(new ProblemDetails
@@ -349,6 +311,229 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
+    /// Delete a user and all associated data
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <returns>Success message</returns>
+    [HttpDelete("users/{id}")]
+    [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<MessageResponse>> DeleteUser(string id)
+    {
+        if (!Guid.TryParse(id, out var userId))
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid User ID",
+                Detail = "User ID must be a valid GUID"
+            });
+        }
+
+        var user = await _context.Users
+            .Include(u => u.Cases)
+                .ThenInclude(c => c.InterviewSessions)
+            .Include(u => u.Cases)
+                .ThenInclude(c => c.Uploads)
+            .Include(u => u.SentMessages)
+            .Include(u => u.InterviewSessions)
+            .Include(u => u.DigestQueues)
+            .FirstOrDefaultAsync(u => u.Id == new UserId(userId))
+            .ConfigureAwait(false);
+
+        if (user == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "User Not Found",
+                Detail = _localizer["Admin.UserNotFound"]
+            });
+        }
+
+        // Prevent deletion of admin users (safety check)
+        if (user.IsAdmin)
+        {
+            return StatusCode(409, new ProblemDetails
+            {
+                Title = "Cannot Delete Admin",
+                Detail = "Admin users cannot be deleted for security reasons"
+            });
+        }
+
+        using var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false);
+        try
+        {
+            // Delete related data in proper order to avoid foreign key constraints
+
+            // Delete interview sessions and related data
+            foreach (var userCase in user.Cases)
+            {
+                _context.InterviewSessions.RemoveRange(userCase.InterviewSessions);
+                _context.Uploads.RemoveRange(userCase.Uploads);
+            }
+
+            // Delete user's direct interview sessions (not tied to cases)
+            _context.InterviewSessions.RemoveRange(user.InterviewSessions);
+
+            // Delete message threads and messages
+            var messageThreads = await _context.MessageThreads
+                .Where(mt => user.Cases.Select(c => c.Id).Contains(mt.CaseId))
+                .Include(mt => mt.Messages)
+                .ToListAsync().ConfigureAwait(false);
+
+            foreach (var thread in messageThreads)
+            {
+                _context.Messages.RemoveRange(thread.Messages);
+            }
+            _context.MessageThreads.RemoveRange(messageThreads);
+
+            // Delete sent messages (not in threads)
+            _context.Messages.RemoveRange(user.SentMessages);
+
+            // Delete daily digest queue entries
+            _context.DailyDigestQueues.RemoveRange(user.DigestQueues);
+
+            // Delete cases
+            _context.Cases.RemoveRange(user.Cases);
+
+            // Note: Audit logs are kept for record keeping and will be anonymized by setting ActorUserId to null
+            // This happens automatically when the user is deleted due to foreign key constraints
+
+            // Finally delete the user
+            _context.Users.Remove(user);
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await transaction.CommitAsync().ConfigureAwait(false);
+
+            // Log the deletion
+            await LogAuditAsync("admin", "user_delete", "User", id,
+                new { email = user.Email, deletedAt = DateTime.UtcNow }).ConfigureAwait(false);
+
+            return Ok(new MessageResponse
+            {
+                Message = _localizer["Admin.UserDeleted"]
+            });
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync().ConfigureAwait(false);
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = "Deletion Failed",
+                Detail = $"Failed to delete user: {ex.Message}"
+            });
+        }
+    }
+
+    /// <summary>
+    /// Change a user's password (admin only)
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <param name="request">Password change request</param>
+    /// <returns>Success message</returns>
+    [HttpPut("users/{id}/password")]
+    [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<MessageResponse>> ChangeUserPassword(
+        string id,
+        [FromBody] ChangeUserPasswordRequest request)
+    {
+        if (!Guid.TryParse(id, out var userId))
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid User ID",
+                Detail = "User ID must be a valid GUID"
+            });
+        }
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == new UserId(userId))
+            .ConfigureAwait(false);
+
+        if (user == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "User Not Found",
+                Detail = _localizer["Admin.UserNotFound"]
+            });
+        }
+
+        // Hash the new password
+        user.PasswordHash = _passwordHasher.HashPassword(request.NewPassword);
+        user.PasswordUpdatedAt = DateTime.UtcNow;
+        user.FailedLoginCount = 0; // Reset failed login count
+        user.LockoutUntil = null; // Clear any lockout
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Audit log
+        await LogAuditAsync("admin", "user_password_change", "User", id,
+            new { changedBy = GetCurrentUserId().ToString() }).ConfigureAwait(false);
+
+        return Ok(new MessageResponse
+        {
+            Message = _localizer["Admin.PasswordChanged"]
+        });
+    }
+
+    /// <summary>
+    /// Toggle user active status (admin only)
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <param name="request">Status change request</param>
+    /// <returns>Success message</returns>
+    [HttpPut("users/{id}/status")]
+    [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<MessageResponse>> ChangeUserStatus(
+        string id,
+        [FromBody] ChangeUserStatusRequest request)
+    {
+        if (!Guid.TryParse(id, out var userId))
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid User ID",
+                Detail = "User ID must be a valid GUID"
+            });
+        }
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == new UserId(userId))
+            .ConfigureAwait(false);
+
+        if (user == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "User Not Found",
+                Detail = _localizer["Admin.UserNotFound"]
+            });
+        }
+
+        var oldStatus = user.IsActive;
+        user.IsActive = request.IsActive;
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Audit log
+        await LogAuditAsync("admin", "user_status_change", "User", id,
+            new { oldStatus, newStatus = request.IsActive, changedBy = GetCurrentUserId().ToString() }).ConfigureAwait(false);
+
+        return Ok(new MessageResponse
+        {
+            Message = request.IsActive
+                ? _localizer["Admin.UserActivated"]
+                : _localizer["Admin.UserDeactivated"]
+        });
+    }
+
+    /// <summary>
     /// Get comprehensive platform analytics and reports
     /// </summary>
     /// <returns>Platform analytics dashboard data</returns>
@@ -357,15 +542,6 @@ public class AdminController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<AdminAnalyticsDashboardResponse>> GetAnalyticsDashboard()
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         var now = DateTime.UtcNow;
         var startOfMonth = new DateTime(now.Year, now.Month, 1);
         var startOfYear = new DateTime(now.Year, 1, 1);
@@ -476,15 +652,6 @@ public class AdminController : ControllerBase
         [FromQuery] DateTime? startDate = null,
         [FromQuery] DateTime? endDate = null)
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         var now = DateTime.UtcNow;
         var start = startDate ?? now.AddDays(-90); // Default to last 90 days
         var end = endDate ?? now;
@@ -553,6 +720,42 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
+    /// Get database statistics for admin overview
+    /// </summary>
+    /// <returns>Database statistics</returns>
+    [HttpGet("database-stats")]
+    [ProducesResponseType(typeof(DatabaseStatsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<DatabaseStatsResponse>> GetDatabaseStats()
+    {
+        var totalUsers = await _context.Users.CountAsync().ConfigureAwait(false);
+        var totalCases = await _context.Cases.CountAsync().ConfigureAwait(false);
+        var usersWithAssignedVisas = await _context.Cases
+            .Where(c => c.VisaType != null)
+            .Select(c => c.UserId)
+            .Distinct()
+            .CountAsync().ConfigureAwait(false);
+        var totalVisaTypes = await _context.VisaTypes.CountAsync().ConfigureAwait(false);
+        var activeVisaTypes = await _context.VisaTypes.CountAsync(v => v.IsActive).ConfigureAwait(false);
+
+        var response = new DatabaseStatsResponse
+        {
+            TotalUsers = totalUsers,
+            TotalCases = totalCases,
+            UsersWithAssignedVisas = usersWithAssignedVisas,
+            TotalVisaTypes = totalVisaTypes,
+            ActiveVisaTypes = activeVisaTypes,
+            GeneratedAt = DateTime.UtcNow
+        };
+
+        // Audit log
+        await LogAuditAsync("admin", "database_stats_view", "Database", "stats",
+            new { totalUsers, totalCases, usersWithAssignedVisas }).ConfigureAwait(false);
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Get user activity and engagement analytics
     /// </summary>
     /// <returns>User activity analytics data</returns>
@@ -561,15 +764,6 @@ public class AdminController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<AdminUserAnalyticsResponse>> GetUserAnalytics()
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         var now = DateTime.UtcNow;
         var thirtyDaysAgo = now.AddDays(-30);
         var sevenDaysAgo = now.AddDays(-7);
@@ -655,15 +849,6 @@ public class AdminController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<AdminCaseResponse[]>> GetAdminCases()
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         var cases = await _context.Cases
             .Include(c => c.User)
             .Include(c => c.VisaType)
@@ -719,15 +904,6 @@ public class AdminController : ControllerBase
         string id, 
         [FromBody] AdminUpdateCaseStatusRequest request)
     {
-        if (!IsAdmin())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = _localizer["Admin.Forbidden"]
-            });
-        }
-
         if (!Guid.TryParse(id, out var caseGuid))
         {
             return BadRequest(new ProblemDetails
@@ -770,6 +946,110 @@ public class AdminController : ControllerBase
         return Ok(new MessageResponse
         {
             Message = _localizer["Admin.CaseStatusUpdated"]
+        });
+    }
+
+    /// <summary>
+    /// Generate a new verification token for a user (admin only)
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <returns>New verification token</returns>
+    [HttpPost("users/{id}/verification-token")]
+    [ProducesResponseType(typeof(AdminVerificationTokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<AdminVerificationTokenResponse>> GenerateVerificationToken(string id)
+    {
+        if (!Guid.TryParse(id, out var userId))
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid User ID",
+                Detail = "User ID must be a valid GUID"
+            });
+        }
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == new UserId(userId))
+            .ConfigureAwait(false);
+
+        if (user == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "User Not Found",
+                Detail = _localizer["Admin.UserNotFound"]
+            });
+        }
+
+        // Create new verification token
+        var token = await _emailVerificationService.CreateVerificationTokenAsync(user.Id).ConfigureAwait(false);
+
+        // Audit log
+        await LogAuditAsync("admin", "verification_token_generated", "User", id,
+            new { email = user.Email, generatedBy = GetCurrentUserId().ToString() }).ConfigureAwait(false);
+
+        return Ok(new AdminVerificationTokenResponse
+        {
+            Token = token,
+            UserEmail = user.Email,
+            UserId = user.Id.ToString(),
+            VerificationUrl = $"{Request.Scheme}://{Request.Host}/verify?token={Uri.EscapeDataString(token)}",
+            ExpiresAt = DateTime.UtcNow.AddHours(24)
+        });
+    }
+
+    /// <summary>
+    /// Generate a fresh demo verification token for testing (admin only)
+    /// </summary>
+    /// <returns>Fresh demo verification token</returns>
+    [HttpPost("demo/verification-token")]
+    [ProducesResponseType(typeof(AdminVerificationTokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<AdminVerificationTokenResponse>> GenerateDemoVerificationToken()
+    {
+        const string demoEmail = "demo@verification.test";
+
+        // Find the demo user
+        var demoUser = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == demoEmail)
+            .ConfigureAwait(false);
+
+        if (demoUser == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Demo User Not Found",
+                Detail = "Demo verification user not found. Please ensure the system is properly seeded."
+            });
+        }
+
+        // Invalidate any existing demo tokens by marking user as unverified
+        demoUser.EmailVerified = false;
+
+        // Remove any existing unused tokens for this user
+        var existingTokens = await _context.EmailVerificationTokens
+            .Where(evt => evt.UserId == demoUser.Id && evt.UsedAt == null)
+            .ToListAsync().ConfigureAwait(false);
+
+        _context.EmailVerificationTokens.RemoveRange(existingTokens);
+
+        // Create fresh verification token
+        var token = await _emailVerificationService.CreateVerificationTokenAsync(demoUser.Id).ConfigureAwait(false);
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Audit log
+        await LogAuditAsync("admin", "demo_verification_token_generated", "User", demoUser.Id.ToString(),
+            new { generatedBy = GetCurrentUserId().ToString() }).ConfigureAwait(false);
+
+        return Ok(new AdminVerificationTokenResponse
+        {
+            Token = token,
+            UserEmail = demoUser.Email,
+            UserId = demoUser.Id.ToString(),
+            VerificationUrl = $"{Request.Scheme}://{Request.Host}/verify?token={Uri.EscapeDataString(token)}",
+            ExpiresAt = DateTime.UtcNow.AddHours(24)
         });
     }
 
@@ -859,6 +1139,7 @@ public class AdminUserResponse
     public string LastName { get; set; } = string.Empty;
     public bool IsAdmin { get; set; }
     public bool IsStaff { get; set; }
+    public bool IsActive { get; set; }
     public bool EmailVerified { get; set; }
     public string CreatedAt { get; set; } = string.Empty;
 }
@@ -998,4 +1279,33 @@ public class AdminCountryStatsResponse
 {
     public string Country { get; set; } = string.Empty;
     public int UserCount { get; set; }
+}
+
+public class ChangeUserPasswordRequest
+{
+    public string NewPassword { get; set; } = string.Empty;
+}
+
+public class ChangeUserStatusRequest
+{
+    public bool IsActive { get; set; }
+}
+
+public class AdminVerificationTokenResponse
+{
+    public string Token { get; set; } = string.Empty;
+    public string UserEmail { get; set; } = string.Empty;
+    public string UserId { get; set; } = string.Empty;
+    public string VerificationUrl { get; set; } = string.Empty;
+    public DateTime ExpiresAt { get; set; }
+}
+
+public class DatabaseStatsResponse
+{
+    public int TotalUsers { get; set; }
+    public int TotalCases { get; set; }
+    public int UsersWithAssignedVisas { get; set; }
+    public int TotalVisaTypes { get; set; }
+    public int ActiveVisaTypes { get; set; }
+    public DateTime GeneratedAt { get; set; }
 }

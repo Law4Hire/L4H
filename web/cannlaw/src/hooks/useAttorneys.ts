@@ -8,6 +8,10 @@ interface Attorney {
   photoUrl: string
   email: string
   phone: string
+  directPhone: string
+  directEmail: string
+  officeLocation: string
+  defaultHourlyRate: number
   credentials: string // JSON array
   practiceAreas: string // JSON array
   languages: string // JSON array

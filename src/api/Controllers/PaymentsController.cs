@@ -8,7 +8,7 @@ using L4H.Api.Configuration;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/payments")]
+[Route("api/v1/payments")]
 [Authorize]
 [Tags("Payments")]
 public class PaymentsController : ControllerBase

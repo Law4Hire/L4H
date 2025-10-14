@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Globalization;
 using L4H.Api.Tests.TestHelpers;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
@@ -103,7 +104,7 @@ public sealed class SecurityHardeningTests : IClassFixture<WebApplicationFactory
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         
         var content = await response.Content.ReadAsStringAsync();
-        Assert.Contains("password", content.ToLower());
+        Assert.Contains("password", content.ToLower(CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -137,7 +138,7 @@ public sealed class SecurityHardeningTests : IClassFixture<WebApplicationFactory
         Assert.Equal(HttpStatusCode.Unauthorized, lockedResponse.StatusCode);
         
         var content = await lockedResponse.Content.ReadAsStringAsync();
-        Assert.Contains("locked", content.ToLower());
+        Assert.Contains("locked", content.ToLower(CultureInfo.InvariantCulture));
     }
 
     [Fact]

@@ -119,3 +119,18 @@ public class SelectVisaTypeRequest
     public Guid SessionId { get; set; }
     public string VisaTypeCode { get; set; } = string.Empty;
 }
+
+public class InterviewProgressResponse
+{
+    public Guid SessionId { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime StartedAt { get; set; }
+    public DateTime? FinishedAt { get; set; }
+    public int CurrentQuestionNumber { get; set; }
+    public int TotalQuestionsAnswered { get; set; }
+    public int EstimatedQuestionsRemaining { get; set; }
+    public int CompletionPercentage { get; set; }
+    public int RemainingVisaTypes { get; set; }
+    public List<string> RemainingVisaCodes { get; set; } = new();
+    public DateTime LastActivityAt { get; set; }
+}

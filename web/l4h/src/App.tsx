@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage'
 import ProfileCompletionPage from './pages/ProfileCompletionPage'
 import DashboardPage from './pages/DashboardPage'
 import PricingPage from './pages/PricingPage'
+import SchedulingPage from './pages/SchedulingPage'
 import AppointmentsPage from './pages/AppointmentsPage'
 import MessagesPage from './pages/MessagesPage'
 import UploadsPage from './pages/UploadsPage'
@@ -17,8 +18,11 @@ import VisaLibraryPage from './pages/VisaLibraryPage'
 import InterviewPage from './pages/InterviewPage'
 import AdminPage from './pages/AdminPage'
 import UserManagementPage from './pages/UserManagementPage'
+import UserDetailPage from './pages/UserDetailPage'
 import AdminPricingPage from './pages/AdminPricingPage'
+import { InterviewProvider } from './InterviewContext';
 import AdminCaseManagementPage from './pages/AdminCaseManagementPage'
+import CaseDetailPage from './pages/CaseDetailPage'
 import { useAuth } from './hooks/useAuth'
 
 function App() {
@@ -134,6 +138,21 @@ function App() {
           } 
         />
         <Route 
+          path="/scheduling" 
+          element={
+            <RouteGuard>
+              <Layout 
+                title={t('nav.scheduling')} 
+                showUserMenu={true} 
+                user={user} 
+                isAuthenticated={isAuthenticated}
+              >
+                <SchedulingPage />
+              </Layout>
+            </RouteGuard>
+          } 
+        />
+        <Route 
           path="/appointments" 
           element={
             <RouteGuard>
@@ -203,7 +222,9 @@ function App() {
                 user={user} 
                 isAuthenticated={isAuthenticated}
               >
-                <InterviewPage />
+                <InterviewProvider>
+                  <InterviewPage />
+                </InterviewProvider>
               </Layout>
             </RouteGuard>
           } 
@@ -223,27 +244,42 @@ function App() {
             </RouteGuard>
           } 
         />
-        <Route 
-          path="/admin/users" 
+        <Route
+          path="/admin/users"
           element={
             <RouteGuard>
-              <Layout 
-                title="User Management" 
-                showUserMenu={true} 
-                user={user} 
+              <Layout
+                title={t('admin.userManagement')}
+                showUserMenu={true}
+                user={user}
                 isAuthenticated={isAuthenticated}
               >
                 <UserManagementPage />
               </Layout>
             </RouteGuard>
-          } 
+          }
+        />
+        <Route
+          path="/admin/users/:userId"
+          element={
+            <RouteGuard>
+              <Layout
+                title={t('admin.userDetails')}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <UserDetailPage />
+              </Layout>
+            </RouteGuard>
+          }
         />
         <Route 
           path="/admin/pricing" 
           element={
             <RouteGuard>
               <Layout 
-                title="Pricing Management" 
+                title={t('admin.pricingManagement')}
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -253,20 +289,35 @@ function App() {
             </RouteGuard>
           } 
         />
-        <Route 
-          path="/admin/cases" 
+        <Route
+          path="/admin/cases"
           element={
             <RouteGuard>
-              <Layout 
-                title="Case Management" 
-                showUserMenu={true} 
-                user={user} 
+              <Layout
+                title={t('admin.caseManagement')}
+                showUserMenu={true}
+                user={user}
                 isAuthenticated={isAuthenticated}
               >
                 <AdminCaseManagementPage />
               </Layout>
             </RouteGuard>
-          } 
+          }
+        />
+        <Route
+          path="/cases/:id"
+          element={
+            <RouteGuard>
+              <Layout
+                title={t('case.detail.title')}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <CaseDetailPage />
+              </Layout>
+            </RouteGuard>
+          }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

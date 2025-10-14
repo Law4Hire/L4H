@@ -4,7 +4,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/i18n")]
+[Route("api/v1/i18n")]
 [Tags("Internationalization")]
 public class InternationalizationController : ControllerBase
 {

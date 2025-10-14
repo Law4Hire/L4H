@@ -51,6 +51,14 @@ public sealed class InterviewControllerTests : IDisposable
             });
         
         _client = _factory.CreateClient();
+        
+        // Ensure database is created with migrations
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+            context.Database.Migrate();
+        }
+        
         SeedTestData().GetAwaiter().GetResult();
     }
 

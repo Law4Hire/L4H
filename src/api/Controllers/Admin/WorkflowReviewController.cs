@@ -11,8 +11,8 @@ using System.Text.Json;
 namespace L4H.Api.Controllers.Admin;
 
 [ApiController]
-[Route("v1/admin/workflows")]
-[Authorize] // Assume admin check is handled by policy or custom authorization
+[Route("api/v1/admin/workflows")]
+[Authorize(Policy = "IsAdmin")]
 public class WorkflowReviewController : ControllerBase
 {
     private readonly L4HDbContext _context;
@@ -169,11 +169,6 @@ public class WorkflowReviewController : ControllerBase
         [FromBody] ApproveWorkflowRequest request,
         CancellationToken cancellationToken = default)
     {
-        // Check admin authorization first
-        if (!IsAdmin())
-        {
-            return Forbid();
-        }
 
         var workflow = await _context.WorkflowVersions
             .FirstOrDefaultAsync(w => w.Id == id, cancellationToken).ConfigureAwait(false);

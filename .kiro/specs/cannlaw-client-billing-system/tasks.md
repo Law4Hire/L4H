@@ -348,6 +348,7 @@
 
 
 
+
   - Test complete client management workflow from assignment to case completion
   - Validate time tracking accuracy with 6-minute increments and billing calculations
   - Test role-based access control for all user types and features

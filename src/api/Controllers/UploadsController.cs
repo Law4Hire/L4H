@@ -15,7 +15,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/uploads")]
+[Route("api/v1/uploads")]
 [Authorize]
 [Tags("Uploads")]
 public class UploadsController : ControllerBase

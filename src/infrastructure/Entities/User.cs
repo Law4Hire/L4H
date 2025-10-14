@@ -16,7 +16,12 @@ public class User
     public DateTimeOffset? LockoutUntil { get; set; }
     public bool IsAdmin { get; set; }
     public bool IsStaff { get; set; }
+    public bool IsLegalProfessional { get; set; }
     public bool IsActive { get; set; } = true;
+    
+    // Attorney Association for Legal Professionals
+    public int? AttorneyId { get; set; }
+    public Attorney? Attorney { get; set; }
 
     // Extended Profile Information
     public string PhoneNumber { get; set; } = string.Empty;

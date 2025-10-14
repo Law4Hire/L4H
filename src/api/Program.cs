@@ -132,6 +132,18 @@ else
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("IsAdmin", policy => policy.RequireClaim("is_admin", "true", "True"));
+    options.AddPolicy("IsLegalProfessional", policy => policy.RequireClaim("is_legal_professional", "true", "True"));
+    options.AddPolicy("IsAdminOrLegalProfessional", policy => 
+        policy.RequireAssertion(context => 
+            context.User.HasClaim("is_admin", "true") || 
+            context.User.HasClaim("is_admin", "True") ||
+            context.User.HasClaim("is_legal_professional", "true") ||
+            context.User.HasClaim("is_legal_professional", "True")));
+    options.AddPolicy("HasAttorneyAssignment", policy => 
+        policy.RequireAssertion(context => 
+            context.User.HasClaim("is_admin", "true") || 
+            context.User.HasClaim("is_admin", "True") ||
+            context.User.HasClaim(c => c.Type == "attorney_id")));
 });
 
             // Add HttpContextAccessor for CSRF service
@@ -185,8 +197,17 @@ builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IAdminSeedService, AdminSeedService>();
 builder.Services.AddScoped<IPricingSeedService, PricingSeedService>();
 builder.Services.AddScoped<CountriesSeeder>();
+
 builder.Services.AddScoped<IInterviewRecommender, RuleBasedRecommender>();
 builder.Services.AddScoped<IAdaptiveInterviewService, AdaptiveInterviewService>();
+builder.Services.AddScoped<ICitizenshipCaseService, CitizenshipCaseService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<CannlawConfigurationService>();
+
+// Cannlaw client billing services
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<ITimeTrackingService, TimeTrackingService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
             // Security hardening services
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
@@ -229,6 +250,8 @@ builder.Services.AddScoped<ISeedTask, VisaClassesSeeder>();
 builder.Services.AddScoped<ISeedTask, VisaTypesSeeder>();
 builder.Services.AddScoped<ISeedTask, CategoryClassSeeder>();
 builder.Services.AddScoped<ISeedTask, CountryVisaTypesSeeder>();
+builder.Services.AddScoped<ISeedTask, CannlawClientBillingSeeder>();
+builder.Services.AddScoped<ISeedTask, CannlawConfigurationSeeder>();
 builder.Services.AddScoped<SeedRunner>();
 
 // Workflow and scraper services (for API endpoints)
@@ -239,6 +262,7 @@ builder.Services.AddHostedService<CaseAutoAgingService>();
 // Only register AntivirusScanService if not disabled via configuration
 builder.Services.AddHostedService<AntivirusScanService>();
 builder.Services.AddHostedService<DailyDigestService>();
+builder.Services.AddHostedService<NotificationBackgroundService>();
 
 var app = builder.Build();
 

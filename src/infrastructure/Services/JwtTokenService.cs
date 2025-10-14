@@ -32,8 +32,15 @@ public class JwtTokenService : IJwtTokenService
             new Claim("sub", user.Id.Value.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim("email_verified", user.EmailVerified.ToString()),
-            new Claim("is_admin", user.IsAdmin.ToString())
+            new Claim("is_admin", user.IsAdmin.ToString()),
+            new Claim("is_legal_professional", user.IsLegalProfessional.ToString())
         };
+
+        // Add attorney assignment information for legal professionals
+        if (user.IsLegalProfessional && user.AttorneyId.HasValue)
+        {
+            claims.Add(new Claim("attorney_id", user.AttorneyId.Value.ToString()));
+        }
 
         // Add name claims if available
         if (!string.IsNullOrEmpty(user.FirstName))

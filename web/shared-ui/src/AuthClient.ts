@@ -3,7 +3,7 @@ export class AuthClient {
   private jwt: string | null = null
   private baseUrl: string
 
-  constructor(baseUrl: string = '/api') {
+  constructor(baseUrl: string = 'http://localhost:8765/api') {
     this.baseUrl = baseUrl
   }
 

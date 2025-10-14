@@ -65,16 +65,24 @@ public record UpdateProfileRequest
 {
     [Phone]
     public string? PhoneNumber { get; init; }
-    
+
     public string? StreetAddress { get; init; }
-    
+
     public string? City { get; init; }
-    
+
     public string? StateProvince { get; init; }
-    
+
     public string? PostalCode { get; init; }
-    
+
     public string? Country { get; init; }
-    
+
     public string? Nationality { get; init; }
+
+    public DateTime? DateOfBirth { get; init; }
+
+    public string? MaritalStatus { get; init; }
+
+    public string? Gender { get; init; }
+
+    public string? GuardianEmail { get; init; }
 }

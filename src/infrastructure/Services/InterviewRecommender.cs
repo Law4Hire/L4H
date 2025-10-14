@@ -29,10 +29,41 @@ public class RuleBasedRecommender : IInterviewRecommender
         // Simple deterministic rules based on answers
         var purpose = answers.GetValueOrDefault("purpose", "").ToLowerInvariant();
         var hasEmployerSponsor = answers.GetValueOrDefault("hasEmployerSponsor", "").ToLowerInvariant();
+        var adoptionType = answers.GetValueOrDefault("adoptionType", "").ToLowerInvariant();
+        var adoptionCompleted = answers.GetValueOrDefault("adoptionCompleted", "").ToLowerInvariant();
 
         RecommendationResult result;
 
-        if (purpose == "tourism" || purpose == "tourist" || purpose == "visit")
+        // Handle adoption cases first
+        if (purpose == "adoption" || adoptionType == "international")
+        {
+            if (adoptionCompleted == "yes")
+            {
+                result = new RecommendationResult
+                {
+                    VisaTypeId = await GetVisaTypeIdByCodeAsync("IR-3").ConfigureAwait(false),
+                    Rationale = "Based on your completed international adoption, an IR-3 visa is recommended. This visa is for children whose adoption was finalized in their country of birth by US citizen parents."
+                };
+            }
+            else if (adoptionCompleted == "no")
+            {
+                result = new RecommendationResult
+                {
+                    VisaTypeId = await GetVisaTypeIdByCodeAsync("IR-4").ConfigureAwait(false),
+                    Rationale = "Based on your pending adoption completion, an IR-4 visa is recommended. This visa is for children who will complete their adoption process in the United States."
+                };
+            }
+            else
+            {
+                // Default to IR-4 if adoption status is unclear
+                result = new RecommendationResult
+                {
+                    VisaTypeId = await GetVisaTypeIdByCodeAsync("IR-4").ConfigureAwait(false),
+                    Rationale = "Based on your international adoption case, an IR-4 visa is recommended. Please consult with an adoption attorney to determine if the adoption should be completed abroad (IR-3) or in the US (IR-4)."
+                };
+            }
+        }
+        else if (purpose == "tourism" || purpose == "tourist" || purpose == "visit")
         {
             result = new RecommendationResult
             {

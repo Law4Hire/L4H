@@ -78,7 +78,7 @@ public class SiteConfigurationController : ControllerBase
 
     private static SiteConfiguration GetDefaultConfiguration()
     {
-        var locations = JsonSerializer.Serialize(new[]
+        var locations = JsonSerializer.Serialize(new object[]
         {
             new { city = "Baltimore, Maryland", type = "Primary" },
             new { city = "Martinsburg, West Virginia", zip = "25403", type = "USA Office" },

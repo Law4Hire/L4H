@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -29,7 +27,7 @@ services:
       - Logging__LogLevel__Default=Information
       - ADMIN_SEED_PASSWORD=SecureTest123!
     ports:
-      - "5000:8080"
+      - "8765:8080"
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -37,25 +35,25 @@ services:
       - ./data/uploads:/app/uploads
     restart: unless-stopped
 
-  scraper:
+  law4hire:
     build:
-      context: .
-      dockerfile: src/scraper/Dockerfile
-    container_name: l4h-scraper
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=L4H;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;
-      - Logging__LogLevel__Default=Information
-      - ScraperSettings__IntervalMinutes=4320  # 3 days
-      - ScraperSettings__EnabledCountries=ES,US,AD
-      - ScraperSettings__EnabledVisaTypes=H1B,B2,F1
+      context: ./web/l4h
+      dockerfile: Dockerfile
+    container_name: l4h-web
+    ports:
+      - "5173:80"
     depends_on:
-      sqlserver:
-        condition: service_healthy
-    volumes:
-      - ./data/scraped:/data/scraped
-      - ./tests/fixtures:/app/fixtures
-    restart: unless-stopped
+      - api
+
+  cannlaw:
+    build:
+      context: ./web/cannlaw
+      dockerfile: Dockerfile
+    container_name: cannlaw-web
+    ports:
+      - "5174:80"
+    depends_on:
+      - api
 
 volumes:
   sqlserver_data:

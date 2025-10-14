@@ -12,7 +12,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/visa-change")]
+[Route("api/v1/visa-change")]
 [Authorize]
 [Tags("Visa Change")]
 public class VisaChangeController : ControllerBase

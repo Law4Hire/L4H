@@ -57,507 +57,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("AdminSettings");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.AdoptionCase", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AcceptableSpecialNeeds")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime?>("AdoptionCompletionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("AdoptionType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("AgencyAccreditationExpiry")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AgencyAccreditationNumber")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("AgencyContactEmail")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("AgencyContactPersonName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("AgencyContactPhone")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("AgencyCountry")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("AgencyLicenseNumber")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("AgencyName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("AreReferencesVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("CaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ChildCaregiverInformation")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ChildCityOfBirth")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ChildCountryOfBirth")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ChildCulturalBackground")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ChildCurrentLocation")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("ChildDateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ChildFirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ChildGender")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<bool>("ChildHasSpecialNeeds")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ChildLanguages")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ChildLastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ChildMedicalConditions")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("ChildMiddleName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ChildSpecialNeedsDescription")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("CustodyDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EligibilityReason")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("HasAdoptionDecree")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasAdoptionExperience")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasAgencyRecommendation")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasChildAbuseChecks")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasChildBirthCertificate")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasChildMedicalRecords")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasChildPassport")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasChildPhotographs")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasCriminalBackgroundChecks")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasDivorceCertificates")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasEmploymentVerification")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasFinancialDocuments")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasHomeStudyReport")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasI600APetition")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasI600Petition")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasInfertilityIssues")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasLegalCustody")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasMarriageCertificate")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasMedicalExaminations")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasParentBirthCertificates")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasPreviousChildren")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("HomeStudyCompletionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("HomeStudyConductingAgency")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("HomeStudyExpirationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("HomeStudyRecommendationStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("HomeStudyRequiredUpdates")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("HomeStudySocialWorkerLicense")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("HomeStudySocialWorkerName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("IsAdoptionCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsAgencyHagueAccredited")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsBackgroundCheckCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEligible")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFinancialAssessmentCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsHomeInspectionCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsHomeStudyCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsMarriedCouple")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MarriageDurationYears")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MotivationForAdoption")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("NextSteps")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<int>("NumberOfChildren")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PotentialIssues")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("PreferredChildAge")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("PreferredChildGender")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("PreviousAdoptionDetails")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("PrimaryParentName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("RecommendationRationale")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<int>("RecommendedVisaType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RequiredDocuments")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("SpouseName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("USPartnerAgency")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("WillCompleteAdoptionInUS")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("WillingToAdoptSpecialNeeds")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdoptionType");
-
-                    b.HasIndex("CaseId")
-                        .IsUnique();
-
-                    b.HasIndex("ChildCountryOfBirth");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("RecommendedVisaType");
-
-                    b.ToTable("AdoptionCases");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.AdoptionDocument", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AdoptionCaseId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("DocumentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DocumentDescription")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("DocumentName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("DocumentNumber")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("DocumentType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<long>("FileSize")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("IsApostilled")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsNotarized")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsTranslationRequired")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("IssuingAuthority")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("RequiresReview")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ReviewDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReviewNotes")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ReviewStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("ReviewedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid?>("UploadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("VerificationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("VerificationNotes")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("VerifiedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdoptionCaseId");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("DocumentType");
-
-                    b.HasIndex("ExpirationDate");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("UploadId");
-
-                    b.ToTable("AdoptionDocuments");
+                    b.ToTable("AdminSettings", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Appointment", b =>
@@ -625,7 +125,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.ApprovedDoctor", b =>
@@ -687,94 +187,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApprovedDoctors");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Attorney", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Bio")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Credentials")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("DefaultHourlyRate")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("DirectEmail")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("DirectPhone")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsManagingAttorney")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Languages")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("OfficeLocation")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("PhotoUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("PracticeAreas")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Attorneys");
+                    b.ToTable("ApprovedDoctors", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.AuditLog", b =>
@@ -825,7 +238,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("TargetType");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.AvailabilityBlock", b =>
@@ -880,130 +293,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("Type");
 
-                    b.ToTable("AvailabilityBlocks");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.BillingRate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AttorneyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime>("EffectiveDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("HourlyRate")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ServiceType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttorneyId");
-
-                    b.HasIndex("EffectiveDate");
-
-                    b.HasIndex("IsActive");
-
-                    b.ToTable("BillingRates");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CannlawCase", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CaseType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("CompletionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("GovernmentCaseNumber")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("RejectionReason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("StartDate");
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("CannlawCases");
+                    b.ToTable("AvailabilityBlocks", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Case", b =>
@@ -1048,7 +338,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("VisaTypeId");
 
-                    b.ToTable("Cases");
+                    b.ToTable("Cases", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.CasePriceSnapshot", b =>
@@ -1096,48 +386,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("CaseId");
 
-                    b.ToTable("CasePriceSnapshots");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CaseStatusHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CaseId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ChangedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ChangedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FromStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ToStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CaseId");
-
-                    b.HasIndex("ChangedAt");
-
-                    b.ToTable("CaseStatusHistories");
+                    b.ToTable("CasePriceSnapshots", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.CategoryClass", b =>
@@ -1177,406 +426,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("IsActive");
 
-                    b.ToTable("CategoryClasses");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CitizenshipCase", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ApplicationType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("AttachedToConstitution")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("BornAbroad")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("CaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CityOfBirth")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("ContinuousResidence")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CountryOfBirth")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CurrentLegalName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("CurrentNationality")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EarliestApplicationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EligibilityReason")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ExemptionReason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("GreenCardNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("HadLegalCustody")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasAbsencesOver6Months")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasBeenDeported")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasClaimedUSCitizenshipFalsely")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasCriminalHistory")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasFailedToRegisterForDraft")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasGoodMoralCharacter")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasImmigrationViolations")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasMilitaryService")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasNameChanged")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasTaxIssues")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasTerroristConnections")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasVotedIllegally")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEligible")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("MaritalStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("MeetsPhysicalPresenceRequirement")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("MeetsResidencyRequirement")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MonthsPhysicallyPresent")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NameAtBirth")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("NeedsCivicsTest")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("NeedsEnglishTest")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("NeedsInterpreter")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ParentCitizenshipDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("ParentUSCitizen")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("PermanentResidencyDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PreferredLanguage")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("ProcessingTimeEstimate")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("QualifiesForExceptions")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("QualifiesForLanguageException")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("QualifiesForTestExemption")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Rationale")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("ReadingLevel")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("RecommendedApplication")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("ResidedWithCitizenParent")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SpeakingLevel")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("Under18WhenParentNaturalized")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("WasPermanentResidentWhenParentNaturalized")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("WillingToTakeOath")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("WritingLevel")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("YearsAsResident")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationType");
-
-                    b.HasIndex("CaseId")
-                        .IsUnique();
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("CitizenshipCases");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CitizenshipDocument", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CitizenshipCaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DocumentType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("IsRequired")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CitizenshipCaseId");
-
-                    b.HasIndex("DocumentType");
-
-                    b.HasIndex("IsRequired");
-
-                    b.ToTable("CitizenshipDocuments");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CitizenshipTestResult", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CitizenshipCaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("Passed")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("Score")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TestComponent")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("TestDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TestLocation")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("TestType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("TotalQuestions")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CitizenshipCaseId");
-
-                    b.HasIndex("TestDate");
-
-                    b.HasIndex("TestType");
-
-                    b.ToTable("CitizenshipTestResults");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Client", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("AssignedAttorneyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CountryOfOrigin")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignedAttorneyId");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("Email");
-
-                    b.ToTable("Clients");
+                    b.ToTable("CategoryClasses", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Country", b =>
@@ -1613,7 +463,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("Iso3")
                         .IsUnique();
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.CountryServiceMapping", b =>
@@ -1651,7 +501,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("Service", "FromCountry")
                         .IsUnique();
 
-                    b.ToTable("CountryServiceMappings");
+                    b.ToTable("CountryServiceMappings", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.CountryVisaType", b =>
@@ -1684,7 +534,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("CountryId", "VisaTypeId")
                         .IsUnique();
 
-                    b.ToTable("CountryVisaTypes");
+                    b.ToTable("CountryVisaTypes", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.DailyDigestQueue", b =>
@@ -1715,93 +565,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DailyDigestQueues");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Document", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AccessNotes")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<long>("FileSize")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("FileUrl")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("IsConfidential")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastAccessedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastAccessedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("OriginalFileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UploadedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Category");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("IsConfidential");
-
-                    b.HasIndex("UploadDate");
-
-                    b.ToTable("Documents");
+                    b.ToTable("DailyDigestQueues", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.EmailVerificationToken", b =>
@@ -1833,7 +597,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EmailVerificationTokens");
+                    b.ToTable("EmailVerificationTokens", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.FieldBinding", b =>
@@ -1860,7 +624,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("TemplateId", "FormFieldId", "DataKey")
                         .IsUnique();
 
-                    b.ToTable("FieldBindings");
+                    b.ToTable("FieldBindings", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.FormField", b =>
@@ -1899,7 +663,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("TemplateId", "Name")
                         .IsUnique();
 
-                    b.ToTable("FormFields");
+                    b.ToTable("FormFields", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.FormInstance", b =>
@@ -1932,7 +696,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("CaseId", "CreatedAt");
 
-                    b.ToTable("FormInstances");
+                    b.ToTable("FormInstances", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.FormTemplate", b =>
@@ -1973,7 +737,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("Code", "Version")
                         .IsUnique();
 
-                    b.ToTable("FormTemplates");
+                    b.ToTable("FormTemplates", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.GuardianLink", b =>
@@ -2005,7 +769,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("GuardianUserId");
 
-                    b.ToTable("GuardianLinks");
+                    b.ToTable("GuardianLinks", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewQA", b =>
@@ -2038,7 +802,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("SessionId", "StepNumber")
                         .IsUnique();
 
-                    b.ToTable("InterviewQAs");
+                    b.ToTable("InterviewQAs", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewSession", b =>
@@ -2073,7 +837,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("InterviewSessions");
+                    b.ToTable("InterviewSessions", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Invoice", b =>
@@ -2134,46 +898,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("Year", "SequentialNumber")
                         .IsUnique();
 
-                    b.ToTable("Invoices");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.LegalService", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int>("ServiceCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceCategoryId");
-
-                    b.ToTable("LegalServices");
+                    b.ToTable("Invoices", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Meeting", b =>
@@ -2222,7 +947,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("Provider");
 
-                    b.ToTable("Meetings");
+                    b.ToTable("Meetings", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Message", b =>
@@ -2260,7 +985,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("ThreadId", "SentAt");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.MessageThread", b =>
@@ -2286,116 +1011,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("CaseId");
 
-                    b.ToTable("MessageThreads");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ActionUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EmailSentAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsEmailSent")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ReadAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("RelatedEntityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RelatedEntityType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId1")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId1");
-
-                    b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.NotificationTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BodyTemplate")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmailBodyTemplate")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SubjectTemplate")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationTemplates");
+                    b.ToTable("MessageThreads", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Package", b =>
@@ -2438,7 +1054,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Packages");
+                    b.ToTable("Packages", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.PasswordResetToken", b =>
@@ -2471,7 +1087,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PasswordResetTokens");
+                    b.ToTable("PasswordResetTokens", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Payment", b =>
@@ -2525,7 +1141,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("StripePaymentIntentId")
                         .IsUnique();
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.PriceDeltaLedger", b =>
@@ -2604,7 +1220,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("VisaChangeRequestId");
 
-                    b.ToTable("PriceDeltaLedgers");
+                    b.ToTable("PriceDeltaLedgers", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.PricingRule", b =>
@@ -2657,7 +1273,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("VisaTypeId", "PackageId", "CountryCode")
                         .IsUnique();
 
-                    b.ToTable("PricingRules");
+                    b.ToTable("PricingRules", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Refund", b =>
@@ -2714,7 +1330,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("StripeRefundId")
                         .IsUnique();
 
-                    b.ToTable("Refunds");
+                    b.ToTable("Refunds", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.RememberMeToken", b =>
@@ -2750,7 +1366,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RememberMeTokens");
+                    b.ToTable("RememberMeTokens", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.RescheduleProposal", b =>
@@ -2816,7 +1432,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("RescheduleProposals");
+                    b.ToTable("RescheduleProposals", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.RetentionQueue", b =>
@@ -2852,7 +1468,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("Category", "EnqueuedAt");
 
-                    b.ToTable("RetentionQueues");
+                    b.ToTable("RetentionQueues", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.ScrapedDocument", b =>
@@ -2909,168 +1525,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("CountryCode", "VisaTypeCode", "Source");
 
-                    b.ToTable("ScrapedDocuments");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.ServiceCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("IconUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ServiceCategories");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.SiteConfiguration", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FirmName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Locations")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LogoUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ManagingAttorney")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("PrimaryFocusStatement")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("PrimaryPhone")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("SocialMediaPlatforms")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UniqueSellingPoints")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SiteConfigurations");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.TimeEntry", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AttorneyId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("BillableAmount")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<DateTime?>("BilledDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<decimal>("Duration")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("HourlyRate")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<bool>("IsBilled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttorneyId");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("IsBilled");
-
-                    b.HasIndex("StartTime");
-
-                    b.ToTable("TimeEntries");
+                    b.ToTable("ScrapedDocuments", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.USSubdivision", b =>
@@ -3102,7 +1557,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("USSubdivisions");
+                    b.ToTable("USSubdivisions", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Upload", b =>
@@ -3153,16 +1608,13 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("CaseId", "CreatedAt");
 
-                    b.ToTable("Uploads");
+                    b.ToTable("Uploads", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("AttorneyId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Citizenship")
                         .IsRequired()
@@ -3211,9 +1663,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsLegalProfessional")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsStaff")
                         .HasColumnType("bit");
 
@@ -3258,51 +1707,10 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AttorneyId");
-
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.UserNotificationPreference", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("EmailEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("InAppEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MinimumPriority")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NotificationType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId1")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId1");
-
-                    b.ToTable("UserNotificationPreferences");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.UserSession", b =>
@@ -3344,7 +1752,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserSessions");
+                    b.ToTable("UserSessions", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.VisaChangeRequest", b =>
@@ -3411,7 +1819,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("VisaChangeRequests");
+                    b.ToTable("VisaChangeRequests", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.VisaClass", b =>
@@ -3444,7 +1852,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("VisaClasses");
+                    b.ToTable("VisaClasses", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.VisaRecommendation", b =>
@@ -3480,7 +1888,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("VisaTypeId");
 
-                    b.ToTable("VisaRecommendations");
+                    b.ToTable("VisaRecommendations", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.VisaType", b =>
@@ -3515,7 +1923,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("VisaTypes");
+                    b.ToTable("VisaTypes", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.WebhookEvent", b =>
@@ -3579,7 +1987,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("StripeEventId")
                         .IsUnique();
 
-                    b.ToTable("WebhookEvents");
+                    b.ToTable("WebhookEvents", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.WorkflowDoctor", b =>
@@ -3629,7 +2037,7 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("WorkflowVersionId");
 
-                    b.ToTable("WorkflowDoctors");
+                    b.ToTable("WorkflowDoctors", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.WorkflowStep", b =>
@@ -3674,7 +2082,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("WorkflowVersionId", "Ordinal")
                         .IsUnique();
 
-                    b.ToTable("WorkflowSteps");
+                    b.ToTable("WorkflowSteps", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.WorkflowVersion", b =>
@@ -3745,7 +2153,7 @@ namespace L4H.Infrastructure.Migrations
                     b.HasIndex("VisaTypeId", "CountryCode", "Version")
                         .IsUnique();
 
-                    b.ToTable("WorkflowVersions");
+                    b.ToTable("WorkflowVersions", (string)null);
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.AdminSettings", b =>
@@ -3756,35 +2164,6 @@ namespace L4H.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("UpdatedByUser");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.AdoptionCase", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Case", "Case")
-                        .WithMany()
-                        .HasForeignKey("CaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Case");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.AdoptionDocument", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.AdoptionCase", "AdoptionCase")
-                        .WithMany()
-                        .HasForeignKey("AdoptionCaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("L4H.Infrastructure.Entities.Upload", "Upload")
-                        .WithMany()
-                        .HasForeignKey("UploadId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("AdoptionCase");
-
-                    b.Navigation("Upload");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Appointment", b =>
@@ -3827,28 +2206,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Staff");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.BillingRate", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "Attorney")
-                        .WithMany("BillingRates")
-                        .HasForeignKey("AttorneyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Attorney");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CannlawCase", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Client", "Client")
-                        .WithMany("Cases")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.Case", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.Package", "Package")
@@ -3885,60 +2242,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Case");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CaseStatusHistory", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.CannlawCase", "Case")
-                        .WithMany("StatusHistory")
-                        .HasForeignKey("CaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Case");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CitizenshipCase", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Case", "Case")
-                        .WithOne()
-                        .HasForeignKey("L4H.Infrastructure.Entities.CitizenshipCase", "CaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Case");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CitizenshipDocument", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.CitizenshipCase", "CitizenshipCase")
-                        .WithMany("Documents")
-                        .HasForeignKey("CitizenshipCaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CitizenshipCase");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CitizenshipTestResult", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.CitizenshipCase", "CitizenshipCase")
-                        .WithMany("TestResults")
-                        .HasForeignKey("CitizenshipCaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CitizenshipCase");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Client", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "AssignedAttorney")
-                        .WithMany("AssignedClients")
-                        .HasForeignKey("AssignedAttorneyId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("AssignedAttorney");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.CountryVisaType", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.Country", "Country")
@@ -3967,17 +2270,6 @@ namespace L4H.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Document", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Client", "Client")
-                        .WithMany("Documents")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.EmailVerificationToken", b =>
@@ -4100,17 +2392,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Case");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.LegalService", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.ServiceCategory", "ServiceCategory")
-                        .WithMany("Services")
-                        .HasForeignKey("ServiceCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ServiceCategory");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.Meeting", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.Appointment", "Appointment")
@@ -4150,17 +2431,6 @@ namespace L4H.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Case");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Notification", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.PasswordResetToken", b =>
@@ -4262,25 +2532,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Appointment");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.TimeEntry", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "Attorney")
-                        .WithMany("TimeEntries")
-                        .HasForeignKey("AttorneyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("L4H.Infrastructure.Entities.Client", "Client")
-                        .WithMany("TimeEntries")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Attorney");
-
-                    b.Navigation("Client");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.Upload", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.Case", "Case")
@@ -4290,27 +2541,6 @@ namespace L4H.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Case");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.User", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "Attorney")
-                        .WithMany()
-                        .HasForeignKey("AttorneyId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Attorney");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.UserNotificationPreference", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.UserSession", b =>
@@ -4429,20 +2659,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("RescheduleProposals");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Attorney", b =>
-                {
-                    b.Navigation("AssignedClients");
-
-                    b.Navigation("BillingRates");
-
-                    b.Navigation("TimeEntries");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CannlawCase", b =>
-                {
-                    b.Navigation("StatusHistory");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.Case", b =>
                 {
                     b.Navigation("Appointments");
@@ -4464,22 +2680,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("VisaChangeRequests");
 
                     b.Navigation("VisaRecommendations");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CitizenshipCase", b =>
-                {
-                    b.Navigation("Documents");
-
-                    b.Navigation("TestResults");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Client", b =>
-                {
-                    b.Navigation("Cases");
-
-                    b.Navigation("Documents");
-
-                    b.Navigation("TimeEntries");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.FormField", b =>
@@ -4518,11 +2718,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Cases");
 
                     b.Navigation("PricingRules");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.ServiceCategory", b =>
-                {
-                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.User", b =>

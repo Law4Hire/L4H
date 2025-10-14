@@ -32,11 +32,41 @@
 - Use concrete evidence to guide decisions
 
 ### 5. Fixed Port Assignments
-**These ports are FIXED and must not be changed unless another application is using them:**
+**These ports are FIXED and must NEVER be changed:**
 - **API Backend**: Port 8765
-- **Law4Hire Frontend**: Port 5175
+- **Law4Hire Frontend**: Port 5173
 - **Cannlaw Frontend**: Port 5174
-- **Upload Gateway**: Port 7070
+- **Database**: Port 14333
+
+### 6. API Endpoint Rules (STRICT ENFORCEMENT)
+**BEFORE making ANY changes to ANY API call, ALWAYS refer to `API-ENDPOINT-RULES.md` for complete documentation.**
+
+#### ❌ FORBIDDEN - Never use these patterns:
+- Wrong ports: `localhost:3000`, `localhost:5000`, `localhost:5175` (frontend)
+- Wrong routes: `/api/auth/login` (missing v1), `/auth/login` (missing api/v1)
+- Missing headers: `Authorization: TOKEN` (missing "Bearer")
+
+#### ✅ REQUIRED - Always use these patterns:
+- **API Base URL**: `http://localhost:8765` (ONLY)
+- **Public routes**: `/v1/` (no auth) - Example: `/v1/ping`, `/v1/countries`
+- **Protected routes**: `/api/v1/` (requires Bearer token) - Example: `/api/v1/cases/mine`
+- **Admin routes**: `/v1/admin/` (requires admin token) - Example: `/v1/admin/users`
+- **Proper headers**: `Authorization: Bearer TOKEN`, `Content-Type: application/json`
+
+#### Quick Test Commands:
+```bash
+# Test connectivity
+curl -X GET http://localhost:8765/v1/ping
+
+# Get auth token
+curl -X POST http://localhost:8765/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"dcann@cannlaw.com","password":"SecureTest123!"}'
+
+# Use token for protected endpoints
+curl -X GET http://localhost:8765/api/v1/cases/mine \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
 
 ## Development Workflow
 
@@ -83,7 +113,7 @@ dotnet run
 1. **Test APIs first** (see above)
 2. **Start frontend servers**:
    ```bash
-   # Law4Hire (port 5175)
+   # Law4Hire (port 5173)
    cd web/l4h
    npm run dev
 
@@ -177,6 +207,12 @@ dotnet ef migrations remove # Only use if migration not applied yet
 - Test migrations on development database first
 - Include rollback plan for complex changes
 - Document migration purpose and effects
+
+### 7. Command Usage Rules
+**NEVER use these commands - they do not work:**
+- `del` command in bash (use `rm` instead)
+- `taskkill /F` flag (omit the /F flag)
+- Use `taskkill /PID [number]` without /F
 
 ## Troubleshooting Quick Reference
 

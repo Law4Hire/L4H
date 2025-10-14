@@ -3,6 +3,8 @@ using L4H.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace L4H.Infrastructure.Services;
 
@@ -42,9 +44,12 @@ public class AdminSeedService : IAdminSeedService
         {
             // Seed admin user
             await SeedUserIfNotExists(adminEmail, defaultPassword, "Denise", "Cann", isAdmin: true, isStaff: false).ConfigureAwait(false);
-            
+
             // Seed test user as legal professional
             await SeedUserIfNotExists(testEmail, defaultPassword, "Abu", "Testing", isAdmin: false, isStaff: true).ConfigureAwait(false);
+
+            // Seed demo verification token for testing
+            await SeedDemoVerificationTokenAsync().ConfigureAwait(false);
 
             _logger.LogInformation("Successfully completed user seeding");
         }
@@ -79,7 +84,8 @@ public class AdminSeedService : IAdminSeedService
             PasswordUpdatedAt = DateTime.UtcNow,
             FailedLoginCount = 0,
             IsAdmin = isAdmin,
-            IsStaff = isStaff
+            IsStaff = isStaff,
+            IsActive = true // Seeded users should be active
         };
 
         _context.Users.Add(user);
@@ -99,5 +105,69 @@ public class AdminSeedService : IAdminSeedService
 
         var role = isAdmin ? "Admin" : isStaff ? "Legal Professional" : "User";
         _logger.LogInformation("Successfully created {Role} user {Email}", role, email);
+    }
+
+    private async Task SeedDemoVerificationTokenAsync()
+    {
+        const string demoToken = "demo-token-2745e95d-0f5e-4152-8d73-ceebcfb79a5d";
+        const string testEmail = "demo@verification.test";
+
+        // Check if demo verification token already exists
+        var tokenHash = HashToken(demoToken);
+        var existingToken = await _context.EmailVerificationTokens
+            .FirstOrDefaultAsync(vt => vt.TokenHash == tokenHash).ConfigureAwait(false);
+
+        if (existingToken != null)
+        {
+            _logger.LogDebug("Demo verification token already exists, skipping seed");
+            return;
+        }
+
+        // Check if demo user exists, if not create one
+        var demoUser = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == testEmail).ConfigureAwait(false);
+
+        if (demoUser == null)
+        {
+            demoUser = new User
+            {
+                Email = testEmail,
+                FirstName = "Demo",
+                LastName = "User",
+                PasswordHash = _passwordHasher.HashPassword("DemoPassword123!"),
+                EmailVerified = false, // Not verified yet - this is what we're testing
+                CreatedAt = DateTime.UtcNow,
+                PasswordUpdatedAt = DateTime.UtcNow,
+                FailedLoginCount = 0,
+                IsAdmin = false,
+                IsStaff = false,
+                IsActive = true // Demo user should be active
+            };
+
+            _context.Users.Add(demoUser);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        // Create demo verification token
+        var verificationToken = new EmailVerificationToken
+        {
+            Id = Guid.NewGuid(),
+            UserId = demoUser.Id,
+            TokenHash = tokenHash,
+            ExpiresAt = DateTime.UtcNow.AddYears(1), // Long expiry for demo purposes
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.EmailVerificationTokens.Add(verificationToken);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        _logger.LogInformation("Successfully created demo verification token for testing");
+    }
+
+    private static string HashToken(string token)
+    {
+        using var sha256 = SHA256.Create();
+        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));
+        return Convert.ToBase64String(hashBytes);
     }
 }

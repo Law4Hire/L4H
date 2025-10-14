@@ -178,13 +178,13 @@
       "VisaName": "H-2A",
       "VisaDescription": "For temporary or seasonal agricultural work.",
       "VisaAppropriateFor": "Individuals performing agricultural labor or services of a temporary or seasonal nature.",
-      "Status": "Active"
+      "Status": "Inactive"
     },
     {
       "VisaName": "H-2B",
       "VisaDescription": "For temporary or seasonal non-agricultural work.",
       "VisaAppropriateFor": "Individuals performing services or labor of a temporary or seasonal nature in fields such as landscaping, hospitality, and construction.",
-      "Status": "Active"
+      "Status": "Inactive"
     },
     {
       "VisaName": "H-3",
