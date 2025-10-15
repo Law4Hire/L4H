@@ -63,8 +63,12 @@ public class UploadTokenService
 
     public static string GetSafeFilename(string originalFilename)
     {
+        // Normalize path separators for cross-platform compatibility
+        // Replace backslashes with forward slashes so Path.GetFileName works on all platforms
+        var normalizedPath = originalFilename.Replace('\\', '/');
+
         // Remove path traversal attempts and invalid characters
-        var filename = Path.GetFileName(originalFilename);
+        var filename = Path.GetFileName(normalizedPath);
 
         // Replace OS-specific invalid characters from Path.GetInvalidFileNameChars()
         var invalidChars = Path.GetInvalidFileNameChars();
