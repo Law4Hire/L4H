@@ -335,7 +335,7 @@ public sealed class UploadsControllerTests : IDisposable
         var testUserId = new L4H.Shared.Models.UserId(Guid.Parse("C0000000-1234-1234-1234-123456789012"));
         var testCaseId = new L4H.Shared.Models.CaseId(_testCaseId);
 
-        // Check if user already exists
+        // Check if user already exists by ID (more reliable for avoiding PRIMARY KEY violations)
         var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Id == testUserId);
         if (existingUser == null)
         {
@@ -349,6 +349,11 @@ public sealed class UploadsControllerTests : IDisposable
                 PasswordUpdatedAt = DateTime.UtcNow
             };
             context.Users.Add(user);
+        }
+        else
+        {
+            // Update existing user to ensure correct state
+            existingUser.EmailVerified = true;
         }
 
         // Check if test case already exists
@@ -384,7 +389,7 @@ public sealed class UploadsControllerTests : IDisposable
         var testUserId = new L4H.Shared.Models.UserId(Guid.Parse("C0000000-1234-1234-1234-123456789012"));
         var unpaidCaseId = new L4H.Shared.Models.CaseId(_testCaseId);
 
-        // Check if user already exists
+        // Check if user already exists by ID (more reliable for avoiding PRIMARY KEY violations)
         var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Id == testUserId);
         if (existingUser == null)
         {
@@ -398,6 +403,11 @@ public sealed class UploadsControllerTests : IDisposable
                 PasswordUpdatedAt = DateTime.UtcNow
             };
             context.Users.Add(user);
+        }
+        else
+        {
+            // Update existing user to ensure correct state
+            existingUser.EmailVerified = true;
         }
 
         // Check if unpaid case already exists
