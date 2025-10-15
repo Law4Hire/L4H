@@ -131,7 +131,11 @@ jobs:
       run: |
         REPO_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
         docker build -f src/api/Dockerfile -t ghcr.io/${REPO_OWNER_LOWER}/l4h-api:${{ github.sha }} .
-        docker run --rm -d --name l4h-test -p 8080:8080 -e ASPNETCORE_ENVIRONMENT=Development ghcr.io/${REPO_OWNER_LOWER}/l4h-api:${{ github.sha }}
+        docker run --rm -d --name l4h-test --network host \
+          -e ASPNETCORE_ENVIRONMENT=Development \
+          -e ASPNETCORE_URLS="http://0.0.0.0:8080" \
+          -e ConnectionStrings__SqlServer="Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True" \
+          ghcr.io/${REPO_OWNER_LOWER}/l4h-api:${{ github.sha }}
         sleep 15
         curl -f http://localhost:8080/healthz || (docker logs l4h-test && exit 1)
         docker stop l4h-test

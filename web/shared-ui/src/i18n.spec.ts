@@ -34,8 +34,8 @@ describe('i18n', () => {
       const result = await loadSupportedCultures()
 
       expect(result).toEqual([
-        { code: 'en', displayName: 'English' },
-        { code: 'es', displayName: 'Spanish' }
+        { code: 'en-US', displayName: 'English' },
+        { code: 'es-ES', displayName: 'Spanish' }
       ])
     })
 
@@ -48,8 +48,8 @@ describe('i18n', () => {
       const result = await loadSupportedCultures()
 
       expect(result).toEqual([
-        { code: 'en', displayName: 'English' },
-        { code: 'es', displayName: 'Spanish' }
+        { code: 'en-US', displayName: 'English' },
+        { code: 'es-ES', displayName: 'Spanish' }
       ])
     })
   })
