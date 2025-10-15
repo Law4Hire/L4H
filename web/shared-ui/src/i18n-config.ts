@@ -8,14 +8,13 @@ export const RTL_LANGUAGES = ['ar-SA', 'ur-PK', 'ar', 'ur']
 
 // All supported languages
 export const SUPPORTED_LANGUAGES = [
-  'en', 'en-US', 'ar-SA', 'bn-BD', 'zh-CN', 'de-DE', 'es-ES', 'fr-FR', 'hi-IN',
+  'en-US', 'ar-SA', 'bn-BD', 'zh-CN', 'de-DE', 'es-ES', 'fr-FR', 'hi-IN',
   'id-ID', 'it-IT', 'ja-JP', 'ko-KR', 'mr-IN', 'pl-PL', 'pt-BR',
   'ru-RU', 'ta-IN', 'te-IN', 'tr-TR', 'ur-PK', 'vi-VN'
 ]
 
 // Culture display names mapping
 export const CULTURE_NAMES: Record<string, string> = {
-  'en': 'English',
   'en-US': 'English (United States)',
   'ar-SA': 'العربية (السعودية)',
   'bn-BD': 'বাংলা (বাংলাদেশ)',
@@ -303,7 +302,7 @@ const initI18n = () => {
       },
       
       // Loading behavior
-      load: 'languageOnly', // Load only the language part (e.g., 'en' from 'en-US')
+      load: 'all', // Load full language codes including region (e.g., 'en-US', not just 'en')
       preload: [initialLanguage, FALLBACK_LANGUAGE], // Preload current and fallback languages
       
       // Interpolation settings
