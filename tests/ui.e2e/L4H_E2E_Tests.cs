@@ -27,7 +27,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             Console.WriteLine("=== Testing L4H Home Page - All Languages ===");
             
             // Test Landing Page
-            await TestPageLocalization(page, "http://localhost:5175/", "Landing Page", 
+            await TestPageLocalization(page, "http://localhost:5173/", "Landing Page", 
                 new[] { "landing.hero.title", "landing.hero.subtitle", "landing.hero.startCase", "landing.hero.exploreVisas", "common.getStarted" }).ConfigureAwait(false);
 
             Console.WriteLine("=== L4H Home Page Testing Complete ===");
@@ -52,7 +52,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             Console.WriteLine("=== Testing L4H Login Page - All Languages ===");
             
             // Test Login Page with actual content verification
-            await TestLoginPageLocalization(page, "http://localhost:5175/login", "Login Page").ConfigureAwait(false);
+            await TestLoginPageLocalization(page, "http://localhost:5173/login", "Login Page").ConfigureAwait(false);
 
             Console.WriteLine("=== L4H Login Page Testing Complete ===");
         }
@@ -76,7 +76,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             Console.WriteLine("=== Testing L4H Register Page - All Languages ===");
             
             // Test Register Page
-            await TestPageLocalization(page, "http://localhost:5175/register", "Register Page",
+            await TestPageLocalization(page, "http://localhost:5173/register", "Register Page",
                 new[] { "auth.createAccount", "auth.firstName", "auth.lastName", "auth.email", "auth.password", "auth.confirmPassword", "auth.alreadyHaveAccount", "auth.register" }).ConfigureAwait(false);
 
             Console.WriteLine("=== L4H Register Page Testing Complete ===");
@@ -101,7 +101,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             Console.WriteLine("=== Testing L4H Visa Library Page - All Languages ===");
             
             // Test Visa Library Page
-            await TestPageLocalization(page, "http://localhost:5175/visa-library", "Visa Library Page",
+            await TestPageLocalization(page, "http://localhost:5173/visa-library", "Visa Library Page",
                 new[] { "visaLibrary.title", "visaLibrary.description", "visaLibrary.learnMore", "visaLibrary.cta.title", "visaLibrary.categories.nonimmigrant", "visaLibrary.categories.immigrant" }).ConfigureAwait(false);
 
             Console.WriteLine("=== L4H Visa Library Page Testing Complete ===");
@@ -126,7 +126,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             Console.WriteLine("=== Testing Cannlaw Pages ===");
             
             // Test Login Page
-            await TestPageLocalization(page, "http://localhost:5175/login", "Cannlaw Login Page",
+            await TestPageLocalization(page, "http://localhost:5173/login", "Cannlaw Login Page",
                 new[] { "auth.login", "auth.email", "auth.password" }).ConfigureAwait(false);
 
             // Login to Cannlaw to test protected pages
@@ -142,24 +142,24 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             await page.WaitForSelectorAsync("h1", new PageWaitForSelectorOptions { Timeout = 30000 }).ConfigureAwait(false);
 
             // Test Schedule Page
-            await TestPageLocalization(page, "http://localhost:5175/schedule", "Schedule Page",
+            await TestPageLocalization(page, "http://localhost:5173/schedule", "Schedule Page",
                 new[] { "nav.schedule" }).ConfigureAwait(false);
 
             // Test Cases Page
-            await TestPageLocalization(page, "http://localhost:5175/cases", "Cases Page",
+            await TestPageLocalization(page, "http://localhost:5173/cases", "Cases Page",
                 new[] { "nav.cases" }).ConfigureAwait(false);
 
             // Test Admin Pages
-            await TestPageLocalization(page, "http://localhost:5175/admin/pricing", "Admin Pricing Page",
+            await TestPageLocalization(page, "http://localhost:5173/admin/pricing", "Admin Pricing Page",
                 new[] { "admin.pricing" }).ConfigureAwait(false);
 
-            await TestPageLocalization(page, "http://localhost:5175/admin/workflows", "Admin Workflows Page",
+            await TestPageLocalization(page, "http://localhost:5173/admin/workflows", "Admin Workflows Page",
                 new[] { "admin.workflows" }).ConfigureAwait(false);
 
-            await TestPageLocalization(page, "http://localhost:5175/admin/time-entries", "Admin Time Entries Page",
+            await TestPageLocalization(page, "http://localhost:5173/admin/time-entries", "Admin Time Entries Page",
                 new[] { "admin.timeEntries" }).ConfigureAwait(false);
 
-            await TestPageLocalization(page, "http://localhost:5175/admin/reports", "Admin Reports Page",
+            await TestPageLocalization(page, "http://localhost:5173/admin/reports", "Admin Reports Page",
                 new[] { "admin.reports" }).ConfigureAwait(false);
 
             Console.WriteLine("=== Cannlaw Testing Complete ===");
@@ -184,9 +184,9 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
         // Test all languages for comprehensive validation
         var allLanguages = new[]
         {
-            "en-US", "es-ES", "ar-SA", "bn-BD", "de-DE", "fr-FR", 
+            "en-US", "es-ES", "ar-SA", "bn-BD", "de-DE", "fr-FR",
             "hi-IN", "id-ID", "it-IT", "ja-JP", "ko-KR", "mr-IN",
-            "pl-PL", "pt-PT", "ru-RU", "ta-IN", "te-IN", "tr-TR",
+            "pl-PL", "pt-BR", "ru-RU", "ta-IN", "te-IN", "tr-TR",
             "ur-PK", "vi-VN", "zh-CN"
         };
 
@@ -206,7 +206,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             ["ko-KR"] = "당신의 이민 여정이 여기서 시작됩니다",
             ["mr-IN"] = "तुमचा इमिग्रेशन प्रवास इथे सुरू होतो",
             ["pl-PL"] = "Twoja Podróż Imigracyjna Zaczyna Się Tutaj",
-            ["pt-PT"] = "A Sua Jornada de Imigração Começa Aqui",
+            ["pt-BR"] = "A Sua Jornada de Imigração Começa Aqui",
             ["ru-RU"] = "Ваше иммиграционное путешествие начинается здесь",
             ["ta-IN"] = "உங்கள் குடியேற்றப் பயணம் இங்கே தொடங்குகிறது",
             ["te-IN"] = "మీ ఇమ్మిగ్రేషన్ యాత్ర ఇక్కడ మొదలవుతుంది",
@@ -321,7 +321,7 @@ public class L4H_E2E_Tests : IClassFixture<PlaywrightFixture>
             ["ko-KR"] = ("Law4Hire에 로그인", "이민 케이스 포털에 액세스"),
             ["mr-IN"] = ("Law4Hire मध्ये साइन इन करा", "तुमच्या इमिग्रेशन केस पोर्टलमध्ये प्रवेश करा"),
             ["pl-PL"] = ("Zaloguj się do Law4Hire", "Uzyskaj dostęp do swojego portalu spraw imigracyjnych"),
-            ["pt-PT"] = ("Iniciar sessão no Law4Hire", "Aceda ao seu portal de casos de imigração"),
+            ["pt-BR"] = ("Iniciar sessão no Law4Hire", "Aceda ao seu portal de casos de imigração"),
             ["ru-RU"] = ("Войти в Law4Hire", "Доступ к вашему порталу иммиграционных дел"),
             ["ta-IN"] = ("Law4Hire இல் உள்நுழையுங்கள்", "உங்கள் குடியேற்ற வழக்கு போர்ட்டலை அணுகவும்"),
             ["te-IN"] = ("Law4Hire లో సైన్ ఇన్ చేయండి", "మీ ఇమ్మిగ్రేషన్ కేస్ పోర్టల్‌ను యాక్సెస్ చేయండి"),
