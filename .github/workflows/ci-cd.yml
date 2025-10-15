@@ -229,7 +229,8 @@ jobs:
           cp /tmp/l4h-deploy/ops/compose.prod.yml ~/ops/
           cp -r /tmp/l4h-deploy/ops/caddy/* ~/ops/caddy/
 
-          # Create production environment file
+          # Create production environment file (with lowercase org name for Docker)
+          GH_ORG_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           cat > ~/ops/.env.prod << EOF
           LE_EMAIL=${{ secrets.LE_EMAIL }}
           L4H_DOMAIN=${{ secrets.L4H_DOMAIN }}
@@ -238,7 +239,7 @@ jobs:
           JWT_SIGNING_KEY=${{ secrets.JWT_SIGNING_KEY }}
           ADMIN_SEED_PASSWORD=${{ secrets.ADMIN_SEED_PASSWORD }}
           UPLOADS_TOKEN_SIGNING_KEY=${{ secrets.UPLOADS_TOKEN_SIGNING_KEY }}
-          GH_ORG=${{ github.repository_owner }}
+          GH_ORG=${GH_ORG_LOWER}
           IMAGE_TAG=${{ github.sha }}
           EOF
 
