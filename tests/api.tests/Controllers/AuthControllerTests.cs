@@ -30,7 +30,9 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         var request = new SignupRequest
         {
             Email = $"test_{Guid.NewGuid()}@example.com",
-            Password = "SecureTest123!"
+            Password = "SecureTest123!",
+            FirstName = "Test",
+            LastName = "User"
         };
 
         // Act
@@ -77,7 +79,9 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         var request = new SignupRequest
         {
             Email = uniqueEmail,
-            Password = "SecureTest123!"
+            Password = "SecureTest123!",
+            FirstName = "Test",
+            LastName = "User"
         };
 
         // First signup
@@ -98,7 +102,9 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         var signupRequest = new SignupRequest
         {
             Email = uniqueEmail,
-            Password = "SecureTest123!"
+            Password = "SecureTest123!",
+            FirstName = "Test",
+            LastName = "User"
         };
         await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
 
@@ -154,7 +160,9 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         var signupRequest = new SignupRequest
         {
             Email = uniqueEmail,
-            Password = "SecureTest123!"
+            Password = "SecureTest123!",
+            FirstName = "Test",
+            LastName = "User"
         };
         await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
 
@@ -185,7 +193,9 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         var signupRequest = new SignupRequest
         {
             Email = uniqueEmail,
-            Password = "SecureTest123!"
+            Password = "SecureTest123!",
+            FirstName = "Test",
+            LastName = "User"
         };
         await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
 
@@ -246,7 +256,9 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         var request = new SignupRequest
         {
             Email = invalidEmail,
-            Password = "SecureTest123!"
+            Password = "SecureTest123!",
+            FirstName = "Test",
+            LastName = "User"
         };
 
         // Act
