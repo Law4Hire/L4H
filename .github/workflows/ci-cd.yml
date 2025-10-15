@@ -184,6 +184,22 @@ jobs:
         tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-api:${{ github.sha }},${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-api:latest
         labels: ${{ steps.meta.outputs.labels }}
 
+    - name: Build and push Upload Gateway image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: src/upload-gateway/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-upload-gateway:${{ github.sha }},${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-upload-gateway:latest
+
+    - name: Build and push Scraper image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: src/scraper/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-scraper:${{ github.sha }},${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-scraper:latest
+
   deploy:
     needs: docker-build-push
     runs-on: ubuntu-latest
