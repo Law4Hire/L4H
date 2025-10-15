@@ -65,13 +65,13 @@ public sealed class InterviewControllerBasicTests : IDisposable
         // Create test visa types for recommendations
         var b2VisaType = new VisaType
         {
-            Code = "B2",
+            Code = "B-2",
             Name = "Tourist/Visitor",
             IsActive = true
         };
         var h1bVisaType = new VisaType
         {
-            Code = "H1B",
+            Code = "H-1B",
             Name = "Specialty Occupation",
             IsActive = true
         };
@@ -171,7 +171,7 @@ public sealed class InterviewControllerBasicTests : IDisposable
         };
 
         // Get the actual B2 visa type ID from database
-        var b2VisaType = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "B2");
+        var b2VisaType = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "B-2");
         Assert.NotNull(b2VisaType);
 
         // Act
@@ -193,8 +193,8 @@ public sealed class InterviewControllerBasicTests : IDisposable
             { "hasEmployerSponsor", "true" }
         };
 
-        // Get the actual H1B visa type ID from database  
-        var h1bVisaType = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "H1B");
+        // Get the actual H1B visa type ID from database
+        var h1bVisaType = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "H-1B");
         Assert.NotNull(h1bVisaType);
 
         // Act
@@ -210,7 +210,7 @@ public sealed class InterviewControllerBasicTests : IDisposable
     public async Task VisaRecommendation_CanBeSaved_WithCaseReference()
     {
         // Arrange
-        var b2VisaType = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "B2");
+        var b2VisaType = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "B-2");
         Assert.NotNull(b2VisaType);
         
         var recommendation = new VisaRecommendation

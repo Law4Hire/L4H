@@ -102,14 +102,14 @@ public sealed class InterviewControllerTests : IDisposable
         }
         
         // Ensure test visa types have the correct names for recommendations
-        var existingB2 = await context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "B2");
-        var existingH1B = await context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "H1B");
-        
+        var existingB2 = await context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "B-2");
+        var existingH1B = await context.VisaTypes.FirstOrDefaultAsync(v => v.Code == "H-1B");
+
         if (existingB2 == null)
         {
             var b2VisaType = new VisaType
             {
-                Code = "B2",
+                Code = "B-2",
                 Name = "B-2 Tourist Visa",
                 IsActive = true
             };
@@ -120,12 +120,12 @@ public sealed class InterviewControllerTests : IDisposable
             // Update existing B2 to have the correct name for the test
             existingB2.Name = "B-2 Tourist Visa";
         }
-        
+
         if (existingH1B == null)
         {
             var h1bVisaType = new VisaType
             {
-                Code = "H1B",
+                Code = "H-1B",
                 Name = "H-1B Specialty Occupation",
                 IsActive = true
             };

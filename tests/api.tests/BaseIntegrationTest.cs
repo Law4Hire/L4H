@@ -74,19 +74,19 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
             // Seed VisaTypes using raw SQL with IDENTITY_INSERT
             context.Database.ExecuteSqlRaw(@"
                 SET IDENTITY_INSERT VisaTypes ON;
-                
+
                 IF NOT EXISTS (SELECT 1 FROM VisaTypes WHERE Id = 1)
-                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt) 
-                    VALUES (1, 'H1B', 'H-1B Specialty Occupation', 1, GETUTCDATE(), GETUTCDATE());
-                
+                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt)
+                    VALUES (1, 'H-1B', 'H-1B Specialty Occupation', 1, GETUTCDATE(), GETUTCDATE());
+
                 IF NOT EXISTS (SELECT 1 FROM VisaTypes WHERE Id = 2)
-                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt) 
-                    VALUES (2, 'B2', 'B-2 Tourist Visa', 1, GETUTCDATE(), GETUTCDATE());
-                
+                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt)
+                    VALUES (2, 'B-2', 'B-2 Tourist Visa', 1, GETUTCDATE(), GETUTCDATE());
+
                 IF NOT EXISTS (SELECT 1 FROM VisaTypes WHERE Id = 3)
-                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt) 
-                    VALUES (3, 'F1', 'F-1 Student Visa', 1, GETUTCDATE(), GETUTCDATE());
-                
+                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt)
+                    VALUES (3, 'F-1', 'F-1 Student Visa', 1, GETUTCDATE(), GETUTCDATE());
+
                 SET IDENTITY_INSERT VisaTypes OFF;
             ");
 
@@ -115,15 +115,15 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
 
             IF NOT EXISTS (SELECT 1 FROM VisaClasses WHERE Id = 1)
                 INSERT INTO VisaClasses (Id, Code, Name, GeneralCategory, IsActive)
-                VALUES (1, 'H1B', 'H-1B', 'Employment', 1);
+                VALUES (1, 'H-1B', 'H-1B', 'Employment', 1);
 
             IF NOT EXISTS (SELECT 1 FROM VisaClasses WHERE Id = 2)
                 INSERT INTO VisaClasses (Id, Code, Name, GeneralCategory, IsActive)
-                VALUES (2, 'B2', 'B-2', 'Tourist', 1);
+                VALUES (2, 'B-2', 'B-2', 'Tourist', 1);
 
             IF NOT EXISTS (SELECT 1 FROM VisaClasses WHERE Id = 3)
                 INSERT INTO VisaClasses (Id, Code, Name, GeneralCategory, IsActive)
-                VALUES (3, 'F1', 'F-1', 'Student', 1);
+                VALUES (3, 'F-1', 'F-1', 'Student', 1);
 
             SET IDENTITY_INSERT VisaClasses OFF;
         ");
