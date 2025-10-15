@@ -268,8 +268,8 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
             existingUser.IsStaff = true;
         }
 
-        // Check if staff user already exists by email
-        var existingStaff = await context.Users.FirstOrDefaultAsync(u => u.Email == "staffavailabilitystaff@testing.com");
+        // Check if staff user already exists by ID first (more reliable than email)
+        var existingStaff = await context.Users.FirstOrDefaultAsync(u => u.Id == TestData.StaffUserId);
         if (existingStaff == null)
         {
             var staffUser = new User
@@ -314,27 +314,29 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
         // Save changes to remove appointments and blocks first
         await context.SaveChangesAsync();
 
-        // Clean up any existing staff user with this ID (from previous test runs or other tests)
+        // Ensure staff user exists and is configured correctly (don't delete and recreate)
         var existingStaffUser = await context.Users
             .FirstOrDefaultAsync(u => u.Id == TestData.StaffUserId);
 
-        if (existingStaffUser != null)
+        if (existingStaffUser == null)
         {
-            context.Users.Remove(existingStaffUser);
-            await context.SaveChangesAsync();
+            var staffUser = new User
+            {
+                Id = TestData.StaffUserId,
+                Email = "staffavailabilitystaff@testing.com",
+                PasswordHash = "SecureTest123!",
+                EmailVerified = true,
+                CreatedAt = DateTime.UtcNow,
+                PasswordUpdatedAt = DateTime.UtcNow,
+                IsStaff = true
+            };
+            context.Users.Add(staffUser);
         }
-
-        var staffUser = new User
+        else
         {
-            Id = TestData.StaffUserId,
-            Email = "staffavailabilitystaff2@testing.com",
-            PasswordHash = "SecureTest123!",
-            EmailVerified = true,
-            CreatedAt = DateTime.UtcNow,
-            PasswordUpdatedAt = DateTime.UtcNow,
-            IsStaff = true
-        };
-        context.Users.Add(staffUser);
+            // Update existing user to ensure correct configuration
+            existingStaffUser.IsStaff = true;
+        }
 
         // Check if test case already exists
         var existingCase = await context.Cases.FirstOrDefaultAsync(c => c.Id == TestData.TestCaseId);

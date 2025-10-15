@@ -501,11 +501,12 @@ public sealed class MeetingsIntegrationTests : IDisposable
     {
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
-        
+
         var email = isAdmin ? "admin@example.com" : "test@example.com";
         var userId = isAdmin ? TestData.AdminUserId : TestData.TestUserId;
-        
-        var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        // Check by ID first (more reliable than email for avoiding duplicates)
+        var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (existingUser == null)
         {
             var user = new User
