@@ -314,12 +314,15 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
         // Save changes to remove appointments and blocks first
         await context.SaveChangesAsync();
 
-        // Clean up any existing users with the same email and create staff user
-        var existingUsersWithEmail = await context.Users
-            .Where(u => u.Email == "staffavailabilitystaff2@testing.com")
-            .ToListAsync();
-        
-        context.Users.RemoveRange(existingUsersWithEmail);
+        // Clean up any existing staff user with this ID (from previous test runs or other tests)
+        var existingStaffUser = await context.Users
+            .FirstOrDefaultAsync(u => u.Id == TestData.StaffUserId);
+
+        if (existingStaffUser != null)
+        {
+            context.Users.Remove(existingStaffUser);
+            await context.SaveChangesAsync();
+        }
 
         var staffUser = new User
         {

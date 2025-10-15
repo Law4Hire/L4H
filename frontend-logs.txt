@@ -146,45 +146,21 @@ vite.config.ts:26:1: ERROR: Expected ";" but found ")"
 [2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/RouteGuard.js[22m
 [2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/query-provider.js[22m
 [2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/index.js[22m
-m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/translation-error-handler.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n-config.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/hooks/useRTL.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Toast.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/RTLDemo.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Modal.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/Api.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/api-client.js[22m
+[2m3:38:37 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/cases/mine[39m
 AggregateError [ECONNREFUSED]: 
     at internalConnectMultiple (node:net:1139:18)
     at afterConnectMultiple (node:net:1714:7)
-[2m8:39:46 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
-AggregateError [ECONNREFUSED]: 
-    at internalConnectMultiple (node:net:1139:18)
-    at afterConnectMultiple (node:net:1714:7)
-[2m8:39:46 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
-AggregateError [ECONNREFUSED]: 
-    at internalConnectMultiple (node:net:1139:18)
-    at afterConnectMultiple (node:net:1714:7)
-[2m8:39:49 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
-AggregateError [ECONNREFUSED]: 
-    at internalConnectMultiple (node:net:1139:18)
-    at afterConnectMultiple (node:net:1714:7)
-[2m8:39:49 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
-AggregateError [ECONNREFUSED]: 
-    at internalConnectMultiple (node:net:1139:18)
-    at afterConnectMultiple (node:net:1714:7)
-[2m8:39:51 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/csrf[39m
-AggregateError [ECONNREFUSED]: 
-    at internalConnectMultiple (node:net:1139:18)
-    at afterConnectMultiple (node:net:1714:7)
-[2m8:39:51 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/i18n/culture[39m
-AggregateError [ECONNREFUSED]: 
-    at internalConnectMultiple (node:net:1139:18)
-    at afterConnectMultiple (node:net:1714:7)
-[2m8:44:20 AM[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
-X [ERROR] Expected ";" but found ")"
-
-    vite.config.ts:26:1:
-      26 │ })
-         │  ^
-         ╵  ;
-
-[31mfailed to load config from C:\programming\L4HProject\web\l4h\vite.config.ts[39m
-[2m8:44:20 AM[22m [31m[1m[vite][22m[39m Build failed with 1 error:
-vite.config.ts:26:1: ERROR: Expected ";" but found ")"
+t found ")"
 [2m8:44:20 AM[22m [31m[1m[vite][22m[39m server restart failed
 [2m8:44:26 AM[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
 [2m8:44:26 AM[22m [36m[1m[vite][22m[39m server restarted.
@@ -219,3 +195,14 @@ vite.config.ts:26:1: ERROR: Expected ";" but found ")"
 [2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/RouteGuard.js[22m
 [2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/query-provider.js[22m
 [2m8:38:24 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/index.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/translation-error-handler.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/Icon.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/i18n-config.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/i18n-provider.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/hooks/useRTL.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/formatters.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/RTLDemo.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Modal.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Input.js[22m
+[2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/Api.js[22m
