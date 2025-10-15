@@ -206,3 +206,4 @@ t found ")"
 [2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Modal.js[22m
 [2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:/programming/L4HProject/web/shared-ui/dist/components/Input.js[22m
 [2m10:22:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mC:/programming/L4HProject/web/shared-ui/dist/Api.js[22m
+[2m10:52:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/main.tsx[22m

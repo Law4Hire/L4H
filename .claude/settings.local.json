@@ -1,13 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(Select-String -Pattern \"Passed|Failed|Total tests\")",
-      "Bash(Select-String -Path \"C:\\programming\\L4HProject\\src\\api\\Program.cs\" -Pattern \"MapGroup|MapControllers|/v1\" -Context 1)",
-      "Bash(find:*)",
-      "Bash(Select-String -Pattern \"Failed|Error\" -Context 2)",
-      "Bash(Select-String -Pattern \"UploadTokenService|GetSafeFilename\" -Context 3)",
-      "Bash(Get-Content \"C:\\programming\\L4HProject\\tests\\api.tests\\BaseIntegrationTest.cs\")",
-      "Bash(Select-String -Pattern \"DatabaseName\" -Context 2)"
+      "Read(//c/Users/The_R/.ssh/**)",
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "Bash(gh secret:*)",
+      "Bash(openssl rand:*)",
+      "Bash(gh api:*)",
+      "Bash(gh workflow run:*)"
     ],
     "deny": [],
     "ask": []
