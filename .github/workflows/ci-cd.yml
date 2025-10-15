@@ -217,35 +217,12 @@ jobs:
         script: |
           # Create temporary directory for UI artifacts
           mkdir -p /tmp/l4h-deploy
-          
-          # Stop existing services
-          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml down || true
-          
-          # Pull latest images
-          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml pull
 
-    - name: Copy UI artifacts to server
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}
-        source: "web/l4h/dist/*,web/cannlaw/dist/*"
-        target: "/tmp/l4h-deploy/"
+          # Create ops directory if it doesn't exist
+          mkdir -p ~/ops
 
-    - name: Deploy UI artifacts and start services
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}
-        script: |
-          # Copy UI artifacts to Docker volumes
-          docker run --rm -v l4h_web-l4h:/dst -v /tmp/l4h-deploy/l4h:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
-          docker run --rm -v l4h_web-cannlaw:/dst -v /tmp/l4h-deploy/cannlaw:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
-          
-          # Create production environment file
-          cat > ops/.env.prod << EOF
+          # Create production environment file FIRST
+          cat > ~/ops/.env.prod << EOF
           LE_EMAIL=${{ secrets.LE_EMAIL }}
           L4H_DOMAIN=${{ secrets.L4H_DOMAIN }}
           CANNLAW_DOMAIN=${{ secrets.CANNLAW_DOMAIN }}
@@ -256,13 +233,45 @@ jobs:
           GH_ORG=${{ github.repository_owner }}
           IMAGE_TAG=${{ github.sha }}
           EOF
-          
-          # Start services
+
+          # Stop existing services
+          docker compose --env-file ~/ops/.env.prod -f ~/ops/compose.prod.yml down || true
+
+          # Pull latest images
+          docker compose --env-file ~/ops/.env.prod -f ~/ops/compose.prod.yml pull
+
+    - name: Copy deployment files to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        source: "web/l4h/dist/*,web/cannlaw/dist/*,ops/compose.prod.yml,ops/caddy/*"
+        target: "/tmp/l4h-deploy/"
+
+    - name: Deploy UI artifacts and start services
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          # Copy UI artifacts to Docker volumes
+          docker run --rm -v l4h_web-l4h:/dst -v /tmp/l4h-deploy/web/l4h/dist:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
+          docker run --rm -v l4h_web-cannlaw:/dst -v /tmp/l4h-deploy/web/cannlaw/dist:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
+
+          # Copy compose and caddy files to proper location
+          mkdir -p ~/ops/caddy
+          cp /tmp/l4h-deploy/ops/compose.prod.yml ~/ops/
+          cp -r /tmp/l4h-deploy/ops/caddy/* ~/ops/caddy/
+
+          # Start services (env file already created in previous step)
+          cd ~
           docker compose --env-file ops/.env.prod -f ops/compose.prod.yml up -d
-          
+
           # Wait for services to be healthy
           sleep 30
-          
+
           # Clean up temporary files
           rm -rf /tmp/l4h-deploy
 
