@@ -17,42 +17,10 @@ using Xunit;
 
 namespace L4H.Api.Tests.Controllers;
 
-public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
+public sealed class AuthControllerTests : BaseIntegrationTest
 {
-    private readonly WebApplicationFactory<Program> _factory;
-    private readonly HttpClient _client;
-    private readonly string _testDatabaseName;
-
-    public AuthControllerTests(WebApplicationFactory<Program> factory)
+    public AuthControllerTests(WebApplicationFactory<Program> factory) : base(factory)
     {
-        _testDatabaseName = $"L4H_AuthTest_{Guid.NewGuid():N}";
-
-        _factory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.UseEnvironment("Testing");
-            builder.ConfigureServices(services =>
-            {
-                // Register test services (but keep SQL Server database)
-                TestServiceRegistration.RegisterTestServices(services);
-            });
-        });
-
-        _client = _factory.CreateClient();
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _client?.Dispose();
-            _factory?.Dispose();
-        }
     }
 
     [Fact]
@@ -66,7 +34,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/signup", request);
+        var response = await Client.PostAsJsonAsync("/v1/auth/signup", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -95,7 +63,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/signup", request);
+        var response = await Client.PostAsJsonAsync("/v1/auth/signup", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -113,10 +81,10 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // First signup
-        await _client.PostAsJsonAsync("/v1/auth/signup", request);
+        await Client.PostAsJsonAsync("/v1/auth/signup", request);
 
         // Act - Second signup with same email
-        var response = await _client.PostAsJsonAsync("/v1/auth/signup", request);
+        var response = await Client.PostAsJsonAsync("/v1/auth/signup", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -132,7 +100,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
             Email = uniqueEmail,
             Password = "SecureTest123!"
         };
-        await _client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
+        await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
 
         var loginRequest = new LoginRequest
         {
@@ -142,7 +110,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/login", loginRequest);
+        var response = await Client.PostAsJsonAsync("/v1/auth/login", loginRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -172,7 +140,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/login", loginRequest);
+        var response = await Client.PostAsJsonAsync("/v1/auth/login", loginRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -188,7 +156,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
             Email = uniqueEmail,
             Password = "SecureTest123!"
         };
-        await _client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
+        await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
 
         var loginRequest = new LoginRequest
         {
@@ -198,7 +166,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/login", loginRequest);
+        var response = await Client.PostAsJsonAsync("/v1/auth/login", loginRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -219,7 +187,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
             Email = uniqueEmail,
             Password = "SecureTest123!"
         };
-        await _client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
+        await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
 
         var forgotRequest = new ForgotPasswordRequest
         {
@@ -227,7 +195,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/forgot", forgotRequest);
+        var response = await Client.PostAsJsonAsync("/v1/auth/forgot", forgotRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -252,7 +220,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/forgot", forgotRequest);
+        var response = await Client.PostAsJsonAsync("/v1/auth/forgot", forgotRequest);
 
         // Assert - Should still return success to prevent email enumeration
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -262,7 +230,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
     public async Task Remember_WithoutCookie_ReturnsUnauthorized()
     {
         // Act
-        var response = await _client.PostAsync("/v1/auth/remember", null);
+        var response = await Client.PostAsync("/v1/auth/remember", null);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -282,7 +250,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/signup", request);
+        var response = await Client.PostAsJsonAsync("/v1/auth/signup", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -299,7 +267,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v1/auth/reset", resetRequest);
+        var response = await Client.PostAsJsonAsync("/v1/auth/reset", resetRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -307,7 +275,7 @@ public sealed class AuthControllerTests : IClassFixture<WebApplicationFactory<Pr
 
     private async Task<string> GetValidResetTokenAsync(string email)
     {
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var resetService = scope.ServiceProvider.GetRequiredService<IPasswordResetTokenService>();
         return await resetService.CreatePasswordResetTokenAsync(email);
     }
