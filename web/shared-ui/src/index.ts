@@ -58,7 +58,6 @@ export { ThemeProvider, useTheme } from './ThemeProvider'
 export { LanguageSwitcher } from './LanguageSwitcher'
 export { I18nProvider, useI18n, useT, useTranslation } from './i18n-provider'
 export type { Culture } from './i18n-provider'
-export { loadSupportedCultures, setCulture } from './i18n'
 
 // Route Guard
 export { RouteGuard } from './RouteGuard'

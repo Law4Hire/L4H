@@ -7,7 +7,12 @@
       "Bash(gh secret:*)",
       "Bash(openssl rand:*)",
       "Bash(gh api:*)",
-      "Bash(gh workflow run:*)"
+      "Bash(gh workflow run:*)",
+      "Bash(ssh:*)",
+      "Bash(gh run watch:*)",
+      "Bash(python:*)",
+      "Bash(tar:*)",
+      "Bash(scp:*)"
     ],
     "deny": [],
     "ask": []
