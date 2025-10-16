@@ -16,7 +16,7 @@ services:
 
   api:
     image: ghcr.io/${GH_ORG}/l4h-api:${IMAGE_TAG}
-    command: ["--migrate"]
+    command: ["dotnet", "L4H.Api.dll", "--migrate"]
     environment:
       ASPNETCORE_URLS: http://0.0.0.0:8080
       ConnectionStrings__SqlServer: "Server=sqlserver,1433;Database=L4H;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;"
