@@ -57,7 +57,7 @@ services:
     volumes:
       - uploads-data:/data/uploads
     healthcheck:
-      test: ["CMD","curl","-fsS","http://localhost:7070/healthz"]
+      test: ["CMD","curl","-fsS","http://localhost:7070/health"]
       interval: 10s
       timeout: 5s
       retries: 12
