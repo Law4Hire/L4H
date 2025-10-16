@@ -1,7 +1,11 @@
-import i18n from 'i18next'
+import i18next, { type i18n as I18nType } from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import Backend from 'i18next-http-backend'
 import { translationErrorHandler } from './translation-error-handler'
+
+// Create a NEW instance instead of using the singleton
+// This ensures we have full control over plugin registration
+const i18n: I18nType = i18next.createInstance()
 
 // RTL languages that should flip layout
 export const RTL_LANGUAGES = ['ar-SA', 'ur-PK', 'ar', 'ur']

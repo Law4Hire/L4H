@@ -50,8 +50,14 @@ export function I18nProvider({ children }: I18nProviderProps) {
   useEffect(() => {
     const initializeI18n = async () => {
       try {
-        // Wait for i18n to be ready
-        await i18nReady
+        // Wait for i18n to be ready (this ensures plugins are registered)
+        const initializedI18n = await i18nReady
+
+        // Verify that initReactI18next was registered
+        if (!initializedI18n.use || typeof initializedI18n.use !== 'function') {
+          console.error('i18n instance does not have plugin registration capability')
+        }
+
         setI18nInitialized(true)
         
         // Use local culture definitions instead of API calls

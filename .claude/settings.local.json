@@ -12,7 +12,8 @@
       "Bash(gh run watch:*)",
       "Bash(python:*)",
       "Bash(tar:*)",
-      "Bash(scp:*)"
+      "Bash(scp:*)",
+      "Bash(node test-production-site.js)"
     ],
     "deny": [],
     "ask": []

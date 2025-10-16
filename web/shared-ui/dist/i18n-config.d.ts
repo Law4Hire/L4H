@@ -1,4 +1,5 @@
-import i18n from 'i18next';
+import { type i18n as I18nType } from 'i18next';
+declare const i18n: I18nType;
 export declare const RTL_LANGUAGES: string[];
 export declare const SUPPORTED_LANGUAGES: string[];
 export declare const CULTURE_NAMES: Record<string, string>;
@@ -12,5 +13,5 @@ export declare function getTextDirection(language: string): 'ltr' | 'rtl';
 export declare function getTextAlign(language: string, align?: 'start' | 'end' | 'left' | 'right' | 'center'): string;
 export declare function formatNumber(value: number, language: string, options?: Intl.NumberFormatOptions): string;
 export declare function formatDate(date: Date, language: string, options?: Intl.DateTimeFormatOptions): string;
-export declare const i18nReady: Promise<import("i18next").i18n>;
+export declare const i18nReady: Promise<I18nType>;
 export default i18n;
