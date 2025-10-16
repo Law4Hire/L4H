@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LanguageSwitcher } from '../LanguageSwitcher'
+import { I18nProvider } from '../i18n-provider'
 import { setCulture, loadSupportedCultures } from '../i18n'
 
 // Mock the i18n functions
@@ -17,13 +18,18 @@ vi.mock('../i18n', () => ({
 // Mock fetch for API calls
 global.fetch = vi.fn()
 
+// Helper to render with I18nProvider
+const renderWithProvider = (ui: React.ReactElement) => {
+  return render(<I18nProvider>{ui}</I18nProvider>)
+}
+
 describe('LanguageSwitcher', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('renders with current language', () => {
-    render(<LanguageSwitcher />)
+    renderWithProvider(<LanguageSwitcher />)
     
     // Should show loading state initially
     expect(screen.getByText('common.loading')).toBeInTheDocument()
@@ -31,13 +37,13 @@ describe('LanguageSwitcher', () => {
 
   it('loads supported cultures on mount', async () => {
     const { loadSupportedCultures } = await import('../i18n')
-    
-    render(<LanguageSwitcher />)
-    
+
+    renderWithProvider(<LanguageSwitcher />)
+
     await waitFor(() => {
       expect(loadSupportedCultures).toHaveBeenCalled()
     })
-    
+
     // Should eventually show the select element
     await waitFor(() => {
       expect(screen.getByRole('combobox')).toBeInTheDocument()
@@ -47,8 +53,8 @@ describe('LanguageSwitcher', () => {
   it('handles language change', async () => {
     const user = userEvent.setup()
 
-    render(<LanguageSwitcher />)
-    
+    renderWithProvider(<LanguageSwitcher />)
+
     // Wait for cultures to load
     await waitFor(() => {
       expect(screen.getByRole('combobox')).toBeInTheDocument()
@@ -56,7 +62,7 @@ describe('LanguageSwitcher', () => {
 
     const select = screen.getByRole('combobox')
     await user.selectOptions(select, 'es')
-    
+
     expect(setCulture).toHaveBeenCalledWith('es')
   })
 
@@ -66,8 +72,8 @@ describe('LanguageSwitcher', () => {
       () => new Promise(() => {}) // Never resolves
     )
 
-    render(<LanguageSwitcher />)
-    
+    renderWithProvider(<LanguageSwitcher />)
+
     expect(screen.getByText('common.loading')).toBeInTheDocument()
   })
 
@@ -75,8 +81,8 @@ describe('LanguageSwitcher', () => {
     // Mock loadSupportedCultures to reject
     vi.mocked(loadSupportedCultures).mockRejectedValueOnce(new Error('API Error'))
 
-    render(<LanguageSwitcher />)
-    
+    renderWithProvider(<LanguageSwitcher />)
+
     // Should show fallback cultures after error
     await waitFor(() => {
       expect(screen.getByRole('combobox')).toBeInTheDocument()
@@ -86,8 +92,8 @@ describe('LanguageSwitcher', () => {
   it('supports keyboard navigation', async () => {
     const user = userEvent.setup()
 
-    render(<LanguageSwitcher />)
-    
+    renderWithProvider(<LanguageSwitcher />)
+
     // Wait for cultures to load
     await waitFor(() => {
       expect(screen.getByRole('combobox')).toBeInTheDocument()
@@ -96,28 +102,28 @@ describe('LanguageSwitcher', () => {
     const select = screen.getByRole('combobox')
     select.focus()
     expect(select).toHaveFocus()
-    
+
     await user.selectOptions(select, 'es')
-    
+
     expect(setCulture).toHaveBeenCalledWith('es')
   })
 
   it('applies custom className', async () => {
-    render(<LanguageSwitcher className="custom-class" />)
-    
+    renderWithProvider(<LanguageSwitcher className="custom-class" />)
+
     await waitFor(() => {
       expect(screen.getByRole('combobox')).toHaveClass('custom-class')
     })
   })
 
   it('supports aria attributes', async () => {
-    render(
-      <LanguageSwitcher 
+    renderWithProvider(
+      <LanguageSwitcher
         aria-label="Select language"
         aria-describedby="language-help"
       />
     )
-    
+
     await waitFor(() => {
       const select = screen.getByRole('combobox')
       expect(select).toHaveAttribute('aria-label', 'Select language')
@@ -126,8 +132,8 @@ describe('LanguageSwitcher', () => {
   })
 
   it('renders with compact variant', async () => {
-    render(<LanguageSwitcher variant="compact" />)
-    
+    renderWithProvider(<LanguageSwitcher variant="compact" />)
+
     await waitFor(() => {
       const select = screen.getByRole('combobox')
       expect(select).toHaveClass('text-sm', 'py-1')
@@ -135,8 +141,8 @@ describe('LanguageSwitcher', () => {
   })
 
   it('renders with full variant', async () => {
-    render(<LanguageSwitcher variant="full" />)
-    
+    renderWithProvider(<LanguageSwitcher variant="full" />)
+
     await waitFor(() => {
       const select = screen.getByRole('combobox')
       expect(select).toHaveClass('text-base', 'py-2')
