@@ -187,12 +187,12 @@ function saveLanguagePreference(language: string): void {
   }
 }
 
-// Register plugins at module level to ensure they're available immediately
-i18n.use(Backend).use(initReactI18next)
-
 // Initialize i18next with enhanced configuration
 const initI18n = () => {
   const initialLanguage = getInitialLanguage()
+
+  // Register plugins BEFORE init
+  i18n.use(Backend).use(initReactI18next)
 
   return i18n.init({
       // Language settings
