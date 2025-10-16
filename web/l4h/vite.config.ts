@@ -8,7 +8,8 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     base: '/',
     build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    sourcemap: true
   },
   server: {
     port: 5173,

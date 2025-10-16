@@ -4,7 +4,6 @@ import { LanguageSwitcher } from '../LanguageSwitcher'
 import { useTheme } from '../ThemeProvider'
 import { Sun, Moon } from '../Icon'
 import { Button } from './Button'
-import { useNavigate, useLocation } from 'react-router-dom'
 
 interface User {
   email: string
@@ -34,8 +33,8 @@ function getUserDisplayName(user: User): string {
   return 'User'
 }
 
-export const Layout: React.FC<LayoutProps> = ({ 
-  children, 
+export const Layout: React.FC<LayoutProps> = ({
+  children,
   title: _title,
   showUserMenu = true,
   user,
@@ -43,10 +42,17 @@ export const Layout: React.FC<LayoutProps> = ({
 }) => {
   const { t: _t } = useTranslation()
   const { theme, toggleTheme } = useTheme()
-  const navigate = useNavigate()
-  const location = useLocation()
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
+
+  // Use window.location for navigation instead of useNavigate to avoid Router context issues
+  const navigate = (path: string) => {
+    window.location.href = path
+  }
+
+  const getCurrentPath = () => {
+    return window.location.pathname
+  }
 
   const handleLogout = () => {
     // Clear tokens and redirect
@@ -98,7 +104,7 @@ export const Layout: React.FC<LayoutProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/visa-library')}
-                className={location.pathname === '/visa-library' ? 'bg-blue-50 text-blue-600' : ''}
+                className={getCurrentPath() === '/visa-library' ? 'bg-blue-50 text-blue-600' : ''}
               >
                 {_t('nav.visaLibrary')}
               </Button>

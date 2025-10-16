@@ -1,7 +1,6 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Layout, RouteGuard, ToastContainer, useToast } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
+import { Layout, RouteGuard, ToastContainer, useToast, useTranslation } from '@l4h/shared-ui'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'

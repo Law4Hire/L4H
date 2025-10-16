@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Container, Card, Button, EmptyState, useToast } from '@l4h/shared-ui'
 import { uploads } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@l4h/shared-ui'
 import { Upload, File, Download, Trash2, CheckCircle, AlertTriangle, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 

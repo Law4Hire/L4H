@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Card, Modal, Button } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@l4h/shared-ui'
 import { useNavigate } from 'react-router-dom'
 
 interface VisaType {

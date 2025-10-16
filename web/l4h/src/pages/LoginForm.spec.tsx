@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@l4h/shared-ui'
 import LoginPage from './LoginPage'
 import { authClient } from '@l4h/shared-ui'
 

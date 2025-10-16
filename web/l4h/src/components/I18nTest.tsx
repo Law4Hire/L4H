@@ -1,5 +1,5 @@
 import React from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@l4h/shared-ui'
 import { useI18n } from '@l4h/shared-ui'
 
 export function I18nTest() {

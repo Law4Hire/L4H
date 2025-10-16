@@ -5,6 +5,9 @@ import { translationErrorHandler } from './translation-error-handler';
 // Create a NEW instance instead of using the singleton
 // This ensures we have full control over plugin registration
 const i18n = i18next.createInstance();
+// Register plugins IMMEDIATELY at module load time
+// This MUST happen before any component tries to use the instance
+i18n.use(Backend).use(initReactI18next);
 // RTL languages that should flip layout
 export const RTL_LANGUAGES = ['ar-SA', 'ur-PK', 'ar', 'ur'];
 // All supported languages
@@ -172,8 +175,6 @@ function saveLanguagePreference(language) {
 // Initialize i18next with enhanced configuration
 const initI18n = () => {
     const initialLanguage = getInitialLanguage();
-    // Register plugins BEFORE init
-    i18n.use(Backend).use(initReactI18next);
     return i18n.init({
         // Language settings
         lng: initialLanguage,
