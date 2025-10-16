@@ -266,9 +266,9 @@ jobs:
           # Pull latest images
           docker compose --env-file ops/.env.prod -f ops/compose.prod.yml pull
 
-          # Copy UI artifacts to Docker volumes
-          docker run --rm -v l4h_web-l4h:/dst -v /tmp/l4h-deploy/web/l4h/dist:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
-          docker run --rm -v l4h_web-cannlaw:/dst -v /tmp/l4h-deploy/web/cannlaw/dist:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
+          # Copy UI artifacts to Docker volumes (ops_ prefix from compose project name)
+          docker run --rm -v ops_web-l4h:/dst -v /tmp/l4h-deploy/web/l4h/dist:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
+          docker run --rm -v ops_web-cannlaw:/dst -v /tmp/l4h-deploy/web/cannlaw/dist:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
 
           # Start services
           docker compose --env-file ops/.env.prod -f ops/compose.prod.yml up -d
