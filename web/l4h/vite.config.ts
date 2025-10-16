@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: isProduction ? '/law4hire/' : '/',
+    base: '/',
     build: {
     outDir: 'dist'
   },
