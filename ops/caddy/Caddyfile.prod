@@ -3,7 +3,8 @@
   auto_https disable_redirects
 }
 
-{$L4H_DOMAIN} {
+# Staging domains using nip.io (no DNS setup needed)
+l4h.74-208-77-43.nip.io {
   encode zstd gzip
   root * /srv/www/l4h
   file_server
@@ -15,7 +16,7 @@
   }
 }
 
-{$CANNLAW_DOMAIN} {
+cannlaw.74-208-77-43.nip.io {
   encode zstd gzip
   root * /srv/www/cannlaw
   file_server
@@ -26,3 +27,28 @@
     reverse_proxy upload-gateway:7070
   }
 }
+
+# Production domains (commented out until ready to switch)
+# {$L4H_DOMAIN} {
+#   encode zstd gzip
+#   root * /srv/www/l4h
+#   file_server
+#   handle_path /api/* {
+#     reverse_proxy api:8080
+#   }
+#   handle_path /gateway/* {
+#     reverse_proxy upload-gateway:7070
+#   }
+# }
+
+# {$CANNLAW_DOMAIN} {
+#   encode zstd gzip
+#   root * /srv/www/cannlaw
+#   file_server
+#   handle_path /api/* {
+#     reverse_proxy api:8080
+#   }
+#   handle_path /gateway/* {
+#     reverse_proxy upload-gateway:7070
+#   }
+# }
