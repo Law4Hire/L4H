@@ -15,9 +15,9 @@ public class CaddyfileValidates
         var caddyfileContent = File.ReadAllText(caddyfilePath);
 
         // Act & Assert
-        caddyfileContent.Should().Contain("{env.L4H_DOMAIN}", "L4H domain environment variable should be present");
-        caddyfileContent.Should().Contain("{env.CANNLAW_DOMAIN}", "Cannlaw domain environment variable should be present");
-        caddyfileContent.Should().Contain("{env.LE_EMAIL}", "Let's Encrypt email environment variable should be present");
+        caddyfileContent.Should().Contain("{$L4H_DOMAIN}", "L4H domain environment variable should be present");
+        caddyfileContent.Should().Contain("{$CANNLAW_DOMAIN}", "Cannlaw domain environment variable should be present");
+        caddyfileContent.Should().Contain("{$LE_EMAIL}", "Let's Encrypt email environment variable should be present");
     }
 
     [Fact]
@@ -80,9 +80,9 @@ public class CaddyfileValidates
         
         // Copy Caddyfile to temp directory and substitute environment variables with test values
         var caddyfileContent = File.ReadAllText(caddyfilePath);
-        caddyfileContent = caddyfileContent.Replace("{env.L4H_DOMAIN}", "test.l4h.com");
-        caddyfileContent = caddyfileContent.Replace("{env.CANNLAW_DOMAIN}", "test.cannlaw.com");
-        caddyfileContent = caddyfileContent.Replace("{env.LE_EMAIL}", "test@example.com");
+        caddyfileContent = caddyfileContent.Replace("{$L4H_DOMAIN}", "test.l4h.com");
+        caddyfileContent = caddyfileContent.Replace("{$CANNLAW_DOMAIN}", "test.cannlaw.com");
+        caddyfileContent = caddyfileContent.Replace("{$LE_EMAIL}", "test@example.com");
         File.WriteAllText(tempCaddyfile, caddyfileContent);
 
         try
