@@ -1,0 +1,126 @@
+{
+  "title": "Visa Eligibility Interview",
+  "loading": "Loading interview...",
+  "selectOption": "Select an option",
+  "enterAnswer": "Enter your answer",
+  "next": "Next Question",
+  "previous": "Previous Question",
+  "restart": "Reset Interview",
+  "complete": "Complete Interview",
+  
+  "progress": {
+    "title": "Adaptive Interview Progress",
+    "stats": "Question {{current}} | {{remaining}} visa types remaining",
+    "currentQuestion": "Question {{current}}",
+    "remainingVisas": "{{count}} visa types remaining",
+    "completionPercentage": "{{percentage}}% complete"
+  },
+  
+  "buttons": {
+    "next": "Next",
+    "previous": "Previous",
+    "restart": "Start Over",
+    "complete": "Complete",
+    "skip": "Skip Question"
+  },
+  
+  "messages": {
+    "selectOption": "Please select an option to continue",
+    "required": "This question is required",
+    "loading": "Loading next question...",
+    "error": "An error occurred while loading the question",
+    "sessionExpired": "Your interview session has expired. Please start over.",
+    "invalidAnswer": "Please provide a valid answer",
+    "completionFailed": "Failed to complete the interview. Please try again.",
+    "selectVisaDirectly": "Click a visa type to select it directly:",
+    "selectVisa": "Select {{code}} visa type",
+    "retrySuccess": "Successfully reconnected! Continuing your interview.",
+    "interviewRestarted": "Interview has been restarted. Starting fresh!",
+    "connectionLost": "Connection lost. Your progress has been saved.",
+    "recoveringSession": "Recovering your interview session..."
+  },
+  
+  "completion": {
+    "title": "Interview Complete",
+    "congratulations": "Congratulations!",
+    "description": "Based on your answers, we have a visa recommendation for you.",
+    "stats": "Questions answered: {{count}} | Narrowed down from 88+ visa types",
+    "recommendedVisa": "Recommended Visa Type",
+    "backToDashboard": "Back to Dashboard",
+    "viewPackages": "View Service Packages",
+    "startApplication": "Start Application"
+  },
+  
+  "categories": {
+    "visitTransit": "Visit & Transit",
+    "studyExchange": "Study & Exchange", 
+    "workTalent": "Work & Talent",
+    "familyFiance": "Family & Fiancé",
+    "diplomaticIO": "Diplomatic, IO & NATO",
+    "humanitarian": "Humanitarian & Law Enforcement",
+    "immigration": "Immigration (Permanent Residence)",
+    "adoption": "Foreign Adoption",
+    "citizenship": "Citizenship (N-400)"
+  },
+  
+  "questions": {
+    "category": "Which category best fits your situation?",
+    "purpose": "What is the primary purpose of your visit to the United States?",
+    "duration": "How long do you plan to stay in the United States?",
+    "employment": "Do you have a job offer from a US employer?",
+    "education": "Are you planning to study in the United States?",
+    "family": "Do you have immediate family members who are US citizens or permanent residents?",
+    "investment": "Are you planning to invest in or start a business in the United States?",
+    "age": "What is your age?",
+    "maritalStatus": "What is your marital status?",
+    "citizenship": "What is your country of citizenship?",
+    "residence": "What is your country of residence?"
+  },
+  
+  "options": {
+    "yes": "Yes",
+    "no": "No",
+    "notSure": "Not sure",
+    "single": "Single",
+    "married": "Married",
+    "divorced": "Divorced",
+    "widowed": "Widowed",
+    "lessThan90Days": "Less than 90 days",
+    "90DaysTo1Year": "90 days to 1 year",
+    "1To3Years": "1 to 3 years",
+    "moreThan3Years": "More than 3 years",
+    "permanent": "Permanent residence"
+  },
+  
+  "modal": {
+    "confirmSelection": "Confirm Visa Type Selection",
+    "selectionDescription": "You are selecting {{visaCode}} as your visa type suggestion.",
+    "completionNote": "This will complete the interview and set this visa type as your suggested starting point for working with our legal professionals.",
+    "legalDisclaimer": "This is a suggestion only and is not a legal recommendation. Our legal professionals will review your case and provide official guidance."
+  },
+  
+  "errorRecovery": {
+    "title": "Interview Error",
+    "description": "We encountered an issue with your interview session.",
+    "options": {
+      "retry": "Try Again",
+      "restart": "Restart Interview", 
+      "dashboard": "Back to Dashboard"
+    },
+    "retryDescription": "Attempt to continue from where you left off.",
+    "restartDescription": "Start the interview over from the beginning.",
+    "dashboardDescription": "Return to your dashboard and try again later.",
+    "retryAttempt": "Retry attempt {{count}} of 3",
+    "maxRetriesReached": "Maximum retry attempts reached. Please restart or return to dashboard."
+  },
+  
+  "errors": {
+    "loadingFailed": "Failed to load interview questions",
+    "submissionFailed": "Failed to submit your answer",
+    "sessionInvalid": "Your interview session is invalid",
+    "networkError": "Network error occurred. Please check your connection.",
+    "serverError": "Server error occurred. Please try again later.",
+    "unexpectedError": "An unexpected error occurred",
+    "restartFailed": "Failed to restart interview. Please try again."
+  }
+}
