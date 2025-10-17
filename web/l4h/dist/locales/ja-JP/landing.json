@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "移民法務サービスを簡単に",
+    "subtitle": "あなたの米国移民の旅のための専門的な法的支援",
+    "description": "複雑な米国移民システムをナビゲートするのを助けるプロフェッショナルな移民サービス",
+    "startCase": "ケースを開始する",
+    "exploreVisas": "ビザオプションを探る"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Law4Hireを選ぶ理由",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "専門法務チーム",
+      "description": "あなたの成功に専念する経験豊富な移民弁護士"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "効率的なプロセス",
+      "description": "最初から最後まで効率的なケース管理"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "24時間365日サポート",
+      "description": "あなたの質問に答えるために常に利用可能"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "始める準備はできましたか？",
+    "description": "今日、私たちの移民専門家との相談をスケジュールしてください",
+    "button": "相談をスケジュールする"
   }
 }

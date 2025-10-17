@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "आव्रजन कानूनी सेवाएं सरल बनाई गईं",
+    "subtitle": "आपकी अमेरिकी आव्रजन यात्रा के लिए विशेषज्ञ कानूनी सहायता",
+    "description": "जटिल अमेरिकी आव्रजन प्रणाली को नेविगेट करने में आपकी सहायता के लिए पेशेवर आव्रजन सेवाएं",
+    "startCase": "अपना केस शुरू करें",
+    "exploreVisas": "वीज़ा विकल्प देखें"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Law4Hire क्यों चुनें",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "विशेषज्ञ कानूनी टीम",
+      "description": "आपकी सफलता के लिए समर्पित अनुभवी आव्रजन अटॉर्नी"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "सुव्यवस्थित प्रक्रिया",
+      "description": "शुरू से अंत तक कुशल केस प्रबंधन"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "24/7 सहायता",
+      "description": "आपके प्रश्नों के उत्तर देने के लिए हमेशा उपलब्ध"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "शुरू करने के लिए तैयार हैं?",
+    "description": "आज ही हमारे आव्रजन विशेषज्ञों के साथ परामर्श निर्धारित करें",
+    "button": "परामर्श निर्धारित करें"
   }
 }

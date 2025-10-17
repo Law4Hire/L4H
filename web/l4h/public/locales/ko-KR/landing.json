@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "이민 법률 서비스를 간단하게",
+    "subtitle": "미국 이민 여정을 위한 전문 법률 지원",
+    "description": "복잡한 미국 이민 시스템을 탐색하는 데 도움이 되는 전문 이민 서비스",
+    "startCase": "사례 시작하기",
+    "exploreVisas": "비자 옵션 탐색"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Law4Hire를 선택하는 이유",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "전문 법률 팀",
+      "description": "귀하의 성공을 위해 헌신하는 경험 많은 이민 변호사"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "간소화된 프로세스",
+      "description": "처음부터 끝까지 효율적인 사례 관리"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "연중무휴 지원",
+      "description": "귀하의 질문에 답변하기 위해 항상 준비되어 있습니다"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "시작할 준비가 되셨나요?",
+    "description": "오늘 우리의 이민 전문가와 상담을 예약하세요",
+    "button": "상담 예약"
   }
 }

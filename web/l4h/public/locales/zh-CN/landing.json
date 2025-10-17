@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "移民法律服务变得简单",
+    "subtitle": "为您的美国移民之旅提供专业法律援助",
+    "description": "专业的移民服务帮助您驾驭复杂的美国移民系统",
+    "startCase": "开始您的案件",
+    "exploreVisas": "探索签证选项"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "为什么选择Law4Hire",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "专业法律团队",
+      "description": "经验丰富的移民律师致力于您的成功"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "简化流程",
+      "description": "从头到尾的高效案件管理"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "全天候支持",
+      "description": "随时准备回答您的问题"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "准备好开始了吗？",
+    "description": "立即与我们的移民专家预约咨询",
+    "button": "预约咨询"
   }
 }
