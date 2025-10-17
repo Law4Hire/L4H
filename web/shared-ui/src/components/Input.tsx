@@ -10,7 +10,7 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 }
 
 const variantClasses = {
-  default: 'border-gray-300 focus:border-primary-500 focus:ring-primary-500',
+  default: 'border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400',
   error: 'border-error-500 focus:border-error-500 focus:ring-error-500',
 }
 
@@ -38,23 +38,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label 
+          <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
             {label}
           </label>
         )}
-        
+
         <input
           ref={ref}
           id={inputId}
           className={clsx(
             // Base styles
             'block w-full rounded-md border shadow-sm transition-colors',
+            'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100',
             'focus:outline-none focus:ring-1',
             'disabled:opacity-50 disabled:cursor-not-allowed',
-            'placeholder:text-gray-400',
+            'placeholder:text-gray-400 dark:placeholder:text-gray-500',
             // RTL support
             'rtl:text-right ltr:text-left',
             // Special handling for specific input types that should remain LTR
@@ -87,9 +88,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         
         {helperText && !error && (
-          <p 
+          <p
             id={`${inputId}-helper`}
-            className="mt-1 text-sm text-gray-500"
+            className="mt-1 text-sm text-gray-500 dark:text-gray-400"
           >
             {helperText}
           </p>

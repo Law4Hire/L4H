@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "US Immigration Help",
+    "subtitle": "Powered by Law4Hire"
+  },
   "loading": "Loading...",
   "error": "Error",
   "success": "Success",
