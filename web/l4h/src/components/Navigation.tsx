@@ -6,7 +6,7 @@ import { useAuth, getUserDisplayName } from '../hooks/useAuth'
 export const Navigation: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { t } = useTranslation()
+  const { t } = useTranslation(['common', 'auth'])
   const { isAuthenticated, user, isLoading } = useAuth()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
@@ -54,8 +54,8 @@ export const Navigation: React.FC = () => {
             <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.2rem' }}>🇺🇸</span>
           </div>
           <div style={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>{t('brand:title', 'US Immigration Help')}</h1>
-            <p style={{ fontSize: '0.875rem', color: '#666', margin: 0 }}>{t('brand:subtitle', 'Powered by Law4Hire')}</p>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>{t('brand.title', 'US Immigration Help')}</h1>
+            <p style={{ fontSize: '0.875rem', color: '#666', margin: 0 }}>{t('brand.subtitle', 'Powered by Law4Hire')}</p>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

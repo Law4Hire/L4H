@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "অভিবাসন আইনি সেবা সহজ করা হয়েছে",
+    "subtitle": "আপনার মার্কিন অভিবাসন যাত্রার জন্য বিশেষজ্ঞ আইনি সহায়তা",
+    "description": "জটিল মার্কিন অভিবাসন ব্যবস্থায় আপনাকে পথ দেখাতে পেশাদার অভিবাসন সেবা",
+    "startCase": "আপনার মামলা শুরু করুন",
+    "exploreVisas": "ভিসা বিকল্পগুলি অন্বেষণ করুন"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "কেন Law4Hire বেছে নেবেন",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "বিশেষজ্ঞ আইনি দল",
+      "description": "আপনার সাফল্যে নিবেদিত অভিজ্ঞ অভিবাসন আইনজীবী"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "সুবিন্যস্ত প্রক্রিয়া",
+      "description": "শুরু থেকে শেষ পর্যন্ত দক্ষ মামলা ব্যবস্থাপনা"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "২৪/৭ সহায়তা",
+      "description": "আপনার প্রশ্নের উত্তর দিতে সর্বদা উপলব্ধ"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "শুরু করতে প্রস্তুত?",
+    "description": "আজই আমাদের অভিবাসন বিশেষজ্ঞদের সাথে পরামর্শের সময় নির্ধারণ করুন",
+    "button": "পরামর্শ নির্ধারণ করুন"
   }
 }
