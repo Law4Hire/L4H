@@ -215,7 +215,10 @@ const initI18n = () => {
                     }
                     catch (error) {
                         const errorObj = error instanceof Error ? error : new Error(String(error));
-                        // If not the fallback language, try fallback (don't log error yet - this is expected)
+                        // Record the error - we want to know about missing files!
+                        translationErrorHandler.recordError(language, namespace, errorObj);
+                        console.error(`⚠️  MISSING TRANSLATION FILE: /locales/${language}/${namespace}.json`);
+                        // If not the fallback language, try fallback
                         if (language !== FALLBACK_LANGUAGE) {
                             try {
                                 const fallbackUrl = `/locales/${FALLBACK_LANGUAGE}/${namespace}.json`;
@@ -229,9 +232,7 @@ const initI18n = () => {
                                     throw new Error(`Fallback HTTP ${fallbackResponse.status}: ${fallbackResponse.statusText}`);
                                 }
                                 const fallbackData = await fallbackResponse.json();
-                                // Successfully loaded fallback, no need to record error for missing translation
-                                console.info(`Using ${FALLBACK_LANGUAGE} translations for ${language}/${namespace} (translation not available)`);
-                                translationErrorHandler.recordSuccess(language, namespace);
+                                console.warn(`📝 Falling back to ${FALLBACK_LANGUAGE} for ${language}/${namespace}`);
                                 callback(null, fallbackData);
                             }
                             catch (fallbackError) {
@@ -340,17 +341,16 @@ i18n.on('loaded', (loaded) => {
     });
 });
 i18n.on('failedLoading', (lng, ns, msg) => {
-    // Only log/record if it's the fallback language failing (that's a real problem)
-    // For other languages, we expect some namespaces to be missing and that's OK
+    // Always log translation loading failures so we know what needs to be fixed
     if (lng === FALLBACK_LANGUAGE) {
-        console.error(`Failed loading FALLBACK translation: ${lng}/${ns}`, msg);
-        const error = new Error(msg || `Failed to load ${lng}/${ns}`);
-        translationErrorHandler.recordError(lng, ns, error);
+        console.error(`🚨 CRITICAL: Failed loading FALLBACK translation: ${lng}/${ns}`, msg);
     }
     else {
-        // Missing translations for non-English languages are expected
-        // Silently fall back to English
+        console.error(`❌ Failed loading translation: ${lng}/${ns}`, msg);
     }
+    // Record the error with detailed information
+    const error = new Error(msg || `Failed to load ${lng}/${ns}`);
+    translationErrorHandler.recordError(lng, ns, error);
 });
 // Additional event handlers for better error tracking
 i18n.on('languageChanged', (lng) => {

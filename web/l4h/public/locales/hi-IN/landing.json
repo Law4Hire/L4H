@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "title": "Immigration Legal Services Made Simple",
+    "subtitle": "Expert legal assistance for your U.S. immigration journey",
+    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
+    "startCase": "Start Your Case",
+    "exploreVisas": "Explore Visa Options"
+  },
+  "features": {
+    "title": "Why Choose Law4Hire",
+    "expert": {
+      "title": "Expert Legal Team",
+      "description": "Experienced immigration attorneys dedicated to your success"
+    },
+    "process": {
+      "title": "Streamlined Process",
+      "description": "Efficient case management from start to finish"
+    },
+    "support": {
+      "title": "24/7 Support",
+      "description": "Always available to answer your questions"
+    }
+  },
+  "cta": {
+    "title": "Ready to Get Started?",
+    "description": "Schedule a consultation with our immigration experts today",
+    "button": "Schedule Consultation"
+  }
+}
