@@ -1,7 +1,7 @@
 {
   "brand": {
-    "title": "美国移民帮助",
-    "subtitle": "由Law4Hire提供支持"
+    "title": "Tulong sa Imigrasyon ng US",
+    "subtitle": "Pinapatakbo ng Law4Hire"
   },
   "loading": "Loading...",
   "error": "Error",
@@ -42,23 +42,23 @@
   "redo": "Redo",
   "getStarted": "Get Started",
   "nav": {
-    "dashboard": "仪表板",
-    "pricing": "定价",
-    "appointments": "预约",
-    "messages": "消息",
-    "uploads": "上传",
-    "invoices": "发票",
-    "visaLibrary": "签证库",
-    "interview": "面试",
-    "scheduling": "安排面试",
-    "admin": "管理员",
-    "hello": "你好",
-    "login": "登录",
-    "logout": "登出",
-    "profile": "个人资料",
-    "settings": "设置",
-    "help": "帮助",
-    "support": "支持"
+    "dashboard": "Dashboard",
+    "pricing": "Presyo",
+    "appointments": "Mga Appointment",
+    "messages": "Mga Mensahe",
+    "uploads": "Mga Upload",
+    "invoices": "Mga Invoice",
+    "visaLibrary": "Library ng Visa",
+    "interview": "Interbyu",
+    "scheduling": "Mag-iskedyul ng Interbyu",
+    "admin": "Admin",
+    "hello": "Kumusta",
+    "login": "Mag-login",
+    "logout": "Mag-logout",
+    "profile": "Profile",
+    "settings": "Mga Setting",
+    "help": "Tulong",
+    "support": "Suporta"
   },
   "auth": {
     "login": "Login",

@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "Иммиграционные Юридические Услуги Упрощены",
+    "subtitle": "Экспертная юридическая помощь для вашего иммиграционного пути в США",
+    "description": "Профессиональные иммиграционные услуги, которые помогут вам ориентироваться в сложной иммиграционной системе США",
+    "startCase": "Начать ваше дело",
+    "exploreVisas": "Изучить варианты виз"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Почему стоит выбрать Law4Hire",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "Команда Экспертных Юристов",
+      "description": "Опытные иммиграционные адвокаты, посвященные вашему успеху"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "Упрощенный Процесс",
+      "description": "Эффективное управление делами от начала до конца"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "Поддержка 24/7",
+      "description": "Всегда готовы ответить на ваши вопросы"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "Готовы начать?",
+    "description": "Запланируйте консультацию с нашими иммиграционными экспертами сегодня",
+    "button": "Запланировать консультацию"
   }
 }

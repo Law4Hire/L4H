@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "title": "Mga Serbisyong Legal sa Imigrasyon na Ginawang Simple",
+    "subtitle": "Dalubhasang tulong legal para sa iyong paglalakbay sa imigrasyon ng US",
+    "description": "Propesyonal na mga serbisyo sa imigrasyon upang tulungan kang mag-navigate sa kumplikadong sistema ng imigrasyon ng US",
+    "startCase": "Simulan ang Iyong Kaso",
+    "exploreVisas": "Tuklasin ang mga Opsyon sa Visa"
+  },
+  "features": {
+    "title": "Bakit Pumili ng Law4Hire",
+    "expert": {
+      "title": "Dalubhasang Koponan ng Legal",
+      "description": "Mga may karanasang abogado sa imigrasyon na nakatuon sa iyong tagumpay"
+    },
+    "process": {
+      "title": "Pinasimple na Proseso",
+      "description": "Mahusay na pamamahala ng kaso mula simula hanggang wakas"
+    },
+    "support": {
+      "title": "24/7 na Suporta",
+      "description": "Laging available upang sagutin ang iyong mga tanong"
+    }
+  },
+  "cta": {
+    "title": "Handa na Bang Magsimula?",
+    "description": "Mag-iskedyul ng konsultasyon sa aming mga dalubhasa sa imigrasyon ngayon",
+    "button": "Mag-iskedyul ng Konsultasyon"
+  }
+}

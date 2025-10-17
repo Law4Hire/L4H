@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "Dịch Vụ Pháp Lý Nhập Cư Được Đơn Giản Hóa",
+    "subtitle": "Hỗ trợ pháp lý chuyên môn cho hành trình nhập cư Hoa Kỳ của bạn",
+    "description": "Dịch vụ nhập cư chuyên nghiệp giúp bạn điều hướng hệ thống nhập cư phức tạp của Hoa Kỳ",
+    "startCase": "Bắt đầu hồ sơ của bạn",
+    "exploreVisas": "Khám phá các lựa chọn visa"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Tại sao chọn Law4Hire",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "Đội Ngũ Pháp Lý Chuyên Môn",
+      "description": "Luật sư nhập cư giàu kinh nghiệm tận tâm với thành công của bạn"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "Quy Trình Hợp Lý",
+      "description": "Quản lý hồ sơ hiệu quả từ đầu đến cuối"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "Hỗ Trợ 24/7",
+      "description": "Luôn sẵn sàng trả lời câu hỏi của bạn"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "Sẵn sàng bắt đầu?",
+    "description": "Lên lịch tư vấn với các chuyên gia nhập cư của chúng tôi ngày hôm nay",
+    "button": "Lên lịch tư vấn"
   }
 }
