@@ -40,6 +40,12 @@
   "undo": "Annuler",
   "redo": "Refaire",
   "getStarted": "Commencer",
+  
+  "brand": {
+    "title": "Aide à l'Immigration Américaine",
+    "subtitle": "Propulsé par Law4Hire"
+  },
+  
   "nav": {
     "dashboard": "Tableau de Bord",
     "pricing": "Tarifs",

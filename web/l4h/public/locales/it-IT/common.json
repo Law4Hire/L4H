@@ -39,6 +39,12 @@
   "undo": "Annulla",
   "redo": "Ripeti",
   "getStarted": "Inizia",
+  
+  "brand": {
+    "title": "Aiuto Immigrazione USA",
+    "subtitle": "Powered by Law4Hire"
+  },
+  
   "nav": {
     "dashboard": "Dashboard",
     "pricing": "Prezzi",

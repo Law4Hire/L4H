@@ -39,6 +39,12 @@
   "undo": "Rückgängig",
   "redo": "Wiederholen",
   "getStarted": "Loslegen",
+  
+  "brand": {
+    "title": "US-Einwanderungshilfe",
+    "subtitle": "Powered by Law4Hire"
+  },
+  
   "nav": {
     "dashboard": "Dashboard",
     "pricing": "Preise",

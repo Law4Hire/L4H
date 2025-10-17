@@ -39,6 +39,12 @@
   "undo": "تراجع",
   "redo": "إعادة",
   "getStarted": "البدء",
+  
+  "brand": {
+    "title": "مساعدة الهجرة الأمريكية",
+    "subtitle": "مدعوم من Law4Hire"
+  },
+  
   "nav": {
     "dashboard": "لوحة التحكم",
     "pricing": "الأسعار",

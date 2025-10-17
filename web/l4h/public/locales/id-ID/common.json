@@ -39,6 +39,12 @@
   "undo": "Urungkan",
   "redo": "Ulangi",
   "getStarted": "Mulai",
+  
+  "brand": {
+    "title": "Bantuan Imigrasi AS",
+    "subtitle": "Didukung oleh Law4Hire"
+  },
+  
   "nav": {
     "dashboard": "Dasbor",
     "pricing": "Harga",

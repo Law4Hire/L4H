@@ -39,6 +39,12 @@
   "undo": "Deshacer",
   "redo": "Rehacer",
   "getStarted": "Comenzar",
+  
+  "brand": {
+    "title": "Ayuda de Inmigración de EE.UU.",
+    "subtitle": "Impulsado por Law4Hire"
+  },
+  
   "nav": {
     "dashboard": "Panel de Control",
     "pricing": "Precios",

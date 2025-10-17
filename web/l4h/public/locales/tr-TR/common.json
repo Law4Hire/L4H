@@ -39,6 +39,12 @@
   "undo": "Geri Al",
   "redo": "Yinele",
   "getStarted": "Başla",
+  
+  "brand": {
+    "title": "ABD Göçmenlik Yardımı",
+    "subtitle": "Law4Hire tarafından desteklenmektedir"
+  },
+  
   "nav": {
     "dashboard": "Kontrol Paneli",
     "pricing": "Fiyatlandırma",
