@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "Ayuda de Inmigración de EE.UU.",
+    "subtitle": "Impulsado por Law4Hire"
+  },
   "loading": "Cargando...",
   "error": "Error",
   "success": "Éxito",
@@ -35,7 +39,6 @@
   "undo": "Deshacer",
   "redo": "Rehacer",
   "getStarted": "Comenzar",
-  
   "nav": {
     "dashboard": "Panel de Control",
     "pricing": "Precios",
@@ -55,7 +58,6 @@
     "help": "Ayuda",
     "support": "Soporte"
   },
-  
   "auth": {
     "login": "Iniciar Sesión",
     "email": "Correo Electrónico",
@@ -93,7 +95,6 @@
     "registrationSuccess": "¡Registro exitoso! Bienvenido a Law4Hire.",
     "registrationFailed": "Error en el registro. Por favor intente de nuevo."
   },
-  
   "dashboard": {
     "title": "Panel de Control",
     "welcome": "¡Bienvenido de vuelta!",
@@ -104,7 +105,6 @@
     "messages": "Mensajes",
     "caseStatus": "Estado del Caso"
   },
-  
   "case": {
     "status": {
       "inactive": "Inactivo",
@@ -117,7 +117,6 @@
       "title": "Detalles del Caso"
     }
   },
-  
   "appointments": {
     "title": "Citas",
     "createAppointment": "Crear Cita",
@@ -130,7 +129,6 @@
     "scheduleFirst": "Programe su primera cita para comenzar",
     "durationHelper": "Duración en minutos"
   },
-  
   "messages": {
     "title": "Mensajes",
     "compose": "Redactar",
@@ -146,18 +144,15 @@
     "chooseThread": "Elija un hilo de mensajes para ver la conversación",
     "recipientPlaceholder": "Ingrese el correo electrónico o ID del destinatario"
   },
-  
   "validation": {
     "requiredFields": "Por favor complete todos los campos requeridos"
   },
-  
   "admin": {
     "userManagement": "Gestión de Usuarios",
     "userDetails": "Detalles del Usuario",
     "pricingManagement": "Gestión de Precios",
     "caseManagement": "Gestión de Casos"
   },
-  
   "visaLibrary": {
     "title": "Biblioteca de Tipos de Visa de EE.UU.",
     "description": "Explora información completa sobre diferentes categorías de visa de EE.UU. Haz clic en cualquier tipo de visa para conocer los requisitos de elegibilidad, el proceso de solicitud y los beneficios.",

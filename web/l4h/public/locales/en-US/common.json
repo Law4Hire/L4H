@@ -41,7 +41,6 @@
   "undo": "Undo",
   "redo": "Redo",
   "getStarted": "Get Started",
-  
   "nav": {
     "dashboard": "Dashboard",
     "pricing": "Pricing",
@@ -61,7 +60,6 @@
     "help": "Help",
     "support": "Support"
   },
-  
   "auth": {
     "login": "Login",
     "email": "Email",
@@ -99,7 +97,6 @@
     "registrationSuccess": "Registration successful! Welcome to Law4Hire.",
     "registrationFailed": "Registration failed. Please try again."
   },
-  
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome back!",
@@ -110,7 +107,6 @@
     "messages": "Messages",
     "caseStatus": "Case Status"
   },
-  
   "case": {
     "status": {
       "inactive": "Inactive",
@@ -123,7 +119,6 @@
       "title": "Case Details"
     }
   },
-  
   "appointments": {
     "title": "Appointments",
     "createAppointment": "Create Appointment",
@@ -136,7 +131,6 @@
     "scheduleFirst": "Schedule your first appointment to get started",
     "durationHelper": "Duration in minutes"
   },
-  
   "messages": {
     "title": "Messages",
     "compose": "Compose",
@@ -152,18 +146,15 @@
     "chooseThread": "Choose a message thread to view the conversation",
     "recipientPlaceholder": "Enter recipient email or ID"
   },
-  
   "validation": {
     "requiredFields": "Please fill in all required fields"
   },
-  
   "admin": {
     "userManagement": "User Management",
     "userDetails": "User Details",
     "pricingManagement": "Pricing Management",
     "caseManagement": "Case Management"
   },
-  
   "visaLibrary": {
     "title": "US Visa Types Library",
     "description": "Explore comprehensive information about different US visa categories. Click on any visa type to learn about eligibility requirements, application process, and benefits.",

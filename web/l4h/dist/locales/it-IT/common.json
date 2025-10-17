@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "Aiuto per l'Immigrazione negli Stati Uniti",
+    "subtitle": "Fornito da Law4Hire"
+  },
   "loading": "Caricamento...",
   "error": "Errore",
   "success": "Successo",
@@ -35,7 +39,6 @@
   "undo": "Annulla",
   "redo": "Ripeti",
   "getStarted": "Inizia",
-  
   "nav": {
     "dashboard": "Dashboard",
     "pricing": "Prezzi",
@@ -55,7 +58,6 @@
     "help": "Aiuto",
     "support": "Supporto"
   },
-  
   "auth": {
     "login": "Accedi",
     "email": "Email",
@@ -93,7 +95,6 @@
     "registrationSuccess": "Registrazione riuscita! Benvenuto in Law4Hire.",
     "registrationFailed": "Registrazione fallita. Riprova."
   },
-  
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Bentornato!",
@@ -104,7 +105,6 @@
     "messages": "Messaggi",
     "caseStatus": "Stato del Caso"
   },
-  
   "case": {
     "status": {
       "inactive": "Inattivo",
@@ -117,7 +117,6 @@
       "title": "Dettagli del Caso"
     }
   },
-  
   "appointments": {
     "title": "Appuntamenti",
     "createAppointment": "Crea Appuntamento",
@@ -130,7 +129,6 @@
     "scheduleFirst": "Programma il tuo primo appuntamento per iniziare",
     "durationHelper": "Durata in minuti"
   },
-  
   "messages": {
     "title": "Messaggi",
     "compose": "Componi",
@@ -146,18 +144,15 @@
     "chooseThread": "Scegli un thread di messaggi per visualizzare la conversazione",
     "recipientPlaceholder": "Inserisci email o ID del destinatario"
   },
-  
   "validation": {
     "requiredFields": "Compila tutti i campi obbligatori"
   },
-  
   "admin": {
     "userManagement": "Gestione Utenti",
     "userDetails": "Dettagli Utente",
     "pricingManagement": "Gestione Prezzi",
     "caseManagement": "Gestione Casi"
   },
-  
   "visaLibrary": {
     "title": "Libreria Tipi di Visto USA",
     "description": "Esplora informazioni complete sulle diverse categorie di visto USA. Clicca su qualsiasi tipo di visto per conoscere i requisiti di idoneità, il processo di richiesta e i benefici.",

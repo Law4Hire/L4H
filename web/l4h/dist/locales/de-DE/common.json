@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "US-Einwanderungshilfe",
+    "subtitle": "Betrieben von Law4Hire"
+  },
   "loading": "Laden...",
   "error": "Fehler",
   "success": "Erfolg",
@@ -35,7 +39,6 @@
   "undo": "Rückgängig",
   "redo": "Wiederholen",
   "getStarted": "Loslegen",
-  
   "nav": {
     "dashboard": "Dashboard",
     "pricing": "Preise",
@@ -55,7 +58,6 @@
     "help": "Hilfe",
     "support": "Support"
   },
-  
   "auth": {
     "login": "Anmelden",
     "email": "E-Mail",
@@ -93,7 +95,6 @@
     "registrationSuccess": "Registrierung erfolgreich! Willkommen bei Law4Hire.",
     "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
-  
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Willkommen zurück!",
@@ -104,7 +105,6 @@
     "messages": "Nachrichten",
     "caseStatus": "Fall-Status"
   },
-  
   "case": {
     "status": {
       "inactive": "Inaktiv",
@@ -117,7 +117,6 @@
       "title": "Fall-Details"
     }
   },
-  
   "appointments": {
     "title": "Termine",
     "createAppointment": "Termin erstellen",
@@ -130,7 +129,6 @@
     "scheduleFirst": "Planen Sie Ihren ersten Termin, um zu beginnen",
     "durationHelper": "Dauer in Minuten"
   },
-  
   "messages": {
     "title": "Nachrichten",
     "compose": "Verfassen",
@@ -146,18 +144,15 @@
     "chooseThread": "Wählen Sie einen Nachrichtenverlauf, um die Unterhaltung anzuzeigen",
     "recipientPlaceholder": "E-Mail oder ID des Empfängers eingeben"
   },
-  
   "validation": {
     "requiredFields": "Bitte füllen Sie alle erforderlichen Felder aus"
   },
-  
   "admin": {
     "userManagement": "Benutzerverwaltung",
     "userDetails": "Benutzerdetails",
     "pricingManagement": "Preisverwaltung",
     "caseManagement": "Fallverwaltung"
   },
-  
   "visaLibrary": {
     "title": "US-Visa-Typen-Bibliothek",
     "description": "Erkunden Sie umfassende Informationen über verschiedene US-Visa-Kategorien. Klicken Sie auf einen beliebigen Visa-Typ, um mehr über Berechtigungsanforderungen, Antragsverfahren und Vorteile zu erfahren.",

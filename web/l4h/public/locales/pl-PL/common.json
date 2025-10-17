@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "Pomoc Imigracyjna do USA",
+    "subtitle": "Obsługiwane przez Law4Hire"
+  },
   "loading": "Ładowanie...",
   "error": "Błąd",
   "success": "Sukces",
@@ -35,7 +39,6 @@
   "undo": "Cofnij",
   "redo": "Ponów",
   "getStarted": "Rozpocznij",
-  
   "nav": {
     "dashboard": "Panel",
     "pricing": "Cennik",
@@ -55,7 +58,6 @@
     "help": "Pomoc",
     "support": "Wsparcie"
   },
-  
   "auth": {
     "login": "Zaloguj",
     "email": "Email",
@@ -93,7 +95,6 @@
     "registrationSuccess": "Rejestracja udana! Witamy w Law4Hire.",
     "registrationFailed": "Rejestracja nieudana. Spróbuj ponownie."
   },
-  
   "dashboard": {
     "title": "Panel",
     "welcome": "Witamy z powrotem!",
@@ -104,7 +105,6 @@
     "messages": "Wiadomości",
     "caseStatus": "Status Sprawy"
   },
-  
   "case": {
     "status": {
       "inactive": "Nieaktywny",
@@ -117,7 +117,6 @@
       "title": "Szczegóły Sprawy"
     }
   },
-  
   "appointments": {
     "title": "Spotkania",
     "createAppointment": "Utwórz Spotkanie",
@@ -130,7 +129,6 @@
     "scheduleFirst": "Zaplanuj swoje pierwsze spotkanie, aby rozpocząć",
     "durationHelper": "Czas trwania w minutach"
   },
-  
   "messages": {
     "title": "Wiadomości",
     "compose": "Napisz",
@@ -146,18 +144,15 @@
     "chooseThread": "Wybierz wątek wiadomości, aby zobaczyć rozmowę",
     "recipientPlaceholder": "Wprowadź email lub ID odbiorcy"
   },
-  
   "validation": {
     "requiredFields": "Wypełnij wszystkie wymagane pola"
   },
-  
   "admin": {
     "userManagement": "Zarządzanie Użytkownikami",
     "userDetails": "Szczegóły Użytkownika",
     "pricingManagement": "Zarządzanie Cennikiem",
     "caseManagement": "Zarządzanie Sprawami"
   },
-  
   "visaLibrary": {
     "title": "Biblioteka Typów Wiz USA",
     "description": "Poznaj kompleksowe informacje o różnych kategoriach wiz USA. Kliknij na dowolny typ wizy, aby dowiedzieć się o wymaganiach kwalifikacyjnych, procesie aplikacji i korzyściach.",

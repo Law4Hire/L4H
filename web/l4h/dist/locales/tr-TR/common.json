@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "ABD Göçmenlik Yardımı",
+    "subtitle": "Law4Hire tarafından desteklenmektedir"
+  },
   "loading": "Yükleniyor...",
   "error": "Hata",
   "success": "Başarılı",
@@ -35,7 +39,6 @@
   "undo": "Geri Al",
   "redo": "Yinele",
   "getStarted": "Başla",
-  
   "nav": {
     "dashboard": "Kontrol Paneli",
     "pricing": "Fiyatlandırma",
@@ -55,7 +58,6 @@
     "help": "Yardım",
     "support": "Destek"
   },
-  
   "auth": {
     "login": "Giriş Yap",
     "email": "E-posta",
@@ -93,7 +95,6 @@
     "registrationSuccess": "Kayıt başarılı! Law4Hire'a hoş geldiniz.",
     "registrationFailed": "Kayıt başarısız. Lütfen tekrar deneyin."
   },
-  
   "dashboard": {
     "title": "Kontrol Paneli",
     "welcome": "Tekrar hoş geldiniz!",
@@ -104,7 +105,6 @@
     "messages": "Mesajlar",
     "caseStatus": "Dava Durumu"
   },
-  
   "case": {
     "status": {
       "inactive": "Pasif",
@@ -117,7 +117,6 @@
       "title": "Dava Detayları"
     }
   },
-  
   "appointments": {
     "title": "Randevular",
     "createAppointment": "Randevu Oluştur",
@@ -130,7 +129,6 @@
     "scheduleFirst": "Başlamak için ilk randevunuzu planlayın",
     "durationHelper": "Dakika cinsinden süre"
   },
-  
   "messages": {
     "title": "Mesajlar",
     "compose": "Yaz",
@@ -146,18 +144,15 @@
     "chooseThread": "Sohbeti görüntülemek için mesaj dizisini seçin",
     "recipientPlaceholder": "Alıcının e-postasını veya ID'sini girin"
   },
-  
   "validation": {
     "requiredFields": "Lütfen tüm gerekli alanları doldurun"
   },
-  
   "admin": {
     "userManagement": "Kullanıcı Yönetimi",
     "userDetails": "Kullanıcı Detayları",
     "pricingManagement": "Fiyat Yönetimi",
     "caseManagement": "Dava Yönetimi"
   },
-  
   "visaLibrary": {
     "title": "ABD Vize Türleri Kütüphanesi",
     "description": "Farklı ABD vize kategorileri hakkında kapsamlı bilgileri keşfedin. Uygunluk gereksinimleri, başvuru süreci ve faydalar hakkında bilgi edinmek için herhangi bir vize türüne tıklayın.",

@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "مساعدة الهجرة الأمريكية",
+    "subtitle": "مدعوم من Law4Hire"
+  },
   "loading": "جاري التحميل...",
   "error": "خطأ",
   "success": "نجح",
@@ -35,7 +39,6 @@
   "undo": "تراجع",
   "redo": "إعادة",
   "getStarted": "البدء",
-  
   "nav": {
     "dashboard": "لوحة التحكم",
     "pricing": "الأسعار",
@@ -55,7 +58,6 @@
     "help": "المساعدة",
     "support": "الدعم"
   },
-  
   "auth": {
     "login": "تسجيل الدخول",
     "email": "البريد الإلكتروني",
@@ -93,7 +95,6 @@
     "registrationSuccess": "تم التسجيل بنجاح! مرحباً بك في Law4Hire.",
     "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى."
   },
-  
   "dashboard": {
     "title": "لوحة التحكم",
     "welcome": "مرحباً بعودتك!",
@@ -104,7 +105,6 @@
     "messages": "الرسائل",
     "caseStatus": "حالة القضية"
   },
-  
   "case": {
     "status": {
       "inactive": "غير نشط",
@@ -117,7 +117,6 @@
       "title": "تفاصيل القضية"
     }
   },
-  
   "appointments": {
     "title": "المواعيد",
     "createAppointment": "إنشاء موعد",
@@ -130,7 +129,6 @@
     "scheduleFirst": "جدول موعدك الأول للبدء",
     "durationHelper": "المدة بالدقائق"
   },
-  
   "messages": {
     "title": "الرسائل",
     "compose": "إنشاء",
@@ -146,18 +144,15 @@
     "chooseThread": "اختر سلسلة رسائل لعرض المحادثة",
     "recipientPlaceholder": "أدخل البريد الإلكتروني أو المعرف للمستلم"
   },
-  
   "validation": {
     "requiredFields": "يرجى ملء جميع الحقول المطلوبة"
   },
-  
   "admin": {
     "userManagement": "إدارة المستخدمين",
     "userDetails": "تفاصيل المستخدم",
     "pricingManagement": "إدارة الأسعار",
     "caseManagement": "إدارة القضايا"
   },
-  
   "visaLibrary": {
     "title": "مكتبة أنواع التأشيرات الأمريكية",
     "description": "استكشف معلومات شاملة حول فئات التأشيرات الأمريكية المختلفة. انقر على أي نوع تأشيرة لمعرفة متطلبات الأهلية وعملية التقديم والفوائد.",

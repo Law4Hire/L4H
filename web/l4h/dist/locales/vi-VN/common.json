@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "Trợ Giúp Nhập Cư Hoa Kỳ",
+    "subtitle": "Được hỗ trợ bởi Law4Hire"
+  },
   "loading": "Đang tải...",
   "error": "Lỗi",
   "success": "Thành công",
@@ -35,7 +39,6 @@
   "undo": "Hoàn tác",
   "redo": "Làm lại",
   "getStarted": "Bắt đầu",
-  
   "nav": {
     "dashboard": "Bảng điều khiển",
     "pricing": "Giá cả",
@@ -55,7 +58,6 @@
     "help": "Trợ giúp",
     "support": "Hỗ trợ"
   },
-  
   "auth": {
     "login": "Đăng nhập",
     "email": "Email",
@@ -93,7 +95,6 @@
     "registrationSuccess": "Đăng ký thành công! Chào mừng đến với Law4Hire.",
     "registrationFailed": "Đăng ký thất bại. Vui lòng thử lại."
   },
-  
   "dashboard": {
     "title": "Bảng điều khiển",
     "welcome": "Chào mừng trở lại!",
@@ -104,7 +105,6 @@
     "messages": "Tin nhắn",
     "caseStatus": "Trạng thái vụ việc"
   },
-  
   "case": {
     "status": {
       "inactive": "Không hoạt động",
@@ -117,7 +117,6 @@
       "title": "Chi tiết vụ việc"
     }
   },
-  
   "appointments": {
     "title": "Cuộc hẹn",
     "createAppointment": "Tạo cuộc hẹn",
@@ -130,7 +129,6 @@
     "scheduleFirst": "Lên lịch cuộc hẹn đầu tiên để bắt đầu",
     "durationHelper": "Thời lượng tính bằng phút"
   },
-  
   "messages": {
     "title": "Tin nhắn",
     "compose": "Soạn",
@@ -146,18 +144,15 @@
     "chooseThread": "Chọn chuỗi tin nhắn để xem cuộc trò chuyện",
     "recipientPlaceholder": "Nhập email hoặc ID người nhận"
   },
-  
   "validation": {
     "requiredFields": "Vui lòng điền tất cả các trường bắt buộc"
   },
-  
   "admin": {
     "userManagement": "Quản lý người dùng",
     "userDetails": "Chi tiết người dùng",
     "pricingManagement": "Quản lý giá cả",
     "caseManagement": "Quản lý vụ việc"
   },
-  
   "visaLibrary": {
     "title": "Thư viện các loại Visa Mỹ",
     "description": "Khám phá thông tin toàn diện về các danh mục visa Mỹ khác nhau. Nhấp vào bất kỳ loại visa nào để tìm hiểu về yêu cầu đủ điều kiện, quy trình đăng ký và lợi ích.",

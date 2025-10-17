@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "Bantuan Imigrasi AS",
+    "subtitle": "Didukung oleh Law4Hire"
+  },
   "loading": "Memuat...",
   "error": "Kesalahan",
   "success": "Berhasil",
@@ -35,7 +39,6 @@
   "undo": "Urungkan",
   "redo": "Ulangi",
   "getStarted": "Mulai",
-  
   "nav": {
     "dashboard": "Dasbor",
     "pricing": "Harga",
@@ -55,7 +58,6 @@
     "help": "Bantuan",
     "support": "Dukungan"
   },
-  
   "auth": {
     "login": "Masuk",
     "email": "Email",
@@ -93,7 +95,6 @@
     "registrationSuccess": "Pendaftaran berhasil! Selamat datang di Law4Hire.",
     "registrationFailed": "Pendaftaran gagal. Silakan coba lagi."
   },
-  
   "dashboard": {
     "title": "Dasbor",
     "welcome": "Selamat datang kembali!",
@@ -104,7 +105,6 @@
     "messages": "Pesan",
     "caseStatus": "Status Kasus"
   },
-  
   "case": {
     "status": {
       "inactive": "Tidak Aktif",
@@ -117,7 +117,6 @@
       "title": "Detail Kasus"
     }
   },
-  
   "appointments": {
     "title": "Janji Temu",
     "createAppointment": "Buat Janji Temu",
@@ -130,7 +129,6 @@
     "scheduleFirst": "Jadwalkan janji temu pertama Anda untuk memulai",
     "durationHelper": "Durasi dalam menit"
   },
-  
   "messages": {
     "title": "Pesan",
     "compose": "Tulis",
@@ -146,18 +144,15 @@
     "chooseThread": "Pilih thread pesan untuk melihat percakapan",
     "recipientPlaceholder": "Masukkan email atau ID penerima"
   },
-  
   "validation": {
     "requiredFields": "Silakan isi semua bidang yang diperlukan"
   },
-  
   "admin": {
     "userManagement": "Manajemen Pengguna",
     "userDetails": "Detail Pengguna",
     "pricingManagement": "Manajemen Harga",
     "caseManagement": "Manajemen Kasus"
   },
-  
   "visaLibrary": {
     "title": "Perpustakaan Jenis Visa AS",
     "description": "Jelajahi informasi komprehensif tentang berbagai kategori visa AS. Klik pada jenis visa apa pun untuk mempelajari persyaratan kelayakan, proses aplikasi, dan manfaat.",

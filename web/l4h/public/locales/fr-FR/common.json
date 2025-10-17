@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "Aide à l'Immigration aux États-Unis",
+    "subtitle": "Propulsé par Law4Hire"
+  },
   "loading": "Chargement...",
   "error": "Erreur",
   "success": "Succès",
@@ -36,7 +40,6 @@
   "undo": "Annuler",
   "redo": "Refaire",
   "getStarted": "Commencer",
-  
   "nav": {
     "dashboard": "Tableau de Bord",
     "pricing": "Tarifs",
@@ -56,7 +59,6 @@
     "help": "Aide",
     "support": "Support"
   },
-  
   "auth": {
     "login": "Se Connecter",
     "email": "Adresse E-mail",
@@ -94,7 +96,6 @@
     "registrationSuccess": "Inscription réussie ! Bienvenue chez Law4Hire.",
     "registrationFailed": "Échec de l'inscription. Veuillez réessayer."
   },
-  
   "dashboard": {
     "title": "Tableau de Bord",
     "welcome": "Bon retour !",
@@ -105,7 +106,6 @@
     "messages": "Messages",
     "caseStatus": "Statut du Dossier"
   },
-  
   "case": {
     "status": {
       "inactive": "Inactif",
@@ -118,7 +118,6 @@
       "title": "Détails du Dossier"
     }
   },
-  
   "appointments": {
     "title": "Rendez-vous",
     "createAppointment": "Créer un Rendez-vous",
@@ -131,7 +130,6 @@
     "scheduleFirst": "Planifiez votre premier rendez-vous pour commencer",
     "durationHelper": "Durée en minutes"
   },
-  
   "messages": {
     "title": "Messages",
     "compose": "Rédiger",
@@ -147,18 +145,15 @@
     "chooseThread": "Choisissez un fil de messages pour voir la conversation",
     "recipientPlaceholder": "Entrez l'e-mail ou l'ID du destinataire"
   },
-  
   "validation": {
     "requiredFields": "Veuillez remplir tous les champs requis"
   },
-  
   "admin": {
     "userManagement": "Gestion des Utilisateurs",
     "userDetails": "Détails de l'Utilisateur",
     "pricingManagement": "Gestion des Tarifs",
     "caseManagement": "Gestion des Dossiers"
   },
-  
   "visaLibrary": {
     "title": "Bibliothèque des Types de Visa Américains",
     "description": "Explorez des informations complètes sur les différentes catégories de visa américains. Cliquez sur n'importe quel type de visa pour connaître les exigences d'éligibilité, le processus de demande et les avantages.",

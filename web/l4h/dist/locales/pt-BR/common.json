@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "title": "Ajuda de Imigração dos EUA",
+    "subtitle": "Desenvolvido por Law4Hire"
+  },
   "loading": "Carregando...",
   "error": "Erro",
   "success": "Sucesso",
@@ -35,7 +39,6 @@
   "undo": "Desfazer",
   "redo": "Refazer",
   "getStarted": "Começar",
-  
   "nav": {
     "dashboard": "Painel",
     "pricing": "Preços",
@@ -55,7 +58,6 @@
     "help": "Ajuda",
     "support": "Suporte"
   },
-  
   "auth": {
     "login": "Entrar",
     "email": "Email",
@@ -93,7 +95,6 @@
     "registrationSuccess": "Registro bem-sucedido! Bem-vindo ao Law4Hire.",
     "registrationFailed": "Registro falhou. Tente novamente."
   },
-  
   "dashboard": {
     "title": "Painel",
     "welcome": "Bem-vindo de volta!",
@@ -104,7 +105,6 @@
     "messages": "Mensagens",
     "caseStatus": "Status do Caso"
   },
-  
   "case": {
     "status": {
       "inactive": "Inativo",
@@ -117,7 +117,6 @@
       "title": "Detalhes do Caso"
     }
   },
-  
   "appointments": {
     "title": "Consultas",
     "createAppointment": "Criar Consulta",
@@ -130,7 +129,6 @@
     "scheduleFirst": "Agende sua primeira consulta para começar",
     "durationHelper": "Duração em minutos"
   },
-  
   "messages": {
     "title": "Mensagens",
     "compose": "Escrever",
@@ -146,18 +144,15 @@
     "chooseThread": "Escolha uma thread de mensagem para ver a conversa",
     "recipientPlaceholder": "Digite o email ou ID do destinatário"
   },
-  
   "validation": {
     "requiredFields": "Preencha todos os campos obrigatórios"
   },
-  
   "admin": {
     "userManagement": "Gerenciamento de Usuários",
     "userDetails": "Detalhes do Usuário",
     "pricingManagement": "Gerenciamento de Preços",
     "caseManagement": "Gerenciamento de Casos"
   },
-  
   "visaLibrary": {
     "title": "Biblioteca de Tipos de Visto dos EUA",
     "description": "Explore informações abrangentes sobre diferentes categorias de visto dos EUA. Clique em qualquer tipo de visto para saber sobre requisitos de elegibilidade, processo de aplicação e benefícios.",
