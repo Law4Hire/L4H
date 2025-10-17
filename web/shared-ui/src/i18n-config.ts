@@ -7,6 +7,10 @@ import { translationErrorHandler } from './translation-error-handler'
 // This ensures we have full control over plugin registration
 const i18n: I18nType = i18next.createInstance()
 
+// Register plugins IMMEDIATELY at module load time
+// This MUST happen before any component tries to use the instance
+i18n.use(Backend).use(initReactI18next)
+
 // RTL languages that should flip layout
 export const RTL_LANGUAGES = ['ar-SA', 'ur-PK', 'ar', 'ur']
 
@@ -195,9 +199,6 @@ function saveLanguagePreference(language: string): void {
 const initI18n = () => {
   const initialLanguage = getInitialLanguage()
 
-  // Register plugins BEFORE init
-  i18n.use(Backend).use(initReactI18next)
-
   return i18n.init({
       // Language settings
       lng: initialLanguage,
@@ -247,11 +248,8 @@ const initI18n = () => {
               
             } catch (error) {
               const errorObj = error instanceof Error ? error : new Error(String(error))
-              
-              // Record the error
-              translationErrorHandler.recordError(language, namespace, errorObj)
-              
-              // If not the fallback language, try fallback
+
+              // If not the fallback language, try fallback (don't log error yet - this is expected)
               if (language !== FALLBACK_LANGUAGE) {
                 try {
                   const fallbackUrl = `/locales/${FALLBACK_LANGUAGE}/${namespace}.json`
@@ -261,14 +259,16 @@ const initI18n = () => {
                       'Accept': 'application/json'
                     }
                   })
-                  
+
                   if (!fallbackResponse.ok) {
                     throw new Error(`Fallback HTTP ${fallbackResponse.status}: ${fallbackResponse.statusText}`)
                   }
-                  
+
                   const fallbackData = await fallbackResponse.json()
-                  
-                  console.info(`Loaded fallback translations for ${namespace} from ${FALLBACK_LANGUAGE}`)
+
+                  // Successfully loaded fallback, no need to record error for missing translation
+                  console.info(`Using ${FALLBACK_LANGUAGE} translations for ${language}/${namespace} (translation not available)`)
+                  translationErrorHandler.recordSuccess(language, namespace)
                   callback(null, fallbackData)
                   
                 } catch (fallbackError) {
@@ -391,11 +391,16 @@ i18n.on('loaded', (loaded) => {
 })
 
 i18n.on('failedLoading', (lng, ns, msg) => {
-  console.warn(`Failed loading translation: ${lng}/${ns}`, msg)
-  
-  // Record the error with detailed information
-  const error = new Error(msg || `Failed to load ${lng}/${ns}`)
-  translationErrorHandler.recordError(lng, ns, error)
+  // Only log/record if it's the fallback language failing (that's a real problem)
+  // For other languages, we expect some namespaces to be missing and that's OK
+  if (lng === FALLBACK_LANGUAGE) {
+    console.error(`Failed loading FALLBACK translation: ${lng}/${ns}`, msg)
+    const error = new Error(msg || `Failed to load ${lng}/${ns}`)
+    translationErrorHandler.recordError(lng, ns, error)
+  } else {
+    // Missing translations for non-English languages are expected
+    // Silently fall back to English
+  }
 })
 
 // Additional event handlers for better error tracking
