@@ -10,6 +10,7 @@ interface VisaType {
   description: string
 }
 
+// Fixed QueryClient issue - using useState instead of useQuery
 const VisaLibraryPage: React.FC = () => {
   const { t } = useTranslation(['common', 'visaLibrary'])
   const navigate = useNavigate()
