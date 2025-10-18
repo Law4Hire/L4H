@@ -11,4 +11,4 @@ computing gzip size...
 [2mdist/[22m[35massets/index-Q8WJh4Mr.css            [39m[1m[2m 40.73 kB[22m[1m[22m[2m │ gzip:   7.27 kB[22m
 [2mdist/[22m[36massets/browser-ponyfill-DZXnQ10C.js  [39m[1m[2m 10.35 kB[22m[1m[22m[2m │ gzip:   3.56 kB[22m[2m │ map:    31.91 kB[22m
 [2mdist/[22m[36massets/index-BVpIxrL7.js             [39m[1m[2m485.77 kB[22m[1m[22m[2m │ gzip: 141.23 kB[22m[2m │ map: 1,875.50 kB[22m
-[32m✓ built in 6.44s[39m
+[32m✓ built in 6.24s[39m

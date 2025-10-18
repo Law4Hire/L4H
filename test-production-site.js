@@ -1,52 +1,90 @@
-#!/usr/bin/env node
+const { chromium } = require('@playwright/test');
 
-// Simple test to check if the production site loads without i18n errors
-// Run with: node test-production-site.js
+async function testProductionSite() {
+  console.log('==========================================');
+  console.log('Production Site Translation Test');
+  console.log('==========================================\n');
 
-const https = require('https');
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
 
-console.log('Testing production site: https://l4h.74-208-77-43.nip.io\n');
+  // Capture console messages
+  const consoleMessages = [];
+  page.on('console', msg => {
+    const text = msg.text();
+    consoleMessages.push({ type: msg.type(), text });
 
-// Fetch the index.html
-https.get('https://l4h.74-208-77-43.nip.io', (res) => {
-  let data = '';
-
-  res.on('data', (chunk) => {
-    data += chunk;
-  });
-
-  res.on('end', () => {
-    console.log('✓ Site is accessible (HTTP', res.statusCode, ')');
-
-    // Check if it's loading the correct JS file
-    const jsMatch = data.match(/src="\/assets\/(index-[^"]+\.js)"/);
-    if (jsMatch) {
-      console.log('✓ JavaScript file:', jsMatch[1]);
-
-      // Fetch the JS file to verify it exists
-      https.get(`https://l4h.74-208-77-43.nip.io/assets/${jsMatch[1]}`, (jsRes) => {
-        if (jsRes.statusCode === 200) {
-          console.log('✓ JavaScript file loads successfully');
-          console.log('\n✅ BASIC TESTS PASSED');
-          console.log('\nTo test for i18n errors:');
-          console.log('1. Open https://l4h.74-208-77-43.nip.io in your browser');
-          console.log('2. Open Developer Tools (F12)');
-          console.log('3. Check the Console tab for errors');
-          console.log('4. Look for: "You will need to pass in an i18next instance"');
-        } else {
-          console.log('✗ JavaScript file returned HTTP', jsRes.statusCode);
-          process.exit(1);
-        }
-      }).on('error', (err) => {
-        console.error('✗ Error fetching JS:', err.message);
-        process.exit(1);
-      });
-    } else {
-      console.log('✗ Could not find JavaScript file in HTML');
-      process.exit(1);
+    // Show translation-related errors immediately
+    if (text.includes('translation') || text.includes('i18n') || text.includes('locales') ||
+        text.includes('⚠️') || text.includes('❌') || text.includes('🚨')) {
+      console.log(`[${msg.type().toUpperCase()}] ${text}`);
     }
   });
-}).on('error', (err) => {
-  console.error('✗ Error:', err.message);
-  process.exit(1);
-});
+
+  const languages = [
+    { code: 'hi-IN', name: 'Hindi' },
+    { code: 'ja-JP', name: 'Japanese' },
+    { code: 'ko-KR', name: 'Korean' },
+    { code: 'zh-CN', name: 'Chinese' },
+    { code: 'es-ES', name: 'Spanish' }
+  ];
+
+  for (const lang of languages) {
+    console.log(`\n${'='.repeat(60)}`);
+    console.log(`Testing: ${lang.name} (${lang.code})`);
+    console.log('='.repeat(60));
+
+    try {
+      // Navigate to site with language parameter
+      await page.goto(`https://l4h.74-208-77-43.nip.io/?lng=${lang.code}`, {
+        waitUntil: 'networkidle',
+        timeout: 30000
+      });
+
+      // Wait a bit for i18n to initialize
+      await page.waitForTimeout(2000);
+
+      // Check what's displayed
+      const title = await page.textContent('h1').catch(() => 'NOT FOUND');
+      const brandTitle = await page.locator('[class*="brand"]').first().textContent().catch(() => 'NOT FOUND');
+
+      console.log(`\nTitle element: ${title}`);
+      console.log(`Brand element: ${brandTitle}`);
+
+      // Check for translation keys (indicates translation failure)
+      const bodyText = await page.textContent('body');
+      const hasTranslationKeys = bodyText.includes('landing.') || bodyText.includes('common.') ||
+                                  bodyText.includes('brand.title') || bodyText.includes('brand.subtitle');
+
+      if (hasTranslationKeys) {
+        console.log('❌ TRANSLATION KEYS VISIBLE - translations not loading!');
+        console.log('Sample text:', bodyText.substring(0, 200));
+      } else {
+        console.log('✓ No translation keys visible');
+      }
+
+      // Show recent console messages for this language
+      const recentErrors = consoleMessages.slice(-10);
+      if (recentErrors.length > 0) {
+        console.log('\nRecent console output:');
+        recentErrors.forEach(m => {
+          if (m.text.includes('translation') || m.text.includes('Failed') || m.text.includes('404')) {
+            console.log(`  [${m.type}] ${m.text}`);
+          }
+        });
+      }
+
+    } catch (error) {
+      console.error(`\n❌ Error testing ${lang.name}:`, error.message);
+    }
+  }
+
+  console.log('\n' + '='.repeat(60));
+  console.log('Test Complete');
+  console.log('='.repeat(60));
+
+  await browser.close();
+}
+
+testProductionSite().catch(console.error);

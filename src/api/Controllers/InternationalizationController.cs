@@ -23,7 +23,7 @@ public class InternationalizationController : ControllerBase
         { "ko-KR", "Korean (Korea)" },
         { "mr-IN", "Marathi (India)" },
         { "pl-PL", "Polish (Poland)" },
-        { "pt-PT", "Portuguese (Portugal)" },
+        { "pt-BR", "Portuguese (Brazil)" },
         { "ru-RU", "Russian (Russia)" },
         { "ta-IN", "Tamil (India)" },
         { "te-IN", "Telugu (India)" },
