@@ -174,6 +174,84 @@
       "title": "¿Necesitas ayuda eligiendo la visa correcta?",
       "description": "Nuestros expertos en inmigración pueden ayudarte a determinar qué categoría de visa se adapta mejor a tu situación.",
       "button": "Iniciar Tu Solicitud"
+    },
+    "visas": {
+      "B1": {
+        "name": "Visitante de Negocios",
+        "description": "Visa de visitante de negocios para actividades comerciales temporales en Estados Unidos."
+      },
+      "B2": {
+        "name": "Visitante Turista",
+        "description": "Visa de turista para placer, vacaciones o visitar familiares y amigos."
+      },
+      "F1": {
+        "name": "Estudiante",
+        "description": "Visa de estudiante para estudios académicos en instituciones acreditadas de EE.UU."
+      },
+      "F2": {
+        "name": "Dependiente de Estudiante",
+        "description": "Visa de dependiente para cónyuges e hijos solteros menores de 21 años de estudiantes F1."
+      },
+      "H1B": {
+        "name": "Trabajador de Ocupación Especializada",
+        "description": "Visa de ocupación especializada para profesionales con título universitario o superior."
+      },
+      "H2A": {
+        "name": "Trabajador Agrícola",
+        "description": "Visa de trabajador agrícola temporal para trabajo agrícola estacional."
+      },
+      "H4": {
+        "name": "Dependiente H1B",
+        "description": "Visa de dependiente para cónyuges e hijos solteros menores de 21 años de portadores de visa H1B."
+      },
+      "J1": {
+        "name": "Visitante de Intercambio",
+        "description": "Visa de visitante de intercambio para programas de intercambio cultural."
+      },
+      "L1A": {
+        "name": "Transferido Intraempresarial Ejecutivo",
+        "description": "Visa de transferido intraempresarial para gerentes y ejecutivos."
+      },
+      "L1B": {
+        "name": "Transferido Intraempresarial Especialista",
+        "description": "Visa de transferido intraempresarial para empleados con conocimiento especializado."
+      },
+      "L2": {
+        "name": "Dependiente L1",
+        "description": "Visa de dependiente para cónyuges e hijos solteros menores de 21 años de portadores de visa L1."
+      },
+      "O1": {
+        "name": "Habilidad Extraordinaria",
+        "description": "Visa de habilidad extraordinaria para individuos con habilidades excepcionales."
+      },
+      "TN": {
+        "name": "Profesional NAFTA",
+        "description": "Visa de profesional NAFTA para ciudadanos canadienses y mexicanos."
+      },
+      "E2": {
+        "name": "Inversionista por Tratado",
+        "description": "Visa de inversionista por tratado para inversión sustancial en negocios de EE.UU."
+      },
+      "EB1": {
+        "name": "Trabajadores Prioritarios",
+        "description": "Tarjeta verde basada en empleo de primera preferencia para trabajadores prioritarios."
+      },
+      "EB2": {
+        "name": "Profesionales con Título Avanzado",
+        "description": "Tarjeta verde basada en empleo de segunda preferencia para portadores de títulos avanzados."
+      },
+      "EB3": {
+        "name": "Trabajadores Calificados",
+        "description": "Tarjeta verde basada en empleo de tercera preferencia para trabajadores calificados."
+      },
+      "EB4": {
+        "name": "Inmigrantes Especiales",
+        "description": "Tarjeta verde basada en empleo de cuarta preferencia para inmigrantes especiales."
+      },
+      "EB5": {
+        "name": "Inversionistas Inmigrantes",
+        "description": "Tarjeta verde basada en empleo de quinta preferencia para inversionistas."
+      }
     }
   }
 }

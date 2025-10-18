@@ -174,6 +174,84 @@
       "title": "Benötigen Sie Hilfe bei der Auswahl des richtigen Visas?",
       "description": "Unsere Einwanderungsexperten können Ihnen helfen zu bestimmen, welche Visa-Kategorie am besten zu Ihrer Situation passt.",
       "button": "Ihren Antrag starten"
+    },
+    "visas": {
+      "B1": {
+        "name": "Geschäftsbesucher",
+        "description": "Geschäftsbesuchervisa für temporäre Geschäftstätigkeiten in den Vereinigten Staaten."
+      },
+      "B2": {
+        "name": "Touristenbesucher",
+        "description": "Touristenvisa für Vergnügen, Urlaub oder Besuch von Familie und Freunden."
+      },
+      "F1": {
+        "name": "Student",
+        "description": "Studentenvisa für akademische Studien an akkreditierten US-Institutionen."
+      },
+      "F2": {
+        "name": "Studentenabhängiger",
+        "description": "Abhängigenvisa für Ehepartner und unverheiratete Kinder unter 21 Jahren von F1-Studenten."
+      },
+      "H1B": {
+        "name": "Facharbeiter",
+        "description": "Facharbeitervisa für Fachkräfte mit Bachelor-Abschluss oder höher."
+      },
+      "H2A": {
+        "name": "Landarbeiter",
+        "description": "Temporäres Landarbeitervisa für saisonale Farmarbeit."
+      },
+      "H4": {
+        "name": "H1B-Abhängiger",
+        "description": "Abhängigenvisa für Ehepartner und unverheiratete Kinder unter 21 Jahren von H1B-Visa-Inhabern."
+      },
+      "J1": {
+        "name": "Austauschbesucher",
+        "description": "Austauschbesuchervisa für kulturelle Austauschprogramme."
+      },
+      "L1A": {
+        "name": "Firmeninterne Versetzung Führungskraft",
+        "description": "Firmeninterne Versetzungsvisa für Manager und Führungskräfte."
+      },
+      "L1B": {
+        "name": "Firmeninterne Versetzung Spezialist",
+        "description": "Firmeninterne Versetzungsvisa für Mitarbeiter mit Spezialwissen."
+      },
+      "L2": {
+        "name": "L1-Abhängiger",
+        "description": "Abhängigenvisa für Ehepartner und unverheiratete Kinder unter 21 Jahren von L1-Visa-Inhabern."
+      },
+      "O1": {
+        "name": "Außergewöhnliche Fähigkeiten",
+        "description": "Visa für außergewöhnliche Fähigkeiten für Personen mit außergewöhnlichen Fertigkeiten."
+      },
+      "TN": {
+        "name": "NAFTA-Fachkraft",
+        "description": "NAFTA-Fachkraftvisa für kanadische und mexikanische Staatsbürger."
+      },
+      "E2": {
+        "name": "Vertragsinvestor",
+        "description": "Vertragsinvestorvisa für erhebliche Investitionen in US-Unternehmen."
+      },
+      "EB1": {
+        "name": "Prioritätsarbeiter",
+        "description": "Beschäftigungsbasierte Green Card erster Präferenz für Prioritätsarbeiter."
+      },
+      "EB2": {
+        "name": "Fachkräfte mit fortgeschrittenem Abschluss",
+        "description": "Beschäftigungsbasierte Green Card zweiter Präferenz für Inhaber fortgeschrittener Abschlüsse."
+      },
+      "EB3": {
+        "name": "Qualifizierte Arbeiter",
+        "description": "Beschäftigungsbasierte Green Card dritter Präferenz für qualifizierte Arbeiter."
+      },
+      "EB4": {
+        "name": "Spezielle Einwanderer",
+        "description": "Beschäftigungsbasierte Green Card vierter Präferenz für spezielle Einwanderer."
+      },
+      "EB5": {
+        "name": "Einwandererinvestoren",
+        "description": "Beschäftigungsbasierte Green Card fünfter Präferenz für Investoren."
+      }
     }
   }
 }

@@ -175,6 +175,84 @@
       "title": "Besoin d'aide pour choisir le bon visa ?",
       "description": "Nos experts en immigration peuvent vous aider à déterminer quelle catégorie de visa convient le mieux à votre situation.",
       "button": "Commencer Votre Demande"
+    },
+    "visas": {
+      "B1": {
+        "name": "Visiteur d'Affaires",
+        "description": "Visa de visiteur d'affaires pour des activités commerciales temporaires aux États-Unis."
+      },
+      "B2": {
+        "name": "Visiteur Touriste",
+        "description": "Visa de touriste pour le plaisir, les vacances ou rendre visite à la famille et aux amis."
+      },
+      "F1": {
+        "name": "Étudiant",
+        "description": "Visa d'étudiant pour des études académiques dans des institutions accréditées aux États-Unis."
+      },
+      "F2": {
+        "name": "Personne à Charge d'Étudiant",
+        "description": "Visa de personne à charge pour les conjoints et enfants célibataires de moins de 21 ans d'étudiants F1."
+      },
+      "H1B": {
+        "name": "Travailleur d'Occupation Spécialisée",
+        "description": "Visa d'occupation spécialisée pour les professionnels avec un diplôme universitaire ou supérieur."
+      },
+      "H2A": {
+        "name": "Travailleur Agricole",
+        "description": "Visa de travailleur agricole temporaire pour le travail agricole saisonnier."
+      },
+      "H4": {
+        "name": "Personne à Charge H1B",
+        "description": "Visa de personne à charge pour les conjoints et enfants célibataires de moins de 21 ans des détenteurs de visa H1B."
+      },
+      "J1": {
+        "name": "Visiteur d'Échange",
+        "description": "Visa de visiteur d'échange pour les programmes d'échange culturel."
+      },
+      "L1A": {
+        "name": "Transféré Intraentreprise Exécutif",
+        "description": "Visa de transféré intraentreprise pour les gestionnaires et cadres."
+      },
+      "L1B": {
+        "name": "Transféré Intraentreprise Spécialiste",
+        "description": "Visa de transféré intraentreprise pour les employés avec des connaissances spécialisées."
+      },
+      "L2": {
+        "name": "Personne à Charge L1",
+        "description": "Visa de personne à charge pour les conjoints et enfants célibataires de moins de 21 ans des détenteurs de visa L1."
+      },
+      "O1": {
+        "name": "Capacité Extraordinaire",
+        "description": "Visa de capacité extraordinaire pour les individus avec des compétences exceptionnelles."
+      },
+      "TN": {
+        "name": "Professionnel ALÉNA",
+        "description": "Visa de professionnel ALÉNA pour les citoyens canadiens et mexicains."
+      },
+      "E2": {
+        "name": "Investisseur de Traité",
+        "description": "Visa d'investisseur de traité pour un investissement substantiel dans une entreprise américaine."
+      },
+      "EB1": {
+        "name": "Travailleurs Prioritaires",
+        "description": "Carte verte basée sur l'emploi de première préférence pour les travailleurs prioritaires."
+      },
+      "EB2": {
+        "name": "Professionnels avec Diplôme Avancé",
+        "description": "Carte verte basée sur l'emploi de deuxième préférence pour les détenteurs de diplômes avancés."
+      },
+      "EB3": {
+        "name": "Travailleurs Qualifiés",
+        "description": "Carte verte basée sur l'emploi de troisième préférence pour les travailleurs qualifiés."
+      },
+      "EB4": {
+        "name": "Immigrants Spéciaux",
+        "description": "Carte verte basée sur l'emploi de quatrième préférence pour les immigrants spéciaux."
+      },
+      "EB5": {
+        "name": "Investisseurs Immigrants",
+        "description": "Carte verte basée sur l'emploi de cinquième préférence pour les investisseurs."
+      }
     }
   }
 }
