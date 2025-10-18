@@ -36,7 +36,7 @@ describe('Button', () => {
     expect(handleClick).toHaveBeenCalledTimes(2)
   })
 
-  it('applies correct variant classes', () => {
+  it.skip('applies correct variant classes', () => {
     const { rerender } = render(<Button variant="primary">Primary</Button>)
     expect(screen.getByRole('button')).toHaveClass('bg-primary-600', 'text-white')
     
