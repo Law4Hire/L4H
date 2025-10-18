@@ -39,7 +39,6 @@
   "undo": "Annulla",
   "redo": "Ripeti",
   "getStarted": "Inizia",
-  
   "nav": {
     "dashboard": "Dashboard",
     "pricing": "Prezzi",
@@ -174,6 +173,84 @@
       "title": "Hai Bisogno di Aiuto per Scegliere il Visto Giusto?",
       "description": "I nostri esperti di immigrazione possono aiutarti a determinare quale categoria di visto si adatta meglio alla tua situazione.",
       "button": "Inizia la Tua Richiesta"
+    },
+    "visas": {
+      "B1": {
+        "name": "Visitatore d'Affari",
+        "description": "Visto per visitatore d'affari per attività commerciali temporanee negli Stati Uniti."
+      },
+      "B2": {
+        "name": "Visitatore Turistico",
+        "description": "Visto turistico per piacere, vacanze o visitare famiglia e amici."
+      },
+      "F1": {
+        "name": "Studente",
+        "description": "Visto per studente per studi accademici presso istituzioni accreditate negli Stati Uniti."
+      },
+      "F2": {
+        "name": "Dipendente Studente",
+        "description": "Visto per dipendente per coniugi e figli non sposati sotto i 21 anni di studenti F1."
+      },
+      "H1B": {
+        "name": "Lavoratore Occupazione Specializzata",
+        "description": "Visto per occupazione specializzata per professionisti con laurea o superiore."
+      },
+      "H2A": {
+        "name": "Lavoratore Agricolo",
+        "description": "Visto per lavoratore agricolo temporaneo per lavoro agricolo stagionale."
+      },
+      "H4": {
+        "name": "Dipendente H1B",
+        "description": "Visto per dipendente per coniugi e figli non sposati sotto i 21 anni di possessori di visto H1B."
+      },
+      "J1": {
+        "name": "Visitatore di Scambio",
+        "description": "Visto per visitatore di scambio per programmi di scambio culturale."
+      },
+      "L1A": {
+        "name": "Trasferito Intraaziendale Esecutivo",
+        "description": "Visto per trasferito intraaziendale per manager ed esecutivi."
+      },
+      "L1B": {
+        "name": "Trasferito Intraaziendale Specialista",
+        "description": "Visto per trasferito intraaziendale per dipendenti con conoscenze specializzate."
+      },
+      "L2": {
+        "name": "Dipendente L1",
+        "description": "Visto per dipendente per coniugi e figli non sposati sotto i 21 anni di possessori di visto L1."
+      },
+      "O1": {
+        "name": "Abilità Straordinaria",
+        "description": "Visto per abilità straordinaria per individui con competenze eccezionali."
+      },
+      "TN": {
+        "name": "Professionista NAFTA",
+        "description": "Visto per professionista NAFTA per cittadini canadesi e messicani."
+      },
+      "E2": {
+        "name": "Investitore per Trattato",
+        "description": "Visto per investitore per trattato per investimenti sostanziali in attività statunitensi."
+      },
+      "EB1": {
+        "name": "Lavoratori Prioritari",
+        "description": "Carta verde basata sull'impiego di prima preferenza per lavoratori prioritari."
+      },
+      "EB2": {
+        "name": "Professionisti con Laurea Avanzata",
+        "description": "Carta verde basata sull'impiego di seconda preferenza per possessori di lauree avanzate."
+      },
+      "EB3": {
+        "name": "Lavoratori Qualificati",
+        "description": "Carta verde basata sull'impiego di terza preferenza per lavoratori qualificati."
+      },
+      "EB4": {
+        "name": "Immigrati Speciali",
+        "description": "Carta verde basata sull'impiego di quarta preferenza per immigrati speciali."
+      },
+      "EB5": {
+        "name": "Investitori Immigrati",
+        "description": "Carta verde basata sull'impiego di quinta preferenza per investitori."
+      }
     }
   }
 }
