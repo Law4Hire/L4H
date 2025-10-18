@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import React, { useState, useEffect } from 'react'
 import { Card, Modal, Button } from '@l4h/shared-ui'
 import { useTranslation } from '@l4h/shared-ui'
 import { useNavigate } from 'react-router-dom'
@@ -16,40 +15,39 @@ const VisaLibraryPage: React.FC = () => {
   const navigate = useNavigate()
   const [selectedVisa, setSelectedVisa] = useState<VisaType | null>(null)
 
-  // Use fallback data with translations instead of API data
-  const { data: visaTypes = [], isLoading } = useQuery({
-    queryKey: ['public-visa-types'],
-    queryFn: async () => {
-      // Always use fallback data to ensure translations work
-      try {
-        // Intentionally skip API and use translated fallback data
-        throw new Error('Using fallback data for translations')
-      } catch {
-        // Fallback visa types data with codes for translation lookup
-        return [
-          { code: 'B1', name: 'Business Visitor', generalCategory: 'Nonimmigrant', description: 'Business visitor visa for temporary business activities in the United States.' },
-          { code: 'B2', name: 'Tourist Visitor', generalCategory: 'Nonimmigrant', description: 'Tourist visa for pleasure, vacation, or visiting family and friends.' },
-          { code: 'F1', name: 'Student', generalCategory: 'Nonimmigrant', description: 'Student visa for academic studies at accredited US institutions.' },
-          { code: 'F2', name: 'Student Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of F1 students.' },
-          { code: 'H1B', name: 'Specialty Occupation Worker', generalCategory: 'Nonimmigrant', description: 'Specialty occupation visa for professionals with bachelor\'s degree or higher.' },
-          { code: 'H2A', name: 'Agricultural Worker', generalCategory: 'Nonimmigrant', description: 'Temporary agricultural worker visa for seasonal farm labor.' },
-          { code: 'H4', name: 'H1B Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of H1B visa holders.' },
-          { code: 'J1', name: 'Exchange Visitor', generalCategory: 'Nonimmigrant', description: 'Exchange visitor visa for cultural exchange programs.' },
-          { code: 'L1A', name: 'Intracompany Transferee Executive', generalCategory: 'Nonimmigrant', description: 'Intracompany transferee visa for managers and executives.' },
-          { code: 'L1B', name: 'Intracompany Transferee Specialist', generalCategory: 'Nonimmigrant', description: 'Intracompany transferee visa for employees with specialized knowledge.' },
-          { code: 'L2', name: 'L1 Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of L1 visa holders.' },
-          { code: 'O1', name: 'Extraordinary Ability', generalCategory: 'Nonimmigrant', description: 'Extraordinary ability visa for individuals with exceptional skills.' },
-          { code: 'TN', name: 'NAFTA Professional', generalCategory: 'Nonimmigrant', description: 'NAFTA professional visa for Canadian and Mexican citizens.' },
-          { code: 'E2', name: 'Treaty Investor', generalCategory: 'Nonimmigrant', description: 'Treaty investor visa for substantial investment in US business.' },
-          { code: 'EB1', name: 'Priority Workers', generalCategory: 'Immigrant', description: 'First preference employment-based green card for priority workers.' },
-          { code: 'EB2', name: 'Advanced Degree Professionals', generalCategory: 'Immigrant', description: 'Second preference employment-based green card for advanced degree holders.' },
-          { code: 'EB3', name: 'Skilled Workers', generalCategory: 'Immigrant', description: 'Third preference employment-based green card for skilled workers.' },
-          { code: 'EB4', name: 'Special Immigrants', generalCategory: 'Immigrant', description: 'Fourth preference employment-based green card for special immigrants.' },
-          { code: 'EB5', name: 'Immigrant Investors', generalCategory: 'Immigrant', description: 'Fifth preference employment-based green card for investors.' }
-        ] as VisaType[]
-      }
-    }
-  })
+  // Use static data instead of React Query to avoid provider issues
+  const [visaTypes, setVisaTypes] = useState<VisaType[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Simulate loading and set static visa data
+    const timer = setTimeout(() => {
+      setVisaTypes([
+        { code: 'B1', name: 'Business Visitor', generalCategory: 'Nonimmigrant', description: 'Business visitor visa for temporary business activities in the United States.' },
+        { code: 'B2', name: 'Tourist Visitor', generalCategory: 'Nonimmigrant', description: 'Tourist visa for pleasure, vacation, or visiting family and friends.' },
+        { code: 'F1', name: 'Student', generalCategory: 'Nonimmigrant', description: 'Student visa for academic studies at accredited US institutions.' },
+        { code: 'F2', name: 'Student Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of F1 students.' },
+        { code: 'H1B', name: 'Specialty Occupation Worker', generalCategory: 'Nonimmigrant', description: 'Specialty occupation visa for professionals with bachelor\'s degree or higher.' },
+        { code: 'H2A', name: 'Agricultural Worker', generalCategory: 'Nonimmigrant', description: 'Temporary agricultural worker visa for seasonal farm labor.' },
+        { code: 'H4', name: 'H1B Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of H1B visa holders.' },
+        { code: 'J1', name: 'Exchange Visitor', generalCategory: 'Nonimmigrant', description: 'Exchange visitor visa for cultural exchange programs.' },
+        { code: 'L1A', name: 'Intracompany Transferee Executive', generalCategory: 'Nonimmigrant', description: 'Intracompany transferee visa for managers and executives.' },
+        { code: 'L1B', name: 'Intracompany Transferee Specialist', generalCategory: 'Nonimmigrant', description: 'Intracompany transferee visa for employees with specialized knowledge.' },
+        { code: 'L2', name: 'L1 Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of L1 visa holders.' },
+        { code: 'O1', name: 'Extraordinary Ability', generalCategory: 'Nonimmigrant', description: 'Extraordinary ability visa for individuals with exceptional skills.' },
+        { code: 'TN', name: 'NAFTA Professional', generalCategory: 'Nonimmigrant', description: 'NAFTA professional visa for Canadian and Mexican citizens.' },
+        { code: 'E2', name: 'Treaty Investor', generalCategory: 'Nonimmigrant', description: 'Treaty investor visa for substantial investment in US business.' },
+        { code: 'EB1', name: 'Priority Workers', generalCategory: 'Immigrant', description: 'First preference employment-based green card for priority workers.' },
+        { code: 'EB2', name: 'Advanced Degree Professionals', generalCategory: 'Immigrant', description: 'Second preference employment-based green card for advanced degree holders.' },
+        { code: 'EB3', name: 'Skilled Workers', generalCategory: 'Immigrant', description: 'Third preference employment-based green card for skilled workers.' },
+        { code: 'EB4', name: 'Special Immigrants', generalCategory: 'Immigrant', description: 'Fourth preference employment-based green card for special immigrants.' },
+        { code: 'EB5', name: 'Immigrant Investors', generalCategory: 'Immigrant', description: 'Fifth preference employment-based green card for investors.' }
+      ])
+      setIsLoading(false)
+    }, 500) // Short delay to simulate loading
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const groupedVisaTypes = visaTypes.reduce((acc, visa) => {
     if (!acc[visa.generalCategory]) {
