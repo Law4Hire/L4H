@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "Göçmenlik Hukuki Hizmetleri Basitleştirildi",
+    "subtitle": "ABD göçmenlik yolculuğunuz için uzman hukuki yardım",
+    "description": "Karmaşık ABD göçmenlik sisteminde gezinmenize yardımcı olacak profesyonel göçmenlik hizmetleri",
+    "startCase": "Davanızı Başlatın",
+    "exploreVisas": "Vize Seçeneklerini Keşfedin"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Neden Law4Hire'ı Seçmelisiniz",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "Uzman Hukuk Ekibi",
+      "description": "Başarınıza adanmış deneyimli göçmenlik avukatları"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "Akıcı Süreç",
+      "description": "Baştan sona verimli dava yönetimi"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "7/24 Destek",
+      "description": "Sorularınızı yanıtlamak için her zaman hazır"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "Başlamaya Hazır mısınız?",
+    "description": "Bugün göçmenlik uzmanlarımızla bir danışmanlık randevusu alın",
+    "button": "Danışmanlık Randevusu Alın"
   }
 }

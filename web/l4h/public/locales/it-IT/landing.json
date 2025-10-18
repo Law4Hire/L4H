@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "Servizi Legali di Immigrazione Semplificati",
+    "subtitle": "Assistenza legale esperta per il tuo viaggio di immigrazione negli Stati Uniti",
+    "description": "Servizi di immigrazione professionali per aiutarti a navigare il complesso sistema di immigrazione statunitense",
+    "startCase": "Inizia il Tuo Caso",
+    "exploreVisas": "Esplora le Opzioni Visto"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Perché Scegliere Law4Hire",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "Team Legale Esperto",
+      "description": "Avvocati di immigrazione esperti dedicati al tuo successo"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "Processo Semplificato",
+      "description": "Gestione efficiente del caso dall'inizio alla fine"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "Supporto 24/7",
+      "description": "Sempre disponibili per rispondere alle tue domande"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "Pronto per Iniziare?",
+    "description": "Prenota una consulenza con i nostri esperti di immigrazione oggi",
+    "button": "Prenota Consulenza"
   }
 }

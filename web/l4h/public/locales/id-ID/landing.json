@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "Layanan Hukum Imigrasi Dibuat Sederhana",
+    "subtitle": "Bantuan hukum ahli untuk perjalanan imigrasi AS Anda",
+    "description": "Layanan imigrasi profesional untuk membantu Anda menavigasi sistem imigrasi AS yang kompleks",
+    "startCase": "Mulai Kasus Anda",
+    "exploreVisas": "Jelajahi Opsi Visa"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Mengapa Memilih Law4Hire",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "Tim Hukum Ahli",
+      "description": "Pengacara imigrasi berpengalaman yang berdedikasi untuk kesuksesan Anda"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "Proses yang Efisien",
+      "description": "Manajemen kasus yang efisien dari awal hingga akhir"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "Dukungan 24/7",
+      "description": "Selalu tersedia untuk menjawab pertanyaan Anda"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "Siap untuk Memulai?",
+    "description": "Jadwalkan konsultasi dengan ahli imigrasi kami hari ini",
+    "button": "Jadwalkan Konsultasi"
   }
 }

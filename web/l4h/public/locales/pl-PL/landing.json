@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "Usługi Prawne Imigracyjne Uproszczone",
+    "subtitle": "Ekspercka pomoc prawna w Twojej podróży imigracyjnej do USA",
+    "description": "Profesjonalne usługi imigracyjne, które pomogą Ci poruszać się po złożonym systemie imigracyjnym USA",
+    "startCase": "Rozpocznij Swoją Sprawę",
+    "exploreVisas": "Poznaj Opcje Wizowe"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Dlaczego Wybrać Law4Hire",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "Zespół Ekspertów Prawnych",
+      "description": "Doświadczeni prawnicy imigracyjni oddani Twojemu sukcesowi"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "Usprawniony Proces",
+      "description": "Efektywne zarządzanie sprawą od początku do końca"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "Wsparcie 24/7",
+      "description": "Zawsze dostępni, aby odpowiedzieć na Twoje pytania"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "Gotowy na Rozpoczęcie?",
+    "description": "Umów konsultację z naszymi ekspertami imigracyjnymi już dziś",
+    "button": "Umów Konsultację"
   }
 }
