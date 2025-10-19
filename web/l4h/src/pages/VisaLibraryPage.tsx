@@ -12,7 +12,7 @@ interface VisaType {
 
 // Fixed QueryClient issue - using useState instead of useQuery
 const VisaLibraryPage: React.FC = () => {
-  const { t } = useTranslation(['common', 'visaLibrary'])
+  const { t } = useTranslation(['common'])
   const navigate = useNavigate()
   const [selectedVisa, setSelectedVisa] = useState<VisaType | null>(null)
 
