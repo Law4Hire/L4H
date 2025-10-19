@@ -46,6 +46,30 @@ export const NAMESPACES = ['common', 'interview', 'errors'];
 export const DEFAULT_NAMESPACE = 'common';
 // Fallback language
 export const FALLBACK_LANGUAGE = 'en-US';
+// Language mapping for common fallbacks
+const LANGUAGE_MAPPING = {
+    'en': 'en-US',
+    'ar': 'ar-SA',
+    'bn': 'bn-BD',
+    'zh': 'zh-CN',
+    'de': 'de-DE',
+    'es': 'es-ES',
+    'fr': 'fr-FR',
+    'hi': 'hi-IN',
+    'id': 'id-ID',
+    'it': 'it-IT',
+    'ja': 'ja-JP',
+    'ko': 'ko-KR',
+    'mr': 'mr-IN',
+    'pl': 'pl-PL',
+    'pt': 'pt-BR',
+    'ru': 'ru-RU',
+    'ta': 'ta-IN',
+    'te': 'te-IN',
+    'tr': 'tr-TR',
+    'ur': 'ur-PK',
+    'vi': 'vi-VN'
+};
 // Get language from cookie or browser
 function getInitialLanguage() {
     if (typeof document !== 'undefined') {
@@ -56,6 +80,10 @@ function getInitialLanguage() {
             if (SUPPORTED_LANGUAGES.includes(cookieLang)) {
                 return cookieLang;
             }
+            // Check if it's a mapped language
+            if (LANGUAGE_MAPPING[cookieLang]) {
+                return LANGUAGE_MAPPING[cookieLang];
+            }
         }
     }
     // Fallback to browser language or default
@@ -64,8 +92,15 @@ function getInitialLanguage() {
         if (SUPPORTED_LANGUAGES.includes(browserLang)) {
             return browserLang;
         }
+        // Check if it's a mapped language
+        if (LANGUAGE_MAPPING[browserLang]) {
+            return LANGUAGE_MAPPING[browserLang];
+        }
         // Try to match language without region (e.g., 'en' matches 'en-US')
         const langCode = browserLang.split('-')[0];
+        if (LANGUAGE_MAPPING[langCode]) {
+            return LANGUAGE_MAPPING[langCode];
+        }
         const matchedLang = SUPPORTED_LANGUAGES.find(lang => lang.startsWith(langCode));
         if (matchedLang) {
             return matchedLang;
@@ -178,8 +213,32 @@ const initI18n = () => {
     return i18n.init({
         // Language settings
         lng: initialLanguage,
-        fallbackLng: FALLBACK_LANGUAGE,
-        supportedLngs: SUPPORTED_LANGUAGES,
+        fallbackLng: {
+            'default': [FALLBACK_LANGUAGE],
+            'en': [FALLBACK_LANGUAGE],
+            'ar': ['ar-SA', FALLBACK_LANGUAGE],
+            'bn': ['bn-BD', FALLBACK_LANGUAGE],
+            'zh': ['zh-CN', FALLBACK_LANGUAGE],
+            'de': ['de-DE', FALLBACK_LANGUAGE],
+            'es': ['es-ES', FALLBACK_LANGUAGE],
+            'fr': ['fr-FR', FALLBACK_LANGUAGE],
+            'hi': ['hi-IN', FALLBACK_LANGUAGE],
+            'id': ['id-ID', FALLBACK_LANGUAGE],
+            'it': ['it-IT', FALLBACK_LANGUAGE],
+            'ja': ['ja-JP', FALLBACK_LANGUAGE],
+            'ko': ['ko-KR', FALLBACK_LANGUAGE],
+            'mr': ['mr-IN', FALLBACK_LANGUAGE],
+            'pl': ['pl-PL', FALLBACK_LANGUAGE],
+            'pt': ['pt-BR', FALLBACK_LANGUAGE],
+            'ru': ['ru-RU', FALLBACK_LANGUAGE],
+            'ta': ['ta-IN', FALLBACK_LANGUAGE],
+            'te': ['te-IN', FALLBACK_LANGUAGE],
+            'tr': ['tr-TR', FALLBACK_LANGUAGE],
+            'ur': ['ur-PK', FALLBACK_LANGUAGE],
+            'vi': ['vi-VN', FALLBACK_LANGUAGE]
+        },
+        supportedLngs: [...SUPPORTED_LANGUAGES, 'en'], // Add 'en' as supported to prevent rejection
+        nonExplicitSupportedLngs: true,
         // Namespace settings
         ns: NAMESPACES,
         defaultNS: DEFAULT_NAMESPACE,

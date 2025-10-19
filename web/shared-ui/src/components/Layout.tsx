@@ -91,8 +91,8 @@ export const Layout: React.FC<LayoutProps> = ({
                   <span className="text-white font-bold text-lg">🇺🇸</span>
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">{_t('brand:title', 'US Immigration Help')}</h1>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">{_t('brand:subtitle', 'Powered by Law4Hire')}</p>
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">{_t('brand.title', 'US Immigration Help')}</h1>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{_t('brand.subtitle', 'Powered by Law4Hire')}</p>
                 </div>
               </div>
             </div>
@@ -159,7 +159,7 @@ export const Layout: React.FC<LayoutProps> = ({
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
-                        {_t('logout', { ns: 'auth' })}
+                        {_t('nav.logout')}
                       </button>
                     </div>
                   )}
@@ -171,14 +171,14 @@ export const Layout: React.FC<LayoutProps> = ({
                     size="sm"
                     onClick={() => navigate('/login')}
                   >
-                    {_t('auth.login')}
+                    {_t('nav.login')}
                   </Button>
                   <Button
                     variant="primary"
                     size="sm"
                     onClick={() => navigate('/login')}
                   >
-                    {_t('common.getStarted')}
+                    {_t('getStarted')}
                   </Button>
                 </div>
               )}
