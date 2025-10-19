@@ -176,80 +176,80 @@
     },
     "visas": {
       "B1": {
-        "name": "Business Visitor",
-        "description": "Business visitor visa for temporary business activities in the United States."
+        "name": "ব্যবসায়িক দর্শনার্থী",
+        "description": "মার্কিন যুক্তরাষ্ট্রে অস্থায়ী ব্যবসায়িক কার্যক্রমের জন্য ব্যবসায়িক দর্শনার্থী ভিসা।"
       },
       "B2": {
-        "name": "Tourist Visitor",
-        "description": "Tourist visa for pleasure, vacation, or visiting family and friends."
+        "name": "পর্যটক দর্শনার্থী",
+        "description": "আনন্দ, ছুটি বা পরিবার ও বন্ধুদের সাথে দেখা করার জন্য পর্যটক ভিসা।"
       },
       "F1": {
-        "name": "Student",
-        "description": "Student visa for academic studies at accredited US institutions."
+        "name": "ছাত্র",
+        "description": "স্বীকৃত মার্কিন প্রতিষ্ঠানে একাডেমিক অধ্যয়নের জন্য ছাত্র ভিসা।"
       },
       "F2": {
-        "name": "Student Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of F1 students."
+        "name": "ছাত্র নির্ভরশীল",
+        "description": "F1 ছাত্রদের স্ত্রী/স্বামী এবং ২১ বছরের কম বয়সী অবিবাহিত সন্তানদের জন্য নির্ভরশীল ভিসা।"
       },
       "H1B": {
-        "name": "Specialty Occupation Worker",
-        "description": "Specialty occupation visa for professionals with bachelor's degree or higher."
+        "name": "বিশেষ পেশার কর্মী",
+        "description": "স্নাতক ডিগ্রি বা উচ্চতর ডিগ্রিধারী পেশাদারদের জন্য বিশেষ পেশার ভিসা।"
       },
       "H2A": {
-        "name": "Agricultural Worker",
-        "description": "Temporary agricultural worker visa for seasonal farm labor."
+        "name": "কৃষি কর্মী",
+        "description": "মৌসুমী খামার কাজের জন্য অস্থায়ী কৃষি কর্মী ভিসা।"
       },
       "H4": {
-        "name": "H1B Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of H1B visa holders."
+        "name": "H1B নির্ভরশীল",
+        "description": "H1B ভিসাধারীদের স্ত্রী/স্বামী এবং ২১ বছরের কম বয়সী অবিবাহিত সন্তানদের জন্য নির্ভরশীল ভিসা।"
       },
       "J1": {
-        "name": "Exchange Visitor",
-        "description": "Exchange visitor visa for cultural exchange programs."
+        "name": "বিনিময় দর্শনার্থী",
+        "description": "সাংস্কৃতিক বিনিময় কর্মসূচির জন্য বিনিময় দর্শনার্থী ভিসা।"
       },
       "L1A": {
-        "name": "Intracompany Transferee Executive",
-        "description": "Intracompany transferee visa for managers and executives."
+        "name": "আন্তঃকোম্পানি স্থানান্তরিত নির্বাহী",
+        "description": "ব্যবস্থাপক এবং নির্বাহীদের জন্য আন্তঃকোম্পানি স্থানান্তরিত ভিসা।"
       },
       "L1B": {
-        "name": "Intracompany Transferee Specialist",
-        "description": "Intracompany transferee visa for employees with specialized knowledge."
+        "name": "আন্তঃকোম্পানি স্থানান্তরিত বিশেষজ্ঞ",
+        "description": "বিশেষায়িত জ্ঞানসম্পন্ন কর্মচারীদের জন্য আন্তঃকোম্পানি স্থানান্তরিত ভিসা।"
       },
       "L2": {
-        "name": "L1 Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of L1 visa holders."
+        "name": "L1 নির্ভরশীল",
+        "description": "L1 ভিসাধারীদের স্ত্রী/স্বামী এবং ২১ বছরের কম বয়সী অবিবাহিত সন্তানদের জন্য নির্ভরশীল ভিসা।"
       },
       "O1": {
-        "name": "Extraordinary Ability",
-        "description": "Extraordinary ability visa for individuals with exceptional skills."
+        "name": "অসাধারণ ক্ষমতা",
+        "description": "ব্যতিক্রমী দক্ষতাসম্পন্ন ব্যক্তিদের জন্য অসাধারণ ক্ষমতার ভিসা।"
       },
       "TN": {
-        "name": "NAFTA Professional",
-        "description": "NAFTA professional visa for Canadian and Mexican citizens."
+        "name": "NAFTA পেশাদার",
+        "description": "কানাডিয়ান এবং মেক্সিকান নাগরিকদের জন্য NAFTA পেশাদার ভিসা।"
       },
       "E2": {
-        "name": "Treaty Investor",
-        "description": "Treaty investor visa for substantial investment in US business."
+        "name": "চুক্তি বিনিয়োগকারী",
+        "description": "মার্কিন ব্যবসায় উল্লেখযোগ্য বিনিয়োগের জন্য চুক্তি বিনিয়োগকারী ভিসা।"
       },
       "EB1": {
-        "name": "Priority Workers",
-        "description": "First preference employment-based green card for priority workers."
+        "name": "অগ্রাধিকার কর্মী",
+        "description": "অগ্রাধিকার কর্মীদের জন্য প্রথম পছন্দের কর্মসংস্থান-ভিত্তিক গ্রিন কার্ড।"
       },
       "EB2": {
-        "name": "Advanced Degree Professionals",
-        "description": "Second preference employment-based green card for advanced degree holders."
+        "name": "উন্নত ডিগ্রি পেশাদার",
+        "description": "উন্নত ডিগ্রিধারীদের জন্য দ্বিতীয় পছন্দের কর্মসংস্থান-ভিত্তিক গ্রিন কার্ড।"
       },
       "EB3": {
-        "name": "Skilled Workers",
-        "description": "Third preference employment-based green card for skilled workers."
+        "name": "দক্ষ কর্মী",
+        "description": "দক্ষ কর্মীদের জন্য তৃতীয় পছন্দের কর্মসংস্থান-ভিত্তিক গ্রিন কার্ড।"
       },
       "EB4": {
-        "name": "Special Immigrants",
-        "description": "Fourth preference employment-based green card for special immigrants."
+        "name": "বিশেষ অভিবাসী",
+        "description": "বিশেষ অভিবাসীদের জন্য চতুর্থ পছন্দের কর্মসংস্থান-ভিত্তিক গ্রিন কার্ড।"
       },
       "EB5": {
-        "name": "Immigrant Investors",
-        "description": "Fifth preference employment-based green card for investors."
+        "name": "অভিবাসী বিনিয়োগকারী",
+        "description": "বিনিয়োগকারীদের জন্য পঞ্চম পছন্দের কর্মসংস্থান-ভিত্তিক গ্রিন কার্ড।"
       }
     }
   }
