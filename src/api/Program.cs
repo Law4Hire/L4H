@@ -210,6 +210,9 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<ITimeTrackingService, TimeTrackingService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
+// Translation monitoring services
+builder.Services.AddScoped<ITranslationMonitoringService, TranslationMonitoringService>();
+
             // Security hardening services
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
             builder.Services.AddScoped<ISessionManagementService, SessionManagementService>();
@@ -310,7 +313,9 @@ app.UseRequestLocalization(locOpts);
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+// Map controllers under /api prefix
+app.MapControllers().RequireHost("*:*"); // Allow all hosts in development
+app.MapGroup("/api").MapControllers();
 
 // Health endpoint is handled by HealthController
 

@@ -11,7 +11,12 @@ import '../../shared-ui/src/styles/rtl.css'
 // All routes will be served from the root path
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <ThemeProvider>
         <QueryProvider>
           <I18nProvider>
