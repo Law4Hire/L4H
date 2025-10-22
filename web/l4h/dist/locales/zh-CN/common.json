@@ -156,25 +156,103 @@
     "caseManagement": "Case Management"
   },
   "visaLibrary": {
-    "title": "US Visa Types Library",
-    "description": "Explore comprehensive information about different US visa categories. Click on any visa type to learn about eligibility requirements, application process, and benefits.",
-    "loading": "Loading visa information...",
-    "learnMore": "Learn More",
+    "title": "美国签证类型库",
+    "description": "探索有关不同美国签证类别的全面信息。点击任何签证类型以了解资格要求、申请流程和好处。",
+    "loading": "加载签证信息中...",
+    "learnMore": "了解更多",
     "categories": {
-      "nonimmigrant": "Nonimmigrant Visas",
-      "immigrant": "Immigrant Visas"
+      "nonimmigrant": "非移民签证",
+      "immigrant": "移民签证"
     },
     "modal": {
-      "category": "Category",
-      "description": "Description",
-      "nextSteps": "Next Steps",
-      "readyToApply": "Ready to apply for the {{code}} visa? Our immigration attorneys can guide you through the entire process.",
-      "applyFor": "Apply for {{code}} Visa"
+      "category": "类别",
+      "description": "描述",
+      "nextSteps": "下一步",
+      "readyToApply": "准备申请{{code}}签证了吗？我们的移民律师将指导您完成整个过程。",
+      "applyFor": "申请{{code}}签证"
     },
     "cta": {
-      "title": "Need Help Choosing the Right Visa?",
-      "description": "Our immigration experts can help you determine which visa category fits your situation best.",
-      "button": "Start Your Application"
+      "title": "需要帮助选择合适的签证吗？",
+      "description": "我们的移民专家可以帮助您确定最适合您情况的签证类别。",
+      "button": "开始申请"
+    },
+    "visas": {
+      "B1": {
+        "name": "商务访客",
+        "description": "用于在美国进行临时商务活动的商务访客签证。"
+      },
+      "B2": {
+        "name": "旅游访客",
+        "description": "用于旅游、度假或拜访家人和朋友的旅游签证。"
+      },
+      "F1": {
+        "name": "学生",
+        "description": "用于在经认可的美国教育机构进行学术研究的学生签证。"
+      },
+      "F2": {
+        "name": "学生家属",
+        "description": "F1学生的配偶及21岁以下未婚子女的家属签证。"
+      },
+      "H1B": {
+        "name": "专业职业工作者",
+        "description": "适用于拥有学士学位或更高学历的专业人士的专业职业签证。"
+      },
+      "H2A": {
+        "name": "农业工作者",
+        "description": "用于季节性农场劳动的临时农业工作者签证。"
+      },
+      "H4": {
+        "name": "H1B家属",
+        "description": "H1B签证持有者的配偶及21岁以下未婚子女的家属签证。"
+      },
+      "J1": {
+        "name": "交流访问者",
+        "description": "用于文化交流项目的交流访问者签证。"
+      },
+      "L1A": {
+        "name": "公司内部调动者（高管）",
+        "description": "适用于经理和高管的公司内部调动者签证。"
+      },
+      "L1B": {
+        "name": "公司内部调动者（专家）",
+        "description": "适用于具有专业知识的员工的公司内部调动者签证。"
+      },
+      "L2": {
+        "name": "L1家属",
+        "description": "L1签证持有者的配偶及21岁以下未婚子女的家属签证。"
+      },
+      "O1": {
+        "name": "杰出能力",
+        "description": "适用于具有卓越技能的个人的杰出能力签证。"
+      },
+      "TN": {
+        "name": "NAFTA专业人士",
+        "description": "适用于加拿大和墨西哥公民的NAFTA专业人士签证。"
+      },
+      "E2": {
+        "name": "条约投资者",
+        "description": "用于在美国企业进行大量投资的条约投资者签证。"
+      },
+      "EB1": {
+        "name": "优先工作者",
+        "description": "适用于优先工作者的第一优先职业移民绿卡。"
+      },
+      "EB2": {
+        "name": "高级学位专业人士",
+        "description": "适用于高级学位持有者的第二优先职业移民绿卡。"
+      },
+      "EB3": {
+        "name": "熟练工人",
+        "description": "适用于熟练工人的第三优先职业移民绿卡。"
+      },
+      "EB4": {
+        "name": "特殊移民",
+        "description": "适用于特殊移民的第四优先职业移民绿卡。"
+      },
+      "EB5": {
+        "name": "投资移民",
+        "description": "适用于投资者的第五优先职业移民绿卡。"
+      }
     }
   }
 }

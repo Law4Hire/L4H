@@ -156,25 +156,103 @@
     "caseManagement": "Case Management"
   },
   "visaLibrary": {
-    "title": "US Visa Types Library",
-    "description": "Explore comprehensive information about different US visa categories. Click on any visa type to learn about eligibility requirements, application process, and benefits.",
-    "loading": "Loading visa information...",
-    "learnMore": "Learn More",
+    "title": "미국 비자 유형 라이브러리",
+    "description": "다양한 미국 비자 카테고리에 대한 종합적인 정보를 살펴보세요. 모든 비자 유형을 클릭하여 자격 요건, 신청 절차 및 혜택에 대해 알아보세요.",
+    "loading": "비자 정보 로드 중...",
+    "learnMore": "자세히 알아보기",
     "categories": {
-      "nonimmigrant": "Nonimmigrant Visas",
-      "immigrant": "Immigrant Visas"
+      "nonimmigrant": "비이민 비자",
+      "immigrant": "이민 비자"
     },
     "modal": {
-      "category": "Category",
-      "description": "Description",
-      "nextSteps": "Next Steps",
-      "readyToApply": "Ready to apply for the {{code}} visa? Our immigration attorneys can guide you through the entire process.",
-      "applyFor": "Apply for {{code}} Visa"
+      "category": "카테고리",
+      "description": "설명",
+      "nextSteps": "다음 단계",
+      "readyToApply": "{{code}} 비자 신청 준비가 되셨나요? 당사의 이민 변호사가 전체 과정을 안내해 드립니다.",
+      "applyFor": "{{code}} 비자 신청"
     },
     "cta": {
-      "title": "Need Help Choosing the Right Visa?",
-      "description": "Our immigration experts can help you determine which visa category fits your situation best.",
-      "button": "Start Your Application"
+      "title": "올바른 비자 선택에 도움이 필요하신가요?",
+      "description": "당사의 이민 전문가가 귀하의 상황에 가장 적합한 비자 카테고리를 결정하는 데 도움을 드립니다.",
+      "button": "신청 시작"
+    },
+    "visas": {
+      "B1": {
+        "name": "비즈니스 방문자",
+        "description": "미국 내 임시 비즈니스 활동을 위한 비즈니스 방문자 비자."
+      },
+      "B2": {
+        "name": "관광 방문자",
+        "description": "여행, 휴가 또는 가족 및 친구 방문을 위한 관광 비자."
+      },
+      "F1": {
+        "name": "학생",
+        "description": "인가된 미국 교육 기관에서의 학업을 위한 학생 비자."
+      },
+      "F2": {
+        "name": "학생 부양 가족",
+        "description": "F1 학생의 배우자 및 21세 미만 미혼 자녀를 위한 부양 가족 비자."
+      },
+      "H1B": {
+        "name": "전문직 종사자",
+        "description": "학사 학위 이상의 전문가를 위한 전문직 비자."
+      },
+      "H2A": {
+        "name": "농업 근로자",
+        "description": "계절별 농장 노동을 위한 임시 농업 근로자 비자."
+      },
+      "H4": {
+        "name": "H1B 부양 가족",
+        "description": "H1B 비자 소지자의 배우자 및 21세 미만 미혼 자녀를 위한 부양 가족 비자."
+      },
+      "J1": {
+        "name": "교환 방문자",
+        "description": "문화 교류 프로그램을 위한 교환 방문자 비자."
+      },
+      "L1A": {
+        "name": "사내 전근자 임원",
+        "description": "관리자 및 임원을 위한 사내 전근자 비자."
+      },
+      "L1B": {
+        "name": "사내 전근자 전문가",
+        "description": "전문 지식을 가진 직원을 위한 사내 전근자 비자."
+      },
+      "L2": {
+        "name": "L1 부양 가족",
+        "description": "L1 비자 소지자의 배우자 및 21세 미만 미혼 자녀를 위한 부양 가족 비자."
+      },
+      "O1": {
+        "name": "탁월한 능력",
+        "description": "뛰어난 기술을 가진 개인을 위한 탁월한 능력 비자."
+      },
+      "TN": {
+        "name": "NAFTA 전문가",
+        "description": "캐나다 및 멕시코 시민을 위한 NAFTA 전문가 비자."
+      },
+      "E2": {
+        "name": "조약 투자자",
+        "description": "미국 사업에 대한 실질적인 투자를 위한 조약 투자자 비자."
+      },
+      "EB1": {
+        "name": "우선 근로자",
+        "description": "우선 근로자를 위한 제1 우선 고용 기반 영주권."
+      },
+      "EB2": {
+        "name": "고급 학위 전문가",
+        "description": "고급 학위 소지자를 위한 제2 우선 고용 기반 영주권."
+      },
+      "EB3": {
+        "name": "숙련 근로자",
+        "description": "숙련 근로자를 위한 제3 우선 고용 기반 영주권."
+      },
+      "EB4": {
+        "name": "특별 이민자",
+        "description": "특별 이민자를 위한 제4 우선 고용 기반 영주권."
+      },
+      "EB5": {
+        "name": "투자 이민자",
+        "description": "투자자를 위한 제5 우선 고용 기반 영주권."
+      }
     }
   }
 }

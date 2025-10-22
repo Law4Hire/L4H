@@ -156,8 +156,8 @@
   "visaLibrary": {
     "title": "அமெரிக்க விசா வகைகள் நூலகம்",
     "description": "பல்வேறு அமெரிக்க விசா வகைகள் பற்றிய விரிவான தகவல்களை ஆராயுங்கள். தகுதி தேவைகள், விண்ணப்ப செயல்முறை மற்றும் நன்மைகள் பற்றி அறிய எந்த விசா வகையிலும் கிளிக் செய்யவும்.",
-    "loading": "விசா தகவல் ஏற்றுகிறது...",
-    "learnMore": "மேலும் அறிய",
+    "loading": "விசா தகவல் ஏற்றப்படுகிறது...",
+    "learnMore": "மேலும் அறிக",
     "categories": {
       "nonimmigrant": "குடியேற்றமற்ற விசாக்கள்",
       "immigrant": "குடியேற்ற விசாக்கள்"
@@ -170,86 +170,86 @@
       "applyFor": "{{code}} விசாவிற்கு விண்ணப்பிக்கவும்"
     },
     "cta": {
-      "title": "சரியான விசாவைத் தேர்ந்தெடுக்க உதவி தேவையா?",
-      "description": "எங்கள் குடியேற்ற நிபுணர்கள் உங்கள் சூழ்நிலைக்கு எந்த விசா வகை சிறந்தது என்பதை தீர்மானிக்க உதவ முடியும்.",
-      "button": "உங்கள் விண்ணப்பத்தைத் தொடங்குங்கள்"
+      "title": "சரியான விசாவை தேர்ந்தெடுக்க உதவி தேவையா?",
+      "description": "எங்கள் குடியேற்ற நிபுணர்கள் உங்கள் சூழ்நிலைக்கு ஏற்ற விசா வகையை தீர்மானிக்க உதவ முடியும்.",
+      "button": "உங்கள் விண்ணப்பத்தை தொடங்குங்கள்"
     },
     "visas": {
       "B1": {
-        "name": "Business Visitor",
-        "description": "Business visitor visa for temporary business activities in the United States."
+        "name": "வணிக பார்வையாளர்",
+        "description": "அமெரிக்காவில் தற்காலிக வணிக நடவடிக்கைகளுக்கான வணிக பார்வையாளர் விசா."
       },
       "B2": {
-        "name": "Tourist Visitor",
-        "description": "Tourist visa for pleasure, vacation, or visiting family and friends."
+        "name": "சுற்றுலா பார்வையாளர்",
+        "description": "மகிழ்ச்சி, விடுமுறை அல்லது குடும்பம் மற்றும் நண்பர்களை சந்திப்பதற்கான சுற்றுலா விசா."
       },
       "F1": {
-        "name": "Student",
-        "description": "Student visa for academic studies at accredited US institutions."
+        "name": "மாணவர்",
+        "description": "அங்கீகரிக்கப்பட்ட அமெரிக்க நிறுவனங்களில் கல்வி படிப்புகளுக்கான மாணவர் விசா."
       },
       "F2": {
-        "name": "Student Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of F1 students."
+        "name": "மாணவர் சார்ந்தவர்",
+        "description": "F1 மாணவர்களின் வாழ்க்கைத் துணைவர்கள் மற்றும் 21 வயதுக்கு குறைவான திருமணமாகாத குழந்தைகளுக்கான சார்ந்த விசா."
       },
       "H1B": {
-        "name": "Specialty Occupation Worker",
-        "description": "Specialty occupation visa for professionals with bachelor's degree or higher."
+        "name": "சிறப்பு தொழில் தொழிலாளி",
+        "description": "இளங்கலை பட்டம் அல்லது அதற்கு மேல் உள்ள வல்லுநர்களுக்கான சிறப்பு தொழில் விசா."
       },
       "H2A": {
-        "name": "Agricultural Worker",
-        "description": "Temporary agricultural worker visa for seasonal farm labor."
+        "name": "விவசாய தொழிலாளி",
+        "description": "பருவகால பண்ணை வேலைக்கான தற்காலிக விவசாய தொழிலாளி விசா."
       },
       "H4": {
-        "name": "H1B Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of H1B visa holders."
+        "name": "H1B சார்ந்தவர்",
+        "description": "H1B விசா வைத்திருப்பவர்களின் வாழ்க்கைத் துணைவர்கள் மற்றும் 21 வயதுக்கு குறைவான திருமணமாகாத குழந்தைகளுக்கான சார்ந்த விசா."
       },
       "J1": {
-        "name": "Exchange Visitor",
-        "description": "Exchange visitor visa for cultural exchange programs."
+        "name": "பரிமாற்ற பார்வையாளர்",
+        "description": "கலாசார பரிமாற்ற திட்டங்களுக்கான பரிமாற்ற பார்வையாளர் விசா."
       },
       "L1A": {
-        "name": "Intracompany Transferee Executive",
-        "description": "Intracompany transferee visa for managers and executives."
+        "name": "நிறுவனத்திற்குள் மாற்றம் நிர்வாகி",
+        "description": "மேலாளர்கள் மற்றும் நிர்வாகிகளுக்கான நிறுவனத்திற்குள் மாற்றம் விசா."
       },
       "L1B": {
-        "name": "Intracompany Transferee Specialist",
-        "description": "Intracompany transferee visa for employees with specialized knowledge."
+        "name": "நிறுவனத்திற்குள் மாற்றம் நிபுணர்",
+        "description": "சிறப்பு அறிவு கொண்ட பணியாளர்களுக்கான நிறுவனத்திற்குள் மாற்றம் விசா."
       },
       "L2": {
-        "name": "L1 Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of L1 visa holders."
+        "name": "L1 சார்ந்தவர்",
+        "description": "L1 விசா வைத்திருப்பவர்களின் வாழ்க்கைத் துணைவர்கள் மற்றும் 21 வயதுக்கு குறைவான திருமணமாகாத குழந்தைகளுக்கான சார்ந்த விசா."
       },
       "O1": {
-        "name": "Extraordinary Ability",
-        "description": "Extraordinary ability visa for individuals with exceptional skills."
+        "name": "அசாதாரண திறன்",
+        "description": "விதிவிலக்கான திறன்களைக் கொண்ட தனிநபர்களுக்கான அசாதாரண திறன் விசா."
       },
       "TN": {
-        "name": "NAFTA Professional",
-        "description": "NAFTA professional visa for Canadian and Mexican citizens."
+        "name": "NAFTA வல்லுநர்",
+        "description": "கனடா மற்றும் மெக்சிக்கோ குடிமக்களுக்கான NAFTA வல்லுநர் விசா."
       },
       "E2": {
-        "name": "Treaty Investor",
-        "description": "Treaty investor visa for substantial investment in US business."
+        "name": "ஒப்பந்த முதலீட்டாளர்",
+        "description": "அமெரிக்க வணிகத்தில் கணிசமான முதலீட்டுக்கான ஒப்பந்த முதலீட்டாளர் விசா."
       },
       "EB1": {
-        "name": "Priority Workers",
-        "description": "First preference employment-based green card for priority workers."
+        "name": "முன்னுரிமை தொழிலாளர்கள்",
+        "description": "முன்னுரிமை தொழிலாளர்களுக்கான முதல் முன்னுரிமை வேலைவாய்ப்பு அடிப்படையிலான பசுமை அட்டை."
       },
       "EB2": {
-        "name": "Advanced Degree Professionals",
-        "description": "Second preference employment-based green card for advanced degree holders."
+        "name": "உயர் பட்டம் வல்லுநர்கள்",
+        "description": "உயர் பட்டம் வைத்திருப்பவர்களுக்கான இரண்டாவது முன்னுரிமை வேலைவாய்ப்பு அடிப்படையிலான பசுமை அட்டை."
       },
       "EB3": {
-        "name": "Skilled Workers",
-        "description": "Third preference employment-based green card for skilled workers."
+        "name": "திறமையான தொழிலாளர்கள்",
+        "description": "திறமையான தொழிலாளர்களுக்கான மூன்றாவது முன்னுரிமை வேலைவாய்ப்பு அடிப்படையிலான பசுமை அட்டை."
       },
       "EB4": {
-        "name": "Special Immigrants",
-        "description": "Fourth preference employment-based green card for special immigrants."
+        "name": "சிறப்பு குடியேறியவர்கள்",
+        "description": "சிறப்பு குடியேறியவர்களுக்கான நான்காவது முன்னுரிமை வேலைவாய்ப்பு அடிப்படையிலான பசுமை அட்டை."
       },
       "EB5": {
-        "name": "Immigrant Investors",
-        "description": "Fifth preference employment-based green card for investors."
+        "name": "முதலீட்டாளர் குடியேறியவர்கள்",
+        "description": "முதலீட்டாளர்களுக்கான ஐந்தாவது முன்னுரிமை வேலைவாய்ப்பு அடிப்படையிலான பசுமை அட்டை."
       }
     }
   }

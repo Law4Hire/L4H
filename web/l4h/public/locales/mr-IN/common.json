@@ -154,102 +154,102 @@
     "caseManagement": "केस व्यवस्थापन"
   },
   "visaLibrary": {
-    "title": "यूएस व्हिसा प्रकार लायब्ररी",
-    "description": "विविध यूएस व्हिसा श्रेणींबद्दल सर्वसमावेशक माहिती एक्सप्लोर करा. पात्रता आवश्यकता, अर्ज प्रक्रिया आणि फायदे जाणून घेण्यासाठी कोणत्याही व्हिसा प्रकारावर क्लिक करा.",
+    "title": "यूएस व्हिसा प्रकार ग्रंथालय",
+    "description": "विविध यूएस व्हिसा श्रेणींबद्दल सर्वसमावेशक माहिती जाणून घ्या. पात्रता आवश्यकता, अर्ज प्रक्रिया आणि फायदे जाणून घेण्यासाठी कोणत्याही व्हिसा प्रकारावर क्लिक करा.",
     "loading": "व्हिसा माहिती लोड होत आहे...",
     "learnMore": "अधिक जाणून घ्या",
     "categories": {
-      "nonimmigrant": "गैर-स्थलांतरित व्हिसा",
-      "immigrant": "स्थलांतरित व्हिसा"
+      "nonimmigrant": "अस्थायी व्हिसा",
+      "immigrant": "कायमस्वरूपी व्हिसा"
     },
     "modal": {
       "category": "श्रेणी",
       "description": "वर्णन",
       "nextSteps": "पुढील पायऱ्या",
-      "readyToApply": "{{code}} व्हिसासाठी अर्ज करण्यास तयार आहात? आमचे इमिग्रेशन वकील संपूर्ण प्रक्रियेत आपले मार्गदर्शन करू शकतात.",
+      "readyToApply": "{{code}} व्हिसासाठी अर्ज करण्यास तयार आहात? आमचे इमिग्रेशन वकील संपूर्ण प्रक्रियेत आपल्याला मार्गदर्शन करू शकतात.",
       "applyFor": "{{code}} व्हिसासाठी अर्ज करा"
     },
     "cta": {
       "title": "योग्य व्हिसा निवडण्यासाठी मदत हवी आहे?",
-      "description": "आमचे इमिग्रेशन तज्ञ आपल्या परिस्थितीसाठी कोणती व्हिसा श्रेणी सर्वोत्तम आहे हे ठरवण्यात मदत करू शकतात.",
+      "description": "आमचे इमिग्रेशन तज्ञ आपल्या परिस्थितीला सर्वोत्तम व्हिसा श्रेणी ठरवण्यात मदत करू शकतात.",
       "button": "आपला अर्ज सुरू करा"
     },
     "visas": {
       "B1": {
-        "name": "Business Visitor",
-        "description": "Business visitor visa for temporary business activities in the United States."
+        "name": "व्यवसाय पाहुणे",
+        "description": "युनायटेड स्टेट्समध्ये तात्पुरत्या व्यावसायिक क्रियाकलापांसाठी व्यवसाय पाहुणे व्हिसा."
       },
       "B2": {
-        "name": "Tourist Visitor",
-        "description": "Tourist visa for pleasure, vacation, or visiting family and friends."
+        "name": "पर्यटक पाहुणे",
+        "description": "आनंद, सुट्टी किंवा कुटुंब आणि मित्रांना भेटण्यासाठी पर्यटक व्हिसा."
       },
       "F1": {
-        "name": "Student",
-        "description": "Student visa for academic studies at accredited US institutions."
+        "name": "विद्यार्थी",
+        "description": "मान्यताप्राप्त यूएस संस्थांमध्ये शैक्षणिक अभ्यासासाठी विद्यार्थी व्हिसा."
       },
       "F2": {
-        "name": "Student Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of F1 students."
+        "name": "विद्यार्थी आश्रित",
+        "description": "F1 विद्यार्थ्यांच्या जोडीदार आणि 21 वर्षाखालील अविवाहित मुलांसाठी आश्रित व्हिसा."
       },
       "H1B": {
-        "name": "Specialty Occupation Worker",
-        "description": "Specialty occupation visa for professionals with bachelor's degree or higher."
+        "name": "विशेष व्यावसायिक कामगार",
+        "description": "स्नातक पदवी किंवा त्यापेक्षा जास्त असलेल्या व्यावसायिकांसाठी विशेष व्यवसाय व्हिसा."
       },
       "H2A": {
-        "name": "Agricultural Worker",
-        "description": "Temporary agricultural worker visa for seasonal farm labor."
+        "name": "कृषी कामगार",
+        "description": "हंगामी शेती कामासाठी तात्पुरते कृषी कामगार व्हिसा."
       },
       "H4": {
-        "name": "H1B Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of H1B visa holders."
+        "name": "H1B आश्रित",
+        "description": "H1B व्हिसा धारकांच्या जोडीदार आणि 21 वर्षाखालील अविवाहित मुलांसाठी आश्रित व्हिसा."
       },
       "J1": {
-        "name": "Exchange Visitor",
-        "description": "Exchange visitor visa for cultural exchange programs."
+        "name": "देवाणघेवाण पाहुणे",
+        "description": "सांस्कृतिक देवाणघेवाण कार्यक्रमांसाठी देवाणघेवाण पाहुणे व्हिसा."
       },
       "L1A": {
-        "name": "Intracompany Transferee Executive",
-        "description": "Intracompany transferee visa for managers and executives."
+        "name": "कंपनी-आंतर स्थानांतरण कार्यकारी",
+        "description": "व्यवस्थापक आणि कार्यकारी अधिकाऱ्यांसाठी कंपनी-आंतर स्थानांतरण व्हिसा."
       },
       "L1B": {
-        "name": "Intracompany Transferee Specialist",
-        "description": "Intracompany transferee visa for employees with specialized knowledge."
+        "name": "कंपनी-आंतर स्थानांतरण तज्ञ",
+        "description": "विशेष ज्ञान असलेल्या कर्मचाऱ्यांसाठी कंपनी-आंतर स्थानांतरण व्हिसा."
       },
       "L2": {
-        "name": "L1 Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of L1 visa holders."
+        "name": "L1 आश्रित",
+        "description": "L1 व्हिसा धारकांच्या जोडीदार आणि 21 वर्षाखालील अविवाहित मुलांसाठी आश्रित व्हिसा."
       },
       "O1": {
-        "name": "Extraordinary Ability",
-        "description": "Extraordinary ability visa for individuals with exceptional skills."
+        "name": "असाधारण क्षमता",
+        "description": "अपवादात्मक कौशल्ये असलेल्या व्यक्तींसाठी असाधारण क्षमता व्हिसा."
       },
       "TN": {
-        "name": "NAFTA Professional",
-        "description": "NAFTA professional visa for Canadian and Mexican citizens."
+        "name": "NAFTA व्यावसायिक",
+        "description": "कॅनेडियन आणि मेक्सिकन नागरिकांसाठी NAFTA व्यावसायिक व्हिसा."
       },
       "E2": {
-        "name": "Treaty Investor",
-        "description": "Treaty investor visa for substantial investment in US business."
+        "name": "करार गुंतवणूकदार",
+        "description": "यूएस व्यवसायात भरीव गुंतवणुकीसाठी करार गुंतवणूकदार व्हिसा."
       },
       "EB1": {
-        "name": "Priority Workers",
-        "description": "First preference employment-based green card for priority workers."
+        "name": "प्राधान्य कामगार",
+        "description": "प्राधान्य कामगारांसाठी पहिले प्राधान्य रोजगार-आधारित ग्रीन कार्ड."
       },
       "EB2": {
-        "name": "Advanced Degree Professionals",
-        "description": "Second preference employment-based green card for advanced degree holders."
+        "name": "उच्च पदवी व्यावसायिक",
+        "description": "उच्च पदवी धारकांसाठी दुसरे प्राधान्य रोजगार-आधारित ग्रीन कार्ड."
       },
       "EB3": {
-        "name": "Skilled Workers",
-        "description": "Third preference employment-based green card for skilled workers."
+        "name": "कुशल कामगार",
+        "description": "कुशल कामगारांसाठी तिसरे प्राधान्य रोजगार-आधारित ग्रीन कार्ड."
       },
       "EB4": {
-        "name": "Special Immigrants",
-        "description": "Fourth preference employment-based green card for special immigrants."
+        "name": "विशेष इमिग्रंट्स",
+        "description": "विशेष इमिग्रंट्ससाठी चौथे प्राधान्य रोजगार-आधारित ग्रीन कार्ड."
       },
       "EB5": {
-        "name": "Immigrant Investors",
-        "description": "Fifth preference employment-based green card for investors."
+        "name": "गुंतवणूकदार इमिग्रंट्स",
+        "description": "गुंतवणूकदारांसाठी पाचवे प्राधान्य रोजगार-आधारित ग्रीन कार्ड."
       }
     }
   }

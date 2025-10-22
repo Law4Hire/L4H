@@ -154,102 +154,102 @@
     "caseManagement": "Quản lý vụ việc"
   },
   "visaLibrary": {
-    "title": "Thư viện các loại Visa Mỹ",
-    "description": "Khám phá thông tin toàn diện về các danh mục visa Mỹ khác nhau. Nhấp vào bất kỳ loại visa nào để tìm hiểu về yêu cầu đủ điều kiện, quy trình đăng ký và lợi ích.",
-    "loading": "Đang tải thông tin visa...",
+    "title": "Thư viện các loại thị thực Hoa Kỳ",
+    "description": "Khám phá thông tin toàn diện về các loại thị thực Hoa Kỳ khác nhau. Nhấp vào bất kỳ loại thị thực nào để tìm hiểu về các yêu cầu đủ điều kiện, quy trình đăng ký và lợi ích.",
+    "loading": "Đang tải thông tin thị thực...",
     "learnMore": "Tìm hiểu thêm",
     "categories": {
-      "nonimmigrant": "Visa không định cư",
-      "immigrant": "Visa định cư"
+      "nonimmigrant": "Thị thực không định cư",
+      "immigrant": "Thị thực định cư"
     },
     "modal": {
       "category": "Danh mục",
       "description": "Mô tả",
       "nextSteps": "Các bước tiếp theo",
-      "readyToApply": "Sẵn sàng đăng ký visa {{code}}? Các luật sư nhập cư của chúng tôi có thể hướng dẫn bạn trong toàn bộ quá trình.",
-      "applyFor": "Đăng ký Visa {{code}}"
+      "readyToApply": "Sẵn sàng đăng ký thị thực {{code}}? Các luật sư di trú của chúng tôi có thể hướng dẫn bạn trong suốt quá trình.",
+      "applyFor": "Đăng ký thị thực {{code}}"
     },
     "cta": {
-      "title": "Cần trợ giúp chọn Visa phù hợp?",
-      "description": "Các chuyên gia nhập cư của chúng tôi có thể giúp bạn xác định danh mục visa nào phù hợp nhất với tình huống của bạn.",
-      "button": "Bắt đầu đăng ký của bạn"
+      "title": "Cần giúp đỡ chọn đúng thị thực?",
+      "description": "Các chuyên gia di trú của chúng tôi có thể giúp bạn xác định loại thị thực phù hợp nhất với tình huống của bạn.",
+      "button": "Bắt đầu đăng ký"
     },
     "visas": {
       "B1": {
-        "name": "Business Visitor",
-        "description": "Business visitor visa for temporary business activities in the United States."
+        "name": "Khách thăm kinh doanh",
+        "description": "Thị thực khách thăm kinh doanh cho các hoạt động kinh doanh tạm thời tại Hoa Kỳ."
       },
       "B2": {
-        "name": "Tourist Visitor",
-        "description": "Tourist visa for pleasure, vacation, or visiting family and friends."
+        "name": "Khách thăm du lịch",
+        "description": "Thị thực du lịch cho mục đích giải trí, nghỉ mát hoặc thăm gia đình và bạn bè."
       },
       "F1": {
-        "name": "Student",
-        "description": "Student visa for academic studies at accredited US institutions."
+        "name": "Sinh viên",
+        "description": "Thị thực sinh viên cho việc học tập tại các trường được công nhận ở Hoa Kỳ."
       },
       "F2": {
-        "name": "Student Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of F1 students."
+        "name": "Người phụ thuộc sinh viên",
+        "description": "Thị thực người phụ thuộc cho vợ/chồng và con chưa kết hôn dưới 21 tuổi của sinh viên F1."
       },
       "H1B": {
-        "name": "Specialty Occupation Worker",
-        "description": "Specialty occupation visa for professionals with bachelor's degree or higher."
+        "name": "Nhân viên chuyên môn",
+        "description": "Thị thực chuyên môn cho các chuyên gia có bằng cử nhân trở lên."
       },
       "H2A": {
-        "name": "Agricultural Worker",
-        "description": "Temporary agricultural worker visa for seasonal farm labor."
+        "name": "Công nhân nông nghiệp",
+        "description": "Thị thực công nhân nông nghiệp tạm thời cho lao động nông trại theo mùa."
       },
       "H4": {
-        "name": "H1B Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of H1B visa holders."
+        "name": "Người phụ thuộc H1B",
+        "description": "Thị thực người phụ thuộc cho vợ/chồng và con chưa kết hôn dưới 21 tuổi của người có thị thực H1B."
       },
       "J1": {
-        "name": "Exchange Visitor",
-        "description": "Exchange visitor visa for cultural exchange programs."
+        "name": "Khách trao đổi",
+        "description": "Thị thực khách trao đổi cho các chương trình trao đổi văn hóa."
       },
       "L1A": {
-        "name": "Intracompany Transferee Executive",
-        "description": "Intracompany transferee visa for managers and executives."
+        "name": "Điều chuyển nội bộ (Giám đốc)",
+        "description": "Thị thực điều chuyển nội bộ cho các nhà quản lý và giám đốc."
       },
       "L1B": {
-        "name": "Intracompany Transferee Specialist",
-        "description": "Intracompany transferee visa for employees with specialized knowledge."
+        "name": "Điều chuyển nội bộ (Chuyên gia)",
+        "description": "Thị thực điều chuyển nội bộ cho nhân viên có kiến thức chuyên môn."
       },
       "L2": {
-        "name": "L1 Dependent",
-        "description": "Dependent visa for spouses and unmarried children under 21 of L1 visa holders."
+        "name": "Người phụ thuộc L1",
+        "description": "Thị thực người phụ thuộc cho vợ/chồng và con chưa kết hôn dưới 21 tuổi của người có thị thực L1."
       },
       "O1": {
-        "name": "Extraordinary Ability",
-        "description": "Extraordinary ability visa for individuals with exceptional skills."
+        "name": "Năng lực đặc biệt",
+        "description": "Thị thực năng lực đặc biệt cho những cá nhân có kỹ năng xuất sắc."
       },
       "TN": {
-        "name": "NAFTA Professional",
-        "description": "NAFTA professional visa for Canadian and Mexican citizens."
+        "name": "Chuyên gia NAFTA",
+        "description": "Thị thực chuyên gia NAFTA cho công dân Canada và Mexico."
       },
       "E2": {
-        "name": "Treaty Investor",
-        "description": "Treaty investor visa for substantial investment in US business."
+        "name": "Nhà đầu tư hiệp ước",
+        "description": "Thị thực nhà đầu tư hiệp ước cho đầu tư đáng kể vào doanh nghiệp Hoa Kỳ."
       },
       "EB1": {
-        "name": "Priority Workers",
-        "description": "First preference employment-based green card for priority workers."
+        "name": "Công nhân ưu tiên",
+        "description": "Thẻ xanh việc làm ưu tiên đầu tiên cho công nhân ưu tiên."
       },
       "EB2": {
-        "name": "Advanced Degree Professionals",
-        "description": "Second preference employment-based green card for advanced degree holders."
+        "name": "Chuyên gia bằng cấp cao",
+        "description": "Thẻ xanh việc làm ưu tiên thứ hai cho người có bằng cấp cao."
       },
       "EB3": {
-        "name": "Skilled Workers",
-        "description": "Third preference employment-based green card for skilled workers."
+        "name": "Công nhân lành nghề",
+        "description": "Thẻ xanh việc làm ưu tiên thứ ba cho công nhân lành nghề."
       },
       "EB4": {
-        "name": "Special Immigrants",
-        "description": "Fourth preference employment-based green card for special immigrants."
+        "name": "Người nhập cư đặc biệt",
+        "description": "Thẻ xanh việc làm ưu tiên thứ tư cho người nhập cư đặc biệt."
       },
       "EB5": {
-        "name": "Immigrant Investors",
-        "description": "Fifth preference employment-based green card for investors."
+        "name": "Nhà đầu tư định cư",
+        "description": "Thẻ xanh việc làm ưu tiên thứ năm cho nhà đầu tư."
       }
     }
   }

@@ -155,9 +155,9 @@
   },
   "visaLibrary": {
     "title": "ABD Vize Türleri Kütüphanesi",
-    "description": "Farklı ABD vize kategorileri hakkında kapsamlı bilgileri keşfedin. Uygunluk gereksinimleri, başvuru süreci ve faydalar hakkında bilgi edinmek için herhangi bir vize türüne tıklayın.",
-    "loading": "Vize bilgileri yükleniyor...",
-    "learnMore": "Daha Fazla Öğren",
+    "description": "Farklı ABD vize kategorileri hakkında kapsamlı bilgileri keşfedin. Uygunluk gereksinimleri, başvuru süreci ve avantajlar hakkında bilgi edinmek için herhangi bir vize türüne tıklayın.",
+    "loading": "Vize bilgisi yükleniyor...",
+    "learnMore": "Daha fazla bilgi",
     "categories": {
       "nonimmigrant": "Göçmen Olmayan Vizeler",
       "immigrant": "Göçmen Vizeleri"
@@ -166,13 +166,91 @@
       "category": "Kategori",
       "description": "Açıklama",
       "nextSteps": "Sonraki Adımlar",
-      "readyToApply": "{{code}} vizesi için başvurmaya hazır mısınız? Göçmenlik avukatlarımız tüm süreç boyunca size rehberlik edebilir.",
-      "applyFor": "{{code}} Vizesi İçin Başvur"
+      "readyToApply": "{{code}} vizesi için başvurmaya hazır mısınız? Göçmenlik avukatlarımız tüm süreçte size rehberlik edebilir.",
+      "applyFor": "{{code}} Vizesi için Başvur"
     },
     "cta": {
-      "title": "Doğru Vizeyi Seçmek İçin Yardıma İhtiyacınız Var mı?",
-      "description": "Göçmenlik uzmanlarımız durumunuza en uygun vize kategorisini belirlemenizde yardımcı olabilir.",
-      "button": "Başvurunuzu Başlatın"
+      "title": "Doğru vizeyi seçmek için yardıma mı ihtiyacınız var?",
+      "description": "Göçmenlik uzmanlarımız, durumunuza en uygun vize kategorisini belirlemenize yardımcı olabilir.",
+      "button": "Başvurunuza başlayın"
+    },
+    "visas": {
+      "B1": {
+        "name": "İş Ziyaretçisi",
+        "description": "Amerika Birleşik Devletleri'nde geçici iş faaliyetleri için iş ziyaretçisi vizesi."
+      },
+      "B2": {
+        "name": "Turist Ziyaretçisi",
+        "description": "Eğlence, tatil veya aile ve arkadaşları ziyaret etmek için turist vizesi."
+      },
+      "F1": {
+        "name": "Öğrenci",
+        "description": "Akredite ABD kurumlarında akademik çalışmalar için öğrenci vizesi."
+      },
+      "F2": {
+        "name": "Öğrenci Bağımlısı",
+        "description": "F1 öğrencilerin eşleri ve 21 yaşın altındaki evli olmayan çocukları için bağımlı vize."
+      },
+      "H1B": {
+        "name": "Özel Meslek Çalışanı",
+        "description": "Lisans veya daha yüksek dereceye sahip profesyoneller için özel meslek vizesi."
+      },
+      "H2A": {
+        "name": "Tarım Çalışanı",
+        "description": "Mevsimlik çiftlik işçiliği için geçici tarım çalışanı vizesi."
+      },
+      "H4": {
+        "name": "H1B Bağımlısı",
+        "description": "H1B vize sahiplerinin eşleri ve 21 yaşın altındaki evli olmayan çocukları için bağımlı vize."
+      },
+      "J1": {
+        "name": "Değişim Ziyaretçisi",
+        "description": "Kültür değişim programları için değişim ziyaretçisi vizesi."
+      },
+      "L1A": {
+        "name": "Şirket İçi Transfer (Yönetici)",
+        "description": "Yöneticiler ve yürütücüler için şirket içi transfer vizesi."
+      },
+      "L1B": {
+        "name": "Şirket İçi Transfer (Uzman)",
+        "description": "Uzman bilgiye sahip çalışanlar için şirket içi transfer vizesi."
+      },
+      "L2": {
+        "name": "L1 Bağımlısı",
+        "description": "L1 vize sahiplerinin eşleri ve 21 yaşın altındaki evli olmayan çocukları için bağımlı vize."
+      },
+      "O1": {
+        "name": "Olağanüstü Yetenek",
+        "description": "İstisnai beceriler ile bireyler için olağanüstü yetenek vizesi."
+      },
+      "TN": {
+        "name": "NAFTA Profesyoneli",
+        "description": "Kanada ve Meksika vatandaşları için NAFTA profesyonel vizesi."
+      },
+      "E2": {
+        "name": "Antlaşma Yatırımcısı",
+        "description": "ABD işine önemli yatırım için antlaşma yatırımcısı vizesi."
+      },
+      "EB1": {
+        "name": "Öncelikli Çalışanlar",
+        "description": "Öncelikli çalışanlar için birinci tercih istihdam tabanlı yeşil kart."
+      },
+      "EB2": {
+        "name": "İleri Derece Profesyonelleri",
+        "description": "İleri derece sahipleri için ikinci tercih istihdam tabanlı yeşil kart."
+      },
+      "EB3": {
+        "name": "Nitelikli Çalışanlar",
+        "description": "Nitelikli çalışanlar için üçüncü tercih istihdam tabanlı yeşil kart."
+      },
+      "EB4": {
+        "name": "Özel Göçmenler",
+        "description": "Özel göçmenler için dördüncü tercih istihdam tabanlı yeşil kart."
+      },
+      "EB5": {
+        "name": "Yatırımcı Göçmenler",
+        "description": "Yatırımcılar için beşinci tercih istihdam tabanlı yeşil kart."
+      }
     }
   }
 }
