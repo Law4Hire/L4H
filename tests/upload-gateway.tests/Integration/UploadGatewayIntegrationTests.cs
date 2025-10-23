@@ -21,6 +21,9 @@ public sealed class UploadGatewayIntegrationTests : IClassFixture<WebApplication
 
         _factory = factory.WithWebHostBuilder(builder =>
         {
+            // Set environment to Test to avoid Swagger initialization issues with .NET 10
+            builder.UseEnvironment("Test");
+
             builder.ConfigureServices(services =>
             {
                 // Override upload options for testing

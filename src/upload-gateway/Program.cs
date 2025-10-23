@@ -7,7 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure services
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Only add Swagger in non-test environments (Swashbuckle 7.3.1 has .NET 10 compatibility issues)
+// This is a temporary workaround until a fully compatible version is released
+if (builder.Environment.EnvironmentName != "Test")
+{
+    builder.Services.AddSwaggerGen();
+}
 
 // Configure upload options
 builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
@@ -44,7 +50,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = Dat
 
 // Upload endpoint
 app.MapPut("/gateway/uploads/{token}", async (
-    string token, 
+    string token,
     HttpRequest request,
     UploadTokenService tokenService,
     IOptions<UploadOptions> uploadOptionsAccessor,
@@ -59,7 +65,7 @@ app.MapPut("/gateway/uploads/{token}", async (
             return Results.BadRequest(new { error = "Invalid or expired token" });
         }
 
-        logger.LogInformation("Processing upload for case {CaseId}, file {Filename}", 
+        logger.LogInformation("Processing upload for case {CaseId}, file {Filename}",
             payload.CaseId, payload.Filename);
 
         // Get configuration
@@ -74,7 +80,7 @@ app.MapPut("/gateway/uploads/{token}", async (
         var contentLength = request.ContentLength ?? 0;
         if (contentLength > payload.SizeBytes)
         {
-            logger.LogWarning("Content length {ContentLength} exceeds token limit {TokenLimit}", 
+            logger.LogWarning("Content length {ContentLength} exceeds token limit {TokenLimit}",
                 contentLength, payload.SizeBytes);
             return Results.BadRequest(new { error = "File size exceeds token limit" });
         }
@@ -82,7 +88,7 @@ app.MapPut("/gateway/uploads/{token}", async (
         var maxBytes = uploadOptions.MaxSizeMB * 1024 * 1024;
         if (contentLength > maxBytes)
         {
-            logger.LogWarning("Content length {ContentLength} exceeds server limit {ServerLimit}", 
+            logger.LogWarning("Content length {ContentLength} exceeds server limit {ServerLimit}",
                 contentLength, maxBytes);
             return Results.BadRequest(new { error = $"File size exceeds {uploadOptions.MaxSizeMB}MB limit" });
         }
@@ -91,7 +97,7 @@ app.MapPut("/gateway/uploads/{token}", async (
         var contentType = request.ContentType ?? "";
         if (contentType != payload.ContentType)
         {
-            logger.LogWarning("Content type mismatch: expected {Expected}, got {Actual}", 
+            logger.LogWarning("Content type mismatch: expected {Expected}, got {Actual}",
                 payload.ContentType, contentType);
             return Results.BadRequest(new { error = "Content type mismatch" });
         }
@@ -107,7 +113,7 @@ app.MapPut("/gateway/uploads/{token}", async (
 
         // Stream file to disk
         using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-        
+
         var buffer = new byte[8192];
         var totalBytes = 0L;
         int bytesRead;
@@ -115,7 +121,7 @@ app.MapPut("/gateway/uploads/{token}", async (
         while ((bytesRead = await request.Body.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
         {
             totalBytes += bytesRead;
-            
+
             // Safety check during streaming
             if (totalBytes > maxBytes)
             {
@@ -128,13 +134,13 @@ app.MapPut("/gateway/uploads/{token}", async (
             await fileStream.WriteAsync(buffer, 0, bytesRead).ConfigureAwait(false);
         }
 
-        logger.LogInformation("Upload completed: {FilePath}, {TotalBytes} bytes", 
+        logger.LogInformation("Upload completed: {FilePath}, {TotalBytes} bytes",
             filePath, totalBytes);
 
         var key = $"{token}/{safeFilename}";
-        return Results.Created($"/gateway/uploads/{token}", new 
-        { 
-            status = "stored", 
+        return Results.Created($"/gateway/uploads/{token}", new
+        {
+            status = "stored",
             key = key,
             sizeBytes = totalBytes
         });
