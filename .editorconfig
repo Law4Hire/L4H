@@ -18,7 +18,8 @@ dotnet_diagnostic.CA1305.severity = error
 dotnet_diagnostic.CA1304.severity = warning
 
 # Dispose patterns
-dotnet_diagnostic.CA2007.severity = error
+# CA2007: ConfigureAwait - Not required for ASP.NET Core (no SynchronizationContext)
+dotnet_diagnostic.CA2007.severity = none
 dotnet_diagnostic.CA1063.severity = error
 dotnet_diagnostic.CA1816.severity = error
 
