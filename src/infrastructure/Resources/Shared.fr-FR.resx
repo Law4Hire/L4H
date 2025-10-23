@@ -59,132 +59,132 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 
-  <!-- NOTE: English placeholders - Ready for professional translation -->
   <!-- Language: French (France) (fr-FR) -->
+  <!-- Traductions professionnelles en français pour la France -->
 
   <!-- Authentication & User Management -->
   <data name="Auth.PasswordRequired" xml:space="preserve">
-    <value>Password is required.</value>
-    <comment>Validation message when password field is empty</comment>
+    <value>Le mot de passe est requis.</value>
+    <comment>Message de validation lorsque le champ mot de passe est vide</comment>
   </data>
   <data name="Auth.PasswordTooShort" xml:space="preserve">
-    <value>Password must be at least {0} characters long.</value>
-    <comment>Validation message for password length. {0} = minimum length</comment>
+    <value>Le mot de passe doit contenir au moins {0} caractères.</value>
+    <comment>Message de validation pour la longueur du mot de passe. {0} = longueur minimale</comment>
   </data>
   <data name="Auth.PasswordNeedsSpecialChar" xml:space="preserve">
-    <value>Password must contain at least one special character.</value>
-    <comment>Validation message for password complexity</comment>
+    <value>Le mot de passe doit contenir au moins un caractère spécial.</value>
+    <comment>Message de validation pour la complexité du mot de passe</comment>
   </data>
   <data name="Auth.PasswordNeedsMoreClasses" xml:space="preserve">
-    <value>Password must contain at least {0} different character types (uppercase, lowercase, digits, special characters).</value>
-    <comment>Validation message for password complexity. {0} = number of required character types</comment>
+    <value>Le mot de passe doit contenir au moins {0} types de caractères différents (majuscules, minuscules, chiffres, caractères spéciaux).</value>
+    <comment>Message de validation pour la complexité du mot de passe. {0} = nombre de types de caractères requis</comment>
   </data>
   <data name="Auth.RateLimitExceeded" xml:space="preserve">
-    <value>Too many requests. Please try again later.</value>
-    <comment>Error message when user exceeds rate limit</comment>
+    <value>Trop de requêtes. Veuillez réessayer plus tard.</value>
+    <comment>Message d'erreur lorsque l'utilisateur dépasse la limite de requêtes</comment>
   </data>
   <data name="Auth.UserNotFound" xml:space="preserve">
-    <value>User not found.</value>
-    <comment>Error message when user account doesn't exist</comment>
+    <value>Utilisateur introuvable.</value>
+    <comment>Message d'erreur lorsque le compte utilisateur n'existe pas</comment>
   </data>
   <data name="Auth.AccountLocked" xml:space="preserve">
-    <value>Account is locked for {0} more minutes due to too many failed login attempts.</value>
-    <comment>Error message when account is temporarily locked. {0} = minutes remaining</comment>
+    <value>Le compte est verrouillé pendant encore {0} minutes en raison de trop nombreuses tentatives de connexion échouées.</value>
+    <comment>Message d'erreur lorsque le compte est temporairement verrouillé. {0} = minutes restantes</comment>
   </data>
   <data name="Auth.LockoutCheckFailed" xml:space="preserve">
-    <value>Failed to check account lockout status.</value>
-    <comment>System error message</comment>
+    <value>Échec de la vérification de l'état de verrouillage du compte.</value>
+    <comment>Message d'erreur système</comment>
   </data>
   <data name="Auth.FailedLoginRecordFailed" xml:space="preserve">
-    <value>Failed to record failed login attempt.</value>
-    <comment>System error message</comment>
+    <value>Échec de l'enregistrement de la tentative de connexion échouée.</value>
+    <comment>Message d'erreur système</comment>
   </data>
   <data name="Auth.LockoutClearFailed" xml:space="preserve">
-    <value>Failed to clear account lockout.</value>
-    <comment>System error message</comment>
+    <value>Échec de la suppression du verrouillage du compte.</value>
+    <comment>Message d'erreur système</comment>
   </data>
   <data name="Auth.LoginFailed" xml:space="preserve">
-    <value>Invalid email or password.</value>
-    <comment>Error message for failed login attempt</comment>
+    <value>E-mail ou mot de passe incorrect.</value>
+    <comment>Message d'erreur pour une tentative de connexion échouée</comment>
   </data>
   <data name="Auth.EmailVerificationRequired" xml:space="preserve">
-    <value>Please verify your email address before logging in.</value>
-    <comment>Message when user needs to verify email first</comment>
+    <value>Veuillez vérifier votre adresse e-mail avant de vous connecter.</value>
+    <comment>Message lorsque l'utilisateur doit d'abord vérifier son e-mail</comment>
   </data>
   <data name="Auth.InvalidToken" xml:space="preserve">
-    <value>Invalid or expired token.</value>
-    <comment>Error message for invalid authentication token</comment>
+    <value>Jeton invalide ou expiré.</value>
+    <comment>Message d'erreur pour un jeton d'authentification invalide</comment>
   </data>
   <data name="Auth.EmailVerified" xml:space="preserve">
-    <value>Email address verified successfully.</value>
-    <comment>Success message after email verification</comment>
+    <value>Adresse e-mail vérifiée avec succès.</value>
+    <comment>Message de succès après la vérification de l'e-mail</comment>
   </data>
   <data name="Auth.LoggedOutAllDevices" xml:space="preserve">
-    <value>Successfully logged out from all devices.</value>
-    <comment>Success message after logging out from all sessions</comment>
+    <value>Déconnexion réussie de tous les appareils.</value>
+    <comment>Message de succès après la déconnexion de toutes les sessions</comment>
   </data>
 
   <!-- Appointments -->
   <data name="Appointments.CreatedSuccessfully" xml:space="preserve">
-    <value>Appointment created successfully.</value>
-    <comment>Success message after creating an appointment</comment>
+    <value>Rendez-vous créé avec succès.</value>
+    <comment>Message de succès après la création d'un rendez-vous</comment>
   </data>
   <data name="Appointments.CreationFailed" xml:space="preserve">
-    <value>Failed to create appointment.</value>
-    <comment>Error message when appointment creation fails</comment>
+    <value>Échec de la création du rendez-vous.</value>
+    <comment>Message d'erreur lorsque la création du rendez-vous échoue</comment>
   </data>
   <data name="Appointments.CreationError" xml:space="preserve">
-    <value>An error occurred while creating the appointment.</value>
-    <comment>Generic error message for appointment creation</comment>
+    <value>Une erreur s'est produite lors de la création du rendez-vous.</value>
+    <comment>Message d'erreur générique pour la création de rendez-vous</comment>
   </data>
 
   <!-- Cases -->
   <data name="Cases.NotFound" xml:space="preserve">
-    <value>Case not found.</value>
-    <comment>Error message when case doesn't exist</comment>
+    <value>Dossier introuvable.</value>
+    <comment>Message d'erreur lorsque le dossier n'existe pas</comment>
   </data>
   <data name="Cases.Forbidden" xml:space="preserve">
-    <value>You do not have permission to access this case.</value>
-    <comment>Error message when user lacks permission to view case</comment>
+    <value>Vous n'avez pas l'autorisation d'accéder à ce dossier.</value>
+    <comment>Message d'erreur lorsque l'utilisateur n'a pas la permission de consulter le dossier</comment>
   </data>
   <data name="Cases.InvalidTransition" xml:space="preserve">
-    <value>Invalid case status transition.</value>
-    <comment>Error message when case status change is not allowed</comment>
+    <value>Transition d'état de dossier invalide.</value>
+    <comment>Message d'erreur lorsque le changement d'état du dossier n'est pas autorisé</comment>
   </data>
   <data name="Cases.TransitionApplied" xml:space="preserve">
-    <value>Case status updated successfully.</value>
-    <comment>Success message after case status update</comment>
+    <value>État du dossier mis à jour avec succès.</value>
+    <comment>Message de succès après la mise à jour de l'état du dossier</comment>
   </data>
 
   <!-- Workflow (Non-Admin) -->
   <data name="Workflow.NotFound" xml:space="preserve">
-    <value>Workflow not found.</value>
-    <comment>Error message when workflow doesn't exist</comment>
+    <value>Flux de travail introuvable.</value>
+    <comment>Message d'erreur lorsque le flux de travail n'existe pas</comment>
   </data>
   <data name="Workflow.PendingStatus" xml:space="preserve">
-    <value>Pending Review</value>
-    <comment>Status label for workflow pending review</comment>
+    <value>En attente de révision</value>
+    <comment>Libellé d'état pour un flux de travail en attente de révision</comment>
   </data>
 
   <!-- Scraper Service -->
   <data name="Scraper.RunStarted" xml:space="preserve">
-    <value>Scraper run started.</value>
-    <comment>Log message when scraper begins</comment>
+    <value>Exécution du collecteur démarrée.</value>
+    <comment>Message de journal lorsque le collecteur démarre</comment>
   </data>
   <data name="Scraper.RunCompleted" xml:space="preserve">
-    <value>Scraper run completed successfully.</value>
-    <comment>Log message when scraper finishes</comment>
+    <value>Exécution du collecteur terminée avec succès.</value>
+    <comment>Message de journal lorsque le collecteur se termine</comment>
   </data>
   <data name="Scraper.NoChange" xml:space="preserve">
-    <value>No changes detected.</value>
-    <comment>Message when scraper finds no updates</comment>
+    <value>Aucun changement détecté.</value>
+    <comment>Message lorsque le collecteur ne trouve aucune mise à jour</comment>
   </data>
   <data name="Scraper.DraftCreated" xml:space="preserve">
-    <value>Draft workflow created with ID {0}. Total changes: {1}.</value>
-    <comment>Log message when draft is created. {0} = workflow ID, {1} = number of changes</comment>
+    <value>Brouillon de flux de travail créé avec l'ID {0}. Total des modifications : {1}.</value>
+    <comment>Message de journal lors de la création du brouillon. {0} = ID du flux de travail, {1} = nombre de modifications</comment>
   </data>
   <data name="Scraper.AndorraUsesSpain" xml:space="preserve">
-    <value>Country {0} uses workflow from {1}.</value>
-    <comment>Log message for country workflow mapping. {0} = source country, {1} = target country</comment>
+    <value>Le pays {0} utilise le flux de travail de {1}.</value>
+    <comment>Message de journal pour le mappage du flux de travail par pays. {0} = pays source, {1} = pays cible</comment>
   </data>
 </root>
