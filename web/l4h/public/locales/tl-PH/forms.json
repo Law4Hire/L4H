@@ -1,0 +1,27 @@
+{
+  "validation": {
+    "required": "Kailangan ang field na ito",
+    "email": "Mangyaring maglagay ng wastong email address",
+    "phone": "Mangyaring maglagay ng wastong numero ng telepono",
+    "minLength": "Dapat na hindi bababa sa {{min}} character",
+    "maxLength": "Dapat na hindi hihigit sa {{max}} character",
+    "pattern": "Mangyaring maglagay ng wastong value",
+    "number": "Mangyaring maglagay ng wastong numero",
+    "min": "Dapat na hindi bababa sa {{min}}",
+    "max": "Dapat na hindi hihigit sa {{max}}"
+  },
+  "labels": {
+    "firstName": "Pangalan",
+    "lastName": "Apelyido",
+    "email": "Email Address",
+    "phone": "Numero ng Telepono",
+    "submit": "Isumite",
+    "cancel": "Kanselahin",
+    "save": "I-save",
+    "delete": "Tanggalin",
+    "edit": "I-edit",
+    "back": "Bumalik",
+    "next": "Susunod",
+    "previous": "Nakaraan"
+  }
+}

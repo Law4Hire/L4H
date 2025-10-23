@@ -1,0 +1,100 @@
+{
+  "title": "Perpustakaan Jenis Visa AS",
+  "description": "Jelajahi informasi lengkap tentang berbagai kategori visa AS. Klik jenis visa apa pun untuk mempelajari persyaratan kelayakan, proses aplikasi, dan manfaatnya.",
+  "loading": "Memuat informasi visa...",
+  "learnMore": "Pelajari Lebih Lanjut",
+  "categories": {
+    "nonimmigrant": "Visa Non-Imigran",
+    "immigrant": "Visa Imigran"
+  },
+  "visas": {
+    "B1": {
+      "name": "Pengunjung Bisnis",
+      "description": "Visa pengunjung bisnis untuk aktivitas bisnis sementara di Amerika Serikat."
+    },
+    "B2": {
+      "name": "Pengunjung Turis",
+      "description": "Visa turis untuk berlibur, liburan, atau mengunjungi keluarga dan teman."
+    },
+    "F1": {
+      "name": "Pelajar",
+      "description": "Visa pelajar untuk studi akademik di institusi AS yang terakreditasi."
+    },
+    "F2": {
+      "name": "Tanggungan Pelajar",
+      "description": "Visa tanggungan untuk pasangan dan anak belum menikah di bawah 21 tahun dari pelajar F1."
+    },
+    "H1B": {
+      "name": "Pekerja Okupasi Khusus",
+      "description": "Visa okupasi khusus untuk profesional dengan gelar sarjana atau lebih tinggi."
+    },
+    "H2A": {
+      "name": "Pekerja Pertanian",
+      "description": "Visa pekerja pertanian sementara untuk tenaga kerja pertanian musiman."
+    },
+    "H4": {
+      "name": "Tanggungan H1B",
+      "description": "Visa tanggungan untuk pasangan dan anak belum menikah di bawah 21 tahun dari pemegang visa H1B."
+    },
+    "J1": {
+      "name": "Pengunjung Pertukaran",
+      "description": "Visa pengunjung pertukaran untuk program pertukaran budaya."
+    },
+    "L1A": {
+      "name": "Transfer Antar Perusahaan Eksekutif",
+      "description": "Visa transfer antar perusahaan untuk manajer dan eksekutif."
+    },
+    "L1B": {
+      "name": "Transfer Antar Perusahaan Spesialis",
+      "description": "Visa transfer antar perusahaan untuk karyawan dengan pengetahuan khusus."
+    },
+    "L2": {
+      "name": "Tanggungan L1",
+      "description": "Visa tanggungan untuk pasangan dan anak belum menikah di bawah 21 tahun dari pemegang visa L1."
+    },
+    "O1": {
+      "name": "Kemampuan Luar Biasa",
+      "description": "Visa kemampuan luar biasa untuk individu dengan keterampilan luar biasa."
+    },
+    "TN": {
+      "name": "Profesional NAFTA",
+      "description": "Visa profesional NAFTA untuk warga negara Kanada dan Meksiko."
+    },
+    "E2": {
+      "name": "Investor Perjanjian",
+      "description": "Visa investor perjanjian untuk investasi substansial dalam bisnis AS."
+    },
+    "EB1": {
+      "name": "Pekerja Prioritas",
+      "description": "Green card berbasis pekerjaan preferensi pertama untuk pekerja prioritas."
+    },
+    "EB2": {
+      "name": "Profesional Gelar Lanjutan",
+      "description": "Green card berbasis pekerjaan preferensi kedua untuk pemegang gelar lanjutan."
+    },
+    "EB3": {
+      "name": "Pekerja Terampil",
+      "description": "Green card berbasis pekerjaan preferensi ketiga untuk pekerja terampil."
+    },
+    "EB4": {
+      "name": "Imigran Khusus",
+      "description": "Green card berbasis pekerjaan preferensi keempat untuk imigran khusus."
+    },
+    "EB5": {
+      "name": "Investor Imigran",
+      "description": "Green card berbasis pekerjaan preferensi kelima untuk investor."
+    }
+  },
+  "cta": {
+    "title": "Butuh Bantuan Memilih Visa yang Tepat?",
+    "description": "Para ahli imigrasi kami dapat membantu Anda menentukan kategori visa mana yang paling sesuai dengan situasi Anda.",
+    "button": "Mulai Aplikasi Anda"
+  },
+  "modal": {
+    "category": "Kategori",
+    "description": "Deskripsi",
+    "nextSteps": "Langkah Selanjutnya",
+    "readyToApply": "Siap mengajukan visa {{code}}? Pengacara imigrasi kami dapat membimbing Anda melalui seluruh proses.",
+    "applyFor": "Ajukan Visa {{code}}"
+  }
+}
