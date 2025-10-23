@@ -35,7 +35,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '10.0.x'
+        dotnet-quality: 'rc'
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -102,6 +103,14 @@ jobs:
     - name: Test shared-ui
       working-directory: web/shared-ui
       run: npm test -- --run || echo "Frontend tests failed but continuing build"
+
+    - name: Validate i18n system
+      working-directory: web/shared-ui
+      run: |
+        echo "Validating translation files..."
+        npm run validate:translations || echo "Translation validation failed but continuing build"
+        echo "Testing i18n configuration..."
+        npm run test:i18n || echo "i18n tests failed but continuing build"
 
     - name: Install l4h dependencies
       working-directory: web/l4h
@@ -224,6 +233,20 @@ jobs:
         cd ../l4h && npm ci && npm run build
         cd ../cannlaw && npm ci && npm run build
 
+    - name: Validate i18n deployment readiness
+      run: |
+        echo "Validating translation files are present..."
+        test -d web/shared-ui/public/locales || (echo "Shared translations missing" && exit 1)
+        test -d web/l4h/public/locales || (echo "L4H translations missing" && exit 1)
+        test -d web/cannlaw/public/locales || (echo "Cannlaw translations missing" && exit 1)
+        echo "✅ All translation directories present"
+        
+        echo "Validating critical translation files..."
+        test -f web/shared-ui/public/locales/shared/en-US/common.json || (echo "Critical shared translations missing" && exit 1)
+        test -f web/l4h/public/locales/l4h/en-US/interview.json || (echo "Critical L4H translations missing" && exit 1)
+        test -f web/cannlaw/public/locales/cannlaw/en-US/legal.json || (echo "Critical Cannlaw translations missing" && exit 1)
+        echo "✅ Critical translation files validated"
+
     - name: Copy deployment files to server
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -307,6 +330,12 @@ jobs:
           # Test HTTP endpoints (bypass SSL for now - Let's Encrypt may take time)
           echo "Testing HTTP endpoints..."
           curl -fsS http://localhost/ || echo "Warning: HTTP test failed, but continuing (SSL may still be provisioning)"
+
+          # Test i18n functionality
+          echo "Testing i18n system deployment..."
+          curl -fsS http://localhost/locales/shared/en-US/common.json || echo "Warning: Shared translations not accessible"
+          curl -fsS http://localhost/locales/l4h/en-US/interview.json || echo "Warning: L4H translations not accessible"
+          curl -fsS http://localhost/cannlaw/locales/cannlaw/en-US/legal.json || echo "Warning: Cannlaw translations not accessible"
 
           echo "Deployment successful! Services are running."
           echo "Note: HTTPS certificates may take a few minutes to provision via Let's Encrypt."
