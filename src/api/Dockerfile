@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/publish .
 
 # Create non-root user
-RUN useradd -m -s /bin/bash appuser && chown -R appuser /app
+RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
 # Expose port
