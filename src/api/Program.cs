@@ -37,8 +37,8 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new CaseIdConverter());
         options.JsonSerializerOptions.Converters.Add(new UserIdConverter());
-        // Source generation disabled - using reflection-based serialization for compatibility
-        // options.JsonSerializerOptions.TypeInfoResolver = ApiJsonContext.Default;
+        // Explicitly use reflection-based serialization for .NET 10 compatibility
+        options.JsonSerializerOptions.TypeInfoResolver = new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver();
     });
 
 // Validators temporarily disabled for deployment
