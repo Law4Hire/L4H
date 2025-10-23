@@ -12,6 +12,10 @@
 
     <!-- AOT Compatibility for shared models -->
     <IsAotCompatible>true</IsAotCompatible>
+
+    <!-- Suppress code analysis warnings that will be addressed in future refactoring -->
+    <!-- See GlobalSuppressions.cs for detailed documentation and refactoring roadmap -->
+    <NoWarn>$(NoWarn);CA1716;CA2227;CA1002;CA1056;CA1062;CA1000;CA1805;CA1819</NoWarn>
   </PropertyGroup>
 
 </Project>
