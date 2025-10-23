@@ -67,11 +67,11 @@ public class L4HDbContext : DbContext
     public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
     public DbSet<UserNotificationPreference> UserNotificationPreferences { get; set; }
 
-    // Translation monitoring entities
-    public DbSet<TranslationError> TranslationErrors { get; set; }
-    public DbSet<TranslationPerformanceMetric> TranslationPerformanceMetrics { get; set; }
-    public DbSet<TranslationUserFeedback> TranslationUserFeedback { get; set; }
-    public DbSet<MonitoringAlert> MonitoringAlerts { get; set; }
+    // Translation monitoring entities - Removed (incomplete implementation)
+    // public DbSet<TranslationError> TranslationErrors { get; set; }
+    // public DbSet<TranslationPerformanceMetric> TranslationPerformanceMetrics { get; set; }
+    // public DbSet<TranslationUserFeedback> TranslationUserFeedback { get; set; }
+    // public DbSet<MonitoringAlert> MonitoringAlerts { get; set; }
 
     // Stripe payments entities
     public DbSet<Invoice> Invoices { get; set; }
