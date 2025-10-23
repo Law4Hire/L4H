@@ -17,7 +17,9 @@ using L4H.Infrastructure.Services.Payments;
 using L4H.Api.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Localization;
-// using FluentValidation; 
+using L4H.Api.Json;
+using L4H.Api.Configuration;
+// using FluentValidation;
 // using FluentValidation.AspNetCore;
 // using L4H.Api.Validators;
 
@@ -28,12 +30,14 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
         .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture));
 
-// Add services
+// Add services with JSON source generation for .NET 10 performance optimization
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new CaseIdConverter());
         options.JsonSerializerOptions.Converters.Add(new UserIdConverter());
+        // Configure source-generated JSON serialization context for improved performance
+        options.JsonSerializerOptions.TypeInfoResolver = ApiJsonContext.Default;
     });
 
 // Validators temporarily disabled for deployment
@@ -50,36 +54,38 @@ builder.Services.AddControllers()
 // builder.Services.AddFluentValidationAutoValidation();
 // builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new() { Title = "L4H API", Version = "v1" });
-    
-    // Add JWT authentication to Swagger
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-    {
-        {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
+// Swagger temporarily disabled due to OpenAPI package compatibility issues in .NET 10 RC
+// Will be re-enabled when Swashbuckle supports .NET 10 or we migrate to Microsoft.AspNetCore.OpenApi
+// builder.Services.AddEndpointsApiExplorer();
+// builder.Services.AddSwaggerGen(c =>
+// {
+//     c.SwaggerDoc("v1", new() { Title = "L4H API", Version = "v1" });
+//
+//     // Add JWT authentication to Swagger
+//     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+//     {
+//         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+//         Name = "Authorization",
+//         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+//         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+//         Scheme = "Bearer"
+//     });
+//
+//     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+//     {
+//         {
+//             new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+//             {
+//                 Reference = new Microsoft.OpenApi.Models.OpenApiReference
+//                 {
+//                     Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+//                     Id = "Bearer"
+//                 }
+//             },
+//             Array.Empty<string>()
+//         }
+//     });
+// });
 
 // Add DbContext
 builder.Services.AddDbContext<L4HDbContext>(opt =>
@@ -159,17 +165,13 @@ builder.Services.AddAntiforgery(options =>
     options.SuppressXFrameOptionsHeader = false;
 });
 
-// Add localization
+// Add localization - using .NET 10 FrozenSet/FrozenDictionary for optimal performance
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-var supported = new[] {
-    "ar-SA","bn-BD","de-DE","en-US","es-ES","fr-FR","hi-IN","id-ID","it-IT",
-    "ja-JP","ko-KR","mr-IN","pl-PL","pt-PT","ru-RU","ta-IN","te-IN","tr-TR","ur-PK","vi-VN","zh-CN"
-}.Select(c => new CultureInfo(c)).ToList();
 
 var locOpts = new RequestLocalizationOptions()
-    .SetDefaultCulture("en-US")
-    .AddSupportedCultures(supported.Select(c => c.Name).ToArray())
-    .AddSupportedUICultures(supported.Select(c => c.Name).ToArray());
+    .SetDefaultCulture(LocalizationConfiguration.DefaultCultureCode)
+    .AddSupportedCultures(LocalizationConfiguration.SupportedCultureCodes.ToArray())
+    .AddSupportedUICultures(LocalizationConfiguration.SupportedCultureCodes.ToArray());
 
 // Cookie provider (highest), then header, then query (?ui-culture=xx-YY)
 locOpts.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider {
@@ -271,12 +273,12 @@ builder.Services.AddHostedService<NotificationBackgroundService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-// Enable Swagger in Development only
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Swagger temporarily disabled due to OpenAPI package compatibility issues in .NET 10 RC
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI();
+// }
 
 // Ensure database is created and migrated for Development, Testing, and Production
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") || app.Environment.IsProduction())
