@@ -15,7 +15,10 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:i18n": "tsx src/scripts/test-language-switching.ts",
+    "test:language-switching": "tsx src/scripts/test-language-switching.ts",
+    "validate:translations": "tsx src/scripts/run-translation-validation.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",

@@ -56,8 +56,29 @@ export { ThemeProvider, useTheme } from './ThemeProvider'
 
 // i18n
 export { LanguageSwitcher } from './LanguageSwitcher'
-export { I18nProvider, useI18n, useT, useTranslation } from './i18n-provider'
+export { I18nProvider, useI18n, useTranslation } from './i18n-provider'
 export type { Culture } from './i18n-provider'
+
+// Application-specific i18n providers
+export { L4HI18nProvider, useL4HI18n, useL4HT } from './providers/L4HI18nProvider'
+export { CannlawI18nProvider, useCannlawI18n, useCannlawT } from './providers/CannlawI18nProvider'
+
+// Enhanced i18n configuration
+export { 
+  initL4HI18n, 
+  initCannlawI18n, 
+  initSharedI18n, 
+  initI18nWithConfig,
+  getI18nInstance,
+  APPLICATION_CONFIGS,
+  APPLICATION_NAMESPACES
+} from './i18n-config'
+export type { 
+  I18nApplicationConfig, 
+  SharedNamespace, 
+  L4HNamespace, 
+  CannlawNamespace 
+} from './i18n-config'
 
 // Route Guard
 export { RouteGuard } from './RouteGuard'
@@ -77,6 +98,9 @@ export {
   formatPercentage,
   formatList,
 } from './formatters'
+
+// Accessibility features
+export * from './accessibility'
 
 // CSS - RTL styles should be imported by consuming apps
 // import './styles/rtl.css'

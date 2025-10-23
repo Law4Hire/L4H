@@ -1,0 +1,76 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome back!",
+  "quickLinks": "Quick Links",
+  "interview": "Visa Interview",
+  "pricing": "Pricing",
+  "appointments": "Appointments",
+  "messages": "Messages",
+  "caseStatus": "Case Status",
+  
+  "case": {
+    "status": {
+      "inactive": "Inactive",
+      "active": "Active",
+      "pending": "Pending",
+      "completed": "Completed",
+      "closed": "Closed"
+    },
+    "detail": {
+      "title": "Case Details"
+    }
+  },
+  
+  "appointments": {
+    "title": "Appointments",
+    "createAppointment": "Create Appointment",
+    "noAppointments": "No appointments scheduled",
+    "appointmentCreated": "Appointment created successfully",
+    "duration": "minutes",
+    "caseId": "Case ID",
+    "date": "Date & Time",
+    "notes": "Notes",
+    "scheduleFirst": "Schedule your first appointment to get started",
+    "durationHelper": "Duration in minutes"
+  },
+  
+  "messages": {
+    "title": "Messages",
+    "compose": "Compose",
+    "inbox": "Inbox",
+    "noMessages": "No messages",
+    "messageSent": "Message sent successfully",
+    "newMessage": "New Message",
+    "subject": "Subject",
+    "recipient": "Recipient",
+    "message": "Message",
+    "startConversation": "Start a conversation",
+    "selectConversation": "Select a conversation",
+    "chooseThread": "Choose a message thread to view the conversation",
+    "recipientPlaceholder": "Enter recipient email or ID"
+  },
+  
+  "admin": {
+    "userManagement": "User Management",
+    "userDetails": "User Details",
+    "pricingManagement": "Pricing Management",
+    "caseManagement": "Case Management"
+  },
+  
+  "widgets": {
+    "recentActivity": "Recent Activity",
+    "upcomingAppointments": "Upcoming Appointments",
+    "caseProgress": "Case Progress",
+    "quickActions": "Quick Actions",
+    "notifications": "Notifications"
+  },
+  
+  "actions": {
+    "startInterview": "Start Visa Interview",
+    "scheduleAppointment": "Schedule Appointment",
+    "viewMessages": "View Messages",
+    "uploadDocuments": "Upload Documents",
+    "viewPricing": "View Pricing",
+    "contactSupport": "Contact Support"
+  }
+}

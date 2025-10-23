@@ -1,0 +1,122 @@
+{
+  "title": "US Visa Types Library",
+  "description": "Explore comprehensive information about different US visa categories. Click on any visa type to learn about eligibility requirements, application process, and benefits.",
+  "loading": "Loading visa information...",
+  "learnMore": "Learn More",
+  
+  "categories": {
+    "nonimmigrant": "Nonimmigrant Visas",
+    "immigrant": "Immigrant Visas"
+  },
+  
+  "modal": {
+    "category": "Category",
+    "description": "Description",
+    "nextSteps": "Next Steps",
+    "readyToApply": "Ready to apply for the {{code}} visa? Our immigration attorneys can guide you through the entire process.",
+    "applyFor": "Apply for {{code}} Visa"
+  },
+  
+  "cta": {
+    "title": "Need Help Choosing the Right Visa?",
+    "description": "Our immigration experts can help you determine which visa category fits your situation best.",
+    "button": "Start Your Application"
+  },
+  
+  "visas": {
+    "B1": {
+      "name": "Business Visitor",
+      "description": "Business visitor visa for temporary business activities in the United States."
+    },
+    "B2": {
+      "name": "Tourist Visitor",
+      "description": "Tourist visa for pleasure, vacation, or visiting family and friends."
+    },
+    "F1": {
+      "name": "Student",
+      "description": "Student visa for academic studies at accredited US institutions."
+    },
+    "F2": {
+      "name": "Student Dependent",
+      "description": "Dependent visa for spouses and unmarried children under 21 of F1 students."
+    },
+    "H1B": {
+      "name": "Specialty Occupation Worker",
+      "description": "Specialty occupation visa for professionals with bachelor's degree or higher."
+    },
+    "H2A": {
+      "name": "Agricultural Worker",
+      "description": "Temporary agricultural worker visa for seasonal farm labor."
+    },
+    "H4": {
+      "name": "H1B Dependent",
+      "description": "Dependent visa for spouses and unmarried children under 21 of H1B visa holders."
+    },
+    "J1": {
+      "name": "Exchange Visitor",
+      "description": "Exchange visitor visa for cultural exchange programs."
+    },
+    "L1A": {
+      "name": "Intracompany Transferee Executive",
+      "description": "Intracompany transferee visa for managers and executives."
+    },
+    "L1B": {
+      "name": "Intracompany Transferee Specialist",
+      "description": "Intracompany transferee visa for employees with specialized knowledge."
+    },
+    "L2": {
+      "name": "L1 Dependent",
+      "description": "Dependent visa for spouses and unmarried children under 21 of L1 visa holders."
+    },
+    "O1": {
+      "name": "Extraordinary Ability",
+      "description": "Extraordinary ability visa for individuals with exceptional skills."
+    },
+    "TN": {
+      "name": "NAFTA Professional",
+      "description": "NAFTA professional visa for Canadian and Mexican citizens."
+    },
+    "E2": {
+      "name": "Treaty Investor",
+      "description": "Treaty investor visa for substantial investment in US business."
+    },
+    "EB1": {
+      "name": "Priority Workers",
+      "description": "First preference employment-based green card for priority workers."
+    },
+    "EB2": {
+      "name": "Advanced Degree Professionals",
+      "description": "Second preference employment-based green card for advanced degree holders."
+    },
+    "EB3": {
+      "name": "Skilled Workers",
+      "description": "Third preference employment-based green card for skilled workers."
+    },
+    "EB4": {
+      "name": "Special Immigrants",
+      "description": "Fourth preference employment-based green card for special immigrants."
+    },
+    "EB5": {
+      "name": "Immigrant Investors",
+      "description": "Fifth preference employment-based green card for investors."
+    }
+  },
+  
+  "filters": {
+    "all": "All Visas",
+    "category": "Category",
+    "purpose": "Purpose",
+    "duration": "Duration",
+    "searchPlaceholder": "Search visa types..."
+  },
+  
+  "details": {
+    "eligibility": "Eligibility Requirements",
+    "process": "Application Process",
+    "timeline": "Processing Timeline",
+    "fees": "Fees",
+    "documents": "Required Documents",
+    "benefits": "Benefits",
+    "limitations": "Limitations"
+  }
+}

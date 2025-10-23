@@ -3,10 +3,12 @@ import { useRTL } from '../hooks/useRTL'
 
 export interface RTLNumberProps {
   value: number
-  format?: 'number' | 'currency' | 'percent'
+  format?: 'number' | 'currency' | 'percent' | 'filesize' | 'duration'
   currency?: string
   minimumFractionDigits?: number
   maximumFractionDigits?: number
+  binary?: boolean // For file size formatting
+  durationStyle?: 'long' | 'short' | 'narrow' // For duration formatting
   className?: string
   style?: React.CSSProperties
 }
@@ -21,24 +23,41 @@ export function RTLNumber({
   currency = 'USD',
   minimumFractionDigits,
   maximumFractionDigits,
+  binary = false,
+  durationStyle = 'short',
   className,
   style,
 }: RTLNumberProps) {
-  const { formatNumber } = useRTL()
+  const { formatNumber, formatCurrency, formatPercentage, formatFileSize, formatDuration } = useRTL()
 
-  const formatOptions: Intl.NumberFormatOptions = {
-    minimumFractionDigits,
-    maximumFractionDigits,
+  let formattedValue: string
+
+  switch (format) {
+    case 'currency':
+      formattedValue = formatCurrency(value, currency, {
+        minimumFractionDigits,
+        maximumFractionDigits,
+      })
+      break
+    case 'percent':
+      formattedValue = formatPercentage(value, {
+        minimumFractionDigits,
+        maximumFractionDigits,
+      })
+      break
+    case 'filesize':
+      formattedValue = formatFileSize(value, { binary })
+      break
+    case 'duration':
+      formattedValue = formatDuration(value, { style: durationStyle })
+      break
+    default:
+      formattedValue = formatNumber(value, {
+        minimumFractionDigits,
+        maximumFractionDigits,
+      })
+      break
   }
-
-  if (format === 'currency') {
-    formatOptions.style = 'currency'
-    formatOptions.currency = currency
-  } else if (format === 'percent') {
-    formatOptions.style = 'percent'
-  }
-
-  const formattedValue = formatNumber(value, formatOptions)
 
   return (
     <span 
@@ -59,6 +78,14 @@ export interface RTLDateProps {
   format?: 'short' | 'medium' | 'long' | 'full'
   dateStyle?: Intl.DateTimeFormatOptions['dateStyle']
   timeStyle?: Intl.DateTimeFormatOptions['timeStyle']
+  className?: string
+  style?: React.CSSProperties
+}
+
+export interface RTLRelativeTimeProps {
+  date: Date
+  numeric?: 'always' | 'auto'
+  formatStyle?: 'long' | 'short' | 'narrow'
   className?: string
   style?: React.CSSProperties
 }
@@ -107,6 +134,35 @@ export function RTLDate({
       style={style}
     >
       {formattedDate}
+    </span>
+  )
+}
+
+/**
+ * RTL-aware relative time formatting component
+ * Automatically formats relative time according to the current language locale
+ */
+export function RTLRelativeTime({
+  date,
+  numeric = 'auto',
+  formatStyle: relativeStyle = 'long',
+  className,
+  style,
+}: RTLRelativeTimeProps) {
+  const { formatRelativeTime } = useRTL()
+
+  const formattedTime = formatRelativeTime(date, {
+    numeric,
+    style: relativeStyle,
+  })
+
+  return (
+    <span 
+      className={`relative-time-display ${className || ''}`}
+      style={style}
+      title={date.toLocaleString()}
+    >
+      {formattedTime}
     </span>
   )
 }

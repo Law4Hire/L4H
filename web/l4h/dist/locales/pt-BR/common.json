@@ -39,6 +39,7 @@
   "undo": "Desfazer",
   "redo": "Refazer",
   "getStarted": "Começar",
+  
   "nav": {
     "dashboard": "Painel",
     "pricing": "Preços",
@@ -173,6 +174,84 @@
       "title": "Precisa de Ajuda para Escolher o Visto Certo?",
       "description": "Nossos especialistas em imigração podem ajudá-lo a determinar qual categoria de visto melhor se adequa à sua situação.",
       "button": "Iniciar Sua Aplicação"
+    },
+    "visas": {
+      "B1": {
+        "name": "Visitante de Negócios",
+        "description": "Visto de visitante de negócios para atividades comerciais temporárias nos Estados Unidos."
+      },
+      "B2": {
+        "name": "Visitante Turista",
+        "description": "Visto de turista para prazer, férias ou visitar familiares e amigos."
+      },
+      "F1": {
+        "name": "Estudante",
+        "description": "Visto de estudante para estudos acadêmicos em instituições credenciadas dos EUA."
+      },
+      "F2": {
+        "name": "Dependente de Estudante",
+        "description": "Visto de dependente para cônjuges e filhos solteiros menores de 21 anos de estudantes F1."
+      },
+      "H1B": {
+        "name": "Trabalhador de Ocupação Especializada",
+        "description": "Visto de ocupação especializada para profissionais com diploma universitário ou superior."
+      },
+      "H2A": {
+        "name": "Trabalhador Agrícola",
+        "description": "Visto de trabalhador agrícola temporário para trabalho agrícola sazonal."
+      },
+      "H4": {
+        "name": "Dependente H1B",
+        "description": "Visto de dependente para cônjuges e filhos solteiros menores de 21 anos de portadores de visto H1B."
+      },
+      "J1": {
+        "name": "Visitante de Intercâmbio",
+        "description": "Visto de visitante de intercâmbio para programas de intercâmbio cultural."
+      },
+      "L1A": {
+        "name": "Transferido Intraempresarial Executivo",
+        "description": "Visto de transferido intraempresarial para gerentes e executivos."
+      },
+      "L1B": {
+        "name": "Transferido Intraempresarial Especialista",
+        "description": "Visto de transferido intraempresarial para funcionários com conhecimento especializado."
+      },
+      "L2": {
+        "name": "Dependente L1",
+        "description": "Visto de dependente para cônjuges e filhos solteiros menores de 21 anos de portadores de visto L1."
+      },
+      "O1": {
+        "name": "Habilidade Extraordinária",
+        "description": "Visto de habilidade extraordinária para indivíduos com habilidades excepcionais."
+      },
+      "TN": {
+        "name": "Profissional NAFTA",
+        "description": "Visto de profissional NAFTA para cidadãos canadenses e mexicanos."
+      },
+      "E2": {
+        "name": "Investidor por Tratado",
+        "description": "Visto de investidor por tratado para investimento substancial em negócios dos EUA."
+      },
+      "EB1": {
+        "name": "Trabalhadores Prioritários",
+        "description": "Green card baseado em emprego de primeira preferência para trabalhadores prioritários."
+      },
+      "EB2": {
+        "name": "Profissionais com Diploma Avançado",
+        "description": "Green card baseado em emprego de segunda preferência para portadores de diplomas avançados."
+      },
+      "EB3": {
+        "name": "Trabalhadores Qualificados",
+        "description": "Green card baseado em emprego de terceira preferência para trabalhadores qualificados."
+      },
+      "EB4": {
+        "name": "Imigrantes Especiais",
+        "description": "Green card baseado em emprego de quarta preferência para imigrantes especiais."
+      },
+      "EB5": {
+        "name": "Investidores Imigrantes",
+        "description": "Green card baseado em emprego de quinta preferência para investidores."
+      }
     }
   }
 }

@@ -8,15 +8,17 @@ interface CardProps {
   actions?: React.ReactNode
   variant?: 'default' | 'elevated' | 'outlined'
   padding?: 'none' | 'sm' | 'md' | 'lg'
+  onClick?: () => void
 }
 
-export const Card: React.FC<CardProps> = ({ 
-  children, 
-  className, 
-  title, 
+export const Card: React.FC<CardProps> = ({
+  children,
+  className,
+  title,
   actions,
   variant = 'default',
-  padding = 'md'
+  padding = 'md',
+  onClick
 }) => {
   const variantClasses = {
     default: 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm',
@@ -32,11 +34,15 @@ export const Card: React.FC<CardProps> = ({
   }
 
   return (
-    <div className={clsx(
-      'rounded-lg transition-shadow hover:shadow-md',
-      variantClasses[variant],
-      className
-    )}>
+    <div
+      onClick={onClick}
+      className={clsx(
+        'rounded-lg transition-shadow hover:shadow-md',
+        variantClasses[variant],
+        onClick && 'cursor-pointer',
+        className
+      )}
+    >
       {(title || actions) && (
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           {title && (

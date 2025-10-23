@@ -66,8 +66,10 @@ export function I18nProvider({ children }) {
     }, []);
     const setCurrentCulture = async (culture) => {
         try {
+            console.log('🔄 Setting culture to:', culture);
             // Change language locally first (this will also save to cookie via setCulture)
             await i18n.changeLanguage(culture);
+            console.log('✅ Language changed successfully to:', culture);
             // Save to cookie explicitly for consistency
             const setCookie = (name, value, days = 365) => {
                 if (typeof document === 'undefined')
@@ -77,9 +79,11 @@ export function I18nProvider({ children }) {
                 document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
             };
             setCookie('l4h-language', culture);
+            console.log('🍪 Cookie saved for language:', culture);
             // Also persist to server for logged-in users
             try {
                 await i18nApi.setCulture(culture);
+                console.log('💾 Language preference saved to server:', culture);
             }
             catch (apiError) {
                 // API call failed, but local change succeeded - continue gracefully

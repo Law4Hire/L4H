@@ -84,6 +84,28 @@ export class TranslationErrorHandler {
   }
 
   /**
+   * Record a missing translation key
+   */
+  recordMissingKey(language: string, namespace: string, key: string): void {
+    const missingKeyError = new Error(`Missing translation key: ${key}`)
+    
+    if (this.options.enableLogging) {
+      console.warn(`Missing translation key: ${namespace}:${key} for language: ${language}`)
+    }
+    
+    // Record as a special type of error for tracking
+    const translationError: TranslationError = {
+      language,
+      namespace,
+      error: missingKeyError,
+      timestamp: new Date(),
+      retryCount: 0
+    }
+    
+    this.errors.push(translationError)
+  }
+
+  /**
    * Record successful translation loading
    */
   recordSuccess(language: string, namespace: string): void {

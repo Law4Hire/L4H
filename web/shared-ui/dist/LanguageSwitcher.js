@@ -1,6 +1,7 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { clsx } from 'clsx';
-import { useI18n, useTranslation } from './i18n-provider';
+import { useI18n } from './i18n-provider';
+import { useTranslation } from 'react-i18next';
 export function LanguageSwitcher({ variant = 'full', className, 'aria-label': ariaLabel = 'Select language', 'aria-describedby': ariaDescribedBy, }) {
     const { t } = useTranslation();
     const { cultures, currentCulture, setCurrentCulture, isLoading } = useI18n();

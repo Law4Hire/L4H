@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "امیگریشن قانونی خدمات آسان بنائی گئیں",
+    "subtitle": "آپ کے امریکی امیگریشن سفر کے لیے ماہر قانونی مدد",
+    "description": "پیشہ ورانہ امیگریشن خدمات جو آپ کو پیچیدہ امریکی امیگریشن سسٹم میں راہنمائی کرنے میں مدد کرتی ہیں",
+    "startCase": "اپنا کیس شروع کریں",
+    "exploreVisas": "ویزا کے اختیارات دیکھیں"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Law4Hire کیوں منتخب کریں",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "ماہر قانونی ٹیم",
+      "description": "آپ کی کامیابی کے لیے وقف تجربہ کار امیگریشن وکلاء"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "ہموار عمل",
+      "description": "شروع سے اختتام تک موثر کیس کا انتظام"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "24/7 سپورٹ",
+      "description": "آپ کے سوالات کا جواب دینے کے لیے ہمیشہ دستیاب"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "شروع کرنے کے لیے تیار ہیں؟",
+    "description": "آج ہی ہمارے امیگریشن ماہرین کے ساتھ مشاورت کا وقت طے کریں",
+    "button": "مشاورت کا وقت طے کریں"
   }
 }

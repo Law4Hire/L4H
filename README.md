@@ -62,10 +62,42 @@ dotnet test
 ## Project Structure
 
 ```
-/Docs                     # Documentation
+/docs                     # Documentation
 /src/api                  # ASP.NET Core API
 /src/shared               # Shared domain library
+/src/infrastructure       # Infrastructure services
+/web/l4h                  # L4H client application
+/web/cannlaw              # Cannlaw staff application
+/web/shared-ui            # Shared UI components and i18n system
 /ops                      # DevOps configuration
-/tests/api.tests          # API tests
+/tests                    # Test suites (API, UI, E2E)
 /.github/workflows        # CI/CD
+```
+
+## Internationalization (i18n)
+
+The platform supports 21 languages with comprehensive RTL support, robust error handling, and performance optimization.
+
+### Supported Languages
+- **Latin Script**: English, Spanish, French, German, Portuguese, Italian, Polish, Indonesian, Turkish, Vietnamese
+- **RTL Languages**: Arabic, Urdu
+- **Asian Languages**: Chinese, Japanese, Korean, Hindi, Bengali, Tamil, Telugu, Marathi
+- **Cyrillic**: Russian
+
+### Documentation
+- **[i18n System Overview](web/shared-ui/I18N_SYSTEM_README.md)** - Complete system documentation
+- **[Developer Guide](web/shared-ui/I18N_DEVELOPER_GUIDE.md)** - Development documentation
+- **[User Guide](web/shared-ui/MULTILINGUAL_USER_GUIDE.md)** - User documentation
+- **[Troubleshooting](web/shared-ui/I18N_TROUBLESHOOTING_GUIDE.md)** - Common issues and solutions
+
+### Quick Start
+```bash
+# Run multilingual tests
+npm run test:multilingual
+
+# Validate translations
+npm run validate-translations
+
+# Add new language
+npm run add-language -- --language pt-PT --name "Portuguese"
 ```

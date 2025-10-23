@@ -32,6 +32,10 @@ export declare class TranslationErrorHandler {
      */
     recordError(language: string, namespace: string, error: Error): void;
     /**
+     * Record a missing translation key
+     */
+    recordMissingKey(language: string, namespace: string, key: string): void;
+    /**
      * Record successful translation loading
      */
     recordSuccess(language: string, namespace: string): void;

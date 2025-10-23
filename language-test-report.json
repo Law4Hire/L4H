@@ -1,0 +1,204 @@
+{
+  "successful": [],
+  "errorsFound": [
+    {
+      "language": "en-US",
+      "name": "English",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "ar-SA",
+      "name": "Arabic",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "bn-BD",
+      "name": "Bengali",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "zh-CN",
+      "name": "Chinese",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "de-DE",
+      "name": "German",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "es-ES",
+      "name": "Spanish",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "fr-FR",
+      "name": "French",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "hi-IN",
+      "name": "Hindi",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "id-ID",
+      "name": "Indonesian",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "it-IT",
+      "name": "Italian",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "ja-JP",
+      "name": "Japanese",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "ko-KR",
+      "name": "Korean",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "mr-IN",
+      "name": "Marathi",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "pl-PL",
+      "name": "Polish",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "pt-BR",
+      "name": "Portuguese",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "ru-RU",
+      "name": "Russian",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "ta-IN",
+      "name": "Tamil",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "te-IN",
+      "name": "Telugu",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "tr-TR",
+      "name": "Turkish",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "ur-PK",
+      "name": "Urdu",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "vi-VN",
+      "name": "Vietnamese",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    },
+    {
+      "language": "tl-PH",
+      "name": "Tagalog",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "count": 2
+    }
+  ],
+  "warningsFound": []
+}

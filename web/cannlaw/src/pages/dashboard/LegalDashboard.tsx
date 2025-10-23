@@ -1,9 +1,10 @@
 import React from 'react'
-import { Card } from '@l4h/shared-ui'
+import { Card, useRTL, RTLNumber } from '@l4h/shared-ui'
 import { useAuth } from '../../hooks/useAuth'
 
 const LegalDashboard: React.FC = () => {
   const { user } = useAuth()
+  const { getClassName, textAlign } = useRTL()
 
   // Mock data - in real implementation, this would come from APIs
   const dashboardStats = {
@@ -32,64 +33,76 @@ const LegalDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white">
-        <h1 className="text-2xl font-bold mb-2">
-          Welcome back, {user?.firstName || 'Legal Professional'}!
+      <div className={getClassName(
+        "bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white",
+        "bg-gradient-to-l from-blue-600 to-blue-800 rounded-lg p-6 text-white"
+      )}>
+        <h1 className="text-2xl font-bold mb-2" style={{ textAlign: textAlign() as any }}>
+          Welcome back, {user?.name || 'Legal Professional'}!
         </h1>
-        <p className="text-blue-100">
+        <p className="text-blue-100" style={{ textAlign: textAlign() as any }}>
           Here's an overview of your practice and recent activity.
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
+        <Card className="p-6 stat-card">
+          <div className={getClassName("flex items-center justify-between", "flex items-center justify-between rtl:flex-row-reverse")}>
+            <div style={{ textAlign: textAlign() as any }}>
               <p className="text-sm font-medium text-gray-600">Active Cases</p>
-              <p className="text-3xl font-bold text-gray-900">{dashboardStats.activeCases}</p>
+              <p className="text-3xl font-bold text-gray-900">
+                <RTLNumber value={dashboardStats.activeCases} />
+              </p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <div className={getClassName(
+              "w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center",
+              "w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center stat-icon"
+            )}>
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-4" style={{ textAlign: textAlign() as any }}>
             <span className="text-sm text-green-600">↗ +12% from last month</span>
           </div>
         </Card>
 
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
+        <Card className="p-6 stat-card">
+          <div className={getClassName("flex items-center justify-between", "flex items-center justify-between rtl:flex-row-reverse")}>
+            <div style={{ textAlign: textAlign() as any }}>
               <p className="text-sm font-medium text-gray-600">Pending Tasks</p>
-              <p className="text-3xl font-bold text-gray-900">{dashboardStats.pendingTasks}</p>
+              <p className="text-3xl font-bold text-gray-900">
+                <RTLNumber value={dashboardStats.pendingTasks} />
+              </p>
             </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center stat-icon">
               <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-4" style={{ textAlign: textAlign() as any }}>
             <span className="text-sm text-orange-600">2 due today</span>
           </div>
         </Card>
 
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
+        <Card className="p-6 stat-card">
+          <div className={getClassName("flex items-center justify-between", "flex items-center justify-between rtl:flex-row-reverse")}>
+            <div style={{ textAlign: textAlign() as any }}>
               <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-              <p className="text-3xl font-bold text-gray-900">${dashboardStats.monthlyRevenue.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-gray-900">
+                <RTLNumber value={dashboardStats.monthlyRevenue} format="currency" currency="USD" />
+              </p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center stat-icon">
               <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
               </svg>
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-4" style={{ textAlign: textAlign() as any }}>
             <span className="text-sm text-green-600">↗ +8% from last month</span>
           </div>
         </Card>

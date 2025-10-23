@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "इमिग्रेशन कायदेशीर सेवा सोप्या केल्या",
+    "subtitle": "तुमच्या यूएस इमिग्रेशन प्रवासासाठी तज्ञ कायदेशीर सहाय्य",
+    "description": "जटिल यूएस इमिग्रेशन सिस्टममध्ये नेव्हिगेट करण्यासाठी व्यावसायिक इमिग्रेशन सेवा",
+    "startCase": "तुमची केस सुरू करा",
+    "exploreVisas": "व्हिसा पर्याय एक्सप्लोर करा"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "Law4Hire का निवडावे",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "तज्ञ कायदेशीर टीम",
+      "description": "तुमच्या यशासाठी समर्पित अनुभवी इमिग्रेशन वकील"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "सुव्यवस्थित प्रक्रिया",
+      "description": "सुरुवातीपासून शेवटपर्यंत कार्यक्षम केस व्यवस्थापन"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "24/7 सपोर्ट",
+      "description": "तुमच्या प्रश्नांची उत्तरे देण्यासाठी नेहमी उपलब्ध"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "सुरुवात करायला तयार आहात?",
+    "description": "आज आमच्या इमिग्रेशन तज्ञांसोबत सल्लामसलत शेड्यूल करा",
+    "button": "सल्लामसलत शेड्यूल करा"
   }
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import { clsx } from 'clsx'
-import { useI18n, useTranslation } from './i18n-provider'
+import { useI18n } from './i18n-provider'
+import { useTranslation } from 'react-i18next'
 
 export interface LanguageSwitcherProps {
   variant?: 'compact' | 'full'

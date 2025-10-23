@@ -1,7 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Layout, RouteGuard, ToastContainer, useToast } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
-import { useAuth } from './hooks/useAuth'
+import { Layout, RouteGuard, ToastContainer, useToast, useCannlawT } from '@l4h/shared-ui'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ClientProtectedRoute } from './components/ClientProtectedRoute'
 
@@ -39,12 +37,8 @@ import SchedulePage from './pages/SchedulePage'
 import CasesPage from './pages/CasesPage'
 
 function App() {
-  const { t } = useTranslation()
+  const t = useCannlawT()
   const { toasts, removeToast } = useToast()
-  const { user, isAuthenticated } = useAuth()
-
-  const isLegalProfessional = user?.isLegalProfessional || false
-  const isAdmin = user?.isAdmin || false
 
   return (
     <>

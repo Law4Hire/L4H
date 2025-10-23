@@ -212,8 +212,8 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<ITimeTrackingService, TimeTrackingService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
-// Translation monitoring services
-builder.Services.AddScoped<ITranslationMonitoringService, TranslationMonitoringService>();
+// Translation monitoring services - Removed (incomplete implementation)
+// builder.Services.AddScoped<ITranslationMonitoringService, TranslationMonitoringService>();
 
             // Security hardening services
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();

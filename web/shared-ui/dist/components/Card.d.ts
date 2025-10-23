@@ -6,6 +6,7 @@ interface CardProps {
     actions?: React.ReactNode;
     variant?: 'default' | 'elevated' | 'outlined';
     padding?: 'none' | 'sm' | 'md' | 'lg';
+    onClick?: () => void;
 }
 export declare const Card: React.FC<CardProps>;
 export {};

@@ -4,20 +4,35 @@ import { useRTL } from '../hooks/useRTL';
  * RTL-aware number formatting component
  * Automatically formats numbers according to the current language locale
  */
-export function RTLNumber({ value, format = 'number', currency = 'USD', minimumFractionDigits, maximumFractionDigits, className, style, }) {
-    const { formatNumber } = useRTL();
-    const formatOptions = {
-        minimumFractionDigits,
-        maximumFractionDigits,
-    };
-    if (format === 'currency') {
-        formatOptions.style = 'currency';
-        formatOptions.currency = currency;
+export function RTLNumber({ value, format = 'number', currency = 'USD', minimumFractionDigits, maximumFractionDigits, binary = false, durationStyle = 'short', className, style, }) {
+    const { formatNumber, formatCurrency, formatPercentage, formatFileSize, formatDuration } = useRTL();
+    let formattedValue;
+    switch (format) {
+        case 'currency':
+            formattedValue = formatCurrency(value, currency, {
+                minimumFractionDigits,
+                maximumFractionDigits,
+            });
+            break;
+        case 'percent':
+            formattedValue = formatPercentage(value, {
+                minimumFractionDigits,
+                maximumFractionDigits,
+            });
+            break;
+        case 'filesize':
+            formattedValue = formatFileSize(value, { binary });
+            break;
+        case 'duration':
+            formattedValue = formatDuration(value, { style: durationStyle });
+            break;
+        default:
+            formattedValue = formatNumber(value, {
+                minimumFractionDigits,
+                maximumFractionDigits,
+            });
+            break;
     }
-    else if (format === 'percent') {
-        formatOptions.style = 'percent';
-    }
-    const formattedValue = formatNumber(value, formatOptions);
     return (_jsx("span", { className: `number-display ${className || ''}`, style: {
             direction: 'ltr',
             unicodeBidi: 'embed',
@@ -53,4 +68,16 @@ export function RTLDate({ date, format = 'medium', dateStyle, timeStyle, classNa
     }
     const formattedDate = formatDate(date, formatOptions);
     return (_jsx("span", { className: `date-display ${className || ''}`, style: style, children: formattedDate }));
+}
+/**
+ * RTL-aware relative time formatting component
+ * Automatically formats relative time according to the current language locale
+ */
+export function RTLRelativeTime({ date, numeric = 'auto', formatStyle: relativeStyle = 'long', className, style, }) {
+    const { formatRelativeTime } = useRTL();
+    const formattedTime = formatRelativeTime(date, {
+        numeric,
+        style: relativeStyle,
+    });
+    return (_jsx("span", { className: `relative-time-display ${className || ''}`, style: style, title: date.toLocaleString(), children: formattedTime }));
 }

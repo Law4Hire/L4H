@@ -1,0 +1,8 @@
+# Console Errors - Updated Configuration
+
+The i18n configuration has been updated to:
+1. Only support full locale codes (en-US, es-ES, etc.)
+2. Prevent loading unsupported language codes like 'en'
+3. Use en-US as the consistent fallback language
+
+Please test the Visa Library page again and paste any new console errors here.

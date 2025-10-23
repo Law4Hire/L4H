@@ -1,29 +1,29 @@
 {
   "hero": {
-    "title": "Immigration Legal Services Made Simple",
-    "subtitle": "Expert legal assistance for your U.S. immigration journey",
-    "description": "Professional immigration services to help you navigate the complex U.S. immigration system",
-    "startCase": "Start Your Case",
-    "exploreVisas": "Explore Visa Options"
+    "title": "குடியேற்ற சட்ட சேவைகள் எளிதாக்கப்பட்டன",
+    "subtitle": "உங்கள் அமெரிக்க குடியேற்ற பயணத்திற்கு நிபுணர் சட்ட உதவி",
+    "description": "சிக்கலான அமெரிக்க குடியேற்ற அமைப்பில் செல்ல உங்களுக்கு உதவும் தொழில்முறை குடியேற்ற சேவைகள்",
+    "startCase": "உங்கள் வழக்கைத் தொடங்குங்கள்",
+    "exploreVisas": "விசா விருப்பங்களை ஆராயுங்கள்"
   },
   "features": {
-    "title": "Why Choose Law4Hire",
+    "title": "ஏன் Law4Hire ஐ தேர்வு செய்ய வேண்டும்",
     "expert": {
-      "title": "Expert Legal Team",
-      "description": "Experienced immigration attorneys dedicated to your success"
+      "title": "நிபுணர் சட்டக் குழு",
+      "description": "உங்கள் வெற்றிக்காக அர்ப்பணிக்கப்பட்ட அனுபவமிக்க குடியேற்ற வழக்கறிஞர்கள்"
     },
     "process": {
-      "title": "Streamlined Process",
-      "description": "Efficient case management from start to finish"
+      "title": "நெறிப்படுத்தப்பட்ட செயல்முறை",
+      "description": "தொடக்கம் முதல் இறுதி வரை திறமையான வழக்கு மேலாண்மை"
     },
     "support": {
-      "title": "24/7 Support",
-      "description": "Always available to answer your questions"
+      "title": "24/7 ஆதரவு",
+      "description": "உங்கள் கேள்விகளுக்கு பதிலளிக்க எப்போதும் கிடைக்கும்"
     }
   },
   "cta": {
-    "title": "Ready to Get Started?",
-    "description": "Schedule a consultation with our immigration experts today",
-    "button": "Schedule Consultation"
+    "title": "தொடங்க தயாரா?",
+    "description": "இன்றே எங்கள் குடியேற்ற நிபுணர்களுடன் ஆலோசனையை திட்டமிடுங்கள்",
+    "button": "ஆலோசனையை திட்டமிடுங்கள்"
   }
 }

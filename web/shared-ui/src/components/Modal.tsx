@@ -9,6 +9,7 @@ export interface ModalProps {
   title?: string
   size?: 'sm' | 'md' | 'lg' | 'xl'
   showCloseButton?: boolean
+  closeButtonLabel?: string
   className?: string
   children: React.ReactNode
 }
@@ -26,6 +27,7 @@ export function Modal({
   title,
   size = 'md',
   showCloseButton = true,
+  closeButtonLabel = 'Close',
   className,
   children,
 }: ModalProps) {
@@ -102,7 +104,7 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         className={clsx(
-          'relative w-full rounded-lg bg-white shadow-xl',
+          'relative w-full rounded-lg bg-white dark:bg-gray-800 shadow-xl',
           sizeClasses[size],
           className
         )}
@@ -113,7 +115,7 @@ export function Modal({
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             {title && (
-              <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
+              <h2 id="modal-title" className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {title}
               </h2>
             )}
@@ -123,7 +125,7 @@ export function Modal({
                 type="button"
                 onClick={onClose}
                 className="rounded-md p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                aria-label="Close modal"
+                aria-label={closeButtonLabel}
               >
                 <X className="h-5 w-5" />
               </button>

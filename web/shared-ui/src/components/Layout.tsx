@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useTranslation } from '../i18n-provider'
+import { useTranslation } from '../i18n-provider-simple'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 import { useTheme } from '../ThemeProvider'
 import { Sun, Moon } from '../Icon'
