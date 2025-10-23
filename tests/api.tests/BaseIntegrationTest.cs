@@ -44,6 +44,13 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
                     options.EnableSensitiveDataLogging();
                 });
 
+                // Override JSON serialization to use reflection instead of source generation in tests
+                // This allows tests to serialize any type without needing to register them in ApiJsonContext
+                services.ConfigureHttpJsonOptions(options =>
+                {
+                    options.SerializerOptions.TypeInfoResolver = null; // Use reflection-based serialization
+                });
+
                 // Register test services (but keep SQL Server database)
                 TestServiceRegistration.RegisterTestServices(services);
             });

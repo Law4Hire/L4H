@@ -14,14 +14,11 @@ indent_size = 4
 [*.cs]
 
 # Culture-aware formatting
-# CA1305/CA1304: Culture-specific formatting - Marked as warning for gradual improvement
-# These are important for multilingual apps but won't block .NET 10 optimization implementation
-dotnet_diagnostic.CA1305.severity = warning
+dotnet_diagnostic.CA1305.severity = error
 dotnet_diagnostic.CA1304.severity = warning
 
 # Dispose patterns
-# CA2007: ConfigureAwait - Not required for ASP.NET Core (no SynchronizationContext)
-dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.CA2007.severity = error
 dotnet_diagnostic.CA1063.severity = error
 dotnet_diagnostic.CA1816.severity = error
 
@@ -36,8 +33,7 @@ dotnet_diagnostic.CA5350.severity = error
 dotnet_diagnostic.CA5351.severity = error
 
 # Performance
-# CA1822: Mark members as static - Suggestion only for gradual improvement
-dotnet_diagnostic.CA1822.severity = suggestion
+dotnet_diagnostic.CA1822.severity = error
 dotnet_diagnostic.CA1829.severity = error
 
 # Naming conventions
