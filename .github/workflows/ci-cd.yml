@@ -52,9 +52,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.fsproj', '**/*.vbproj') }}
+        key: ${{ runner.os }}-nuget-net10-${{ hashFiles('**/*.csproj', '**/*.fsproj', '**/*.vbproj') }}
         restore-keys: |
-          ${{ runner.os }}-nuget-
+          ${{ runner.os }}-nuget-net10-
 
     - name: Restore .NET dependencies
       run: dotnet restore
