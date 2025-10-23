@@ -46,9 +46,9 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
 
                 // Override JSON serialization to use reflection instead of source generation in tests
                 // This allows tests to serialize any type without needing to register them in ApiJsonContext
-                services.ConfigureHttpJsonOptions(options =>
+                services.PostConfigure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
                 {
-                    options.SerializerOptions.TypeInfoResolver = null; // Use reflection-based serialization
+                    options.JsonSerializerOptions.TypeInfoResolver = null; // Use reflection-based serialization
                 });
 
                 // Register test services (but keep SQL Server database)
