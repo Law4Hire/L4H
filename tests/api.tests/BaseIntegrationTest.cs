@@ -52,8 +52,8 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
                 {
                     options.JsonSerializerOptions.TypeInfoResolver = null; // Use reflection-based serialization
                     // Copy converters from ApiJsonContext to maintain compatibility
-                    options.JsonSerializerOptions.Converters.Add(new L4H.Shared.Models.CaseIdConverter());
-                    options.JsonSerializerOptions.Converters.Add(new L4H.Shared.Models.UserIdConverter());
+                    options.JsonSerializerOptions.Converters.Add(new L4H.Shared.Json.CaseIdConverter());
+                    options.JsonSerializerOptions.Converters.Add(new L4H.Shared.Json.UserIdConverter());
                 });
 
                 // Register test services (but keep SQL Server database)
