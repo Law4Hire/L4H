@@ -30,14 +30,15 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
         .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture));
 
-// Add services with JSON source generation for .NET 10 performance optimization
+// Add services - JSON source generation temporarily disabled for .NET 10 RC compatibility
+// TODO: Re-enable source generation after registering all required types in ApiJsonContext
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new CaseIdConverter());
         options.JsonSerializerOptions.Converters.Add(new UserIdConverter());
-        // Configure source-generated JSON serialization context for improved performance
-        options.JsonSerializerOptions.TypeInfoResolver = ApiJsonContext.Default;
+        // Source generation disabled - using reflection-based serialization for compatibility
+        // options.JsonSerializerOptions.TypeInfoResolver = ApiJsonContext.Default;
     });
 
 // Validators temporarily disabled for deployment

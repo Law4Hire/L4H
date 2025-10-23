@@ -44,24 +44,6 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
                     options.EnableSensitiveDataLogging();
                 });
 
-                // Override JSON serialization to use reflection instead of source generation in tests
-                // This allows tests to serialize any type without needing to register them in ApiJsonContext
-                // Find and remove the existing MvcOptions configuration that sets up source generation
-                var mvcOptions = services.FirstOrDefault(d => d.ServiceType == typeof(Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>));
-                if (mvcOptions != null)
-                {
-                    services.Remove(mvcOptions);
-                }
-
-                // Now configure JSON options to use reflection-based serialization
-                services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
-                {
-                    options.JsonSerializerOptions.TypeInfoResolver = null; // Use reflection-based serialization
-                    // Copy converters from API to maintain compatibility
-                    options.JsonSerializerOptions.Converters.Add(new L4H.Shared.Json.CaseIdConverter());
-                    options.JsonSerializerOptions.Converters.Add(new L4H.Shared.Json.UserIdConverter());
-                });
-
                 // Register test services (but keep SQL Server database)
                 TestServiceRegistration.RegisterTestServices(services);
             });
