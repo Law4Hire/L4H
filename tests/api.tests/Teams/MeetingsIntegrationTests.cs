@@ -22,15 +22,33 @@ public sealed class MeetingsIntegrationTests : IDisposable
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
     private readonly JsonSerializerOptions _jsonOptions;
+    private readonly string _databaseName;
 
     public MeetingsIntegrationTests()
     {
+        // Generate unique database name to avoid conflicts with other test classes
+        _databaseName = GetType().Name + "_" + Guid.NewGuid().ToString("N")[..8];
+
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("Testing");
                 builder.ConfigureServices(services =>
                 {
+                    // Replace the database connection with our test database
+                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<L4HDbContext>));
+                    if (descriptor != null)
+                    {
+                        services.Remove(descriptor);
+                    }
+
+                    var connectionString = $"Server=localhost,14333;Database={_databaseName};User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;";
+                    services.AddDbContext<L4HDbContext>(options =>
+                    {
+                        options.UseSqlServer(connectionString);
+                        options.EnableSensitiveDataLogging();
+                    });
+
                     // Register test services (but keep SQL Server database)
                     TestServiceRegistration.RegisterTestServices(services);
 
@@ -43,7 +61,7 @@ public sealed class MeetingsIntegrationTests : IDisposable
             });
 
         _client = _factory.CreateClient();
-        
+
         // Initialize JSON options with custom converters
         _jsonOptions = new JsonSerializerOptions
         {
@@ -52,6 +70,18 @@ public sealed class MeetingsIntegrationTests : IDisposable
         };
         _jsonOptions.Converters.Add(new UserIdConverter());
         _jsonOptions.Converters.Add(new CaseIdConverter());
+
+        // Ensure database is created and migrated
+        EnsureDatabaseCreated();
+    }
+
+    private void EnsureDatabaseCreated()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+
+        // Apply migrations to create the database with the latest schema
+        context.Database.Migrate();
     }
 
     [Fact]
@@ -535,6 +565,18 @@ public sealed class MeetingsIntegrationTests : IDisposable
     {
         if (disposing)
         {
+            // Clean up the test database
+            try
+            {
+                using var scope = _factory.Services.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+                context.Database.EnsureDeleted();
+            }
+            catch
+            {
+                // Ignore cleanup errors
+            }
+
             _client.Dispose();
             _factory.Dispose();
         }
