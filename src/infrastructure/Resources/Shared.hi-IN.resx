@@ -59,100 +59,132 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 
+  <!-- NOTE: English placeholders - Ready for professional translation -->
+  <!-- Language: Hindi (India) (hi-IN) -->
+
   <!-- Authentication & User Management -->
   <data name="Auth.PasswordRequired" xml:space="preserve">
     <value>Password is required.</value>
+    <comment>Validation message when password field is empty</comment>
   </data>
   <data name="Auth.PasswordTooShort" xml:space="preserve">
     <value>Password must be at least {0} characters long.</value>
+    <comment>Validation message for password length. {0} = minimum length</comment>
   </data>
   <data name="Auth.PasswordNeedsSpecialChar" xml:space="preserve">
     <value>Password must contain at least one special character.</value>
+    <comment>Validation message for password complexity</comment>
   </data>
   <data name="Auth.PasswordNeedsMoreClasses" xml:space="preserve">
     <value>Password must contain at least {0} different character types (uppercase, lowercase, digits, special characters).</value>
+    <comment>Validation message for password complexity. {0} = number of required character types</comment>
   </data>
   <data name="Auth.RateLimitExceeded" xml:space="preserve">
     <value>Too many requests. Please try again later.</value>
+    <comment>Error message when user exceeds rate limit</comment>
   </data>
   <data name="Auth.UserNotFound" xml:space="preserve">
     <value>User not found.</value>
+    <comment>Error message when user account doesn't exist</comment>
   </data>
   <data name="Auth.AccountLocked" xml:space="preserve">
     <value>Account is locked for {0} more minutes due to too many failed login attempts.</value>
+    <comment>Error message when account is temporarily locked. {0} = minutes remaining</comment>
   </data>
   <data name="Auth.LockoutCheckFailed" xml:space="preserve">
     <value>Failed to check account lockout status.</value>
+    <comment>System error message</comment>
   </data>
   <data name="Auth.FailedLoginRecordFailed" xml:space="preserve">
     <value>Failed to record failed login attempt.</value>
+    <comment>System error message</comment>
   </data>
   <data name="Auth.LockoutClearFailed" xml:space="preserve">
     <value>Failed to clear account lockout.</value>
+    <comment>System error message</comment>
   </data>
   <data name="Auth.LoginFailed" xml:space="preserve">
     <value>Invalid email or password.</value>
+    <comment>Error message for failed login attempt</comment>
   </data>
   <data name="Auth.EmailVerificationRequired" xml:space="preserve">
     <value>Please verify your email address before logging in.</value>
+    <comment>Message when user needs to verify email first</comment>
   </data>
   <data name="Auth.InvalidToken" xml:space="preserve">
     <value>Invalid or expired token.</value>
+    <comment>Error message for invalid authentication token</comment>
   </data>
   <data name="Auth.EmailVerified" xml:space="preserve">
     <value>Email address verified successfully.</value>
+    <comment>Success message after email verification</comment>
   </data>
   <data name="Auth.LoggedOutAllDevices" xml:space="preserve">
     <value>Successfully logged out from all devices.</value>
+    <comment>Success message after logging out from all sessions</comment>
   </data>
 
   <!-- Appointments -->
   <data name="Appointments.CreatedSuccessfully" xml:space="preserve">
     <value>Appointment created successfully.</value>
+    <comment>Success message after creating an appointment</comment>
   </data>
   <data name="Appointments.CreationFailed" xml:space="preserve">
     <value>Failed to create appointment.</value>
+    <comment>Error message when appointment creation fails</comment>
   </data>
   <data name="Appointments.CreationError" xml:space="preserve">
     <value>An error occurred while creating the appointment.</value>
+    <comment>Generic error message for appointment creation</comment>
   </data>
 
   <!-- Cases -->
   <data name="Cases.NotFound" xml:space="preserve">
     <value>Case not found.</value>
+    <comment>Error message when case doesn't exist</comment>
   </data>
   <data name="Cases.Forbidden" xml:space="preserve">
     <value>You do not have permission to access this case.</value>
+    <comment>Error message when user lacks permission to view case</comment>
   </data>
   <data name="Cases.InvalidTransition" xml:space="preserve">
     <value>Invalid case status transition.</value>
+    <comment>Error message when case status change is not allowed</comment>
   </data>
   <data name="Cases.TransitionApplied" xml:space="preserve">
     <value>Case status updated successfully.</value>
+    <comment>Success message after case status update</comment>
   </data>
 
   <!-- Workflow (Non-Admin) -->
   <data name="Workflow.NotFound" xml:space="preserve">
     <value>Workflow not found.</value>
+    <comment>Error message when workflow doesn't exist</comment>
   </data>
   <data name="Workflow.PendingStatus" xml:space="preserve">
     <value>Pending Review</value>
+    <comment>Status label for workflow pending review</comment>
   </data>
 
   <!-- Scraper Service -->
   <data name="Scraper.RunStarted" xml:space="preserve">
     <value>Scraper run started.</value>
+    <comment>Log message when scraper begins</comment>
   </data>
   <data name="Scraper.RunCompleted" xml:space="preserve">
     <value>Scraper run completed successfully.</value>
+    <comment>Log message when scraper finishes</comment>
   </data>
   <data name="Scraper.NoChange" xml:space="preserve">
     <value>No changes detected.</value>
+    <comment>Message when scraper finds no updates</comment>
   </data>
   <data name="Scraper.DraftCreated" xml:space="preserve">
     <value>Draft workflow created with ID {0}. Total changes: {1}.</value>
+    <comment>Log message when draft is created. {0} = workflow ID, {1} = number of changes</comment>
   </data>
   <data name="Scraper.AndorraUsesSpain" xml:space="preserve">
     <value>Country {0} uses workflow from {1}.</value>
+    <comment>Log message for country workflow mapping. {0} = source country, {1} = target country</comment>
   </data>
 </root>
