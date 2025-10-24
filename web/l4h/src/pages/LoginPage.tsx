@@ -14,11 +14,7 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
-  const { t, i18n } = useTranslation(['login', 'auth', 'common'])
-  
-  // Use translations from shared i18n system
-  const loginTitle = t('title', { ns: 'login', defaultValue: 'Sign In to Law4Hire' })
-  const loginSubtitle = t('subtitle', { ns: 'login', defaultValue: 'Access your immigration case portal' })
+  const { t, i18n } = useTranslation(['auth', 'common'])
   const navigate = useNavigate()
   const { success, error: showError } = useToast()
   const [loading, setLoading] = useState(false)
@@ -117,10 +113,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-            {t('title', { ns: 'login' })}
+            {t('login.title', { ns: 'auth' })}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            {t('subtitle', { ns: 'login' })}
+            {t('login.email', { ns: 'auth' })}
           </p>
         </div>
         
