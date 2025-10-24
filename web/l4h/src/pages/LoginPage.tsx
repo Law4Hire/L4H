@@ -187,7 +187,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
               disabled={loading}
               className="w-full"
             >
-              {t('login', { ns: 'auth' })}
+              {t('login.submit', { ns: 'auth' })}
             </Button>
           </div>
 
