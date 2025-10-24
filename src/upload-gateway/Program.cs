@@ -8,12 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure services
 builder.Services.AddEndpointsApiExplorer();
 
-// Only add Swagger in non-test environments (Swashbuckle 7.3.1 has .NET 10 compatibility issues)
-// This is a temporary workaround until a fully compatible version is released
-if (builder.Environment.EnvironmentName != "Test")
-{
-    builder.Services.AddSwaggerGen();
-}
+// Swagger temporarily disabled due to Swashbuckle .NET 10 compatibility issues
+// TODO: Re-enable when Swashbuckle supports .NET 10 or migrate to Microsoft.AspNetCore.OpenApi
+// if (builder.Environment.EnvironmentName != "Test")
+// {
+//     builder.Services.AddSwaggerGen();
+// }
 
 // Configure upload options
 builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
@@ -39,11 +39,12 @@ builder.Logging.AddConsole();
 var app = builder.Build();
 
 // Configure pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Swagger temporarily disabled due to Swashbuckle .NET 10 compatibility issues
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI();
+// }
 
 // Health endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
