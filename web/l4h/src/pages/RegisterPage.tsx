@@ -145,7 +145,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
                 onClick={() => navigate('/login')}
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                {t('login')}
+                {t('register.signIn', { ns: 'auth' })}
               </button>
             </p>
           )}
@@ -260,7 +260,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
               disabled={loading}
               className="w-full"
             >
-              {userExists ? t('login') : t('signup')}
+              {userExists ? t('login.submit', { ns: 'auth' }) : t('signup')}
             </Button>
           </div>
 
