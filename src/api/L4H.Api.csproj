@@ -10,8 +10,9 @@
     <WarningsNotAsErrors />
 
     <!-- .NET 10 Performance Optimizations -->
-    <!-- Enable JSON source generation for improved performance and AOT compatibility -->
-    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <!-- Temporarily enable reflection-based JSON serialization until we implement source generation -->
+    <!-- TODO: Implement proper JsonSerializerContext for all API types to improve performance -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
 
     <!-- Enhanced code analysis -->
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
