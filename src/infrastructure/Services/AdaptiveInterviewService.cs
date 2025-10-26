@@ -151,12 +151,22 @@ namespace L4H.Infrastructure.Services
             {
                 var age = CalculateAge(user.DateOfBirth.Value);
                 _logger.LogDebug("Applying age filter: {Age} years old", age);
-                
+
                 // Filter out visas not appropriate for age
                 if (age < 18)
                 {
                     // Minors may need special visa categories or guardian consent
                     filtered = filtered.Where(v => !IsAdultOnlyVisa(v.Code));
+                }
+                else if (age >= 21)
+                {
+                    // Adults (21+) cannot use child-specific visa categories
+                    filtered = filtered.Where(v => !IsChildOnlyVisa(v.Code));
+                }
+                else if (age >= 18)
+                {
+                    // Young adults (18-20) can't use child visas but also can't sponsor parents
+                    filtered = filtered.Where(v => !IsChildOnlyVisa(v.Code) && v.Code != "IR-5");
                 }
             }
 
@@ -393,7 +403,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "purpose",
                 Question = "What is the primary purpose of your visit to the United States?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "tourism", Label = "Tourism/Vacation" },
@@ -420,7 +430,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "hasEmployerSponsor",
                 Question = "Do you have a US employer who will sponsor your visa?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, I have an employer sponsor" },
@@ -438,7 +448,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "durationOfStay",
                 Question = "How long do you plan to stay in the United States?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "short", Label = "Less than 90 days" },
@@ -457,7 +467,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "familyRelationship",
                 Question = "Do you have immediate family members who are US citizens or permanent residents?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "spouse", Label = "Spouse" },
@@ -479,7 +489,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "investmentAmount",
                 Question = "What is your planned investment amount in the US?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "none", Label = "No investment planned" },
@@ -499,7 +509,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "educationLevel",
                 Question = "What is your highest level of education?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "high_school", Label = "High school or equivalent" },
@@ -519,7 +529,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "hasUsFamily",
                 Question = "Do you have any family members in the United States?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes_citizen", Label = "Yes, US citizens" },
@@ -538,7 +548,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "previousVisaHistory",
                 Question = "Have you previously held a US visa?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "never", Label = "Never had a US visa" },
@@ -558,7 +568,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "adoptionType",
                 Question = "What type of adoption are you pursuing?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "international", Label = "International adoption (child from another country)" },
@@ -577,7 +587,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "adoptionCompleted",
                 Question = "Has the adoption been legally completed in the child's country of birth?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, adoption is legally completed abroad" },
@@ -595,7 +605,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "childAge",
                 Question = "What is the age of the child you are adopting?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "infant", Label = "Infant (0-12 months)" },
@@ -616,7 +626,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "childCountry",
                 Question = "What country is the child from?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "china", Label = "China" },
@@ -640,7 +650,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "hasLegalCustody",
                 Question = "Do you have legal custody of the child?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, I have legal custody" },
@@ -658,7 +668,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "homeStudyCompleted",
                 Question = "Have you completed a home study with an approved agency?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, home study is completed and approved" },
@@ -677,7 +687,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "agencyApproved",
                 Question = "Are you working with a Hague-accredited adoption agency?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, working with Hague-accredited agency" },
@@ -741,15 +751,50 @@ namespace L4H.Infrastructure.Services
             return adultOnlyVisas.Contains(visaCode);
         }
 
+        private static bool IsChildOnlyVisa(string visaCode)
+        {
+            // Visas specifically for children/minors
+            var childOnlyVisas = new[] { "IR-2", "IR-3", "IR-4", "F-2A", "F-2B" };
+            return childOnlyVisas.Contains(visaCode);
+        }
+
         private static bool IsVisaAvailableForNationality(string visaCode, string nationality)
         {
-            // Most visas are available to all nationalities, but some have restrictions
-            // This is a simplified implementation - in reality, this would be more complex
+            // TN visa is only for Canadian and Mexican nationals (USMCA/NAFTA)
+            if (visaCode == "TN")
+            {
+                return nationality.Equals("CA", StringComparison.OrdinalIgnoreCase) ||
+                       nationality.Equals("MX", StringComparison.OrdinalIgnoreCase) ||
+                       nationality.Equals("Canada", StringComparison.OrdinalIgnoreCase) ||
+                       nationality.Equals("Mexico", StringComparison.OrdinalIgnoreCase);
+            }
+
+            // E-3 visa is only for Australian nationals
+            if (visaCode == "E-3")
+            {
+                return nationality.Equals("AU", StringComparison.OrdinalIgnoreCase) ||
+                       nationality.Equals("Australia", StringComparison.OrdinalIgnoreCase);
+            }
+
+            // Most other visas are available to all nationalities
             return true;
         }
 
         private static bool IsVisaAvailableForMaritalStatus(string visaCode, string maritalStatus)
         {
+            // K-1 (Fiance visa) requires unmarried status
+            if (visaCode == "K-1")
+            {
+                return maritalStatus.Equals("single", StringComparison.OrdinalIgnoreCase) ||
+                       maritalStatus.Equals("unmarried", StringComparison.OrdinalIgnoreCase);
+            }
+
+            // K-3 (Spouse visa) requires married status
+            if (visaCode == "K-3")
+            {
+                return maritalStatus.Equals("married", StringComparison.OrdinalIgnoreCase);
+            }
+
             // Most visas don't have marital status restrictions
             return true;
         }
@@ -856,7 +901,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "currentStatus",
                 Question = "What is your current immigration status?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "permanent_resident", Label = "Permanent Resident (Green Card holder)" },
@@ -888,7 +933,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "residencyYears",
                 Question = "How many years have you been a permanent resident?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "1", Label = "1 year" },
@@ -909,7 +954,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "physicalPresenceMonths",
                 Question = "How many months have you been physically present in the US during your permanent residency?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "12", Label = "12 months (1 year)" },
@@ -930,7 +975,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "continuousResidence",
                 Question = "Have you maintained continuous residence in the United States?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, continuous residence maintained" },
@@ -948,7 +993,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "englishProficient",
                 Question = "Are you proficient in English (speaking, reading, and writing)?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, proficient in all areas" },
@@ -967,7 +1012,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "civicsKnowledge",
                 Question = "Do you have knowledge of US history and civics?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, knowledgeable about US history and civics" },
@@ -986,7 +1031,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "goodMoralCharacter",
                 Question = "Do you have good moral character (no serious criminal history, tax issues, etc.)?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, good moral character" },
@@ -1004,7 +1049,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "criminalHistory",
                 Question = "Do you have any criminal history (arrests, citations, convictions)?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "no", Label = "No criminal history" },
@@ -1023,7 +1068,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "taxCompliance",
                 Question = "Have you filed all required tax returns and paid taxes owed?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, fully tax compliant" },
@@ -1042,7 +1087,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "militaryService",
                 Question = "Have you served in the US military?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, served in US military" },
@@ -1060,7 +1105,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "oathWillingness",
                 Question = "Are you willing to take the Oath of Allegiance to the United States?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, willing to take oath" },
@@ -1078,7 +1123,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "marriedToUSCitizen",
                 Question = "Are you married to a US citizen?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, married to US citizen" },
@@ -1097,7 +1142,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "parentUSCitizen",
                 Question = "Is at least one of your parents a US citizen?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, at least one parent is US citizen" },
@@ -1116,7 +1161,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "bornAbroad",
                 Question = "Were you born outside the United States?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, born outside the US" },
@@ -1134,7 +1179,7 @@ namespace L4H.Infrastructure.Services
             {
                 Key = "under18WhenParentNaturalized",
                 Question = "Were you under 18 years old when your parent became a US citizen?",
-                Type = "single_choice",
+                Type = "radio",
                 Options = new List<InterviewOption>
                 {
                     new() { Value = "yes", Label = "Yes, under 18 when parent naturalized" },

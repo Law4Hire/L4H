@@ -1,8 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(from assembly 'Swashbuckle.AspNetCore.SwaggerGen, Version=7.3.1.0' does not have)",
-      "Bash(an implementation.\"\n\nThis is the same Swashbuckle .NET 10 compatibility issue that affected the API.\nCommented out all Swagger-related code until Swashbuckle releases a compatible version.\n\nThis was preventing the upload-gateway container from starting, which blocked\nthe Caddy reverse proxy from starting (dependency chain), causing the website\nto be inaccessible.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(docker start:*)",
+      "Bash(docker logs:*)",
+      "Bash(timeout 10 bash:*)",
+      "Bash(node add-profile-translations.js:*)"
     ],
     "deny": [],
     "ask": []
