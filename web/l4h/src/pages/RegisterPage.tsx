@@ -76,7 +76,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
           setJwtToken(result.token)
           // Dispatch custom event to notify auth state change
           window.dispatchEvent(new Event('jwt-token-changed'))
-          success(t('loginSuccess'))
+          success(t('loginSuccess', { ns: 'auth' }))
           if (onSuccess) {
             onSuccess()
           } else {
@@ -88,8 +88,8 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
             }
           }
         } else {
-          setError(t('loginFailed'))
-          showError(t('loginFailed'))
+          setError(t('loginFailed', { ns: 'auth' }))
+          showError(t('loginFailed', { ns: 'auth' }))
         }
       } else {
         // New user, attempt signup
@@ -104,7 +104,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
           setJwtToken(result.token)
           // Dispatch custom event to notify auth state change
           window.dispatchEvent(new Event('jwt-token-changed'))
-          success(t('registrationSuccess'))
+          success(t('registrationSuccess', { ns: 'auth' }))
           if (onSuccess) {
             onSuccess()
           } else {
@@ -117,12 +117,12 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
             }
           }
         } else {
-          setError(t('registrationFailed'))
-          showError(t('registrationFailed'))
+          setError(t('registrationFailed', { ns: 'auth' }))
+          showError(t('registrationFailed', { ns: 'auth' }))
         }
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : userExists ? t('loginFailed') : t('registrationFailed')
+      const errorMessage = err instanceof Error ? err.message : userExists ? t('loginFailed', { ns: 'auth' }) : t('registrationFailed', { ns: 'auth' })
       setError(errorMessage)
       showError(errorMessage)
     } finally {
@@ -135,11 +135,11 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-            {userExists ? t('welcomeBack', { defaultValue: 'Welcome Back' }) : t('createAccount')}
+            {userExists ? t('welcomeBack', { ns: 'auth' }) : t('createAccount', { ns: 'auth' })}
           </h2>
           {!userExists && (
             <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-              {t('alreadyHaveAccount')} {' '}
+              {t('alreadyHaveAccount', { ns: 'auth' })} {' '}
               <button
                 type="button"
                 onClick={() => navigate('/login')}
@@ -161,87 +161,87 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
             {!userExists && (
               <div className="grid grid-cols-2 gap-4">
                 <Input
-                  label={t('firstName')}
+                  label={t('firstName', { ns: 'auth' })}
                   type="text"
                   autoComplete="given-name"
-                  placeholder={t('firstName')}
+                  placeholder={t('firstName', { ns: 'auth' })}
                   error={errors.firstName?.message}
                   {...register('firstName', {
-                    required: !userExists ? t('firstNameRequired') : false,
+                    required: !userExists ? t('firstNameRequired', { ns: 'auth' }) : false,
                   })}
                 />
-                
+
                 <Input
-                  label={t('lastName')}
+                  label={t('lastName', { ns: 'auth' })}
                   type="text"
                   autoComplete="family-name"
-                  placeholder={t('lastName')}
+                  placeholder={t('lastName', { ns: 'auth' })}
                   error={errors.lastName?.message}
                   {...register('lastName', {
-                    required: !userExists ? t('lastNameRequired') : false,
+                    required: !userExists ? t('lastNameRequired', { ns: 'auth' }) : false,
                   })}
                 />
               </div>
             )}
             
             <Input
-              label={t('email')}
+              label={t('email', { ns: 'auth' })}
               type="email"
               autoComplete="email"
-              placeholder={t('email')}
+              placeholder={t('email', { ns: 'auth' })}
               error={errors.email?.message}
               {...register('email', {
-                required: t('emailRequired'),
+                required: t('emailRequired', { ns: 'auth' }),
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: t('emailInvalid'),
+                  message: t('emailInvalid', { ns: 'auth' }),
                 },
                 onBlur: (e) => handleEmailBlur(e.target.value)
               })}
             />
-            
+
             {checkingEmail && (
               <div className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                {t('checkingEmail', { defaultValue: 'Checking email...' })}
+                {t('checkingEmail', { ns: 'auth' })}
               </div>
             )}
-            
+
             {emailChecked && userExists && (
               <div className="text-sm text-green-600 dark:text-green-400 text-center">
-                {t('welcomeBack', { defaultValue: 'Welcome back! Please enter your password to continue.' })}
+                {t('welcomeBack', { ns: 'auth' })}
               </div>
             )}
-            
+
             <Input
-              label={t('password')}
+              label={t('password', { ns: 'auth' })}
               type="password"
               autoComplete={userExists ? "current-password" : "new-password"}
-              placeholder={t('password')}
+              placeholder={t('password', { ns: 'auth' })}
               error={errors.password?.message}
               {...register('password', {
-                required: t('passwordRequired'),
+                required: t('passwordRequired', { ns: 'auth' }),
                 minLength: userExists ? undefined : {
                   value: 8,
-                  message: t('passwordTooShort'),
+                  message: t('passwordTooShort', { ns: 'auth' }),
                 },
                 pattern: userExists ? undefined : {
                   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-                  message: t('passwordNeedsSpecialChar'),
+                  message: t('passwordNeedsSpecialChar', { ns: 'auth' }),
                 },
               })}
             />
-            
+
             {!userExists && (
               <Input
-                label={t('confirmPassword')}
+                label={t('confirmPassword', { ns: 'auth' })}
                 type="password"
                 autoComplete="new-password"
-                placeholder={t('confirmPassword')}
+                placeholder={t('confirmPassword', { ns: 'auth' })}
                 error={errors.confirmPassword?.message}
                 {...register('confirmPassword', {
-                  required: t('passwordConfirmRequired'),
+                  required: t('passwordConfirmRequired', { ns: 'auth' }),
                   validate: (value) =>
-                    value === password || t('passwordsDoNotMatch'),
+                    value === password || t('passwordsDoNotMatch', { ns: 'auth' }),
                 })}
               />
             )}
@@ -260,7 +260,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
               disabled={loading}
               className="w-full"
             >
-              {userExists ? t('login.submit', { ns: 'auth' }) : t('signup')}
+              {userExists ? t('login.submit', { ns: 'auth' }) : t('signup', { ns: 'auth' })}
             </Button>
           </div>
 
