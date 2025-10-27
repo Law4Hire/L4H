@@ -7,24 +7,38 @@
 l4h.74-208-77-43.nip.io {
   encode zstd gzip
   root * /srv/www/l4h
-  file_server
+
+  # API endpoints
   handle_path /api/* {
     reverse_proxy api:8080
   }
   handle_path /gateway/* {
     reverse_proxy upload-gateway:7070
+  }
+
+  # SPA fallback - serve index.html for all other routes
+  handle {
+    try_files {path} /index.html
+    file_server
   }
 }
 
 cannlaw.74-208-77-43.nip.io {
   encode zstd gzip
   root * /srv/www/cannlaw
-  file_server
+
+  # API endpoints
   handle_path /api/* {
     reverse_proxy api:8080
   }
   handle_path /gateway/* {
     reverse_proxy upload-gateway:7070
+  }
+
+  # SPA fallback - serve index.html for all other routes
+  handle {
+    try_files {path} /index.html
+    file_server
   }
 }
 
@@ -32,23 +46,37 @@ cannlaw.74-208-77-43.nip.io {
 # {$L4H_DOMAIN} {
 #   encode zstd gzip
 #   root * /srv/www/l4h
-#   file_server
+#
+#   # API endpoints
 #   handle_path /api/* {
 #     reverse_proxy api:8080
 #   }
 #   handle_path /gateway/* {
 #     reverse_proxy upload-gateway:7070
+#   }
+#
+#   # SPA fallback - serve index.html for all other routes
+#   handle {
+#     try_files {path} /index.html
+#     file_server
 #   }
 # }
 
 # {$CANNLAW_DOMAIN} {
 #   encode zstd gzip
 #   root * /srv/www/cannlaw
-#   file_server
+#
+#   # API endpoints
 #   handle_path /api/* {
 #     reverse_proxy api:8080
 #   }
 #   handle_path /gateway/* {
 #     reverse_proxy upload-gateway:7070
+#   }
+#
+#   # SPA fallback - serve index.html for all other routes
+#   handle {
+#     try_files {path} /index.html
+#     file_server
 #   }
 # }
