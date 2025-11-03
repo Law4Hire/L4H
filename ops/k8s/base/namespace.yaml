@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: l4h
+  labels:
+    name: l4h
+    environment: production

@@ -1,0 +1,143 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: web-l4h
+  namespace: l4h
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: web-cannlaw
+  namespace: l4h
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: l4h
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: l4h
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+        - name: web-l4h
+          mountPath: /usr/share/nginx/html/l4h
+          readOnly: true
+        - name: web-cannlaw
+          mountPath: /usr/share/nginx/html/cannlaw
+          readOnly: true
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+          readOnly: true
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 5
+      volumes:
+      - name: web-l4h
+        persistentVolumeClaim:
+          claimName: web-l4h
+      - name: web-cannlaw
+        persistentVolumeClaim:
+          claimName: web-cannlaw
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: l4h
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name _;
+
+        # Law4Hire site
+        location /l4h/ {
+            alias /usr/share/nginx/html/l4h/;
+            try_files $uri $uri/ /l4h/index.html;
+
+            # SPA fallback
+            location ~ ^/l4h/(.*)$ {
+                try_files $uri $uri/ /l4h/index.html;
+            }
+        }
+
+        # Cannlaw site
+        location /cannlaw/ {
+            alias /usr/share/nginx/html/cannlaw/;
+            try_files $uri $uri/ /cannlaw/index.html;
+
+            # SPA fallback
+            location ~ ^/cannlaw/(.*)$ {
+                try_files $uri $uri/ /cannlaw/index.html;
+            }
+        }
+
+        # Health check
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }

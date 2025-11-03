@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: upload-gateway
+  namespace: l4h
+spec:
+  type: ClusterIP
+  ports:
+    - port: 7070
+      targetPort: 7070
+      protocol: TCP
+      name: http
+  selector:
+    app: upload-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upload-gateway
+  namespace: l4h
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: upload-gateway
+  template:
+    metadata:
+      labels:
+        app: upload-gateway
+    spec:
+      containers:
+      - name: upload-gateway
+        image: ghcr.io/law4hire/l4h-upload-gateway:latest  # Will be updated by CI/CD
+        ports:
+        - containerPort: 7070
+          name: http
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://0.0.0.0:7070"
+        - name: Uploads__BasePath
+          value: "/data/uploads"
+        - name: Uploads__QuarantineSubdir
+          value: "quarantine"
+        - name: Uploads__Token__SigningKey
+          valueFrom:
+            secretKeyRef:
+              name: l4h-secrets
+              key: uploads-token-signing-key
+        - name: Uploads__Token__TtlMinutes
+          value: "30"
+        - name: Uploads__MaxSizeMB
+          value: "25"
+        volumeMounts:
+        - name: uploads-data
+          mountPath: /data/uploads
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7070
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 7070
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: uploads-data
+        persistentVolumeClaim:
+          claimName: uploads-data

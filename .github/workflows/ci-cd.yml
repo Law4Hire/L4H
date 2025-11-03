@@ -241,102 +241,160 @@ jobs:
         test -d web/l4h/public/locales || (echo "L4H translations missing" && exit 1)
         test -d web/cannlaw/public/locales || (echo "Cannlaw translations missing" && exit 1)
         echo "✅ All translation directories present"
-        
+
         echo "Validating critical translation files..."
         test -f web/shared-ui/public/locales/shared/en-US/common.json || (echo "Critical shared translations missing" && exit 1)
         test -f web/l4h/public/locales/l4h/en-US/interview.json || (echo "Critical L4H translations missing" && exit 1)
         test -f web/cannlaw/public/locales/cannlaw/en-US/legal.json || (echo "Critical Cannlaw translations missing" && exit 1)
         echo "✅ Critical translation files validated"
 
-    - name: Copy deployment files to server
+    - name: Copy Kubernetes manifests and UI artifacts to server
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
-        source: "web/l4h/dist/*,web/cannlaw/dist/*,ops/compose.prod.yml,ops/caddy/*"
+        source: "web/l4h/dist/*,web/cannlaw/dist/*,ops/k8s/*"
         target: "/tmp/l4h-deploy/"
 
-    - name: Deploy and start services
+    - name: Deploy to Kubernetes
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
-          # Copy compose and caddy files to proper location
-          mkdir -p ~/ops/caddy
-          cp /tmp/l4h-deploy/ops/compose.prod.yml ~/ops/
-          cp -r /tmp/l4h-deploy/ops/caddy/* ~/ops/caddy/
+          set -e
 
-          # Create production environment file (with lowercase org name for Docker)
+          echo "🚀 Starting Kubernetes deployment..."
+
+          # Copy Kubernetes manifests to proper location
+          mkdir -p ~/ops/k8s
+          cp -r /tmp/l4h-deploy/ops/k8s/* ~/ops/k8s/
+
+          # Export secrets for create-secrets.sh script
+          export SQL_SA_PASSWORD='${{ secrets.SQL_SA_PASSWORD }}'
+          export JWT_SIGNING_KEY='${{ secrets.JWT_SIGNING_KEY }}'
+          export UPLOADS_TOKEN_SIGNING_KEY='${{ secrets.UPLOADS_TOKEN_SIGNING_KEY }}'
+          export ADMIN_SEED_PASSWORD='${{ secrets.ADMIN_SEED_PASSWORD }}'
+
+          # Create/update Kubernetes secrets
+          echo "🔐 Creating/updating Kubernetes secrets..."
+          cd ~/ops/k8s/scripts
+          chmod +x create-secrets.sh
+          ./create-secrets.sh
+
+          # Apply Kubernetes manifests
+          echo "📝 Applying Kubernetes manifests..."
+          cd ~/ops/k8s/base
+          kubectl apply -f namespace.yaml
+          kubectl apply -k .
+
+          # Update deployment images to use the new SHA
+          echo "🔄 Updating deployment images..."
           GH_ORG_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          cat > ~/ops/.env.prod << EOF
-          LE_EMAIL=${{ secrets.LE_EMAIL }}
-          L4H_DOMAIN=${{ secrets.L4H_DOMAIN }}
-          CANNLAW_DOMAIN=${{ secrets.CANNLAW_DOMAIN }}
-          SQL_SA_PASSWORD=${{ secrets.SQL_SA_PASSWORD }}
-          JWT_SIGNING_KEY=${{ secrets.JWT_SIGNING_KEY }}
-          ADMIN_SEED_PASSWORD=${{ secrets.ADMIN_SEED_PASSWORD }}
-          UPLOADS_TOKEN_SIGNING_KEY=${{ secrets.UPLOADS_TOKEN_SIGNING_KEY }}
-          GH_ORG=${GH_ORG_LOWER}
-          IMAGE_TAG=${{ github.sha }}
-          EOF
+          kubectl set image deployment/api \
+            api=ghcr.io/${GH_ORG_LOWER}/l4h-api:${{ github.sha }} \
+            -n l4h
+          kubectl set image deployment/upload-gateway \
+            upload-gateway=ghcr.io/${GH_ORG_LOWER}/l4h-upload-gateway:${{ github.sha }} \
+            -n l4h
+          kubectl set image deployment/scraper \
+            scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${{ github.sha }} \
+            -n l4h
 
-          # Stop existing services
-          cd ~
-          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml down || true
+          # Copy UI artifacts to Kubernetes PVCs
+          echo "📦 Copying UI artifacts to Kubernetes volumes..."
 
-          # Pull latest images
-          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml pull
+          # Create a temporary pod to copy files to l4h PVC
+          kubectl run copy-l4h --image=alpine --restart=Never -n l4h \
+            --overrides='{"spec":{"containers":[{"name":"copy-l4h","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"l4h-data","mountPath":"/data"}]}],"volumes":[{"name":"l4h-data","persistentVolumeClaim":{"claimName":"web-l4h-pvc"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-l4h -n l4h --timeout=60s || true
+          kubectl cp /tmp/l4h-deploy/web/l4h/dist/. l4h/copy-l4h:/data/
+          kubectl delete pod copy-l4h -n l4h || true
 
-          # Copy UI artifacts to Docker volumes (ops_ prefix from compose project name)
-          docker run --rm -v ops_web-l4h:/dst -v /tmp/l4h-deploy/web/l4h/dist:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
-          docker run --rm -v ops_web-cannlaw:/dst -v /tmp/l4h-deploy/web/cannlaw/dist:/src alpine sh -c "rm -rf /dst/* && cp -r /src/* /dst/"
+          # Create a temporary pod to copy files to cannlaw PVC
+          kubectl run copy-cannlaw --image=alpine --restart=Never -n l4h \
+            --overrides='{"spec":{"containers":[{"name":"copy-cannlaw","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"cannlaw-data","mountPath":"/data"}]}],"volumes":[{"name":"cannlaw-data","persistentVolumeClaim":{"claimName":"web-cannlaw-pvc"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-cannlaw -n l4h --timeout=60s || true
+          kubectl cp /tmp/l4h-deploy/web/cannlaw/dist/. l4h/copy-cannlaw:/data/
+          kubectl delete pod copy-cannlaw -n l4h || true
 
-          # Start services
-          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml up -d
+          # Restart web deployment to pick up new files
+          kubectl rollout restart deployment/web -n l4h
 
-          # Wait for services to be healthy
-          sleep 30
+          # Wait for deployments to be ready
+          echo "⏳ Waiting for deployments to be ready..."
+          kubectl wait --for=condition=available --timeout=300s \
+            deployment/sqlserver \
+            deployment/api \
+            deployment/upload-gateway \
+            deployment/scraper \
+            deployment/web \
+            -n l4h || echo "⚠️ Some deployments took longer than expected"
 
           # Clean up temporary files
           rm -rf /tmp/l4h-deploy
 
-    - name: Smoke tests
+          echo "✅ Kubernetes deployment complete!"
+
+    - name: Kubernetes health checks
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
-          cd ~
+          echo "🏥 Running health checks..."
 
-          # Check that all services are running
-          echo "Checking Docker services..."
-          docker compose --env-file ops/.env.prod -f ops/compose.prod.yml ps
+          # Check pod status
+          echo "📊 Pod Status:"
+          kubectl get pods -n l4h
 
-          # Test that containers are healthy
-          echo "Waiting for all services to be healthy..."
-          for i in {1..30}; do
-            UNHEALTHY=$(docker compose --env-file ops/.env.prod -f ops/compose.prod.yml ps --format json | grep -v '"Health":"healthy"' | grep '"Health"' || true)
-            if [ -z "$UNHEALTHY" ]; then
-              echo "All services are healthy!"
-              break
-            fi
-            echo "Waiting for services to be healthy... ($i/30)"
-            sleep 2
-          done
+          # Check deployment status
+          echo ""
+          echo "📊 Deployment Status:"
+          kubectl get deployments -n l4h
 
-          # Test HTTP endpoints (bypass SSL for now - Let's Encrypt may take time)
-          echo "Testing HTTP endpoints..."
-          curl -fsS http://localhost/ || echo "Warning: HTTP test failed, but continuing (SSL may still be provisioning)"
+          # Check service status
+          echo ""
+          echo "📊 Service Status:"
+          kubectl get services -n l4h
+
+          # Check ingress status
+          echo ""
+          echo "📊 Ingress Status:"
+          kubectl get ingress -n l4h
+
+          # Test endpoints
+          echo ""
+          echo "🌐 Testing endpoints..."
+
+          # Wait a bit for ingress to be ready
+          sleep 10
+
+          # Test Law4Hire
+          curl -fsSL -o /dev/null https://l4h.74-208-77-43.nip.io || echo "⚠️ L4H endpoint not yet ready"
+
+          # Test Cannlaw
+          curl -fsSL -o /dev/null https://cannlaw.74-208-77-43.nip.io || echo "⚠️ Cannlaw endpoint not yet ready"
+
+          # Test API health
+          curl -fsSL https://api.74-208-77-43.nip.io/healthz || echo "⚠️ API health check not yet ready"
 
           # Test i18n functionality
+          echo ""
           echo "Testing i18n system deployment..."
-          curl -fsS http://localhost/locales/shared/en-US/common.json || echo "Warning: Shared translations not accessible"
-          curl -fsS http://localhost/locales/l4h/en-US/interview.json || echo "Warning: L4H translations not accessible"
-          curl -fsS http://localhost/cannlaw/locales/cannlaw/en-US/legal.json || echo "Warning: Cannlaw translations not accessible"
+          curl -fsSL https://l4h.74-208-77-43.nip.io/locales/shared/en-US/common.json || echo "⚠️ Shared translations not accessible"
+          curl -fsSL https://l4h.74-208-77-43.nip.io/locales/l4h/en-US/interview.json || echo "⚠️ L4H translations not accessible"
+          curl -fsSL https://cannlaw.74-208-77-43.nip.io/locales/cannlaw/en-US/legal.json || echo "⚠️ Cannlaw translations not accessible"
 
-          echo "Deployment successful! Services are running."
-          echo "Note: HTTPS certificates may take a few minutes to provision via Let's Encrypt."
+          echo ""
+          echo "✅ Deployment successful! Services are running."
+          echo ""
+          echo "🌐 Your services are available at:"
+          echo "   Law4Hire:  https://l4h.74-208-77-43.nip.io"
+          echo "   Cannlaw:   https://cannlaw.74-208-77-43.nip.io"
+          echo "   API:       https://api.74-208-77-43.nip.io"
+          echo ""
+          echo "Note: HTTPS certificates are automatically managed by Traefik with Let's Encrypt."

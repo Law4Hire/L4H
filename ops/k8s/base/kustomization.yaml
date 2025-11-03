@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: l4h
+
+resources:
+  - namespace.yaml
+  - sqlserver.yaml
+  - api.yaml
+  - upload-gateway.yaml
+  - scraper.yaml
+  - web.yaml
+  - ingress.yaml
+
+# Note: secrets should be created manually or via CI/CD
+# NOT included in kustomization to avoid committing sensitive data

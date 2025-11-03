@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scraper
+  namespace: l4h
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scraper
+  template:
+    metadata:
+      labels:
+        app: scraper
+    spec:
+      containers:
+      - name: scraper
+        image: ghcr.io/law4hire/l4h-scraper:latest  # Will be updated by CI/CD
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: Scraper__Cron
+          value: "P3D"  # Run every 3 days
+        - name: Scraper__UserAgent
+          value: "L4H-Scraper/1.0"
+        - name: Scraper__RespectRobots
+          value: "true"
+        - name: ConnectionStrings__SqlServer
+          value: "Server=sqlserver,1433;Database=L4H;User Id=sa;Password=$(SQL_SA_PASSWORD);TrustServerCertificate=True;"
+        - name: SQL_SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: l4h-secrets
+              key: sql-sa-password
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      initContainers:
+      - name: wait-for-db
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z sqlserver 1433; do echo waiting for database; sleep 2; done;']

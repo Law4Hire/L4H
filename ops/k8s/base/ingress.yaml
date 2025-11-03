@@ -1,0 +1,73 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: l4h-ingress
+  namespace: l4h
+  annotations:
+    # Traefik-specific annotations (K3s default ingress controller)
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: default
+    # Force HTTPS redirect
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+  # Law4Hire main site
+  - host: l4h.74-208-77-43.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 8080
+      - path: /gateway
+        pathType: Prefix
+        backend:
+          service:
+            name: upload-gateway
+            port:
+              number: 7070
+
+  # Cannlaw site
+  - host: cannlaw.74-208-77-43.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web
+            port:
+              number: 80
+
+  # API subdomain (optional, for direct API access)
+  - host: api.74-208-77-43.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 8080
+
+  tls:
+  - hosts:
+    - l4h.74-208-77-43.nip.io
+    - cannlaw.74-208-77-43.nip.io
+    - api.74-208-77-43.nip.io
+    secretName: l4h-tls  # Traefik will auto-generate with Let's Encrypt
