@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.0-rc.2 AS base
 WORKDIR /app
 EXPOSE 7070
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.100-rc.2 AS build
 WORKDIR /src
 COPY ["src/upload-gateway/L4H.UploadGateway.csproj", "src/upload-gateway/"]
 RUN dotnet restore "src/upload-gateway/L4H.UploadGateway.csproj"
