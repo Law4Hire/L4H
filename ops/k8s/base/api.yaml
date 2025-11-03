@@ -6,7 +6,7 @@ metadata:
   namespace: l4h
 spec:
   accessModes:
-    - ReadWriteMany  # Multiple pods can access for uploads
+    - ReadWriteOnce  # Single node - all pods access same volume
   resources:
     requests:
       storage: 100Gi
