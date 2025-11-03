@@ -14,10 +14,13 @@ public class PlaywrightFixture : IAsyncLifetime
         Microsoft.Playwright.Program.Main(new[] { "install" });
 
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync().ConfigureAwait(false);
+
+        // Run headless in CI environments (when DISPLAY is not available)
+        var headless = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DISPLAY"));
+
         Browser = await Playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            Headless = false, // Non-headless so we can see what's happening
-            SlowMo = 500 // Slow down actions for visibility
+            Headless = headless
         }).ConfigureAwait(false);
     }
 
