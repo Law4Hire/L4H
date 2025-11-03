@@ -264,12 +264,12 @@ builder.Services.AddScoped<SeedRunner>();
 // Workflow and scraper services (for API endpoints)
 builder.Services.AddScoped<CountryService>();
 
-// Background services
-builder.Services.AddHostedService<CaseAutoAgingService>();
-// Only register AntivirusScanService if not disabled via configuration
-builder.Services.AddHostedService<AntivirusScanService>();
-builder.Services.AddHostedService<DailyDigestService>();
-builder.Services.AddHostedService<NotificationBackgroundService>();
+// Background services - temporarily disabled to isolate startup crash
+// TODO: Re-enable after fixing startup issue
+// builder.Services.AddHostedService<CaseAutoAgingService>();
+// builder.Services.AddHostedService<AntivirusScanService>();
+// builder.Services.AddHostedService<DailyDigestService>();
+// builder.Services.AddHostedService<NotificationBackgroundService>();
 
 var app = builder.Build();
 
