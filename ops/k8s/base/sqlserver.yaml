@@ -70,35 +70,15 @@ spec:
             memory: "4Gi"
             cpu: "2000m"
         livenessProbe:
-          exec:
-            command:
-            - /opt/mssql-tools18/bin/sqlcmd
-            - -C
-            - -S
-            - localhost
-            - -U
-            - sa
-            - -P
-            - $(SA_PASSWORD)
-            - -Q
-            - SELECT 1
+          tcpSocket:
+            port: 1433
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
         readinessProbe:
-          exec:
-            command:
-            - /opt/mssql-tools18/bin/sqlcmd
-            - -C
-            - -S
-            - localhost
-            - -U
-            - sa
-            - -P
-            - $(SA_PASSWORD)
-            - -Q
-            - SELECT 1
+          tcpSocket:
+            port: 1433
           initialDelaySeconds: 15
           periodSeconds: 5
           timeoutSeconds: 3
