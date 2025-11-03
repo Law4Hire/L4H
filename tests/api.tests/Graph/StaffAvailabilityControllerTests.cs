@@ -290,7 +290,16 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
             existingStaff.IsStaff = true;
         }
 
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx &&
+                                           (sqlEx.Number == 2627 || sqlEx.Number == 2601)) // PRIMARY KEY or UNIQUE constraint violation
+        {
+            // Ignore duplicate key errors - this can happen when tests run in parallel
+            // The user already exists which is fine for our test purposes
+        }
     }
 
     private async Task SetupTestDataWithAppointmentsAndBlocks()
