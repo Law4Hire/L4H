@@ -377,7 +377,16 @@ public sealed class UploadsControllerTests : IDisposable
             existingCase.Status = "active";
         }
 
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx &&
+                                           (sqlEx.Number == 2627 || sqlEx.Number == 2601)) // PRIMARY KEY or UNIQUE constraint violation
+        {
+            // Ignore duplicate key errors - this can happen when tests run in parallel
+            // The user/case already exists which is fine for our test purposes
+        }
     }
 
     private async Task SetupTestDataWithUnpaidCase()
@@ -431,7 +440,16 @@ public sealed class UploadsControllerTests : IDisposable
             existingCase.Status = "pending";
         }
 
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx &&
+                                           (sqlEx.Number == 2627 || sqlEx.Number == 2601)) // PRIMARY KEY or UNIQUE constraint violation
+        {
+            // Ignore duplicate key errors - this can happen when tests run in parallel
+            // The user/case already exists which is fine for our test purposes
+        }
     }
 
     private async Task SetupTestDataWithUploads()
