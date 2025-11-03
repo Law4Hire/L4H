@@ -291,8 +291,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") 
     }
 }
 
-// Seed admin and pricing data for Development and Production (skip Testing)
-if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+// Seed admin and pricing data for Development only (skip Testing and Production for now)
+// TODO: Fix seeder crash in Production and re-enable
+if (app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
     {
