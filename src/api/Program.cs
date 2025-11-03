@@ -291,24 +291,40 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") 
     }
 }
 
-// Seed admin and pricing data for Development only (skip Testing and Production for now)
-// TODO: Fix seeder crash in Production and re-enable
-if (app.Environment.IsDevelopment())
+// Seed admin and pricing data for Development and Production (skip Testing)
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     using (var scope = app.Services.CreateScope())
     {
-        var adminSeedService = scope.ServiceProvider.GetRequiredService<IAdminSeedService>();
-        await adminSeedService.SeedAdminAsync().ConfigureAwait(false);
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-        var pricingSeedService = scope.ServiceProvider.GetRequiredService<IPricingSeedService>();
-        await pricingSeedService.SeedPricingDataAsync().ConfigureAwait(false);
+        try
+        {
+            logger.LogInformation("Starting admin seed...");
+            var adminSeedService = scope.ServiceProvider.GetRequiredService<IAdminSeedService>();
+            await adminSeedService.SeedAdminAsync().ConfigureAwait(false);
+            logger.LogInformation("Admin seed completed");
 
-        var countriesSeeder = scope.ServiceProvider.GetRequiredService<CountriesSeeder>();
-        await countriesSeeder.ExecuteAsync().ConfigureAwait(false);
+            logger.LogInformation("Starting pricing data seed...");
+            var pricingSeedService = scope.ServiceProvider.GetRequiredService<IPricingSeedService>();
+            await pricingSeedService.SeedPricingDataAsync().ConfigureAwait(false);
+            logger.LogInformation("Pricing data seed completed");
 
-        // Run essential seeders that must always run
-        var seedRunner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
-        await seedRunner.RunAllAsync().ConfigureAwait(false);
+            logger.LogInformation("Starting countries seed...");
+            var countriesSeeder = scope.ServiceProvider.GetRequiredService<CountriesSeeder>();
+            await countriesSeeder.ExecuteAsync().ConfigureAwait(false);
+            logger.LogInformation("Countries seed completed");
+
+            logger.LogInformation("Starting seed runner...");
+            var seedRunner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
+            await seedRunner.RunAllAsync().ConfigureAwait(false);
+            logger.LogInformation("Seed runner completed");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "FATAL: Seeding failed - {Message}", ex.Message);
+            throw; // Re-throw to fail startup if seeding fails
+        }
     }
 }
 
