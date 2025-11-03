@@ -15,7 +15,7 @@ Transform the existing Cannlaw website (https://cannlaw.com) into a modern React
 ## Phase 1: Backend Infrastructure & API Development
 
 ### 1.1 Site Configuration Management System
-- [ ] Create `SiteConfiguration` entity in database
+- [ ] Create `SiteConfiguration` entity in database 
 - [ ] Add fields for:
   - Company information (name, description, tagline)
   - Contact details (address, phone, email)
