@@ -272,22 +272,26 @@ jobs:
           mkdir -p ~/ops/k8s
           cp -r /tmp/l4h-deploy/ops/k8s/* ~/ops/k8s/
 
+          # Create namespace first
+          echo "📦 Creating namespace..."
+          cd ~/ops/k8s/base
+          kubectl apply -f namespace.yaml
+
           # Export secrets for create-secrets.sh script
           export SQL_SA_PASSWORD='${{ secrets.SQL_SA_PASSWORD }}'
           export JWT_SIGNING_KEY='${{ secrets.JWT_SIGNING_KEY }}'
           export UPLOADS_TOKEN_SIGNING_KEY='${{ secrets.UPLOADS_TOKEN_SIGNING_KEY }}'
           export ADMIN_SEED_PASSWORD='${{ secrets.ADMIN_SEED_PASSWORD }}'
 
-          # Create/update Kubernetes secrets
+          # Create/update Kubernetes secrets (after namespace exists)
           echo "🔐 Creating/updating Kubernetes secrets..."
           cd ~/ops/k8s/scripts
           chmod +x create-secrets.sh
           ./create-secrets.sh
 
-          # Apply Kubernetes manifests
+          # Apply remaining Kubernetes manifests
           echo "📝 Applying Kubernetes manifests..."
           cd ~/ops/k8s/base
-          kubectl apply -f namespace.yaml
           kubectl apply -k .
 
           # Update deployment images to use the new SHA
