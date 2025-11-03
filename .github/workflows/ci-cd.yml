@@ -307,21 +307,30 @@ jobs:
             scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${{ github.sha }} \
             -n l4h
 
+          # Wait for PVCs to be bound
+          echo "⏳ Waiting for PVCs to be bound..."
+          kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/web-l4h -n l4h --timeout=120s || echo "⚠️ L4H PVC not bound yet"
+          kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/web-cannlaw -n l4h --timeout=120s || echo "⚠️ Cannlaw PVC not bound yet"
+
           # Copy UI artifacts to Kubernetes PVCs
           echo "📦 Copying UI artifacts to Kubernetes volumes..."
 
           # Create a temporary pod to copy files to l4h PVC
           kubectl run copy-l4h --image=alpine --restart=Never -n l4h \
-            --overrides='{"spec":{"containers":[{"name":"copy-l4h","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"l4h-data","mountPath":"/data"}]}],"volumes":[{"name":"l4h-data","persistentVolumeClaim":{"claimName":"web-l4h-pvc"}}]}}' || true
-          kubectl wait --for=condition=Ready pod/copy-l4h -n l4h --timeout=60s || true
-          kubectl cp /tmp/l4h-deploy/web/l4h/dist/. l4h/copy-l4h:/data/
+            --overrides='{"spec":{"containers":[{"name":"copy-l4h","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"l4h-data","mountPath":"/data"}]}],"volumes":[{"name":"l4h-data","persistentVolumeClaim":{"claimName":"web-l4h"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-l4h -n l4h --timeout=120s || echo "⚠️ Copy pod failed to start"
+          if kubectl get pod copy-l4h -n l4h &>/dev/null; then
+            kubectl cp /tmp/l4h-deploy/web/l4h/dist/. l4h/copy-l4h:/data/ || echo "⚠️ Failed to copy l4h files"
+          fi
           kubectl delete pod copy-l4h -n l4h || true
 
           # Create a temporary pod to copy files to cannlaw PVC
           kubectl run copy-cannlaw --image=alpine --restart=Never -n l4h \
-            --overrides='{"spec":{"containers":[{"name":"copy-cannlaw","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"cannlaw-data","mountPath":"/data"}]}],"volumes":[{"name":"cannlaw-data","persistentVolumeClaim":{"claimName":"web-cannlaw-pvc"}}]}}' || true
-          kubectl wait --for=condition=Ready pod/copy-cannlaw -n l4h --timeout=60s || true
-          kubectl cp /tmp/l4h-deploy/web/cannlaw/dist/. l4h/copy-cannlaw:/data/
+            --overrides='{"spec":{"containers":[{"name":"copy-cannlaw","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"cannlaw-data","mountPath":"/data"}]}],"volumes":[{"name":"cannlaw-data","persistentVolumeClaim":{"claimName":"web-cannlaw"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-cannlaw -n l4h --timeout=120s || echo "⚠️ Copy pod failed to start"
+          if kubectl get pod copy-cannlaw -n l4h &>/dev/null; then
+            kubectl cp /tmp/l4h-deploy/web/cannlaw/dist/. l4h/copy-cannlaw:/data/ || echo "⚠️ Failed to copy cannlaw files"
+          fi
           kubectl delete pod copy-cannlaw -n l4h || true
 
           # Restart web deployment to pick up new files
