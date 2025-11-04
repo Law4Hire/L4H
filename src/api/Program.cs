@@ -271,7 +271,9 @@ builder.Services.AddScoped<CountryService>();
 // builder.Services.AddHostedService<DailyDigestService>();
 // builder.Services.AddHostedService<NotificationBackgroundService>();
 
+Console.WriteLine("[STARTUP] Building application...");
 var app = builder.Build();
+Console.WriteLine("[STARTUP] Application built successfully");
 
 // Configure the HTTP request pipeline
 // Swagger temporarily disabled due to OpenAPI package compatibility issues in .NET 10 RC
@@ -284,10 +286,12 @@ var app = builder.Build();
 // Ensure database is created and migrated for Development, Testing, and Production
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") || app.Environment.IsProduction())
 {
+    Console.WriteLine("[STARTUP] Starting database migration...");
     using (var scope = app.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
         await context.Database.MigrateAsync().ConfigureAwait(false);
+        Console.WriteLine("[STARTUP] Database migration completed");
     }
 }
 
