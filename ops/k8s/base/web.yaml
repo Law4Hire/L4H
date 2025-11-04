@@ -108,30 +108,17 @@ metadata:
   namespace: l4h
 data:
   default.conf: |
+    # Law4Hire site
     server {
         listen 80;
-        server_name _;
+        server_name l4h.74-208-77-43.nip.io;
 
-        # Law4Hire site
-        location /l4h/ {
-            alias /usr/share/nginx/html/l4h/;
-            try_files $uri $uri/ /l4h/index.html;
+        root /usr/share/nginx/html/l4h;
+        index index.html;
 
-            # SPA fallback
-            location ~ ^/l4h/(.*)$ {
-                try_files $uri $uri/ /l4h/index.html;
-            }
-        }
-
-        # Cannlaw site
-        location /cannlaw/ {
-            alias /usr/share/nginx/html/cannlaw/;
-            try_files $uri $uri/ /cannlaw/index.html;
-
-            # SPA fallback
-            location ~ ^/cannlaw/(.*)$ {
-                try_files $uri $uri/ /cannlaw/index.html;
-            }
+        # SPA fallback - serve index.html for all routes
+        location / {
+            try_files $uri $uri/ /index.html;
         }
 
         # Health check
@@ -139,5 +126,44 @@ data:
             access_log off;
             return 200 "healthy\n";
             add_header Content-Type text/plain;
+        }
+    }
+
+    # Cannlaw site
+    server {
+        listen 80;
+        server_name cannlaw.74-208-77-43.nip.io;
+
+        root /usr/share/nginx/html/cannlaw;
+        index index.html;
+
+        # SPA fallback - serve index.html for all routes
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Health check
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }
+
+    # Default server for health checks and other requests
+    server {
+        listen 80 default_server;
+        server_name _;
+
+        # Health check
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+
+        # All other requests return 404
+        location / {
+            return 404;
         }
     }
