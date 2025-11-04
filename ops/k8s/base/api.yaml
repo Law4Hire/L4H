@@ -65,6 +65,12 @@ spec:
       containers:
       - name: api
         image: ghcr.io/law4hire/l4h-api:latest  # Will be updated by CI/CD
+        command: ["/bin/sh"]
+        args:
+          - -c
+          - |
+            export ConnectionStrings__SqlServer="Server=sqlserver,1433;Database=L4H;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;"
+            dotnet L4H.Api.dll
         ports:
         - containerPort: 8080
           name: http
@@ -72,8 +78,6 @@ spec:
         - configMapRef:
             name: api-config
         env:
-        - name: ConnectionStrings__SqlServer
-          value: "Server=sqlserver,1433;Database=L4H;User Id=sa;Password=$(SQL_SA_PASSWORD);TrustServerCertificate=True;"
         - name: SQL_SA_PASSWORD
           valueFrom:
             secretKeyRef:
