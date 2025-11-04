@@ -289,9 +289,23 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") 
     Console.WriteLine("[STARTUP] Starting database migration...");
     using (var scope = app.Services.CreateScope())
     {
-        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
-        await context.Database.MigrateAsync().ConfigureAwait(false);
-        Console.WriteLine("[STARTUP] Database migration completed");
+        try
+        {
+            var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+            Console.WriteLine("[STARTUP] DbContext acquired, starting migration...");
+            await context.Database.MigrateAsync().ConfigureAwait(false);
+            Console.WriteLine("[STARTUP] Database migration completed");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[STARTUP] FATAL: Database migration failed - {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"[STARTUP] Stack trace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"[STARTUP] Inner exception: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
+            }
+            throw;
+        }
     }
 }
 
