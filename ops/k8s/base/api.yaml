@@ -53,7 +53,7 @@ metadata:
   name: api
   namespace: l4h
 spec:
-  replicas: 2  # Run 2 instances for high availability
+  replicas: 1  # Temporarily 1 to avoid migration deadlock - TODO: implement migration Job
   selector:
     matchLabels:
       app: api
