@@ -714,7 +714,13 @@ namespace L4H.Infrastructure.Services
 
         private static Task<bool> CanCompleteEarlyAsync(List<VisaType> remainingVisaTypes, Dictionary<string, string>? answers)
         {
-            // Never complete with only 1 question answered - need at least 2 for a reasonable recommendation
+            // Complete immediately if no visas remain - can't narrow down further (edge case)
+            if (remainingVisaTypes.Count == 0)
+            {
+                return Task.FromResult(true);
+            }
+
+            // Never complete with only 1 question answered when visas still remain - need at least 2 for a reasonable recommendation
             if (answers == null || answers.Count < 2)
             {
                 return Task.FromResult(false);
