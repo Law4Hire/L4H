@@ -81,13 +81,22 @@ public class RuleBasedRecommender : IInterviewRecommender
                     Rationale = "Based on your employment purpose and employer sponsorship, an H-1B Specialty Occupation Visa is recommended."
                 };
             }
-            else
+            else if (hasEmployerSponsor == "no")
             {
-                // Fallback to B2 if no sponsor
+                // If explicitly no sponsor, recommend investor visa
                 result = new RecommendationResult
                 {
-                    VisaTypeId = await GetVisaTypeIdByCodeAsync("B-2").ConfigureAwait(false), // B-2 Tourist Visa  
-                    Rationale = "Based on your purpose of travel, a B-2 Tourist Visa is recommended."
+                    VisaTypeId = await GetVisaTypeIdByCodeAsync("E-2").ConfigureAwait(false), // E-2 Treaty Investor
+                    Rationale = "Based on your employment purpose without employer sponsorship, an E-2 Treaty Investor Visa is recommended. This allows you to work in a business you invest in and control."
+                };
+            }
+            else
+            {
+                // Default to H-1B if sponsor status unclear - most common employment visa
+                result = new RecommendationResult
+                {
+                    VisaTypeId = await GetVisaTypeIdByCodeAsync("H-1B").ConfigureAwait(false), // H-1B Specialty Occupation
+                    Rationale = "Based on your employment purpose, an H-1B Specialty Occupation Visa is recommended. This visa requires employer sponsorship and is suitable for professional-level positions."
                 };
             }
         }

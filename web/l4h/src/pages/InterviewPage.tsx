@@ -448,8 +448,8 @@ const InterviewPage: React.FC = () => {
 
             {/* Remaining Visa Types - Show on hover */}
             {currentQuestion.remainingVisaCodes && currentQuestion.remainingVisaCodes.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible hover:opacity-100 hover:visible transition-all duration-200 z-10">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="absolute left-0 right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible hover:opacity-100 hover:visible transition-all duration-200 z-10">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 pointer-events-auto">
                   <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                     {t('interview:messages.selectVisaDirectly', 'Click a visa type to select it directly:')}
                   </div>

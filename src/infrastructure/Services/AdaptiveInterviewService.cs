@@ -714,6 +714,12 @@ namespace L4H.Infrastructure.Services
 
         private static Task<bool> CanCompleteEarlyAsync(List<VisaType> remainingVisaTypes, Dictionary<string, string>? answers)
         {
+            // Never complete with only 1 question answered - need at least 2 for a reasonable recommendation
+            if (answers == null || answers.Count < 2)
+            {
+                return Task.FromResult(false);
+            }
+
             // Complete early if we have narrowed down to a small number of visa types
             if (remainingVisaTypes.Count <= 3)
             {
@@ -721,15 +727,12 @@ namespace L4H.Infrastructure.Services
             }
 
             // Complete early if we have enough information for a confident recommendation
-            if (answers != null)
+            var essentialQuestions = new[] { "purpose", "hasEmployerSponsor", "durationOfStay" };
+            var answeredEssentialQuestions = essentialQuestions.Count(q => answers.ContainsKey(q));
+
+            if (answeredEssentialQuestions >= 2 && remainingVisaTypes.Count <= 5)
             {
-                var essentialQuestions = new[] { "purpose", "hasEmployerSponsor", "durationOfStay" };
-                var answeredEssentialQuestions = essentialQuestions.Count(q => answers.ContainsKey(q));
-                
-                if (answeredEssentialQuestions >= 2 && remainingVisaTypes.Count <= 5)
-                {
-                    return Task.FromResult(true);
-                }
+                return Task.FromResult(true);
             }
 
             return Task.FromResult(false);
