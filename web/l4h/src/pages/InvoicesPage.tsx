@@ -1,6 +1,5 @@
 import React from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Container, Card, Button, EmptyState, useToast } from '@l4h/shared-ui'
+import { Container, Card, Button, EmptyState, useToast, useQuery } from '@l4h/shared-ui'
 import { invoices } from '@l4h/shared-ui'
 import { useTranslation } from '@l4h/shared-ui'
 import { FileText, Download, Eye, Calendar, DollarSign } from 'lucide-react'

@@ -85,6 +85,7 @@ export { RouteGuard } from './RouteGuard'
 
 // React Query
 export { QueryProvider, queryClient } from './query-provider'
+export { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Formatters
 export {

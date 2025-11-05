@@ -1,9 +1,8 @@
 
-import { QueryClient } from '@tanstack/react-query';
-
-const API_BASE_URL = 'http://localhost:8765/api/v1'; // Assuming the API is served from the same domain
-
-export const queryClient = new QueryClient();
+// Use relative URL so it works in both development and production
+// In development, Vite proxy will forward to localhost:8765
+// In production, it will use the same domain
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 export const apiClient = {
   startInterview: async () => {

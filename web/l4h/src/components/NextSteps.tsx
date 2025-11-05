@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from '@l4h/shared-ui';
+import { useTranslation, useQuery } from '@l4h/shared-ui';
 
 interface NextStepsProps {
   visaTypeCode: string;

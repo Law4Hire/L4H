@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Container, Card, Button, EmptyState, Modal, Input, useToast } from '@l4h/shared-ui'
+import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { appointments } from '@l4h/shared-ui'
 import { useTranslation } from '@l4h/shared-ui'
 import { Calendar, Plus, Clock, MapPin, Users } from 'lucide-react'

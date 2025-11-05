@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { Card, Button, Modal, cases, interview, useToast, useTranslation } from '@l4h/shared-ui'
+import { Card, Button, Modal, cases, interview, useToast, useTranslation, useQuery } from '@l4h/shared-ui'
 
 interface CaseDetailData {
   id: string

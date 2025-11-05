@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Button, Input, useToast, useTranslation, auth, cases, interview } from '@l4h/shared-ui'
+import { Button, Input, useToast, useTranslation, auth, cases, interview, useQuery } from '@l4h/shared-ui'
 import { SearchableSelect, SearchableSelectOption } from '@l4h/shared-ui'
-import { useQuery } from '@tanstack/react-query'
 
 interface ProfileCompletionFormData {
   country: string
