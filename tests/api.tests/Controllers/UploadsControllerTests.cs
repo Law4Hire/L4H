@@ -356,6 +356,19 @@ public sealed class UploadsControllerTests : IDisposable
             existingUser.EmailVerified = true;
         }
 
+        // Save user first (if needed)
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx &&
+                                           (sqlEx.Number == 2627 || sqlEx.Number == 2601)) // PRIMARY KEY or UNIQUE constraint violation
+        {
+            // Ignore duplicate key errors for user - this can happen when tests run in parallel
+            // Detach the user entity so we can continue with case creation
+            context.Entry(existingUser ?? context.Users.Local.First(u => u.Id == testUserId)).State = EntityState.Unchanged;
+        }
+
         // Check if test case already exists
         var existingCase = await context.Cases.FirstOrDefaultAsync(c => c.Id == testCaseId);
         if (existingCase == null)
@@ -377,6 +390,7 @@ public sealed class UploadsControllerTests : IDisposable
             existingCase.Status = "active";
         }
 
+        // Save case separately to ensure it gets saved even if user already existed
         try
         {
             await context.SaveChangesAsync();
@@ -384,8 +398,8 @@ public sealed class UploadsControllerTests : IDisposable
         catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx &&
                                            (sqlEx.Number == 2627 || sqlEx.Number == 2601)) // PRIMARY KEY or UNIQUE constraint violation
         {
-            // Ignore duplicate key errors - this can happen when tests run in parallel
-            // The user/case already exists which is fine for our test purposes
+            // Ignore duplicate key errors for case - this can happen when tests run in parallel
+            // The case already exists which is fine for our test purposes
         }
     }
 
