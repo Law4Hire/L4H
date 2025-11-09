@@ -134,3 +134,114 @@ public class InterviewProgressResponse
     public List<string> RemainingVisaCodes { get; set; } = new();
     public DateTime LastActivityAt { get; set; }
 }
+
+// New multi-visa eligibility models
+public class VisaEligibilityDto
+{
+    public string VisaCode { get; set; } = string.Empty;
+    public string VisaName { get; set; } = string.Empty;
+    public string EligibilityStatus { get; set; } = string.Empty; // "Eligible" or "Potential"
+    public int MatchScore { get; set; } // 0-100
+    public string Rationale { get; set; } = string.Empty;
+    public List<string> MetRequirements { get; set; } = new();
+    public List<string> UnmetRequirements { get; set; } = new();
+}
+
+public class MultiVisaEligibilityResponse
+{
+    public Guid SessionId { get; set; }
+    public List<VisaEligibilityDto> EligibleVisas { get; set; } = new();
+    public List<VisaEligibilityDto> PotentialVisas { get; set; } = new();
+    public int TotalEvaluated { get; set; }
+    public DateTime EvaluatedAt { get; set; }
+}
+
+public class GetVisaResultsRequest
+{
+    public Guid SessionId { get; set; }
+}
+
+// Attorney lock-in models
+public class LockVisaSelectionRequest
+{
+    public CaseId CaseId { get; set; }
+    public int VisaTypeId { get; set; }
+}
+
+public class LockVisaSelectionResponse
+{
+    public bool Success { get; set; }
+    public string VisaCode { get; set; } = string.Empty;
+    public string VisaName { get; set; } = string.Empty;
+    public DateTime LockedAt { get; set; }
+    public Guid LockedByStaffId { get; set; }
+}
+
+public class UnlockVisaSelectionRequest
+{
+    public CaseId CaseId { get; set; }
+    public string Reason { get; set; } = string.Empty;
+}
+
+public class CheckLockStatusRequest
+{
+    public CaseId CaseId { get; set; }
+}
+
+public class CheckLockStatusResponse
+{
+    public bool IsLocked { get; set; }
+    public string? VisaCode { get; set; }
+    public string? VisaName { get; set; }
+    public DateTime? LockedAt { get; set; }
+    public string? LockedByStaffName { get; set; }
+}
+
+// Unauthenticated interview models (cookie-based)
+public class UnauthInterviewStartRequest
+{
+    // No fields needed - will create anonymous session
+}
+
+public class UnauthInterviewStartResponse
+{
+    public Guid SessionId { get; set; }
+    public string CookieKey { get; set; } = "l4h_interview_progress";
+    public DateTime ExpiresAt { get; set; }
+}
+
+public class UnauthInterviewAnswerRequest
+{
+    public Guid SessionId { get; set; }
+    public string QuestionKey { get; set; } = string.Empty;
+    public string AnswerValue { get; set; } = string.Empty;
+}
+
+public class RegisterWithInterviewDataRequest
+{
+    // User registration fields
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string MiddleName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public DateTime DateOfBirth { get; set; }
+    public string Gender { get; set; } = string.Empty;
+    public string MaritalStatus { get; set; } = string.Empty;
+    public string Nationality { get; set; } = string.Empty;
+
+    // Address fields
+    public string Country { get; set; } = string.Empty;
+    public string StreetAddress { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string StateProvince { get; set; } = string.Empty;
+    public string PostalCode { get; set; } = string.Empty;
+    public string? AddressType { get; set; } // "own-mortgage", "rent", "family", "friend"
+
+    // Guardian emails (if under 18)
+    public List<string> GuardianEmails { get; set; } = new();
+
+    // Interview session ID to transfer data from cookie
+    public Guid? InterviewSessionId { get; set; }
+}
