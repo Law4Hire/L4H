@@ -37,6 +37,7 @@ export { initL4HI18n, initCannlawI18n, initSharedI18n, initI18nWithConfig, getI1
 export { RouteGuard } from './RouteGuard';
 // React Query
 export { QueryProvider, queryClient } from './query-provider';
+export { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 // Formatters
 export { formatCurrency, formatDate, formatTime, formatDateTime, formatNumber, formatRelativeTime, formatFileSize, formatPercentage, formatList, } from './formatters';
 // Accessibility features

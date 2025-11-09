@@ -31,5 +31,6 @@ export { initL4HI18n, initCannlawI18n, initSharedI18n, initI18nWithConfig, getI1
 export type { I18nApplicationConfig, SharedNamespace, L4HNamespace, CannlawNamespace } from './i18n-config';
 export { RouteGuard } from './RouteGuard';
 export { QueryProvider, queryClient } from './query-provider';
+export { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 export { formatCurrency, formatDate, formatTime, formatDateTime, formatNumber, formatRelativeTime, formatFileSize, formatPercentage, formatList, } from './formatters';
 export * from './accessibility';

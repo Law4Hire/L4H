@@ -40,7 +40,16 @@
       "Bash(while true)",
       "Bash(do sleep 60)",
       "Bash(done)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dotnet:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx playwright:*)",
+      "Bash(npm install:*)",
+      "Bash(npx playwright install:*)",
+      "Bash(node test-l4h-login.js:*)",
+      "Bash(npm update:*)",
+      "Bash(npm run dev)",
+      "Bash(gh run:*)"
     ],
     "deny": [],
     "ask": []
