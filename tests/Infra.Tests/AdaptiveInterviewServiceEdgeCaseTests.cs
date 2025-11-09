@@ -486,7 +486,7 @@ namespace L4H.Tests.Infrastructure
             // Assert
             result.Should().NotBeNull();
             // Should handle conflicting filters gracefully
-            result.RemainingVisaTypes.Should().BeGreaterOrEqualTo(0);
+            result.RemainingVisaTypes.Should().BeGreaterThanOrEqualTo(0);
         }
 
         [Fact]
@@ -539,7 +539,7 @@ namespace L4H.Tests.Infrastructure
             result.Should().NotBeNull();
             result.RemainingVisaCodes.Should().Contain("EB-5");
             // Should narrow down to very few options
-            result.RemainingVisaTypes.Should().BeLessOrEqualTo(3);
+            result.RemainingVisaTypes.Should().BeLessThanOrEqualTo(3);
         }
 
         #endregion

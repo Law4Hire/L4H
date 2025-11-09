@@ -285,8 +285,8 @@ public class InterviewController : ControllerBase
             var session = new InterviewSession
             {
                 Id = Guid.NewGuid(),
-                UserId = null!, // No user for unauthenticated session
-                CaseId = null!, // No case for unauthenticated session
+                UserId = null, // No user for unauthenticated session
+                CaseId = null, // No case for unauthenticated session
                 Status = "active",
                 StartedAt = DateTime.UtcNow
             };

@@ -206,25 +206,29 @@ public class L4HDbContext : DbContext
 
             entity.Property(e => e.UserId)
                 .HasConversion(
-                    v => v.Value,
-                    v => new UserId(v));
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : null)
+                .IsRequired(false);
 
             entity.Property(e => e.CaseId)
                 .HasConversion(
-                    v => v.Value,
-                    v => new CaseId(v));
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new CaseId(v.Value) : null)
+                .IsRequired(false);
 
             entity.Property(e => e.Status).HasMaxLength(50);
 
             entity.HasOne(e => e.User)
                 .WithMany(e => e.InterviewSessions)
                 .HasForeignKey(e => e.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
 
             entity.HasOne(e => e.Case)
                 .WithMany(e => e.InterviewSessions)
                 .HasForeignKey(e => e.CaseId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.CaseId);
