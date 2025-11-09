@@ -168,17 +168,17 @@ namespace L4H.Infrastructure.Services
                     break;
 
                 // Family-Based Preference Categories
-                case "F-1": // F1 immigrant (not student)
+                case "F1": // Family First Preference (unmarried sons/daughters of US citizens)
                     EvaluateFamilyF1(answers, user, ref metRequirements, ref unmetRequirements);
                     break;
-                case "F-2A":
-                case "F-2B":
+                case "F2A":
+                case "F2B":
                     EvaluateFamilyF2(answers, user, visaType.Code, ref metRequirements, ref unmetRequirements);
                     break;
-                case "F-3":
+                case "F3":
                     EvaluateFamilyF3(answers, user, ref metRequirements, ref unmetRequirements);
                     break;
-                case "F-4":
+                case "F4":
                     EvaluateFamilyF4(answers, user, ref metRequirements, ref unmetRequirements);
                     break;
 
