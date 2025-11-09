@@ -16,4 +16,5 @@ public class InterviewSession
     public virtual Case Case { get; set; } = null!;
     public virtual User User { get; set; } = null!;
     public virtual ICollection<InterviewQA> QAs { get; set; } = new List<InterviewQA>();
+    public virtual ICollection<VisaEligibilityResult> VisaEligibilityResults { get; set; } = new List<VisaEligibilityResult>();
 }

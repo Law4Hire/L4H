@@ -23,6 +23,7 @@ public class L4HDbContext : DbContext
     public DbSet<CasePriceSnapshot> CasePriceSnapshots { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<InterviewQA> InterviewQAs { get; set; }
+    public DbSet<VisaEligibilityResult> VisaEligibilityResults { get; set; }
     public DbSet<Country> Countries { get; set; }
     public DbSet<CountryVisaType> CountryVisaTypes { get; set; }
     public DbSet<USSubdivision> USSubdivisions { get; set; }
@@ -389,6 +390,14 @@ public class L4HDbContext : DbContext
                 .WithMany(e => e.Cases)
                 .HasForeignKey(e => e.PackageId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(e => e.AttorneySelectedVisaType)
+                .WithMany()
+                .HasForeignKey(e => e.AttorneySelectedVisaTypeId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasIndex(e => e.AttorneySelectedVisaTypeId);
+            entity.HasIndex(e => e.IsVisaLockedByAttorney);
         });
 
         modelBuilder.Entity<InterviewQA>(entity =>
@@ -403,6 +412,29 @@ public class L4HDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(e => new { e.SessionId, e.StepNumber }).IsUnique();
+        });
+
+        modelBuilder.Entity<VisaEligibilityResult>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.EligibilityStatus).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Rationale).HasMaxLength(2000);
+            entity.Property(e => e.MetRequirements).HasMaxLength(4000);
+            entity.Property(e => e.UnmetRequirements).HasMaxLength(4000);
+
+            entity.HasOne(e => e.InterviewSession)
+                .WithMany(e => e.VisaEligibilityResults)
+                .HasForeignKey(e => e.InterviewSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.VisaType)
+                .WithMany()
+                .HasForeignKey(e => e.VisaTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.InterviewSessionId);
+            entity.HasIndex(e => e.VisaTypeId);
+            entity.HasIndex(e => new { e.InterviewSessionId, e.VisaTypeId }).IsUnique();
         });
 
         modelBuilder.Entity<Country>(entity =>

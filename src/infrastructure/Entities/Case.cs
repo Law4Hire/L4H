@@ -12,12 +12,20 @@ public class Case
     public int? PackageId { get; set; }
     public Guid? AssignedStaffId { get; set; }
     public bool IsInterviewLocked { get; set; } = false;
+
+    // Attorney lock-in fields
+    public int? AttorneySelectedVisaTypeId { get; set; }
+    public bool IsVisaLockedByAttorney { get; set; } = false;
+    public DateTime? VisaLockedAt { get; set; }
+    public Guid? VisaLockedByStaffId { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties
     public User User { get; set; } = null!;
     public VisaType? VisaType { get; set; }
+    public VisaType? AttorneySelectedVisaType { get; set; }
     public Package? Package { get; set; }
     public ICollection<CasePriceSnapshot> PriceSnapshots { get; set; } = new List<CasePriceSnapshot>();
     public ICollection<InterviewSession> InterviewSessions { get; set; } = new List<InterviewSession>();
