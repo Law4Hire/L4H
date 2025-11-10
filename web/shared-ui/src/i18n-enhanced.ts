@@ -1593,7 +1593,6 @@ const resources = {
       caseStatus: 'Fall-Status',
     },
   },
-},
 }
 
 // Cookie utility functions
