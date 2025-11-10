@@ -438,7 +438,7 @@ public class InterviewController : ControllerBase
         var visaRecommendation = new VisaRecommendation
         {
             Id = Guid.NewGuid(),
-            CaseId = session.CaseId,
+            CaseId = session!.CaseId,
             VisaTypeId = recommendation.VisaTypeId,
             Rationale = recommendation.Rationale,
             CreatedAt = DateTime.UtcNow
@@ -633,7 +633,7 @@ public class InterviewController : ControllerBase
         {
             Id = Guid.NewGuid(), // Completely new session ID
             UserId = userId,
-            CaseId = session.CaseId, // Same case, but fresh session
+            CaseId = session!.CaseId, // Same case, but fresh session
             Status = "active",
             StartedAt = DateTime.UtcNow
         };
@@ -853,7 +853,7 @@ public class InterviewController : ControllerBase
                 var visaRecommendation = new VisaRecommendation
                 {
                     Id = Guid.NewGuid(),
-                    CaseId = session.CaseId,
+                    CaseId = session!.CaseId,
                     VisaTypeId = recommendation.VisaTypeId,
                     Rationale = recommendation.Rationale,
                     CreatedAt = DateTime.UtcNow
@@ -983,7 +983,7 @@ public class InterviewController : ControllerBase
         // Create a recommendation record
         var recommendation = new VisaRecommendation
         {
-            CaseId = session.CaseId,
+            CaseId = session!.CaseId,
             VisaTypeId = visaType.Id,
             Rationale = $"User selected {visaType.Code} ({visaType.Name}) directly during the interview process. This is a suggested starting point for working with legal professionals.",
             CreatedAt = DateTime.UtcNow
@@ -1079,7 +1079,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            var caseIdValue = new CaseId(caseId);
+            CaseId caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
@@ -1132,7 +1132,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            var caseIdValue = new CaseId(caseId);
+            CaseId caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
@@ -1180,7 +1180,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            var caseIdValue = new CaseId(caseId);
+            CaseId caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
@@ -1237,7 +1237,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            var caseIdValue = new CaseId(caseId);
+            CaseId caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
@@ -1358,7 +1358,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            var caseIdValue = new CaseId(caseId);
+            CaseId caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
