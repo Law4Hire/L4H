@@ -1396,8 +1396,7 @@ const resources = {
       'appointments.caseId': 'কেস আইডি',
       'appointments.date': 'তারিখ ও সময়',
       'appointments.notes': 'বিঃদ্রঃ',
-      'appointments.scheduleFirst': 'শুরু করার জন্য
-  your first appointment to get started',
+      'appointments.scheduleFirst': 'শুরু করার জন্য your first appointment to get started',
       'appointments.durationHelper': 'মিনিটে সময়কাল',
       // Messages keys
       'messages.title': 'বার্তা',
