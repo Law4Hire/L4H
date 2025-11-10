@@ -1592,3 +1592,137 @@ const resources = {
       messages: 'Nachrichten',
       caseStatus: 'Fall-Status',
     },
+  },
+},
+}
+
+// Cookie utility functions
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null
+  return null
+}
+
+function setCookie(name: string, value: string, days = 365): void {
+  if (typeof document === 'undefined') return
+
+  const expires = new Date()
+  expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000))
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`
+}
+
+// Get saved language from cookie or default to browser preference
+function getInitialLanguage(): string {
+  // First check for saved language in cookie
+  const savedLanguage = getCookie('l4h-language')
+  if (savedLanguage && Object.keys(CULTURE_NAMES).includes(savedLanguage)) {
+    return savedLanguage
+  }
+
+  // Fall back to browser language detection
+  if (typeof navigator !== 'undefined') {
+    const browserLang = navigator.language
+    // Check if we support the exact language
+    if (Object.keys(CULTURE_NAMES).includes(browserLang)) {
+      return browserLang
+    }
+
+    // Check if we support the language family (e.g., 'en' from 'en-GB')
+    const langFamily = browserLang.split('-')[0]
+    const supportedLang = Object.keys(CULTURE_NAMES).find(lang => lang.startsWith(langFamily))
+    if (supportedLang) {
+      return supportedLang
+    }
+  }
+
+  // Default to English
+  return 'en-US'
+}
+
+// Initialize i18next with all namespaces
+const initPromise = i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: getInitialLanguage(),
+    fallbackLng: 'en-US',
+    defaultNS: 'common',
+    ns: ['common', 'nav', 'auth', 'status', 'pricing', 'appointments', 'messages', 'uploads', 'admin', 'reports', 'login', 'app', 'brand', 'dashboard', 'case', 'landing', 'interview', 'questions', 'options', 'outcomes'],
+    interpolation: {
+      escapeValue: false
+    },
+    react: {
+      useSuspense: true // Enable suspense for proper loading
+    },
+    debug: true,
+    returnEmptyString: false, // Always return the key if translation not found
+    returnNull: false,
+    keySeparator: '.',
+    nsSeparator: ':',
+    saveMissing: false
+  })
+
+// Ensure i18n is ready and register interview resources
+export const i18nReady = initPromise.then(async () => {
+  // Interview resources are now loaded via the new i18n-config system
+  // No need to load from CSV anymore
+
+  // Expose i18n to window for debugging
+  if (typeof window !== 'undefined') {
+    (window as any).i18next = i18n
+  }
+})
+
+export default i18n
+
+// Culture interface for API responses
+export interface Culture {
+  code: string
+  displayName: string
+}
+
+// Get supported cultures from local definitions
+export function getSupportedCultures(): Culture[] {
+  return Object.entries(CULTURE_NAMES).map(([code, displayName]) => ({
+    code,
+    displayName
+  }))
+}
+
+// Set culture locally only
+export async function setCulture(cultureCode: string): Promise<void> {
+  await i18n.changeLanguage(cultureCode)
+  setRTLDirection(cultureCode)
+  // Save language preference to cookie
+  setCookie('l4h-language', cultureCode)
+}
+
+// Note: CSRF token function removed as it's not used in local-only mode
+
+// Set RTL direction based on language
+export function setRTLDirection(languageCode: string): void {
+  const htmlElement = document.documentElement
+  const isRTL = RTL_LANGUAGES.some(rtlLang =>
+    languageCode.toLowerCase().startsWith(rtlLang.toLowerCase())
+  )
+
+  htmlElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr')
+  htmlElement.setAttribute('lang', languageCode)
+}
+
+// Check if current language is RTL
+export function isRTL(): boolean {
+  const currentLang = i18n.language
+  return RTL_LANGUAGES.some(rtlLang =>
+    currentLang.toLowerCase().startsWith(rtlLang.toLowerCase())
+  )
+}
+
+// Hook for using translations with namespace support
+export function useT(namespace?: string) {
+  const { t } = useTranslation(namespace)
+  return t
+}
