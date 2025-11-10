@@ -161,7 +161,7 @@ public class UploadTokenServiceTests
 
         // Assert
         result.Should().EndWith(".pdf");
-        result.Length.Should().BeLessOrEqualTo(255);
+        result.Length.Should().BeLessThanOrEqualTo(255);
     }
 
     private string GenerateTestSignature(Guid caseId, string filename, string contentType, long sizeBytes, long exp)
