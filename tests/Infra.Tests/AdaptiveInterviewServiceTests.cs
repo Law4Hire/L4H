@@ -1097,7 +1097,7 @@ namespace L4H.Tests.Infrastructure
             {
                 result.Should().NotBeNull();
                 result.Key.Should().NotBeNullOrEmpty();
-                result.RemainingVisaTypes.Should().BeGreaterOrEqualTo(0);
+                result.RemainingVisaTypes.Should().BeGreaterThanOrEqualTo(0);
             });
 
             // All results should be consistent

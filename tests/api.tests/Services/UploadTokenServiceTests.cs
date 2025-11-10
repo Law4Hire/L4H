@@ -103,7 +103,7 @@ public class UploadTokenServiceTests
 
         // Assert
         result.Should().EndWith(extension);
-        result.Length.Should().BeLessOrEqualTo(255);
+        result.Length.Should().BeLessThanOrEqualTo(255);
         result.Should().StartWith("aaa"); // Should preserve start of original name
     }
 
