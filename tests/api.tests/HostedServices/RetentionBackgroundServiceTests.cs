@@ -231,8 +231,9 @@ public sealed class RetentionBackgroundServiceTests : IDisposable
 
         // Act
         var executeTask = service.StartAsync(cancellationTokenSource.Token);
-        
-        await Task.Delay(100);
+
+        // Give the background service enough time to start and execute at least once
+        await Task.Delay(500);
         cancellationTokenSource.Cancel();
 
         try
