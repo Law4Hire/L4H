@@ -26,14 +26,35 @@ interface FormErrors {
   [key: string]: string
 }
 
+interface Attorney {
+  id: number
+  name: string
+  title: string
+  email: string
+  phone: string
+  bio?: string
+  photoUrl?: string
+  barNumber?: string
+  licenseState?: string
+  practiceAreas: string // JSON string
+  languages: string // JSON string
+  credentials: string // JSON string
+  yearsOfExperience: number
+  defaultHourlyRate: number
+  isManagingAttorney: boolean
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 const AttorneyManagementPage: React.FC = () => {
   const { attorneys, isLoading, createAttorney, updateAttorney, refetch: fetchAttorneys } = useAttorneys()
   const [showForm, setShowForm] = useState(false)
-  const [editingAttorney, setEditingAttorney] = useState<any>(null)
+  const [editingAttorney, setEditingAttorney] = useState<Attorney | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [showDeactivateModal, setShowDeactivateModal] = useState(false)
-  const [attorneyToDeactivate, setAttorneyToDeactivate] = useState<any>(null)
+  const [attorneyToDeactivate, setAttorneyToDeactivate] = useState<Attorney | null>(null)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -253,7 +274,7 @@ const AttorneyManagementPage: React.FC = () => {
     }
   }
 
-  const handleEdit = (attorney: any) => {
+  const handleEdit = (attorney: Attorney) => {
     setFormData({
       name: attorney.name || '',
       title: attorney.title || '',
