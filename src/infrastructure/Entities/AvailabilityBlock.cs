@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -22,5 +23,7 @@ public class AvailabilityBlock
     public DateTime? ExpiresAt { get; set; }
 
     // Navigation properties
+    [JsonIgnore]
+
     public User Staff { get; set; } = null!;
 }

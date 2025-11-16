@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -14,7 +15,13 @@ public class FormTemplate
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties
+    [JsonIgnore]
+
     public ICollection<FormField> Fields { get; set; } = new List<FormField>();
+    [JsonIgnore]
+
     public ICollection<FieldBinding> Bindings { get; set; } = new List<FieldBinding>();
+    [JsonIgnore]
+
     public ICollection<FormInstance> Instances { get; set; } = new List<FormInstance>();
 }

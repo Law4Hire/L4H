@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace L4H.Infrastructure.Entities;
 
 public class Package
@@ -12,6 +13,10 @@ public class Package
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties
+    [JsonIgnore]
+
     public ICollection<PricingRule> PricingRules { get; set; } = new List<PricingRule>();
+    [JsonIgnore]
+
     public ICollection<Case> Cases { get; set; } = new List<Case>();
 }

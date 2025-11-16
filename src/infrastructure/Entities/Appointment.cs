@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -38,8 +39,14 @@ public class Appointment
     public string? CancellationReason { get; set; }
 
     // Navigation properties
+    [JsonIgnore]
+
     public Case Case { get; set; } = null!;
+    [JsonIgnore]
+
     public User Staff { get; set; } = null!;
+    [JsonIgnore]
+
     public ICollection<RescheduleProposal> RescheduleProposals { get; set; } = new List<RescheduleProposal>();
     public Meeting? Meeting { get; set; }
 }

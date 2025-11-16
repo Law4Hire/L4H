@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -21,6 +22,8 @@ public class User
     
     // Attorney Association for Legal Professionals
     public int? AttorneyId { get; set; }
+    [JsonIgnore]
+
     public Attorney? Attorney { get; set; }
 
     // Extended Profile Information
@@ -42,18 +45,46 @@ public class User
     public string GuardianEmail { get; set; } = string.Empty;
 
     // Navigation properties
+    [JsonIgnore]
+
     public ICollection<Case> Cases { get; set; } = new List<Case>();
+    [JsonIgnore]
+
     public ICollection<GuardianLink> ChildLinks { get; set; } = new List<GuardianLink>();
+    [JsonIgnore]
+
     public ICollection<GuardianLink> GuardianLinks { get; set; } = new List<GuardianLink>();
+    [JsonIgnore]
+
     public ICollection<InterviewSession> InterviewSessions { get; set; } = new List<InterviewSession>();
+    [JsonIgnore]
+
     public ICollection<VisaRecommendation> VisaRecommendations { get; set; } = new List<VisaRecommendation>();
+    [JsonIgnore]
+
     public ICollection<RememberMeToken> RememberMeTokens { get; set; } = new List<RememberMeToken>();
+    [JsonIgnore]
+
     public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
+    [JsonIgnore]
+
     public ICollection<VisaChangeRequest> RequestedVisaChanges { get; set; } = new List<VisaChangeRequest>();
+    [JsonIgnore]
+
     public ICollection<Appointment> StaffAppointments { get; set; } = new List<Appointment>();
+    [JsonIgnore]
+
     public ICollection<AvailabilityBlock> AvailabilityBlocks { get; set; } = new List<AvailabilityBlock>();
+    [JsonIgnore]
+
     public ICollection<Message> SentMessages { get; set; } = new List<Message>();
+    [JsonIgnore]
+
     public ICollection<DailyDigestQueue> DigestQueues { get; set; } = new List<DailyDigestQueue>();
+    [JsonIgnore]
+
     public ICollection<EmailVerificationToken> EmailVerificationTokens { get; set; } = new List<EmailVerificationToken>();
+    [JsonIgnore]
+
     public ICollection<UserSession> UserSessions { get; set; } = new List<UserSession>();
 }

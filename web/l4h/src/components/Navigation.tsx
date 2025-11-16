@@ -20,7 +20,8 @@ export const Navigation: React.FC = () => {
       setJwtToken(null)
       // Dispatch custom event to notify auth state change
       window.dispatchEvent(new Event('jwt-token-changed'))
-      window.location.href = '/'
+      // Use navigate instead of window.location to avoid full page reload
+      navigate('/')
     })
   }
 

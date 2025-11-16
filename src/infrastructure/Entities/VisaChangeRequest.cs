@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -20,8 +21,16 @@ public class VisaChangeRequest
     public string? Notes { get; set; }
 
     // Navigation properties
+    [JsonIgnore]
+
     public Case Case { get; set; } = null!;
+    [JsonIgnore]
+
     public VisaType OldVisaType { get; set; } = null!;
+    [JsonIgnore]
+
     public VisaType NewVisaType { get; set; } = null!;
+    [JsonIgnore]
+
     public User RequestedByStaff { get; set; } = null!;
 }

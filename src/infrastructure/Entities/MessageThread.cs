@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -11,6 +12,10 @@ public class MessageThread
     public DateTime LastMessageAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties
+    [JsonIgnore]
+
     public Case Case { get; set; } = null!;
+    [JsonIgnore]
+
     public ICollection<Message> Messages { get; set; } = new List<Message>();
 }

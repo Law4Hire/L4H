@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace L4H.Infrastructure.Entities;
 
 public class FieldBinding

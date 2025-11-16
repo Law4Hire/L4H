@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace L4H.Infrastructure.Entities;
 
 public enum FormFieldType
@@ -19,6 +20,10 @@ public class FormField
     public string? DataKey { get; set; }
 
     // Navigation properties
+    [JsonIgnore]
+
     public FormTemplate Template { get; set; } = null!;
+    [JsonIgnore]
+
     public ICollection<FieldBinding> Bindings { get; set; } = new List<FieldBinding>();
 }

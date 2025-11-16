@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -23,6 +24,10 @@ public class VisaRecommendation
     public DateTime CreatedAt { get; set; }
 
     // Navigation properties
+    [JsonIgnore]
+
     public virtual Case Case { get; set; } = null!;
+    [JsonIgnore]
+
     public virtual VisaType VisaType { get; set; } = null!;
 }
