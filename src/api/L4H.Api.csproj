@@ -26,10 +26,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Validators\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0-rc.2.25502.107" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-rc.2.25502.107" />
@@ -41,8 +37,7 @@
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <!-- Swashbuckle temporarily removed due to .NET 10 type loading issues -->
-    <!-- <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" /> -->
+    <PackageReference Include="Scalar.AspNetCore" Version="1.2.66" />
   </ItemGroup>
 
   <ItemGroup>
