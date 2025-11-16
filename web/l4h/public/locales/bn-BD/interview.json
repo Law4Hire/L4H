@@ -10,10 +10,10 @@
   
   "progress": {
     "title": "সাক্ষাৎকারের অগ্রগতি",
-    "stats": "প্রশ্ন {{current}} | {{remaining}} ভিসার ধরন বাকি",
-    "currentQuestion": "প্রশ্ন {{current}}",
-    "remainingVisas": "{{count}} ভিসার ধরন বাকি",
-    "completionPercentage": "{{percentage}}% সম্পন্ন"
+    "stats": "প্রশ্ন +(current) | +(remaining) ভিসার ধরন বাকি",
+    "currentQuestion": "প্রশ্ন +(current)",
+    "remainingVisas": "+(count) ভিসার ধরন বাকি",
+    "completionPercentage": "+(percentage)% সম্পন্ন"
   },
   
   "buttons": {
@@ -38,7 +38,7 @@
     "title": "সাক্ষাৎকার সম্পন্ন",
     "congratulations": "অভিনন্দন!",
     "description": "আপনার উত্তরের ভিত্তিতে, আমাদের কাছে আপনার জন্য একটি ভিসার সুপারিশ রয়েছে।",
-    "stats": "উত্তর দেওয়া প্রশ্ন: {{count}} | ৮৮+ ভিসার ধরন থেকে সংকুচিত",
+    "stats": "উত্তর দেওয়া প্রশ্ন: +(count) | ৮৮+ ভিসার ধরন থেকে সংকুচিত",
     "recommendedVisa": "প্রস্তাবিত ভিসার ধরন",
     "backToDashboard": "ড্যাশবোর্ডে ফিরে যান",
     "viewPackages": "সেবা প্যাকেজ দেখুন",

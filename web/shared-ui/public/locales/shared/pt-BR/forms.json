@@ -76,8 +76,8 @@
     "invalidDate": "Please enter a valid date",
     "fileTooLarge": "File size is too large",
     "invalidFileType": "Invalid file type",
-    "minLength": "Must be at least {{min}} characters",
-    "maxLength": "Must be no more than {{max}} characters"
+    "minLength": "Must be at least +(min) characters",
+    "maxLength": "Must be no more than +(max) characters"
   },
   
   "messages": {

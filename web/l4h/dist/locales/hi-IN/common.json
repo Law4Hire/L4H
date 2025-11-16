@@ -86,7 +86,7 @@
     "emailInvalid": "Please enter a valid email address",
     "passwordTooShort": "Password must be at least 8 characters",
     "passwordNeedsSpecialChar": "Password must contain at least one special character",
-    "passwordNeedsMoreClasses": "Password must contain at least {{count}} different character types",
+    "passwordNeedsMoreClasses": "Password must contain at least +(count) different character types",
     "rateLimitExceeded": "Too many requests. Please try again later.",
     "passwordMinLength": "Password must be at least 8 characters",
     "dontHaveAccount": "Don't have an account?",
@@ -168,8 +168,8 @@
       "category": "श्रेणी",
       "description": "विवरण",
       "nextSteps": "अगले कदम",
-      "readyToApply": "{{code}} वीज़ा के लिए आवेदन करने के लिए तैयार हैं? हमारे आप्रवासन वकील पूरी प्रक्रिया के माध्यम से आपका मार्गदर्शन कर सकते हैं।",
-      "applyFor": "{{code}} वीज़ा के लिए आवेदन करें"
+      "readyToApply": "+(code) वीज़ा के लिए आवेदन करने के लिए तैयार हैं? हमारे आप्रवासन वकील पूरी प्रक्रिया के माध्यम से आपका मार्गदर्शन कर सकते हैं।",
+      "applyFor": "+(code) वीज़ा के लिए आवेदन करें"
     },
     "cta": {
       "title": "सही वीज़ा चुनने में मदद चाहिए?",

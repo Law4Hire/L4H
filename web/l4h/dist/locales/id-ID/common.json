@@ -84,7 +84,7 @@
     "emailInvalid": "Silakan masukkan alamat email yang valid",
     "passwordTooShort": "Kata sandi harus minimal 8 karakter",
     "passwordNeedsSpecialChar": "Kata sandi harus mengandung setidaknya satu karakter khusus",
-    "passwordNeedsMoreClasses": "Kata sandi harus mengandung setidaknya {{count}} jenis karakter yang berbeda",
+    "passwordNeedsMoreClasses": "Kata sandi harus mengandung setidaknya +(count) jenis karakter yang berbeda",
     "rateLimitExceeded": "Terlalu banyak permintaan. Silakan coba lagi nanti.",
     "passwordMinLength": "Kata sandi harus minimal 8 karakter",
     "dontHaveAccount": "Tidak punya akun?",
@@ -166,8 +166,8 @@
       "category": "Kategori",
       "description": "Deskripsi",
       "nextSteps": "Langkah Selanjutnya",
-      "readyToApply": "Siap mengajukan visa {{code}}? Pengacara imigrasi kami dapat memandu Anda melalui seluruh proses.",
-      "applyFor": "Ajukan Visa {{code}}"
+      "readyToApply": "Siap mengajukan visa +(code)? Pengacara imigrasi kami dapat memandu Anda melalui seluruh proses.",
+      "applyFor": "Ajukan Visa +(code)"
     },
     "cta": {
       "title": "Butuh Bantuan Memilih Visa yang Tepat?",

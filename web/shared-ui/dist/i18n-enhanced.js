@@ -141,8 +141,8 @@ const resources = {
             'visaLibrary.modal.category': 'Category',
             'visaLibrary.modal.description': 'Description',
             'visaLibrary.modal.nextSteps': 'Next Steps',
-            'visaLibrary.modal.readyToApply': 'Ready to apply for the {{code}} visa? Our immigration attorneys can guide you through the entire process.',
-            'visaLibrary.modal.applyFor': 'Apply for {{code}} Visa',
+            'visaLibrary.modal.readyToApply': 'Ready to apply for the +(code) visa? Our immigration attorneys can guide you through the entire process.',
+            'visaLibrary.modal.applyFor': 'Apply for +(code) Visa',
             'visaLibrary.cta.title': 'Need Help Choosing the Right Visa?',
             'visaLibrary.cta.description': 'Our immigration experts can help you determine which visa category fits your situation best.',
             'visaLibrary.cta.button': 'Start Your Application',
@@ -257,7 +257,7 @@ const resources = {
             emailInvalid: 'Please enter a valid email address',
             passwordTooShort: 'Password must be at least 8 characters',
             passwordNeedsSpecialChar: 'Password must contain at least one special character',
-            passwordNeedsMoreClasses: 'Password must contain at least {{count}} different character types',
+            passwordNeedsMoreClasses: 'Password must contain at least +(count) different character types',
             rateLimitExceeded: 'Too many requests. Please try again later.',
             passwordMinLength: 'Password must be at least 8 characters',
             dontHaveAccount: "Don't have an account?",
@@ -498,7 +498,7 @@ const resources = {
             loading: 'Loading...',
             progress: {
                 title: 'Adaptive Interview Progress',
-                stats: 'Question {{current}} | {{remaining}} visa types remaining'
+                stats: 'Question +(current) | +(remaining) visa types remaining'
             },
             next: 'Next Question'
         },
@@ -603,8 +603,8 @@ const resources = {
             'visaLibrary.modal.category': 'Categoría',
             'visaLibrary.modal.description': 'Descripción',
             'visaLibrary.modal.nextSteps': 'Siguientes pasos',
-            'visaLibrary.modal.readyToApply': '¿Listo para solicitar la visa {{code}}? Nuestros abogados de inmigración pueden guiarte en todo el proceso.',
-            'visaLibrary.modal.applyFor': 'Solicitar visa {{code}}',
+            'visaLibrary.modal.readyToApply': '¿Listo para solicitar la visa +(code)? Nuestros abogados de inmigración pueden guiarte en todo el proceso.',
+            'visaLibrary.modal.applyFor': 'Solicitar visa +(code)',
             'visaLibrary.visas.B1.name': 'Visitante de negocios',
             'visaLibrary.visas.B1.description': 'Visa de visitante de negocios para actividades comerciales temporales en los Estados Unidos.',
             'visaLibrary.visas.B2.name': 'Visitante turista',
@@ -656,7 +656,7 @@ const resources = {
             passwordTooShort: 'La contraseña debe tener al menos 8 caracteres',
             passwordMinLength: 'La contraseña debe tener al menos 6 caracteres',
             passwordNeedsSpecialChar: 'La contraseña debe contener al menos un carácter especial',
-            passwordNeedsMoreClasses: 'La contraseña debe contener al menos {{count}} tipos de caracteres diferentes',
+            passwordNeedsMoreClasses: 'La contraseña debe contener al menos +(count) tipos de caracteres diferentes',
             rateLimitExceeded: 'Demasiadas solicitudes. Por favor intenta de nuevo más tarde.',
             dontHaveAccount: '¿No tienes una cuenta?',
             signUpNow: 'Regístrate ahora',
@@ -893,7 +893,7 @@ const resources = {
             loading: 'Cargando...',
             progress: {
                 title: 'Progreso de Entrevista Adaptativa',
-                stats: 'Pregunta {{current}} | {{remaining}} tipos de visa restantes'
+                stats: 'Pregunta +(current) | +(remaining) tipos de visa restantes'
             },
             next: 'Siguiente Pregunta',
             backToDashboard: 'Volver al Panel',
@@ -1014,8 +1014,8 @@ const resources = {
             'visaLibrary.modal.category': 'الفئة',
             'visaLibrary.modal.description': 'الوصف',
             'visaLibrary.modal.nextSteps': 'الخطوات التالية',
-            'visaLibrary.modal.readyToApply': 'هل أنت مستعد للتقدم بطلب للحصول على تأشيرة {{code}}؟ يمكن لمحامينا توجيهك خلال العملية بأكملها.',
-            'visaLibrary.modal.applyFor': 'التقدم للحصول على تأشيرة {{code}}',
+            'visaLibrary.modal.readyToApply': 'هل أنت مستعد للتقدم بطلب للحصول على تأشيرة +(code)؟ يمكن لمحامينا توجيهك خلال العملية بأكملها.',
+            'visaLibrary.modal.applyFor': 'التقدم للحصول على تأشيرة +(code)',
         },
         nav: {
             login: 'تسجيل الدخول',
@@ -1063,7 +1063,7 @@ const resources = {
             passwordTooShort: 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل',
             passwordMinLength: 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل',
             passwordNeedsSpecialChar: 'يجب أن تحتوي كلمة المرور على حرف خاص واحد على الأقل',
-            passwordNeedsMoreClasses: 'يجب أن تحتوي كلمة المرور على {{count}} أنواع أحرف مختلفة على الأقل',
+            passwordNeedsMoreClasses: 'يجب أن تحتوي كلمة المرور على +(count) أنواع أحرف مختلفة على الأقل',
             rateLimitExceeded: 'طلبات كثيرة جداً. يرجى المحاولة مرة أخرى لاحقاً.',
             alreadyHaveAccount: 'هل لديك حساب بالفعل؟',
         },
@@ -1297,7 +1297,7 @@ const resources = {
             loading: 'جاري التحميل...',
             progress: {
                 title: 'تقدم المقابلة التكيفية',
-                stats: 'السؤال {{current}} | {{remaining}} أنواع الفيزا المتبقية'
+                stats: 'السؤال +(current) | +(remaining) أنواع الفيزا المتبقية'
             },
             next: 'السؤال التالي',
             backToDashboard: 'العودة إلى اللوحة',
@@ -1432,8 +1432,8 @@ const resources = {
             'visaLibrary.modal.category': 'বিভাগ',
             'visaLibrary.modal.description': 'বর্ণনা',
             'visaLibrary.modal.nextSteps': 'পরবর্তী পদক্ষেপ',
-            'visaLibrary.modal.readyToApply': '{{code}} ভিসার জন্য আবেদন করতে প্রস্তুত? আমাদের ইমিগ্রেশন আইনজীবীরা সম্পূর্ণ প্রক্রিয়ায় আপনাকে নির্দেশনা দিতে পারেন।',
-            'visaLibrary.modal.applyFor': '{{code}} ভিসার জন্য আবেদন করুন',
+            'visaLibrary.modal.readyToApply': '+(code) ভিসার জন্য আবেদন করতে প্রস্তুত? আমাদের ইমিগ্রেশন আইনজীবীরা সম্পূর্ণ প্রক্রিয়ায় আপনাকে নির্দেশনা দিতে পারেন।',
+            'visaLibrary.modal.applyFor': '+(code) ভিসার জন্য আবেদন করুন',
             'visaLibrary.visas.B1.name': 'বিজনেস ভিজিটর',
             'visaLibrary.visas.B1.description': 'আস্থায় অস্থায়ী ব্যবসায়িক কার্যকলাপের জন্য বিজনেস ভিজিটর ভিসা।',
             'visaLibrary.visas.B2.name': 'ট্যুরিস্ট ভিজিটর',
@@ -1562,7 +1562,7 @@ const resources = {
             passwordTooShort: 'Das Passwort muss mindestens 8 Zeichen lang sein',
             passwordMinLength: 'Das Passwort muss mindestens 8 Zeichen lang sein',
             passwordNeedsSpecialChar: 'Das Passwort muss mindestens ein Sonderzeichen enthalten',
-            passwordNeedsMoreClasses: 'Das Passwort muss mindestens {{count}} verschiedene Zeichentypen enthalten',
+            passwordNeedsMoreClasses: 'Das Passwort muss mindestens +(count) verschiedene Zeichentypen enthalten',
             rateLimitExceeded: 'Zu viele Anfragen. Bitte versuchen Sie es später erneut.',
             alreadyHaveAccount: 'Bereits ein Konto vorhanden?',
         },
@@ -1642,7 +1642,10 @@ const initPromise = i18n
     defaultNS: 'common',
     ns: ['common', 'nav', 'auth', 'status', 'pricing', 'appointments', 'messages', 'uploads', 'admin', 'reports', 'login', 'app', 'brand', 'dashboard', 'case', 'landing', 'interview', 'questions', 'options', 'outcomes'],
     interpolation: {
-        escapeValue: false
+        escapeValue: false,
+        // Use +() syntax instead of +() for placeholders
+        prefix: '+(',
+        suffix: ')'
     },
     react: {
         useSuspense: true // Enable suspense for proper loading

@@ -86,7 +86,7 @@
     "emailInvalid": "Please enter a valid email address",
     "passwordTooShort": "Password must be at least 8 characters",
     "passwordNeedsSpecialChar": "Password must contain at least one special character",
-    "passwordNeedsMoreClasses": "Password must contain at least {{count}} different character types",
+    "passwordNeedsMoreClasses": "Password must contain at least +(count) different character types",
     "rateLimitExceeded": "Too many requests. Please try again later.",
     "passwordMinLength": "Password must be at least 8 characters",
     "dontHaveAccount": "Don't have an account?",
@@ -168,8 +168,8 @@
       "category": "类别",
       "description": "描述",
       "nextSteps": "下一步",
-      "readyToApply": "准备申请{{code}}签证了吗？我们的移民律师将指导您完成整个过程。",
-      "applyFor": "申请{{code}}签证"
+      "readyToApply": "准备申请+(code)签证了吗？我们的移民律师将指导您完成整个过程。",
+      "applyFor": "申请+(code)签证"
     },
     "cta": {
       "title": "需要帮助选择合适的签证吗？",

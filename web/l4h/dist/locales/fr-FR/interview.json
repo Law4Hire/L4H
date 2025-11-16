@@ -10,10 +10,10 @@
   
   "progress": {
     "title": "Progression de l'Entretien Adaptatif",
-    "stats": "Question {{current}} | {{remaining}} types de visa restants",
-    "currentQuestion": "Question {{current}}",
-    "remainingVisas": "{{count}} types de visa restants",
-    "completionPercentage": "{{percentage}}% terminé"
+    "stats": "Question +(current) | +(remaining) types de visa restants",
+    "currentQuestion": "Question +(current)",
+    "remainingVisas": "+(count) types de visa restants",
+    "completionPercentage": "+(percentage)% terminé"
   },
   
   "buttons": {
@@ -33,7 +33,7 @@
     "invalidAnswer": "Veuillez fournir une réponse valide",
     "completionFailed": "Échec de la finalisation de l'entretien. Veuillez réessayer.",
     "selectVisaDirectly": "Cliquez sur un type de visa pour le sélectionner directement :",
-    "selectVisa": "Sélectionner le type de visa {{code}}",
+    "selectVisa": "Sélectionner le type de visa +(code)",
     "retrySuccess": "Reconnexion réussie ! Poursuite de votre entretien.",
     "interviewRestarted": "L'entretien a été redémarré. Nouveau départ !",
     "connectionLost": "Connexion perdue. Votre progression a été sauvegardée.",
@@ -44,7 +44,7 @@
     "title": "Entretien Terminé",
     "congratulations": "Félicitations !",
     "description": "Basé sur vos réponses, nous avons une recommandation de visa pour vous.",
-    "stats": "Questions répondues : {{count}} | Réduit de plus de 88 types de visa",
+    "stats": "Questions répondues : +(count) | Réduit de plus de 88 types de visa",
     "recommendedVisa": "Type de Visa Recommandé",
     "backToDashboard": "Retour au Tableau de Bord",
     "viewPackages": "Voir les Forfaits de Services",

@@ -84,7 +84,7 @@
     "emailInvalid": "Lütfen geçerli bir e-posta adresi girin",
     "passwordTooShort": "Şifre en az 8 karakter olmalı",
     "passwordNeedsSpecialChar": "Şifre en az bir özel karakter içermeli",
-    "passwordNeedsMoreClasses": "Şifre en az {{count}} farklı karakter türü içermeli",
+    "passwordNeedsMoreClasses": "Şifre en az +(count) farklı karakter türü içermeli",
     "rateLimitExceeded": "Çok fazla istek. Lütfen daha sonra tekrar deneyin.",
     "passwordMinLength": "Şifre en az 8 karakter olmalı",
     "dontHaveAccount": "Hesabınız yok mu?",
@@ -166,8 +166,8 @@
       "category": "Kategori",
       "description": "Açıklama",
       "nextSteps": "Sonraki Adımlar",
-      "readyToApply": "{{code}} vizesi için başvurmaya hazır mısınız? Göçmenlik avukatlarımız tüm süreçte size rehberlik edebilir.",
-      "applyFor": "{{code}} Vizesi için Başvur"
+      "readyToApply": "+(code) vizesi için başvurmaya hazır mısınız? Göçmenlik avukatlarımız tüm süreçte size rehberlik edebilir.",
+      "applyFor": "+(code) Vizesi için Başvur"
     },
     "cta": {
       "title": "Doğru vizeyi seçmek için yardıma mı ihtiyacınız var?",

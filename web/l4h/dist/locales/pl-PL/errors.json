@@ -49,8 +49,8 @@
     "dateFormat": "Wprowadź prawidłową datę.",
     "fileSize": "Rozmiar pliku przekracza maksymalny limit.",
     "fileType": "Typ pliku nie jest obsługiwany.",
-    "minLength": "Musi mieć co najmniej {{min}} znaków.",
-    "maxLength": "Nie może mieć więcej niż {{max}} znaków.",
+    "minLength": "Musi mieć co najmniej +(min) znaków.",
+    "maxLength": "Nie może mieć więcej niż +(max) znaków.",
     "numeric": "Wprowadź prawidłową liczbę.",
     "alphanumeric": "Dozwolone są tylko litery i cyfry."
   },

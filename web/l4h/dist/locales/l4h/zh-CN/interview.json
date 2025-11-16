@@ -10,10 +10,10 @@
   
   "progress": {
     "title": "Adaptive Interview Progress",
-    "stats": "Question {{current}} | {{remaining}} visa types remaining",
-    "currentQuestion": "Question {{current}}",
-    "remainingVisas": "{{count}} visa types remaining",
-    "completionPercentage": "{{percentage}}% complete"
+    "stats": "Question +(current) | +(remaining) visa types remaining",
+    "currentQuestion": "Question +(current)",
+    "remainingVisas": "+(count) visa types remaining",
+    "completionPercentage": "+(percentage)% complete"
   },
   
   "buttons": {
@@ -33,7 +33,7 @@
     "invalidAnswer": "Please provide a valid answer",
     "completionFailed": "Failed to complete the interview. Please try again.",
     "selectVisaDirectly": "Click a visa type to select it directly:",
-    "selectVisa": "Select {{code}} visa type",
+    "selectVisa": "Select +(code) visa type",
     "retrySuccess": "Successfully reconnected! Continuing your interview.",
     "interviewRestarted": "Interview has been restarted. Starting fresh!",
     "connectionLost": "Connection lost. Your progress has been saved.",
@@ -44,7 +44,7 @@
     "title": "Interview Complete",
     "congratulations": "Congratulations!",
     "description": "Based on your answers, we have a visa recommendation for you.",
-    "stats": "Questions answered: {{count}} | Narrowed down from 88+ visa types",
+    "stats": "Questions answered: +(count) | Narrowed down from 88+ visa types",
     "recommendedVisa": "Recommended Visa Type",
     "backToDashboard": "Back to Dashboard",
     "viewPackages": "View Service Packages",
@@ -94,7 +94,7 @@
   
   "modal": {
     "confirmSelection": "Confirm Visa Type Selection",
-    "selectionDescription": "You are selecting {{visaCode}} as your visa type suggestion.",
+    "selectionDescription": "You are selecting +(visaCode) as your visa type suggestion.",
     "completionNote": "This will complete the interview and set this visa type as your suggested starting point for working with our legal professionals.",
     "legalDisclaimer": "This is a suggestion only and is not a legal recommendation. Our legal professionals will review your case and provide official guidance."
   },
@@ -110,7 +110,7 @@
     "retryDescription": "Attempt to continue from where you left off.",
     "restartDescription": "Start the interview over from the beginning.",
     "dashboardDescription": "Return to your dashboard and try again later.",
-    "retryAttempt": "Retry attempt {{count}} of 3",
+    "retryAttempt": "Retry attempt +(count) of 3",
     "maxRetriesReached": "Maximum retry attempts reached. Please restart or return to dashboard."
   },
   
