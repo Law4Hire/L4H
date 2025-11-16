@@ -55,8 +55,18 @@ const ContactPage: React.FC = () => {
     )
   }
 
-  const locations = siteConfig?.locations ? JSON.parse(siteConfig.locations) : []
-  const socialMediaPlatforms = siteConfig?.socialMediaPlatforms ? JSON.parse(siteConfig.socialMediaPlatforms) : []
+  // Safely parse JSON with error handling
+  const safeJsonParse = <T,>(jsonString: string | undefined | null, fallback: T): T => {
+    if (!jsonString) return fallback
+    try {
+      return JSON.parse(jsonString) as T
+    } catch (error) {
+      return fallback
+    }
+  }
+
+  const locations = safeJsonParse(siteConfig?.locations, [])
+  const socialMediaPlatforms = safeJsonParse(siteConfig?.socialMediaPlatforms, [])
 
   return (
     <PublicLayout>

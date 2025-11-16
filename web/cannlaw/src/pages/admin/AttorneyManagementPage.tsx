@@ -825,23 +825,34 @@ const AttorneyManagementPage: React.FC = () => {
                   </div>
 
                   {/* Practice Areas */}
-                  {attorney.practiceAreas && attorney.practiceAreas !== '[]' && (
-                    <div className="mb-4">
-                      <p className="text-xs font-medium text-gray-500 mb-1">PRACTICE AREAS</p>
-                      <div className="flex flex-wrap gap-1">
-                        {JSON.parse(attorney.practiceAreas).slice(0, 3).map((area: string, index: number) => (
-                          <span key={index} className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-700">
-                            {area}
-                          </span>
-                        ))}
-                        {JSON.parse(attorney.practiceAreas).length > 3 && (
-                          <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-700">
-                            +{JSON.parse(attorney.practiceAreas).length - 3} more
-                          </span>
-                        )}
+                  {attorney.practiceAreas && attorney.practiceAreas !== '[]' && (() => {
+                    // Parse once and cache to avoid multiple JSON.parse calls
+                    const practiceAreas = (() => {
+                      try {
+                        return JSON.parse(attorney.practiceAreas) as string[]
+                      } catch {
+                        return []
+                      }
+                    })()
+
+                    return (
+                      <div className="mb-4">
+                        <p className="text-xs font-medium text-gray-500 mb-1">PRACTICE AREAS</p>
+                        <div className="flex flex-wrap gap-1">
+                          {practiceAreas.slice(0, 3).map((area: string, index: number) => (
+                            <span key={index} className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-700">
+                              {area}
+                            </span>
+                          ))}
+                          {practiceAreas.length > 3 && (
+                            <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-700">
+                              +{practiceAreas.length - 3} more
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                  })()}
 
                   {/* Action Buttons */}
                   <div className="flex justify-between items-center pt-4 border-t border-gray-200">

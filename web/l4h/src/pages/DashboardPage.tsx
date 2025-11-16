@@ -94,10 +94,8 @@ const DashboardPage: React.FC = () => {
   }
 
   const handleViewCase = (caseId: string) => {
-    console.log('handleViewCase called with caseId:', caseId)
     // Navigate to the case detail page
     navigate(`/cases/${caseId}`)
-    console.log('Navigation attempted to:', `/cases/${caseId}`)
   }
 
   const getStatusBadge = (status: string) => {
