@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "Ayuda de Inmigración de EE.UU.",
-    "subtitle": "Impulsado por Law4Hire"
+    "subtitle": "Impulsado por Law4Hire",
+    "tagline": "Tu viaje a los Estados Unidos comienza aquí"
   },
   "loading": "Cargando...",
   "error": "Error",
@@ -20,9 +21,11 @@
   "sort": "Ordenar",
   "refresh": "Actualizar",
   "retry": "Reintentar",
+  "dismiss": "Descartar",
   "confirm": "Confirmar",
   "yes": "Sí",
   "no": "No",
+  "note": "Nota",
   "required": "Requerido",
   "optional": "Opcional",
   "all": "Todos",

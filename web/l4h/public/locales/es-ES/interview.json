@@ -31,7 +31,13 @@
     "error": "Ocurrió un error al cargar la pregunta",
     "sessionExpired": "Su sesión de entrevista ha expirado. Por favor comience de nuevo.",
     "invalidAnswer": "Por favor proporcione una respuesta válida",
-    "completionFailed": "Error al completar la entrevista. Por favor intente de nuevo."
+    "completionFailed": "Error al completar la entrevista. Por favor intente de nuevo.",
+    "selectVisaDirectly": "Haga clic en un tipo de visa para seleccionarlo directamente:",
+    "selectVisa": "Seleccionar visa tipo {{code}}",
+    "retrySuccess": "¡Reconectado exitosamente! Continuando su entrevista.",
+    "interviewRestarted": "La entrevista ha sido reiniciada. ¡Empezando de nuevo!",
+    "connectionLost": "Conexión perdida. Su progreso ha sido guardado.",
+    "recoveringSession": "Recuperando su sesión de entrevista..."
   },
   
   "completion": {
@@ -85,6 +91,28 @@
     "moreThan3Years": "Más de 3 años",
     "permanent": "Residencia permanente"
   },
+
+  "modal": {
+    "confirmSelection": "Confirmar Selección de Tipo de Visa",
+    "selectionDescription": "Está seleccionando {{visaCode}} como su sugerencia de tipo de visa.",
+    "completionNote": "Esto completará la entrevista y establecerá este tipo de visa como su punto de partida sugerido para trabajar con nuestros profesionales legales.",
+    "legalDisclaimer": "Esto es solo una sugerencia y no es una recomendación legal. Nuestros profesionales legales revisarán su caso y proporcionarán orientación oficial."
+  },
+
+  "errorRecovery": {
+    "title": "Error de Entrevista",
+    "description": "Encontramos un problema con su sesión de entrevista.",
+    "options": {
+      "retry": "Intentar de Nuevo",
+      "restart": "Reiniciar Entrevista",
+      "dashboard": "Volver al Panel de Control"
+    },
+    "retryDescription": "Intentar continuar desde donde lo dejó.",
+    "restartDescription": "Comenzar la entrevista de nuevo desde el principio.",
+    "dashboardDescription": "Regresar a su panel de control e intentar más tarde.",
+    "retryAttempt": "Intento de reintento {{count}} de 3",
+    "maxRetriesReached": "Se alcanzó el máximo de intentos de reintento. Por favor reinicie o regrese al panel de control."
+  },
   
   "errors": {
     "loadingFailed": "Error al cargar las preguntas de la entrevista",
@@ -92,6 +120,7 @@
     "sessionInvalid": "Su sesión de entrevista es inválida",
     "networkError": "Error de red. Por favor verifique su conexión.",
     "serverError": "Error del servidor. Por favor intente más tarde.",
-    "unexpectedError": "Ocurrió un error inesperado"
+    "unexpectedError": "Ocurrió un error inesperado",
+    "restartFailed": "Error al reiniciar la entrevista. Por favor intente de nuevo."
   }
 }
