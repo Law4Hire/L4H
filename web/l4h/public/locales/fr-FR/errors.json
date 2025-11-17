@@ -12,14 +12,19 @@
     "tooManyRequests": "Trop de demandes. Veuillez attendre avant de réessayer.",
     "internalServerError": "Erreur interne du serveur. Veuillez contacter le support si le problème persiste."
   },
-  
   "translation": {
     "loadFailed": "Échec du chargement des traductions pour cette langue.",
     "fallbackActive": "Certaines traductions ne sont pas disponibles. Affichage de l'anglais en secours.",
     "missingKey": "Traduction non trouvée pour ce texte.",
-    "parsingError": "Erreur d'analyse du fichier de traduction."
+    "parsingError": "Erreur d'analyse du fichier de traduction.",
+    "retrying": "Nouvelle tentative... ({{count}})",
+    "retryFailed": "Nouvelle tentative {{count}} échouée",
+    "failedLanguages": "Langues échouées : {{languages}}",
+    "networkError": "Erreur réseau lors du chargement des traductions.",
+    "serverError": "Erreur serveur lors du chargement des traductions.",
+    "timeoutError": "Délai de chargement des traductions dépassé.",
+    "unknownError": "Une erreur inconnue s'est produite lors du chargement des traductions."
   },
-  
   "interview": {
     "sessionExpired": "Votre session d'entretien a expiré. Veuillez commencer un nouvel entretien.",
     "invalidAnswer": "Veuillez fournir une réponse valide pour continuer.",
@@ -29,7 +34,6 @@
     "sessionInvalid": "Votre session d'entretien est invalide. Veuillez recommencer.",
     "progressLost": "Votre progrès d'entretien peut avoir été perdu. Souhaitez-vous recommencer ?"
   },
-  
   "auth": {
     "loginRequired": "Veuillez vous connecter pour continuer.",
     "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
@@ -39,7 +43,6 @@
     "passwordExpired": "Votre mot de passe a expiré. Veuillez le réinitialiser.",
     "twoFactorRequired": "L'authentification à deux facteurs est requise."
   },
-  
   "validation": {
     "required": "Ce champ est requis.",
     "email": "Veuillez saisir une adresse e-mail valide.",
@@ -54,7 +57,6 @@
     "numeric": "Veuillez saisir un nombre valide.",
     "alphanumeric": "Seules les lettres et les chiffres sont autorisés."
   },
-  
   "api": {
     "genericError": "Une erreur s'est produite lors du traitement de votre demande.",
     "retryableError": "Une erreur temporaire s'est produite. Veuillez réessayer.",
@@ -62,7 +64,6 @@
     "maintenanceMode": "Le système est actuellement en maintenance. Veuillez réessayer plus tard.",
     "rateLimitExceeded": "Vous avez dépassé la limite de taux. Veuillez attendre avant de faire plus de demandes."
   },
-  
   "file": {
     "uploadFailed": "Échec du téléchargement du fichier. Veuillez réessayer.",
     "downloadFailed": "Échec du téléchargement du fichier.",
@@ -71,7 +72,6 @@
     "corruptFile": "Le fichier semble être corrompu.",
     "unsupportedFormat": "Le format de fichier n'est pas pris en charge."
   },
-  
   "general": {
     "unexpectedError": "Une erreur inattendue s'est produite. Veuillez actualiser la page et réessayer.",
     "featureUnavailable": "Cette fonctionnalité n'est actuellement pas disponible.",

@@ -12,14 +12,19 @@
     "tooManyRequests": "Zbyt wiele żądań. Poczekaj przed ponowną próbą.",
     "internalServerError": "Wewnętrzny błąd serwera. Skontaktuj się z pomocą techniczną, jeśli problem się utrzymuje."
   },
-  
   "translation": {
     "loadFailed": "Nie udało się załadować tłumaczeń dla tego języka.",
     "fallbackActive": "Niektóre tłumaczenia są niedostępne. Pokazywanie angielskiego jako zapasowego.",
     "missingKey": "Nie znaleziono tłumaczenia dla tego tekstu.",
-    "parsingError": "Błąd podczas analizowania pliku tłumaczenia."
+    "parsingError": "Błąd podczas analizowania pliku tłumaczenia.",
+    "retrying": "Ponowna próba... ({{count}})",
+    "retryFailed": "Ponowna próba {{count}} nie powiodła się",
+    "failedLanguages": "Nieudane języki: {{languages}}",
+    "networkError": "Błąd sieci podczas ładowania tłumaczeń.",
+    "serverError": "Błąd serwera podczas ładowania tłumaczeń.",
+    "timeoutError": "Przekroczono limit czasu ładowania tłumaczeń.",
+    "unknownError": "Wystąpił nieznany błąd podczas ładowania tłumaczeń."
   },
-  
   "interview": {
     "sessionExpired": "Twoja sesja rozmowy wygasła. Rozpocznij nową rozmowę.",
     "invalidAnswer": "Podaj prawidłową odpowiedź, aby kontynuować.",
@@ -29,7 +34,6 @@
     "sessionInvalid": "Twoja sesja rozmowy jest nieprawidłowa. Zacznij od nowa.",
     "progressLost": "Twój postęp w rozmowie mógł zostać utracony. Czy chcesz zacząć od nowa?"
   },
-  
   "auth": {
     "loginRequired": "Zaloguj się, aby kontynuować.",
     "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie.",
@@ -39,7 +43,6 @@
     "passwordExpired": "Twoje hasło wygasło. Zresetuj je.",
     "twoFactorRequired": "Wymagana jest dwuskładnikowa autoryzacja."
   },
-  
   "validation": {
     "required": "To pole jest wymagane.",
     "email": "Wprowadź prawidłowy adres email.",
@@ -54,7 +57,6 @@
     "numeric": "Wprowadź prawidłową liczbę.",
     "alphanumeric": "Dozwolone są tylko litery i cyfry."
   },
-  
   "api": {
     "genericError": "Wystąpił błąd podczas przetwarzania Twojego żądania.",
     "retryableError": "Wystąpił tymczasowy błąd. Spróbuj ponownie.",
@@ -62,7 +64,6 @@
     "maintenanceMode": "System jest obecnie w trybie konserwacji. Spróbuj ponownie później.",
     "rateLimitExceeded": "Przekroczyłeś limit żądań. Poczekaj przed wykonaniem kolejnych żądań."
   },
-  
   "file": {
     "uploadFailed": "Nie udało się przesłać pliku. Spróbuj ponownie.",
     "downloadFailed": "Nie udało się pobrać pliku.",
@@ -71,7 +72,6 @@
     "corruptFile": "Plik wydaje się być uszkodzony.",
     "unsupportedFormat": "Format pliku nie jest obsługiwany."
   },
-  
   "general": {
     "unexpectedError": "Wystąpił nieoczekiwany błąd. Odśwież stronę i spróbuj ponownie.",
     "featureUnavailable": "Ta funkcja jest obecnie niedostępna.",

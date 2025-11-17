@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "ABD Göçmenlik Yardımı",
-    "subtitle": "Law4Hire tarafından desteklenmektedir"
+    "subtitle": "Law4Hire tarafından desteklenmektedir",
+    "tagline": "Amerika Birleşik Devletleri'ne yolculuğunuz burada başlıyor"
   },
   "loading": "Yükleniyor...",
   "error": "Hata",
@@ -252,5 +253,7 @@
         "description": "Yatırımcılar için beşinci tercih istihdam tabanlı yeşil kart."
       }
     }
-  }
+  },
+  "dismiss": "Kapat",
+  "note": "Not"
 }

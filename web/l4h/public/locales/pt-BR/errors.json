@@ -12,14 +12,19 @@
     "tooManyRequests": "Muitas solicitações. Aguarde antes de tentar novamente.",
     "internalServerError": "Erro interno do servidor. Entre em contato com o suporte se o problema persistir."
   },
-  
   "translation": {
     "loadFailed": "Falha ao carregar traduções para este idioma.",
     "fallbackActive": "Algumas traduções não estão disponíveis. Mostrando inglês como alternativa.",
     "missingKey": "Tradução não encontrada para este texto.",
-    "parsingError": "Erro ao analisar arquivo de tradução."
+    "parsingError": "Erro ao analisar arquivo de tradução.",
+    "retrying": "Tentando novamente... ({{count}})",
+    "retryFailed": "Tentativa {{count}} falhou",
+    "failedLanguages": "Idiomas com falha: {{languages}}",
+    "networkError": "Erro de rede ao carregar traduções.",
+    "serverError": "Erro do servidor ao carregar traduções.",
+    "timeoutError": "Tempo limite de carregamento de traduções esgotado.",
+    "unknownError": "Ocorreu um erro desconhecido ao carregar traduções."
   },
-  
   "interview": {
     "sessionExpired": "Sua sessão de entrevista expirou. Inicie uma nova entrevista.",
     "invalidAnswer": "Forneça uma resposta válida para continuar.",
@@ -29,7 +34,6 @@
     "sessionInvalid": "Sua sessão de entrevista é inválida. Comece novamente.",
     "progressLost": "Seu progresso na entrevista pode ter sido perdido. Gostaria de começar novamente?"
   },
-  
   "auth": {
     "loginRequired": "Faça login para continuar.",
     "sessionExpired": "Sua sessão expirou. Faça login novamente.",
@@ -39,7 +43,6 @@
     "passwordExpired": "Sua senha expirou. Redefina-a.",
     "twoFactorRequired": "Autenticação de dois fatores é necessária."
   },
-  
   "validation": {
     "required": "Este campo é obrigatório.",
     "email": "Digite um endereço de email válido.",
@@ -54,7 +57,6 @@
     "numeric": "Digite um número válido.",
     "alphanumeric": "Apenas letras e números são permitidos."
   },
-  
   "api": {
     "genericError": "Ocorreu um erro ao processar sua solicitação.",
     "retryableError": "Ocorreu um erro temporário. Tente novamente.",
@@ -62,7 +64,6 @@
     "maintenanceMode": "O sistema está atualmente em manutenção. Tente novamente mais tarde.",
     "rateLimitExceeded": "Você excedeu o limite de taxa. Aguarde antes de fazer mais solicitações."
   },
-  
   "file": {
     "uploadFailed": "Falha ao enviar arquivo. Tente novamente.",
     "downloadFailed": "Falha ao baixar arquivo.",
@@ -71,7 +72,6 @@
     "corruptFile": "O arquivo parece estar corrompido.",
     "unsupportedFormat": "Formato de arquivo não suportado."
   },
-  
   "general": {
     "unexpectedError": "Ocorreu um erro inesperado. Atualize a página e tente novamente.",
     "featureUnavailable": "Este recurso está atualmente indisponível.",

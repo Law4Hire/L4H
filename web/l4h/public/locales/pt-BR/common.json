@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "Ajuda de Imigração dos EUA",
-    "subtitle": "Desenvolvido por Law4Hire"
+    "subtitle": "Desenvolvido por Law4Hire",
+    "tagline": "Sua jornada para os Estados Unidos começa aqui"
   },
   "loading": "Carregando...",
   "error": "Erro",
@@ -39,7 +40,6 @@
   "undo": "Desfazer",
   "redo": "Refazer",
   "getStarted": "Começar",
-  
   "nav": {
     "dashboard": "Painel",
     "pricing": "Preços",
@@ -253,5 +253,7 @@
         "description": "Green card baseado em emprego de quinta preferência para investidores."
       }
     }
-  }
+  },
+  "dismiss": "Dispensar",
+  "note": "Nota"
 }

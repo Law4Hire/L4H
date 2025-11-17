@@ -7,7 +7,6 @@
   "previous": "Question Précédente",
   "restart": "Redémarrer l'Entretien",
   "complete": "Terminer l'Entretien",
-  
   "progress": {
     "title": "Progression de l'Entretien Adaptatif",
     "stats": "Question {{current}} | {{remaining}} types de visa restants",
@@ -15,7 +14,6 @@
     "remainingVisas": "{{count}} types de visa restants",
     "completionPercentage": "{{percentage}}% terminé"
   },
-  
   "buttons": {
     "next": "Suivant",
     "previous": "Précédent",
@@ -23,7 +21,6 @@
     "complete": "Terminer",
     "skip": "Passer la Question"
   },
-  
   "messages": {
     "selectOption": "Veuillez sélectionner une option pour continuer",
     "required": "Cette question est requise",
@@ -34,12 +31,11 @@
     "completionFailed": "Échec de la finalisation de l'entretien. Veuillez réessayer.",
     "selectVisaDirectly": "Cliquez sur un type de visa pour le sélectionner directement :",
     "selectVisa": "Sélectionner le type de visa {{code}}",
-    "retrySuccess": "Reconnexion réussie ! Poursuite de votre entretien.",
-    "interviewRestarted": "L'entretien a été redémarré. Nouveau départ !",
+    "retrySuccess": "Reconnecté avec succès ! Poursuite de votre entretien.",
+    "interviewRestarted": "L'entretien a été redémarré. Recommencement !",
     "connectionLost": "Connexion perdue. Votre progression a été sauvegardée.",
     "recoveringSession": "Récupération de votre session d'entretien..."
   },
-  
   "completion": {
     "title": "Entretien Terminé",
     "congratulations": "Félicitations !",
@@ -50,7 +46,6 @@
     "viewPackages": "Voir les Forfaits de Services",
     "startApplication": "Commencer la Demande"
   },
-  
   "categories": {
     "visitTransit": "Visite et Transit",
     "studyExchange": "Étude et Échange",
@@ -62,7 +57,6 @@
     "adoption": "Adoption Étrangère",
     "citizenship": "Citoyenneté (N-400)"
   },
-  
   "questions": {
     "category": "Quelle catégorie correspond le mieux à votre situation ?",
     "purpose": "Quel est l'objectif principal de votre visite aux États-Unis ?",
@@ -76,7 +70,6 @@
     "citizenship": "Quel est votre pays de citoyenneté ?",
     "residence": "Quel est votre pays de résidence ?"
   },
-  
   "options": {
     "yes": "Oui",
     "no": "Non",
@@ -91,13 +84,33 @@
     "moreThan3Years": "Plus de 3 ans",
     "permanent": "Résidence permanente"
   },
-  
   "errors": {
     "loadingFailed": "Échec du chargement des questions d'entretien",
     "submissionFailed": "Échec de l'envoi de votre réponse",
     "sessionInvalid": "Votre session d'entretien est invalide",
     "networkError": "Erreur réseau. Veuillez vérifier votre connexion.",
     "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
-    "unexpectedError": "Une erreur inattendue s'est produite"
+    "unexpectedError": "Une erreur inattendue s'est produite",
+    "restartFailed": "Échec du redémarrage de l'entretien. Veuillez réessayer."
+  },
+  "modal": {
+    "confirmSelection": "Confirmer la sélection du type de visa",
+    "selectionDescription": "Vous sélectionnez {{visaCode}} comme suggestion de type de visa.",
+    "completionNote": "Cela complétera l'entretien et définira ce type de visa comme point de départ suggéré pour travailler avec nos professionnels juridiques.",
+    "legalDisclaimer": "Ceci n'est qu'une suggestion et non une recommandation juridique. Nos professionnels juridiques examineront votre dossier et fourniront des conseils officiels."
+  },
+  "errorRecovery": {
+    "title": "Erreur d'entretien",
+    "description": "Nous avons rencontré un problème avec votre session d'entretien.",
+    "options": {
+      "retry": "Réessayer",
+      "restart": "Redémarrer l'entretien",
+      "dashboard": "Retour au tableau de bord"
+    },
+    "retryDescription": "Tenter de continuer là où vous vous êtes arrêté.",
+    "restartDescription": "Recommencer l'entretien depuis le début.",
+    "dashboardDescription": "Retourner à votre tableau de bord et réessayer plus tard.",
+    "retryAttempt": "Tentative {{count}} sur 3",
+    "maxRetriesReached": "Nombre maximum de tentatives atteint. Veuillez redémarrer ou retourner au tableau de bord."
   }
 }
