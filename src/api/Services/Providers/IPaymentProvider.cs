@@ -1,4 +1,4 @@
-using L4H.Api.Models;
+using L4H.Shared.Models;
 
 namespace L4H.Api.Services.Providers;
 

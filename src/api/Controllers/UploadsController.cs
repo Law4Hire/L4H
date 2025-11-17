@@ -6,7 +6,6 @@ using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
 using L4H.Api.Services;
-using L4H.Api.Models;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Json;

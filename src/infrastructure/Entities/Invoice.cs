@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 
 namespace L4H.Infrastructure.Entities;
@@ -19,7 +20,13 @@ public class Invoice
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties
+    [JsonIgnore]
+
     public Case Case { get; set; } = null!;
+    [JsonIgnore]
+
     public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    [JsonIgnore]
+
     public ICollection<Refund> Refunds { get; set; } = new List<Refund>();
 }

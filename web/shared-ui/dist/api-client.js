@@ -346,51 +346,53 @@ export const invoices = {
     }
 };
 // Interview API methods
+// New unified interview API
 export const interview = {
-    async start(caseId) {
-        return fetchJson('/v1/interview/start', {
+    // Start a new anonymous interview
+    async startAnonymous(languageCode) {
+        return fetchJson('/interview/anonymous/start', {
             method: 'POST',
-            body: JSON.stringify({ caseId })
+            body: JSON.stringify({ languageCode })
         });
     },
-    async nextQuestion(sessionId) {
-        return fetchJson('/v1/interview/next-question', {
+    // Resume an existing anonymous interview
+    async resumeAnonymous(sessionToken) {
+        return fetchJson('/interview/anonymous/resume', {
             method: 'POST',
-            body: JSON.stringify({ sessionId })
+            body: JSON.stringify({ sessionToken })
         });
     },
-    async answer(data) {
-        return fetchJson('/v1/interview/answer', {
+    // Submit an answer and get next question
+    async submitAnswer(sessionToken, questionKey, answer) {
+        return fetchJson('/interview/anonymous/answer', {
+            method: 'POST',
+            body: JSON.stringify({ sessionToken, questionKey, answer })
+        });
+    },
+    // Complete the interview and get evaluations
+    async complete(sessionToken) {
+        return fetchJson('/interview/anonymous/complete', {
+            method: 'POST',
+            body: JSON.stringify({ sessionToken })
+        });
+    },
+    // Get visa evaluations for a session
+    async getEvaluations(sessionToken) {
+        return fetchJson(`/interview/anonymous/evaluations/${sessionToken}`);
+    },
+    // User selects their preferred visa
+    async selectVisa(sessionToken, visaTypeId) {
+        return fetchJson('/interview/anonymous/select-visa', {
+            method: 'POST',
+            body: JSON.stringify({ sessionToken, visaTypeId })
+        });
+    },
+    // Create account with interview data
+    async registerWithInterview(data) {
+        return fetchJson('/interview/anonymous/register', {
             method: 'POST',
             body: JSON.stringify(data)
         });
-    },
-    async selectVisaType(sessionId, visaTypeCode) {
-        return fetchJson('/v1/interview/select-visa-type', {
-            method: 'POST',
-            body: JSON.stringify({ sessionId, visaTypeCode })
-        });
-    },
-    async complete(sessionId) {
-        return fetchJson('/v1/interview/complete', {
-            method: 'POST',
-            body: JSON.stringify({ sessionId })
-        });
-    },
-    async rerun(caseId) {
-        return fetchJson('/v1/interview/rerun', {
-            method: 'POST',
-            body: JSON.stringify({ caseId })
-        });
-    },
-    async lock(caseId) {
-        return fetchJson('/v1/interview/lock', {
-            method: 'POST',
-            body: JSON.stringify({ caseId })
-        });
-    },
-    async history() {
-        return fetchJson('/v1/interview/history');
     }
 };
 // Admin API methods

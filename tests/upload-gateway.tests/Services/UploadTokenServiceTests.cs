@@ -1,5 +1,5 @@
 using FluentAssertions;
-using L4H.UploadGateway.Models;
+using L4H.Shared.Models;
 using L4H.UploadGateway.Services;
 using Microsoft.Extensions.Options;
 using Xunit;

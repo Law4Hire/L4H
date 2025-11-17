@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -12,5 +13,7 @@ public class EmailVerificationToken
     public DateTime CreatedAt { get; set; }
 
     // Navigation properties
+    [JsonIgnore]
+
     public User User { get; set; } = null!;
 }

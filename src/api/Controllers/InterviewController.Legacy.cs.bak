@@ -21,6 +21,7 @@ public class InterviewController : ControllerBase
     private readonly IAdaptiveInterviewService _adaptiveInterview;
     private readonly IAdoptionCaseService _adoptionCaseService;
     private readonly ICitizenshipCaseService _citizenshipCaseService;
+    private readonly DecisionTreeVisaEligibilityService _eligibilityService;
     private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<InterviewController> _logger;
 
@@ -30,6 +31,7 @@ public class InterviewController : ControllerBase
         IAdaptiveInterviewService adaptiveInterview,
         IAdoptionCaseService adoptionCaseService,
         ICitizenshipCaseService citizenshipCaseService,
+        DecisionTreeVisaEligibilityService eligibilityService,
         IStringLocalizer<Shared> localizer,
         ILogger<InterviewController> logger)
     {
@@ -38,6 +40,7 @@ public class InterviewController : ControllerBase
         _adaptiveInterview = adaptiveInterview;
         _adoptionCaseService = adoptionCaseService;
         _citizenshipCaseService = citizenshipCaseService;
+        _eligibilityService = eligibilityService;
         _localizer = localizer;
         _logger = logger;
     }
@@ -264,6 +267,191 @@ public class InterviewController : ControllerBase
     }
 
     /// <summary>
+    /// Start a new unauthenticated interview session (cookie-based)
+    /// </summary>
+    /// <param name="request">Unauthenticated interview start request</param>
+    /// <returns>Interview session details with cookie information</returns>
+    [HttpPost("unauth/start")]
+    [AllowAnonymous]
+    [ProducesResponseType<UnauthInterviewStartResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UnauthStart([FromBody] UnauthInterviewStartRequest request)
+    {
+        try
+        {
+            _logger.LogInformation("Starting unauthenticated interview session");
+
+            // Create anonymous interview session (no user or case)
+            var session = new InterviewSession
+            {
+                Id = Guid.NewGuid(),
+                UserId = null, // No user for unauthenticated session
+                CaseId = null, // No case for unauthenticated session
+                Status = "active",
+                StartedAt = DateTime.UtcNow
+            };
+
+            _context.InterviewSessions.Add(session);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            _logger.LogInformation("Unauthenticated interview session {SessionId} created", session.Id);
+
+            var expiresAt = DateTime.UtcNow.AddHours(24);
+
+            return Ok(new UnauthInterviewStartResponse
+            {
+                SessionId = session.Id,
+                CookieKey = "l4h_interview_progress",
+                ExpiresAt = expiresAt
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error starting unauthenticated interview");
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = _localizer["Common.InternalError"],
+                Detail = _localizer["Common.InternalErrorDetail"],
+                Instance = "/api/v1/interview/unauth/start"
+            });
+        }
+    }
+
+    /// <summary>
+    /// Submit an answer for unauthenticated interview (cookie-based)
+    /// </summary>
+    /// <param name="request">Unauthenticated interview answer request</param>
+    /// <returns>Answer confirmation</returns>
+    [HttpPost("unauth/answer")]
+    [AllowAnonymous]
+    [ProducesResponseType<InterviewAnswerResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UnauthAnswer([FromBody] UnauthInterviewAnswerRequest request)
+    {
+        try
+        {
+            _logger.LogInformation("Recording unauthenticated answer for session {SessionId}: {QuestionKey} = {AnswerValue}",
+                request.SessionId, request.QuestionKey, request.AnswerValue);
+
+            // Validate input
+            if (string.IsNullOrWhiteSpace(request.QuestionKey))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = _localizer["Interview.InvalidQuestion"],
+                    Detail = _localizer["Interview.InvalidQuestionDetail"],
+                    Instance = "/api/v1/interview/unauth/answer"
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.AnswerValue))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = _localizer["Interview.InvalidAnswer"],
+                    Detail = _localizer["Interview.InvalidAnswerDetail"],
+                    Instance = "/api/v1/interview/unauth/answer"
+                });
+            }
+
+            // Validate session exists
+            var session = await _context.InterviewSessions
+                .FirstOrDefaultAsync(s => s.Id == request.SessionId)
+                .ConfigureAwait(false);
+
+            if (session == null)
+            {
+                _logger.LogWarning("Session not found: {SessionId}", request.SessionId);
+                return NotFound(new ProblemDetails
+                {
+                    Title = _localizer["Interview.SessionNotFound"],
+                    Detail = _localizer["Interview.SessionNotFoundDetail"],
+                    Instance = $"/api/v1/interview/unauth/answer"
+                });
+            }
+
+            // Check session expiration (24 hours)
+            if (session.StartedAt.AddHours(24) < DateTime.UtcNow)
+            {
+                _logger.LogInformation("Session {SessionId} has expired", request.SessionId);
+                session.Status = "expired";
+                session.FinishedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+
+                return Conflict(new ProblemDetails
+                {
+                    Title = _localizer["Interview.SessionExpired"],
+                    Detail = _localizer["Interview.SessionExpiredDetail"],
+                    Instance = $"/api/v1/interview/unauth/answer"
+                });
+            }
+
+            // Upsert the answer
+            var existingQA = await _context.InterviewQAs
+                .FirstOrDefaultAsync(q => q.SessionId == request.SessionId && q.QuestionKey == request.QuestionKey)
+                .ConfigureAwait(false);
+
+            int stepNumber;
+            if (existingQA != null)
+            {
+                _logger.LogInformation("Updating existing answer for question {QuestionKey} in session {SessionId}",
+                    request.QuestionKey, request.SessionId);
+
+                existingQA.AnswerValue = request.AnswerValue;
+                existingQA.AnsweredAt = DateTime.UtcNow;
+                stepNumber = existingQA.StepNumber;
+            }
+            else
+            {
+                // Get the next step number
+                var maxStepNumber = await _context.InterviewQAs
+                    .Where(q => q.SessionId == request.SessionId)
+                    .Select(q => (int?)q.StepNumber)
+                    .MaxAsync().ConfigureAwait(false) ?? 0;
+
+                stepNumber = maxStepNumber + 1;
+
+                var newQA = new InterviewQA
+                {
+                    Id = Guid.NewGuid(),
+                    SessionId = request.SessionId,
+                    StepNumber = stepNumber,
+                    QuestionKey = request.QuestionKey,
+                    AnswerValue = request.AnswerValue,
+                    AnsweredAt = DateTime.UtcNow
+                };
+
+                _context.InterviewQAs.Add(newQA);
+
+                _logger.LogInformation("Added new answer for question {QuestionKey} in session {SessionId} at step {StepNumber}",
+                    request.QuestionKey, request.SessionId, stepNumber);
+            }
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            return Ok(new InterviewAnswerResponse
+            {
+                SessionId = request.SessionId,
+                StepNumber = stepNumber,
+                QuestionKey = request.QuestionKey,
+                AnswerValue = request.AnswerValue,
+                AnsweredAt = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error recording unauthenticated answer for session {SessionId}", request.SessionId);
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = _localizer["Common.InternalError"],
+                Detail = _localizer["Common.InternalErrorDetail"],
+                Instance = "/api/v1/interview/unauth/answer"
+            });
+        }
+    }
+
+    /// <summary>
     /// Answer an interview question
     /// </summary>
     /// <param name="request">Interview answer request</param>
@@ -438,7 +626,7 @@ public class InterviewController : ControllerBase
         var visaRecommendation = new VisaRecommendation
         {
             Id = Guid.NewGuid(),
-            CaseId = session!.CaseId,
+            CaseId = session.CaseId!.Value,
             VisaTypeId = recommendation.VisaTypeId,
             Rationale = recommendation.Rationale,
             CreatedAt = DateTime.UtcNow
@@ -464,6 +652,190 @@ public class InterviewController : ControllerBase
             RecommendationVisaType = visaType?.Name ?? "Unknown",
             Rationale = recommendation.Rationale
         });
+    }
+
+    /// <summary>
+    /// Get multi-visa eligibility results for a completed interview session
+    /// </summary>
+    /// <param name="request">Get visa results request</param>
+    /// <returns>Multi-visa eligibility results with eligible and potential visas</returns>
+    [HttpPost("results")]
+    [AllowAnonymous]
+    [ProducesResponseType<MultiVisaEligibilityResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetVisaResults([FromBody] GetVisaResultsRequest request)
+    {
+        try
+        {
+            _logger.LogInformation("Getting visa eligibility results for session {SessionId}", request.SessionId);
+
+            // Get session with QAs
+            var session = await _context.InterviewSessions
+                .Include(s => s.QAs)
+                .Include(s => s.User)
+                .FirstOrDefaultAsync(s => s.Id == request.SessionId)
+                .ConfigureAwait(false);
+
+            if (session == null)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Title = _localizer["Interview.SessionNotFound"],
+                    Detail = _localizer["Interview.SessionNotFoundDetail"],
+                    Instance = $"/api/v1/interview/results"
+                });
+            }
+
+            // Check if results already exist for this session
+            var existingResults = await _context.VisaEligibilityResults
+                .Include(r => r.VisaType)
+                .Where(r => r.InterviewSessionId == request.SessionId)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            MultiVisaEligibilityResponse response;
+
+            if (existingResults.Any())
+            {
+                _logger.LogInformation("Using existing eligibility results for session {SessionId}", request.SessionId);
+
+                // Return existing results
+                response = new MultiVisaEligibilityResponse
+                {
+                    SessionId = request.SessionId,
+                    EligibleVisas = existingResults
+                        .Where(r => r.EligibilityStatus == "Eligible")
+                        .OrderByDescending(r => r.MatchScore)
+                        .Select(r => new VisaEligibilityDto
+                        {
+                            VisaCode = r.VisaType.Code,
+                            VisaName = r.VisaType.Name,
+                            EligibilityStatus = r.EligibilityStatus,
+                            MatchScore = r.MatchScore,
+                            Rationale = r.Rationale ?? "",
+                            MetRequirements = string.IsNullOrEmpty(r.MetRequirements)
+                                ? new List<string>()
+                                : r.MetRequirements.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(),
+                            UnmetRequirements = string.IsNullOrEmpty(r.UnmetRequirements)
+                                ? new List<string>()
+                                : r.UnmetRequirements.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList()
+                        }).ToList(),
+                    PotentialVisas = existingResults
+                        .Where(r => r.EligibilityStatus == "Potential")
+                        .OrderByDescending(r => r.MatchScore)
+                        .Select(r => new VisaEligibilityDto
+                        {
+                            VisaCode = r.VisaType.Code,
+                            VisaName = r.VisaType.Name,
+                            EligibilityStatus = r.EligibilityStatus,
+                            MatchScore = r.MatchScore,
+                            Rationale = r.Rationale ?? "",
+                            MetRequirements = string.IsNullOrEmpty(r.MetRequirements)
+                                ? new List<string>()
+                                : r.MetRequirements.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(),
+                            UnmetRequirements = string.IsNullOrEmpty(r.UnmetRequirements)
+                                ? new List<string>()
+                                : r.UnmetRequirements.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList()
+                        }).ToList(),
+                    TotalEvaluated = existingResults.Count,
+                    EvaluatedAt = existingResults.Max(r => r.CreatedAt)
+                };
+            }
+            else
+            {
+                _logger.LogInformation("Evaluating visa eligibility for session {SessionId}", request.SessionId);
+
+                // Build answers dictionary
+                var answers = session.QAs.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue);
+
+                // Evaluate eligibility using the new service
+                var eligibilityResults = await _eligibilityService.EvaluateEligibilityAsync(answers, session.User)
+                    .ConfigureAwait(false);
+
+                _logger.LogInformation("Evaluation complete for session {SessionId}: {TotalResults} results, {EligibleCount} eligible, {PotentialCount} potential",
+                    request.SessionId, eligibilityResults.Count,
+                    eligibilityResults.Count(r => r.EligibilityStatus == "Eligible"),
+                    eligibilityResults.Count(r => r.EligibilityStatus == "Potential"));
+
+                // Save results to database
+                foreach (var result in eligibilityResults)
+                {
+                    result.InterviewSessionId = request.SessionId;
+                    _context.VisaEligibilityResults.Add(result);
+                }
+
+                // Mark session as completed
+                session.Status = "completed";
+                session.FinishedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+
+                // Load visa types for response
+                var visaTypeIds = eligibilityResults.Select(r => r.VisaTypeId).Distinct().ToList();
+                var visaTypes = await _context.VisaTypes
+                    .Where(vt => visaTypeIds.Contains(vt.Id))
+                    .ToDictionaryAsync(vt => vt.Id, vt => vt)
+                    .ConfigureAwait(false);
+
+                // Build response
+                response = new MultiVisaEligibilityResponse
+                {
+                    SessionId = request.SessionId,
+                    EligibleVisas = eligibilityResults
+                        .Where(r => r.EligibilityStatus == "Eligible")
+                        .OrderByDescending(r => r.MatchScore)
+                        .Select(r => new VisaEligibilityDto
+                        {
+                            VisaCode = visaTypes[r.VisaTypeId].Code,
+                            VisaName = visaTypes[r.VisaTypeId].Name,
+                            EligibilityStatus = r.EligibilityStatus,
+                            MatchScore = r.MatchScore,
+                            Rationale = r.Rationale ?? "",
+                            MetRequirements = string.IsNullOrEmpty(r.MetRequirements)
+                                ? new List<string>()
+                                : r.MetRequirements.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(),
+                            UnmetRequirements = string.IsNullOrEmpty(r.UnmetRequirements)
+                                ? new List<string>()
+                                : r.UnmetRequirements.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList()
+                        }).ToList(),
+                    PotentialVisas = eligibilityResults
+                        .Where(r => r.EligibilityStatus == "Potential")
+                        .OrderByDescending(r => r.MatchScore)
+                        .Select(r => new VisaEligibilityDto
+                        {
+                            VisaCode = visaTypes[r.VisaTypeId].Code,
+                            VisaName = visaTypes[r.VisaTypeId].Name,
+                            EligibilityStatus = r.EligibilityStatus,
+                            MatchScore = r.MatchScore,
+                            Rationale = r.Rationale ?? "",
+                            MetRequirements = string.IsNullOrEmpty(r.MetRequirements)
+                                ? new List<string>()
+                                : r.MetRequirements.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(),
+                            UnmetRequirements = string.IsNullOrEmpty(r.UnmetRequirements)
+                                ? new List<string>()
+                                : r.UnmetRequirements.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList()
+                        }).ToList(),
+                    TotalEvaluated = eligibilityResults.Count,
+                    EvaluatedAt = DateTime.UtcNow
+                };
+            }
+
+            _logger.LogInformation("Returning {EligibleCount} eligible visas and {PotentialCount} potential visas for session {SessionId}",
+                response.EligibleVisas.Count, response.PotentialVisas.Count, request.SessionId);
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting visa eligibility results for session {SessionId}", request.SessionId);
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = _localizer["Common.InternalError"],
+                Detail = _localizer["Common.InternalErrorDetail"],
+                Instance = "/api/v1/interview/results"
+            });
+        }
     }
 
     /// <summary>
@@ -581,6 +953,221 @@ public class InterviewController : ControllerBase
     }
 
     /// <summary>
+    /// Lock a specific visa type selection for a case (Attorney feature)
+    /// </summary>
+    /// <param name="request">Lock visa selection request</param>
+    /// <returns>Lock confirmation with visa details</returns>
+    [HttpPost("lock-visa-selection")]
+    [ProducesResponseType<LockVisaSelectionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> LockVisaSelection([FromBody] LockVisaSelectionRequest request)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            _logger.LogInformation("Locking visa selection for case {CaseId} by user {UserId}", request.CaseId, userId);
+
+            // Get the case
+            var caseEntity = await _context.Cases
+                .FirstOrDefaultAsync(c => c.Id == request.CaseId)
+                .ConfigureAwait(false);
+
+            if (caseEntity == null)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Case Not Found",
+                    Detail = _localizer["Cases.NotFound"],
+                    Instance = "/api/v1/interview/lock-visa-selection"
+                });
+            }
+
+            // Get the visa type
+            var visaType = await _context.VisaTypes
+                .FindAsync(request.VisaTypeId)
+                .ConfigureAwait(false);
+
+            if (visaType == null)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid Visa Type",
+                    Detail = "The specified visa type does not exist",
+                    Instance = "/api/v1/interview/lock-visa-selection"
+                });
+            }
+
+            // Lock the visa selection
+            caseEntity.AttorneySelectedVisaTypeId = request.VisaTypeId;
+            caseEntity.IsVisaLockedByAttorney = true;
+            caseEntity.VisaLockedAt = DateTime.UtcNow;
+            caseEntity.VisaLockedByStaffId = userId.Value;
+            caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            _logger.LogInformation("Visa selection locked for case {CaseId}: {VisaCode} ({VisaName})",
+                request.CaseId, visaType.Code, visaType.Name);
+
+            return Ok(new LockVisaSelectionResponse
+            {
+                Success = true,
+                VisaCode = visaType.Code,
+                VisaName = visaType.Name,
+                LockedAt = caseEntity.VisaLockedAt!.Value,
+                LockedByStaffId = userId.Value
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error locking visa selection for case {CaseId}", request.CaseId);
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = _localizer["Common.InternalError"],
+                Detail = _localizer["Common.InternalErrorDetail"],
+                Instance = "/api/v1/interview/lock-visa-selection"
+            });
+        }
+    }
+
+    /// <summary>
+    /// Unlock visa selection for a case (Admin feature)
+    /// </summary>
+    /// <param name="request">Unlock visa selection request</param>
+    /// <returns>Success response</returns>
+    [HttpPost("unlock-visa-selection")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UnlockVisaSelection([FromBody] UnlockVisaSelectionRequest request)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            _logger.LogInformation("Unlocking visa selection for case {CaseId} by user {UserId}. Reason: {Reason}",
+                request.CaseId, userId, request.Reason);
+
+            // Get the case
+            var caseEntity = await _context.Cases
+                .FirstOrDefaultAsync(c => c.Id == request.CaseId)
+                .ConfigureAwait(false);
+
+            if (caseEntity == null)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Case Not Found",
+                    Detail = _localizer["Cases.NotFound"],
+                    Instance = "/api/v1/interview/unlock-visa-selection"
+                });
+            }
+
+            // Unlock the visa selection
+            caseEntity.AttorneySelectedVisaTypeId = null;
+            caseEntity.IsVisaLockedByAttorney = false;
+            caseEntity.VisaLockedAt = null;
+            caseEntity.VisaLockedByStaffId = null;
+            caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            _logger.LogInformation("Visa selection unlocked for case {CaseId}", request.CaseId);
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error unlocking visa selection for case {CaseId}", request.CaseId);
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = _localizer["Common.InternalError"],
+                Detail = _localizer["Common.InternalErrorDetail"],
+                Instance = "/api/v1/interview/unlock-visa-selection"
+            });
+        }
+    }
+
+    /// <summary>
+    /// Check if a case has a locked visa selection
+    /// </summary>
+    /// <param name="request">Check lock status request</param>
+    /// <returns>Lock status information</returns>
+    [HttpPost("check-lock-status")]
+    [ProducesResponseType<CheckLockStatusResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CheckLockStatus([FromBody] CheckLockStatusRequest request)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            _logger.LogInformation("Checking lock status for case {CaseId}", request.CaseId);
+
+            // Get the case with visa type and staff details
+            var caseEntity = await _context.Cases
+                .Include(c => c.AttorneySelectedVisaType)
+                .FirstOrDefaultAsync(c => c.Id == request.CaseId && c.UserId == userId)
+                .ConfigureAwait(false);
+
+            if (caseEntity == null)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Case Not Found",
+                    Detail = _localizer["Cases.NotFound"],
+                    Instance = "/api/v1/interview/check-lock-status"
+                });
+            }
+
+            CheckLockStatusResponse response;
+
+            if (caseEntity.IsVisaLockedByAttorney && caseEntity.AttorneySelectedVisaType != null)
+            {
+                // Get staff name if locked
+                string? staffName = null;
+                if (caseEntity.VisaLockedByStaffId.HasValue)
+                {
+                    var staff = await _context.Users
+                        .FindAsync(new UserId(caseEntity.VisaLockedByStaffId.Value))
+                        .ConfigureAwait(false);
+                    staffName = staff != null ? $"{staff.FirstName} {staff.LastName}" : "Unknown";
+                }
+
+                response = new CheckLockStatusResponse
+                {
+                    IsLocked = true,
+                    VisaCode = caseEntity.AttorneySelectedVisaType.Code,
+                    VisaName = caseEntity.AttorneySelectedVisaType.Name,
+                    LockedAt = caseEntity.VisaLockedAt,
+                    LockedByStaffName = staffName
+                };
+            }
+            else
+            {
+                response = new CheckLockStatusResponse
+                {
+                    IsLocked = false,
+                    VisaCode = null,
+                    VisaName = null,
+                    LockedAt = null,
+                    LockedByStaffName = null
+                };
+            }
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking lock status for case {CaseId}", request.CaseId);
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = _localizer["Common.InternalError"],
+                Detail = _localizer["Common.InternalErrorDetail"],
+                Instance = "/api/v1/interview/check-lock-status"
+            });
+        }
+    }
+
+    /// <summary>
     /// Reset interview session (cancel current session and create a completely fresh one)
     /// </summary>
     /// <param name="request">Interview reset request</param>
@@ -633,7 +1220,7 @@ public class InterviewController : ControllerBase
         {
             Id = Guid.NewGuid(), // Completely new session ID
             UserId = userId,
-            CaseId = session!.CaseId, // Same case, but fresh session
+            CaseId = session.CaseId, // Same case, but fresh session
             Status = "active",
             StartedAt = DateTime.UtcNow
         };
@@ -771,7 +1358,7 @@ public class InterviewController : ControllerBase
 
         // Get all sessions for user's cases
         var sessions = await _context.InterviewSessions
-            .Where(s => userCases.Contains(s.CaseId))
+            .Where(s => s.CaseId.HasValue && userCases.Contains(s.CaseId.Value))
             .OrderByDescending(s => s.StartedAt)
             .Select(s => new InterviewSessionSummary
             {
@@ -853,7 +1440,7 @@ public class InterviewController : ControllerBase
                 var visaRecommendation = new VisaRecommendation
                 {
                     Id = Guid.NewGuid(),
-                    CaseId = session!.CaseId,
+                    CaseId = session.CaseId!.Value,
                     VisaTypeId = recommendation.VisaTypeId,
                     Rationale = recommendation.Rationale,
                     CreatedAt = DateTime.UtcNow
@@ -983,7 +1570,7 @@ public class InterviewController : ControllerBase
         // Create a recommendation record
         var recommendation = new VisaRecommendation
         {
-            CaseId = session!.CaseId,
+            CaseId = session.CaseId!.Value,
             VisaTypeId = visaType.Id,
             Rationale = $"User selected {visaType.Code} ({visaType.Name}) directly during the interview process. This is a suggested starting point for working with legal professionals.",
             CreatedAt = DateTime.UtcNow
@@ -1079,7 +1666,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            CaseId caseIdValue = new CaseId(caseId);
+            var caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
@@ -1132,7 +1719,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            CaseId caseIdValue = new CaseId(caseId);
+            var caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
@@ -1180,7 +1767,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            CaseId caseIdValue = new CaseId(caseId);
+            var caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
@@ -1237,7 +1824,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            CaseId caseIdValue = new CaseId(caseId);
+            var caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases
@@ -1358,7 +1945,7 @@ public class InterviewController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            CaseId caseIdValue = new CaseId(caseId);
+            var caseIdValue = new CaseId(caseId);
 
             // Verify the case belongs to the user
             var caseEntity = await _context.Cases

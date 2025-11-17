@@ -22,6 +22,7 @@ using L4H.Api.Configuration;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using L4H.Api.Validators;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,9 +40,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new UserIdConverter());
         // Explicitly use reflection-based serialization for .NET 10 compatibility
         options.JsonSerializerOptions.TypeInfoResolver = new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver();
+        // Handle circular references
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.MaxDepth = 32; // Use reasonable depth for API responses
     });
 
-// FluentValidation - Re-enabled for input validation
+// Validators temporarily disabled for deployment
 builder.Services.AddScoped<IValidator<SignupRequest>, SignupRequestValidator>();
 builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateProfileRequest>, UpdateProfileRequestValidator>();
@@ -51,14 +55,60 @@ builder.Services.AddScoped<IValidator<CreateApprovedDoctorRequest>, CreateApprov
 builder.Services.AddScoped<IValidator<CreateWorkflowRequest>, CreateWorkflowRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateWorkflowStepRequest>, CreateWorkflowStepRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateWorkflowDoctorRequest>, CreateWorkflowDoctorRequestValidator>();
-builder.Services.AddScoped<IValidator<ContactFormRequest>, ContactFormRequestValidator>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// OpenAPI and Scalar - Modern API documentation UI (replacing Swashbuckle)
-builder.Services.AddOpenApi();
-builder.Services.AddEndpointsApiExplorer();
+// Swagger/OpenAPI re-enabled with Scalar
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info.Title = "L4H API";
+        document.Info.Version = "v1";
+        document.Info.Description = "Law4Hire Immigration Services API";
+        return Task.CompletedTask;
+    });
+
+    // Add schema transformer to handle circular references
+    //     options.AddSchemaTransformer<L4H.Api.OpenApi.CircularReferenceSchemaTransformer>();
+});
+
+// Configure JSON options to handle circular references (consistent with MVC JSON options)
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.MaxDepth = 32;
+    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
+// builder.Services.AddSwaggerGen(c =>
+// {
+//     c.SwaggerDoc("v1", new() { Title = "L4H API", Version = "v1" });
+//
+//     // Add JWT authentication to Swagger
+//     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+//     {
+//         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+//         Name = "Authorization",
+//         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+//         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+//         Scheme = "Bearer"
+//     });
+//
+//     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+//     {
+//         {
+//             new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+//             {
+//                 Reference = new Microsoft.OpenApi.Models.OpenApiReference
+//                 {
+//                     Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+//                     Id = "Bearer"
+//                 }
+//             },
+//             Array.Empty<string>()
+//         }
+//     });
+// });
 
 // Add DbContext
 builder.Services.AddDbContext<L4HDbContext>(opt =>
@@ -173,9 +223,9 @@ builder.Services.AddScoped<IAdminSeedService, AdminSeedService>();
 builder.Services.AddScoped<IPricingSeedService, PricingSeedService>();
 builder.Services.AddScoped<CountriesSeeder>();
 
-builder.Services.AddScoped<IInterviewRecommender, RuleBasedRecommender>();
-builder.Services.AddScoped<IAdaptiveInterviewService, AdaptiveInterviewService>();
-builder.Services.AddScoped<ICitizenshipCaseService, CitizenshipCaseService>();
+// builder.Services.AddScoped<IInterviewRecommender, RuleBasedRecommender>();
+// builder.Services.AddScoped<IAdaptiveInterviewService, AdaptiveInterviewService>();
+// builder.Services.AddScoped<ICitizenshipCaseService, CitizenshipCaseService>();
 builder.Services.AddScoped<IAdoptionCaseService, AdoptionCaseService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<CannlawConfigurationService>();
@@ -217,7 +267,7 @@ builder.Services.AddScoped<ICalendarProvider, FakeGraphCalendarProvider>();
 builder.Services.AddScoped<IMeetingsProvider, FakeMeetingsProvider>();
 
 // Configure Upload settings
-builder.Services.Configure<L4H.Api.Models.UploadOptions>(builder.Configuration.GetSection("Uploads"));
+builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
 
 // Register upload token service
 builder.Services.AddScoped<UploadTokenService>();
@@ -248,15 +298,11 @@ var app = builder.Build();
 Console.WriteLine("[STARTUP] Application built successfully");
 
 // Configure the HTTP request pipeline
-// OpenAPI and Scalar UI - Available in all environments
-app.MapOpenApi();
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
+// Swagger temporarily disabled due to OpenAPI package compatibility issues in .NET 10 RC
+if (app.Environment.IsDevelopment())
 {
-    app.MapScalarApiReference(options =>
-    {
-        options.Title = "L4H API Documentation";
-        options.Theme = Scalar.AspNetCore.ScalarTheme.Purple;
-    });
+    app.MapOpenApi();
+    app.MapScalarApiReference(); // Scalar UI at /scalar
 }
 
 // Ensure database is created and migrated for Development, Testing, and Production

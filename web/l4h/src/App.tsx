@@ -221,22 +221,20 @@ function App() {
             </RouteGuard>
           } 
         />
-        <Route 
-          path="/interview" 
+        <Route
+          path="/interview"
           element={
-            <RouteGuard>
-              <Layout 
-                title={t('nav.interview')} 
-                showUserMenu={true} 
-                user={user} 
-                isAuthenticated={isAuthenticated}
-              >
-                <InterviewProvider>
-                  <InterviewPage />
-                </InterviewProvider>
-              </Layout>
-            </RouteGuard>
-          } 
+            <Layout
+              title={t('nav.interview')}
+              showUserMenu={true}
+              user={user}
+              isAuthenticated={isAuthenticated}
+            >
+              <InterviewProvider>
+                <InterviewPage />
+              </InterviewProvider>
+            </Layout>
+          }
         />
         <Route 
           path="/admin" 

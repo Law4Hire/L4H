@@ -1,4 +1,3 @@
-using L4H.Api.Models;
 using L4H.Shared.Models;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;

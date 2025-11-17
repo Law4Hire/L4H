@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+using System.Text.Json.Serialization;
+
 namespace L4H.Infrastructure.Entities;
 
 public class ServiceCategory
@@ -22,6 +24,8 @@ public class ServiceCategory
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
     // Navigation properties
+    [JsonIgnore]
+
     public ICollection<LegalService> Services { get; set; } = new List<LegalService>();
 }
 
@@ -36,6 +40,8 @@ public class LegalService
     public string Description { get; set; } = string.Empty;
     
     public int ServiceCategoryId { get; set; }
+    [JsonIgnore]
+
     public ServiceCategory ServiceCategory { get; set; } = null!;
     
     public bool IsActive { get; set; } = true;
