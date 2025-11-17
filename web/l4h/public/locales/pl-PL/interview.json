@@ -7,7 +7,6 @@
   "previous": "Poprzednie Pytanie",
   "restart": "Resetuj Rozmowę",
   "complete": "Zakończ Rozmowę",
-  
   "progress": {
     "title": "Postęp Rozmowy",
     "stats": "Pytanie +(current) | +(remaining) typów wiz pozostało",
@@ -15,7 +14,6 @@
     "remainingVisas": "+(count) typów wiz pozostało",
     "completionPercentage": "+(percentage)% ukończone"
   },
-  
   "buttons": {
     "next": "Dalej",
     "previous": "Wstecz",
@@ -23,7 +21,6 @@
     "complete": "Zakończ",
     "skip": "Pomiń Pytanie"
   },
-  
   "messages": {
     "selectOption": "Wybierz opcję, aby kontynuować",
     "required": "To pytanie jest wymagane",
@@ -31,9 +28,14 @@
     "error": "Wystąpił błąd podczas ładowania pytania",
     "sessionExpired": "Twoja sesja rozmowy wygasła. Zacznij od nowa.",
     "invalidAnswer": "Podaj prawidłową odpowiedź",
-    "completionFailed": "Nie udało się zakończyć rozmowy. Spróbuj ponownie."
+    "completionFailed": "Nie udało się zakończyć rozmowy. Spróbuj ponownie.",
+    "selectVisaDirectly": "Kliknij typ wizy, aby wybrać go bezpośrednio:",
+    "selectVisa": "Wybierz typ wizy {{code}}",
+    "retrySuccess": "Pomyślnie połączono ponownie! Kontynuowanie rozmowy kwalifikacyjnej.",
+    "interviewRestarted": "Rozmowa kwalifikacyjna została zrestartowana. Zaczynamy od nowa!",
+    "connectionLost": "Utracono połączenie. Twój postęp został zapisany.",
+    "recoveringSession": "Odzyskiwanie sesji rozmowy kwalifikacyjnej..."
   },
-  
   "completion": {
     "title": "Rozmowa Zakończona",
     "congratulations": "Gratulacje!",
@@ -44,7 +46,6 @@
     "viewPackages": "Zobacz Pakiety Usług",
     "startApplication": "Rozpocznij Aplikację"
   },
-  
   "categories": {
     "visitTransit": "Wizyta i Tranzyt",
     "studyExchange": "Studia i Wymiana",
@@ -56,7 +57,6 @@
     "adoption": "Adopcja Zagraniczna",
     "citizenship": "Obywatelstwo (N-400)"
   },
-  
   "questions": {
     "category": "Która kategoria najlepiej pasuje do Twojej sytuacji?",
     "purpose": "Jaki jest główny cel Twojej wizyty w Stanach Zjednoczonych?",
@@ -70,7 +70,6 @@
     "citizenship": "Jaki jest Twój kraj obywatelstwa?",
     "residence": "Jaki jest Twój kraj zamieszkania?"
   },
-  
   "options": {
     "yes": "Tak",
     "no": "Nie",
@@ -85,13 +84,33 @@
     "moreThan3Years": "Więcej niż 3 lata",
     "permanent": "Pobyt stały"
   },
-  
   "errors": {
     "loadingFailed": "Nie udało się załadować pytań rozmowy",
     "submissionFailed": "Nie udało się przesłać Twojej odpowiedzi",
     "sessionInvalid": "Twoja sesja rozmowy jest nieprawidłowa",
     "networkError": "Wystąpił błąd sieci. Sprawdź swoje połączenie.",
     "serverError": "Wystąpił błąd serwera. Spróbuj ponownie później.",
-    "unexpectedError": "Wystąpił nieoczekiwany błąd"
+    "unexpectedError": "Wystąpił nieoczekiwany błąd",
+    "restartFailed": "Nie udało się zrestartować rozmowy kwalifikacyjnej. Spróbuj ponownie."
+  },
+  "modal": {
+    "confirmSelection": "Potwierdź wybór typu wizy",
+    "selectionDescription": "Wybierasz {{visaCode}} jako sugerowany typ wizy.",
+    "completionNote": "To zakończy rozmowę kwalifikacyjną i ustawi ten typ wizy jako sugerowany punkt wyjścia do współpracy z naszymi prawnikami.",
+    "legalDisclaimer": "To tylko sugestia, a nie rekomendacja prawna. Nasi prawnicy przejrzą Twoją sprawę i udzielą oficjalnych wskazówek."
+  },
+  "errorRecovery": {
+    "title": "Błąd rozmowy kwalifikacyjnej",
+    "description": "Napotkaliśmy problem z Twoją sesją rozmowy kwalifikacyjnej.",
+    "options": {
+      "retry": "Spróbuj ponownie",
+      "restart": "Zrestartuj rozmowę",
+      "dashboard": "Wróć do pulpitu"
+    },
+    "retryDescription": "Spróbuj kontynuować od miejsca, w którym skończyłeś.",
+    "restartDescription": "Zacznij rozmowę od początku.",
+    "dashboardDescription": "Wróć do pulpitu i spróbuj ponownie później.",
+    "retryAttempt": "Próba {{count}} z 3",
+    "maxRetriesReached": "Osiągnięto maksymalną liczbę prób. Proszę zrestartować lub wrócić do pulpitu."
   }
 }

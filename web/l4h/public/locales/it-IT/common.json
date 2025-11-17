@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "Aiuto per l'Immigrazione negli Stati Uniti",
-    "subtitle": "Fornito da Law4Hire"
+    "subtitle": "Fornito da Law4Hire",
+    "tagline": "Il tuo viaggio negli Stati Uniti inizia qui"
   },
   "loading": "Caricamento...",
   "error": "Errore",
@@ -252,5 +253,7 @@
         "description": "Carta verde basata sull'impiego di quinta preferenza per investitori."
       }
     }
-  }
+  },
+  "dismiss": "Ignora",
+  "note": "Nota"
 }

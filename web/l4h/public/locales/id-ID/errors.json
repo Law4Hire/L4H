@@ -12,14 +12,19 @@
     "tooManyRequests": "Terlalu banyak permintaan. Silakan tunggu sebelum mencoba lagi.",
     "internalServerError": "Kesalahan server internal. Silakan hubungi dukungan jika masalah berlanjut."
   },
-  
   "translation": {
     "loadFailed": "Gagal memuat terjemahan untuk bahasa ini.",
     "fallbackActive": "Beberapa terjemahan tidak tersedia. Menampilkan bahasa Inggris sebagai cadangan.",
     "missingKey": "Terjemahan tidak ditemukan untuk teks ini.",
-    "parsingError": "Kesalahan saat mengurai file terjemahan."
+    "parsingError": "Kesalahan saat mengurai file terjemahan.",
+    "retrying": "Mencoba lagi... ({{count}})",
+    "retryFailed": "Percobaan ulang {{count}} gagal",
+    "failedLanguages": "Bahasa yang gagal: {{languages}}",
+    "networkError": "Kesalahan jaringan saat memuat terjemahan.",
+    "serverError": "Kesalahan server saat memuat terjemahan.",
+    "timeoutError": "Waktu pemuatan terjemahan habis.",
+    "unknownError": "Terjadi kesalahan yang tidak diketahui saat memuat terjemahan."
   },
-  
   "interview": {
     "sessionExpired": "Sesi wawancara Anda telah berakhir. Silakan mulai wawancara baru.",
     "invalidAnswer": "Silakan berikan jawaban yang valid untuk melanjutkan.",
@@ -29,7 +34,6 @@
     "sessionInvalid": "Sesi wawancara Anda tidak valid. Silakan mulai ulang.",
     "progressLost": "Kemajuan wawancara Anda mungkin hilang. Apakah Anda ingin mulai ulang?"
   },
-  
   "auth": {
     "loginRequired": "Silakan masuk untuk melanjutkan.",
     "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk lagi.",
@@ -39,7 +43,6 @@
     "passwordExpired": "Kata sandi Anda telah kedaluwarsa. Silakan reset.",
     "twoFactorRequired": "Autentikasi dua faktor diperlukan."
   },
-  
   "validation": {
     "required": "Bidang ini wajib diisi.",
     "email": "Silakan masukkan alamat email yang valid.",
@@ -54,7 +57,6 @@
     "numeric": "Silakan masukkan angka yang valid.",
     "alphanumeric": "Hanya huruf dan angka yang diizinkan."
   },
-  
   "api": {
     "genericError": "Terjadi kesalahan saat memproses permintaan Anda.",
     "retryableError": "Terjadi kesalahan sementara. Silakan coba lagi.",
@@ -62,7 +64,6 @@
     "maintenanceMode": "Sistem sedang dalam pemeliharaan. Silakan coba lagi nanti.",
     "rateLimitExceeded": "Anda telah melebihi batas tingkat. Silakan tunggu sebelum membuat lebih banyak permintaan."
   },
-  
   "file": {
     "uploadFailed": "Gagal mengunggah file. Silakan coba lagi.",
     "downloadFailed": "Gagal mengunduh file.",
@@ -71,7 +72,6 @@
     "corruptFile": "File tampaknya rusak.",
     "unsupportedFormat": "Format file tidak didukung."
   },
-  
   "general": {
     "unexpectedError": "Terjadi kesalahan yang tidak terduga. Silakan segarkan halaman dan coba lagi.",
     "featureUnavailable": "Fitur ini saat ini tidak tersedia.",

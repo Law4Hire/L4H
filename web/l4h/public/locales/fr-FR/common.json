@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "Aide à l'Immigration aux États-Unis",
-    "subtitle": "Propulsé par Law4Hire"
+    "subtitle": "Propulsé par Law4Hire",
+    "tagline": "Votre voyage vers les États-Unis commence ici"
   },
   "loading": "Chargement...",
   "error": "Erreur",
@@ -40,7 +41,6 @@
   "undo": "Annuler",
   "redo": "Refaire",
   "getStarted": "Commencer",
-  
   "nav": {
     "dashboard": "Tableau de Bord",
     "pricing": "Tarifs",
@@ -254,5 +254,6 @@
         "description": "Carte verte basée sur l'emploi de cinquième préférence pour les investisseurs."
       }
     }
-  }
+  },
+  "dismiss": "Ignorer"
 }

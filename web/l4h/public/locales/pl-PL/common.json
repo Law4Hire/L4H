@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "Pomoc Imigracyjna do USA",
-    "subtitle": "Obsługiwane przez Law4Hire"
+    "subtitle": "Obsługiwane przez Law4Hire",
+    "tagline": "Twoja podróż do Stanów Zjednoczonych zaczyna się tutaj"
   },
   "loading": "Ładowanie...",
   "error": "Błąd",
@@ -252,5 +253,7 @@
         "description": "Zielona karta oparta na zatrudnieniu piątej preferencji dla inwestorów."
       }
     }
-  }
+  },
+  "dismiss": "Odrzuć",
+  "note": "Uwaga"
 }

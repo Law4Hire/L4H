@@ -12,14 +12,19 @@
     "tooManyRequests": "Çok fazla istek. Lütfen tekrar denemeden önce bekleyin.",
     "internalServerError": "İç sunucu hatası. Sorun devam ederse lütfen destek ile iletişime geçin."
   },
-  
   "translation": {
     "loadFailed": "Bu dil için çeviriler yüklenemedi.",
     "fallbackActive": "Bazı çeviriler mevcut değil. Yedek olarak İngilizce gösteriliyor.",
     "missingKey": "Bu metin için çeviri bulunamadı.",
-    "parsingError": "Çeviri dosyası ayrıştırılırken hata oluştu."
+    "parsingError": "Çeviri dosyası ayrıştırılırken hata oluştu.",
+    "retrying": "Yeniden deneniyor... ({{count}})",
+    "retryFailed": "Yeniden deneme {{count}} başarısız oldu",
+    "failedLanguages": "Başarısız diller: {{languages}}",
+    "networkError": "Çeviriler yüklenirken ağ hatası.",
+    "serverError": "Çeviriler yüklenirken sunucu hatası.",
+    "timeoutError": "Çeviri yükleme zaman aşımı.",
+    "unknownError": "Çeviriler yüklenirken bilinmeyen bir hata oluştu."
   },
-  
   "interview": {
     "sessionExpired": "Mülakat oturumunuz sona erdi. Lütfen yeni bir mülakat başlatın.",
     "invalidAnswer": "Devam etmek için lütfen geçerli bir cevap verin.",
@@ -29,7 +34,6 @@
     "sessionInvalid": "Mülakat oturumunuz geçersiz. Lütfen yeniden başlayın.",
     "progressLost": "Mülakat ilerlemeniz kaybolmuş olabilir. Yeniden başlamak ister misiniz?"
   },
-  
   "auth": {
     "loginRequired": "Devam etmek için lütfen giriş yapın.",
     "sessionExpired": "Oturumunuz sona erdi. Lütfen tekrar giriş yapın.",
@@ -39,7 +43,6 @@
     "passwordExpired": "Şifrenizin süresi doldu. Lütfen sıfırlayın.",
     "twoFactorRequired": "İki faktörlü kimlik doğrulama gerekli."
   },
-  
   "validation": {
     "required": "Bu alan zorunludur.",
     "email": "Lütfen geçerli bir e-posta adresi girin.",
@@ -54,7 +57,6 @@
     "numeric": "Lütfen geçerli bir sayı girin.",
     "alphanumeric": "Sadece harfler ve sayılara izin verilir."
   },
-  
   "api": {
     "genericError": "İsteğiniz işlenirken bir hata oluştu.",
     "retryableError": "Geçici bir hata oluştu. Lütfen tekrar deneyin.",
@@ -62,7 +64,6 @@
     "maintenanceMode": "Sistem şu anda bakımda. Lütfen daha sonra tekrar deneyin.",
     "rateLimitExceeded": "Hız sınırını aştınız. Daha fazla istek yapmadan önce lütfen bekleyin."
   },
-  
   "file": {
     "uploadFailed": "Dosya yüklenemedi. Lütfen tekrar deneyin.",
     "downloadFailed": "Dosya indirilemedi.",
@@ -71,7 +72,6 @@
     "corruptFile": "Dosya bozuk görünüyor.",
     "unsupportedFormat": "Dosya formatı desteklenmiyor."
   },
-  
   "general": {
     "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen sayfayı yenileyin ve tekrar deneyin.",
     "featureUnavailable": "Bu özellik şu anda kullanılamıyor.",

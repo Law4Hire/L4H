@@ -7,7 +7,6 @@
   "previous": "Pergunta Anterior",
   "restart": "Reiniciar Entrevista",
   "complete": "Concluir Entrevista",
-  
   "progress": {
     "title": "Progresso da Entrevista",
     "stats": "Pergunta +(current) | +(remaining) tipos de visto restantes",
@@ -15,7 +14,6 @@
     "remainingVisas": "+(count) tipos de visto restantes",
     "completionPercentage": "+(percentage)% concluído"
   },
-  
   "buttons": {
     "next": "Próximo",
     "previous": "Anterior",
@@ -23,7 +21,6 @@
     "complete": "Concluir",
     "skip": "Pular Pergunta"
   },
-  
   "messages": {
     "selectOption": "Selecione uma opção para continuar",
     "required": "Esta pergunta é obrigatória",
@@ -31,9 +28,14 @@
     "error": "Ocorreu um erro ao carregar a pergunta",
     "sessionExpired": "Sua sessão de entrevista expirou. Comece novamente.",
     "invalidAnswer": "Forneça uma resposta válida",
-    "completionFailed": "Falha ao concluir a entrevista. Tente novamente."
+    "completionFailed": "Falha ao concluir a entrevista. Tente novamente.",
+    "selectVisaDirectly": "Clique em um tipo de visto para selecioná-lo diretamente:",
+    "selectVisa": "Selecionar tipo de visto {{code}}",
+    "retrySuccess": "Reconectado com sucesso! Continuando sua entrevista.",
+    "interviewRestarted": "A entrevista foi reiniciada. Começando do zero!",
+    "connectionLost": "Conexão perdida. Seu progresso foi salvo.",
+    "recoveringSession": "Recuperando sua sessão de entrevista..."
   },
-  
   "completion": {
     "title": "Entrevista Concluída",
     "congratulations": "Parabéns!",
@@ -44,7 +46,6 @@
     "viewPackages": "Ver Pacotes de Serviço",
     "startApplication": "Iniciar Aplicação"
   },
-  
   "categories": {
     "visitTransit": "Visita e Trânsito",
     "studyExchange": "Estudo e Intercâmbio",
@@ -56,7 +57,6 @@
     "adoption": "Adoção Estrangeira",
     "citizenship": "Cidadania (N-400)"
   },
-  
   "questions": {
     "category": "Qual categoria melhor se adequa à sua situação?",
     "purpose": "Qual é o propósito principal de sua visita aos Estados Unidos?",
@@ -70,7 +70,6 @@
     "citizenship": "Qual é o seu país de cidadania?",
     "residence": "Qual é o seu país de residência?"
   },
-  
   "options": {
     "yes": "Sim",
     "no": "Não",
@@ -85,13 +84,33 @@
     "moreThan3Years": "Mais de 3 anos",
     "permanent": "Residência permanente"
   },
-  
   "errors": {
     "loadingFailed": "Falha ao carregar perguntas da entrevista",
     "submissionFailed": "Falha ao enviar sua resposta",
     "sessionInvalid": "Sua sessão de entrevista é inválida",
     "networkError": "Erro de rede ocorreu. Verifique sua conexão.",
     "serverError": "Erro do servidor ocorreu. Tente novamente mais tarde.",
-    "unexpectedError": "Ocorreu um erro inesperado"
+    "unexpectedError": "Ocorreu um erro inesperado",
+    "restartFailed": "Falha ao reiniciar a entrevista. Por favor, tente novamente."
+  },
+  "modal": {
+    "confirmSelection": "Confirmar Seleção do Tipo de Visto",
+    "selectionDescription": "Você está selecionando {{visaCode}} como sua sugestão de tipo de visto.",
+    "completionNote": "Isso completará a entrevista e definirá este tipo de visto como seu ponto de partida sugerido para trabalhar com nossos profissionais jurídicos.",
+    "legalDisclaimer": "Esta é apenas uma sugestão e não uma recomendação legal. Nossos profissionais jurídicos revisarão seu caso e fornecerão orientação oficial."
+  },
+  "errorRecovery": {
+    "title": "Erro na Entrevista",
+    "description": "Encontramos um problema com sua sessão de entrevista.",
+    "options": {
+      "retry": "Tentar Novamente",
+      "restart": "Reiniciar Entrevista",
+      "dashboard": "Voltar ao Painel"
+    },
+    "retryDescription": "Tente continuar de onde você parou.",
+    "restartDescription": "Comece a entrevista novamente do início.",
+    "dashboardDescription": "Volte ao seu painel e tente novamente mais tarde.",
+    "retryAttempt": "Tentativa {{count}} de 3",
+    "maxRetriesReached": "Número máximo de tentativas atingido. Por favor, reinicie ou volte ao painel."
   }
 }

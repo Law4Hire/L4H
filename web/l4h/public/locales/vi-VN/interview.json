@@ -7,7 +7,6 @@
   "previous": "Câu hỏi trước",
   "restart": "Đặt lại phỏng vấn",
   "complete": "Hoàn thành phỏng vấn",
-  
   "progress": {
     "title": "Tiến độ phỏng vấn",
     "stats": "Câu hỏi +(current) | +(remaining) loại visa còn lại",
@@ -15,7 +14,6 @@
     "remainingVisas": "+(count) loại visa còn lại",
     "completionPercentage": "+(percentage)% hoàn thành"
   },
-  
   "buttons": {
     "next": "Tiếp theo",
     "previous": "Trước đó",
@@ -23,7 +21,6 @@
     "complete": "Hoàn thành",
     "skip": "Bỏ qua câu hỏi"
   },
-  
   "messages": {
     "selectOption": "Vui lòng chọn một tùy chọn để tiếp tục",
     "required": "Câu hỏi này là bắt buộc",
@@ -31,9 +28,14 @@
     "error": "Đã xảy ra lỗi khi tải câu hỏi",
     "sessionExpired": "Phiên phỏng vấn của bạn đã hết hạn. Vui lòng bắt đầu lại.",
     "invalidAnswer": "Vui lòng cung cấp câu trả lời hợp lệ",
-    "completionFailed": "Không thể hoàn thành phỏng vấn. Vui lòng thử lại."
+    "completionFailed": "Không thể hoàn thành phỏng vấn. Vui lòng thử lại.",
+    "selectVisaDirectly": "Nhấp vào loại visa để chọn trực tiếp:",
+    "selectVisa": "Chọn loại visa {{code}}",
+    "retrySuccess": "Kết nối lại thành công! Tiếp tục cuộc phỏng vấn của bạn.",
+    "interviewRestarted": "Cuộc phỏng vấn đã được khởi động lại. Bắt đầu mới!",
+    "connectionLost": "Mất kết nối. Tiến trình của bạn đã được lưu.",
+    "recoveringSession": "Đang khôi phục phiên phỏng vấn của bạn..."
   },
-  
   "completion": {
     "title": "Phỏng vấn hoàn thành",
     "congratulations": "Chúc mừng!",
@@ -44,7 +46,6 @@
     "viewPackages": "Xem gói dịch vụ",
     "startApplication": "Bắt đầu đăng ký"
   },
-  
   "categories": {
     "visitTransit": "Thăm quan và quá cảnh",
     "studyExchange": "Học tập và trao đổi",
@@ -56,7 +57,6 @@
     "adoption": "Nhận con nuôi nước ngoài",
     "citizenship": "Quốc tịch (N-400)"
   },
-  
   "questions": {
     "category": "Danh mục nào phù hợp nhất với tình huống của bạn?",
     "purpose": "Mục đích chính của chuyến thăm Hoa Kỳ của bạn là gì?",
@@ -70,7 +70,6 @@
     "citizenship": "Quốc gia công dân của bạn là gì?",
     "residence": "Quốc gia cư trú của bạn là gì?"
   },
-  
   "options": {
     "yes": "Có",
     "no": "Không",
@@ -85,13 +84,33 @@
     "moreThan3Years": "Hơn 3 năm",
     "permanent": "Cư trú vĩnh viễn"
   },
-  
   "errors": {
     "loadingFailed": "Không thể tải câu hỏi phỏng vấn",
     "submissionFailed": "Không thể gửi câu trả lời của bạn",
     "sessionInvalid": "Phiên phỏng vấn của bạn không hợp lệ",
     "networkError": "Đã xảy ra lỗi mạng. Vui lòng kiểm tra kết nối của bạn.",
     "serverError": "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.",
-    "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+    "unexpectedError": "Đã xảy ra lỗi không mong muốn",
+    "restartFailed": "Không thể khởi động lại cuộc phỏng vấn. Vui lòng thử lại."
+  },
+  "modal": {
+    "confirmSelection": "Xác nhận Lựa chọn Loại Visa",
+    "selectionDescription": "Bạn đang chọn {{visaCode}} làm gợi ý loại visa của bạn.",
+    "completionNote": "Điều này sẽ hoàn thành cuộc phỏng vấn và đặt loại visa này làm điểm khởi đầu được đề xuất để làm việc với các chuyên gia pháp lý của chúng tôi.",
+    "legalDisclaimer": "Đây chỉ là gợi ý chứ không phải khuyến nghị pháp lý. Các chuyên gia pháp lý của chúng tôi sẽ xem xét trường hợp của bạn và cung cấp hướng dẫn chính thức."
+  },
+  "errorRecovery": {
+    "title": "Lỗi Phỏng vấn",
+    "description": "Chúng tôi gặp sự cố với phiên phỏng vấn của bạn.",
+    "options": {
+      "retry": "Thử lại",
+      "restart": "Khởi động lại Phỏng vấn",
+      "dashboard": "Quay lại Bảng điều khiển"
+    },
+    "retryDescription": "Cố gắng tiếp tục từ nơi bạn dừng lại.",
+    "restartDescription": "Bắt đầu lại cuộc phỏng vấn từ đầu.",
+    "dashboardDescription": "Quay lại bảng điều khiển của bạn và thử lại sau.",
+    "retryAttempt": "Lần thử {{count}} trong 3",
+    "maxRetriesReached": "Đã đạt số lần thử lại tối đa. Vui lòng khởi động lại hoặc quay lại bảng điều khiển."
   }
 }

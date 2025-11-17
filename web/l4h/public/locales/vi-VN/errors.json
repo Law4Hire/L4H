@@ -12,14 +12,19 @@
     "tooManyRequests": "Quá nhiều yêu cầu. Vui lòng đợi trước khi thử lại.",
     "internalServerError": "Lỗi máy chủ nội bộ. Vui lòng liên hệ hỗ trợ nếu vấn đề vẫn tiếp tục."
   },
-  
   "translation": {
     "loadFailed": "Không thể tải bản dịch cho ngôn ngữ này.",
     "fallbackActive": "Một số bản dịch không có sẵn. Hiển thị tiếng Anh làm dự phòng.",
     "missingKey": "Không tìm thấy bản dịch cho văn bản này.",
-    "parsingError": "Lỗi khi phân tích tệp dịch."
+    "parsingError": "Lỗi khi phân tích tệp dịch.",
+    "retrying": "Đang thử lại... ({{count}})",
+    "retryFailed": "Thử lại {{count}} thất bại",
+    "failedLanguages": "Ngôn ngữ thất bại: {{languages}}",
+    "networkError": "Lỗi mạng khi tải bản dịch.",
+    "serverError": "Lỗi máy chủ khi tải bản dịch.",
+    "timeoutError": "Hết thời gian tải bản dịch.",
+    "unknownError": "Đã xảy ra lỗi không xác định khi tải bản dịch."
   },
-  
   "interview": {
     "sessionExpired": "Phiên phỏng vấn của bạn đã hết hạn. Vui lòng bắt đầu phỏng vấn mới.",
     "invalidAnswer": "Vui lòng cung cấp câu trả lời hợp lệ để tiếp tục.",
@@ -29,7 +34,6 @@
     "sessionInvalid": "Phiên phỏng vấn của bạn không hợp lệ. Vui lòng bắt đầu lại.",
     "progressLost": "Tiến độ phỏng vấn của bạn có thể đã bị mất. Bạn có muốn bắt đầu lại không?"
   },
-  
   "auth": {
     "loginRequired": "Vui lòng đăng nhập để tiếp tục.",
     "sessionExpired": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại.",
@@ -39,7 +43,6 @@
     "passwordExpired": "Mật khẩu của bạn đã hết hạn. Vui lòng đặt lại.",
     "twoFactorRequired": "Yêu cầu xác thực hai yếu tố."
   },
-  
   "validation": {
     "required": "Trường này là bắt buộc.",
     "email": "Vui lòng nhập địa chỉ email hợp lệ.",
@@ -54,7 +57,6 @@
     "numeric": "Vui lòng nhập số hợp lệ.",
     "alphanumeric": "Chỉ cho phép chữ cái và số."
   },
-  
   "api": {
     "genericError": "Đã xảy ra lỗi khi xử lý yêu cầu của bạn.",
     "retryableError": "Đã xảy ra lỗi tạm thời. Vui lòng thử lại.",
@@ -62,7 +64,6 @@
     "maintenanceMode": "Hệ thống hiện đang bảo trì. Vui lòng thử lại sau.",
     "rateLimitExceeded": "Bạn đã vượt quá giới hạn tốc độ. Vui lòng đợi trước khi thực hiện thêm yêu cầu."
   },
-  
   "file": {
     "uploadFailed": "Không thể tải lên tệp. Vui lòng thử lại.",
     "downloadFailed": "Không thể tải xuống tệp.",
@@ -71,7 +72,6 @@
     "corruptFile": "Tệp có vẻ bị hỏng.",
     "unsupportedFormat": "Định dạng tệp không được hỗ trợ."
   },
-  
   "general": {
     "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng làm mới trang và thử lại.",
     "featureUnavailable": "Tính năng này hiện không có sẵn.",

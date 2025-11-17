@@ -7,7 +7,6 @@
   "previous": "Önceki Soru",
   "restart": "Mülakatı Sıfırla",
   "complete": "Mülakatı Tamamla",
-  
   "progress": {
     "title": "Mülakat İlerlemesi",
     "stats": "Soru +(current) | +(remaining) vize türü kaldı",
@@ -15,7 +14,6 @@
     "remainingVisas": "+(count) vize türü kaldı",
     "completionPercentage": "%+(percentage) tamamlandı"
   },
-  
   "buttons": {
     "next": "İleri",
     "previous": "Geri",
@@ -23,7 +21,6 @@
     "complete": "Tamamla",
     "skip": "Soruyu Atla"
   },
-  
   "messages": {
     "selectOption": "Devam etmek için lütfen bir seçenek seçin",
     "required": "Bu soru zorunludur",
@@ -31,9 +28,14 @@
     "error": "Soru yüklenirken bir hata oluştu",
     "sessionExpired": "Mülakat oturumunuz sona erdi. Lütfen yeniden başlayın.",
     "invalidAnswer": "Lütfen geçerli bir cevap verin",
-    "completionFailed": "Mülakat tamamlanamadı. Lütfen tekrar deneyin."
+    "completionFailed": "Mülakat tamamlanamadı. Lütfen tekrar deneyin.",
+    "selectVisaDirectly": "Doğrudan seçmek için bir vize türüne tıklayın:",
+    "selectVisa": "{{code}} vize türünü seç",
+    "retrySuccess": "Başarıyla yeniden bağlandı! Görüşmenize devam ediliyor.",
+    "interviewRestarted": "Görüşme yeniden başlatıldı. Yeniden başlıyor!",
+    "connectionLost": "Bağlantı kesildi. İlerlemeniz kaydedildi.",
+    "recoveringSession": "Görüşme oturumunuz kurtarılıyor..."
   },
-  
   "completion": {
     "title": "Mülakat Tamamlandı",
     "congratulations": "Tebrikler!",
@@ -44,7 +46,6 @@
     "viewPackages": "Hizmet Paketlerini Görüntüle",
     "startApplication": "Başvuruyu Başlat"
   },
-  
   "categories": {
     "visitTransit": "Ziyaret ve Transit",
     "studyExchange": "Eğitim ve Değişim",
@@ -56,7 +57,6 @@
     "adoption": "Yabancı Evlat Edinme",
     "citizenship": "Vatandaşlık (N-400)"
   },
-  
   "questions": {
     "category": "Hangi kategori durumunuza en uygun?",
     "purpose": "Amerika Birleşik Devletleri'ne ziyaretinizin temel amacı nedir?",
@@ -70,7 +70,6 @@
     "citizenship": "Vatandaşlık ülkeniz hangisi?",
     "residence": "İkamet ülkeniz hangisi?"
   },
-  
   "options": {
     "yes": "Evet",
     "no": "Hayır",
@@ -85,13 +84,33 @@
     "moreThan3Years": "3 yıldan fazla",
     "permanent": "Daimi ikamet"
   },
-  
   "errors": {
     "loadingFailed": "Mülakat soruları yüklenemedi",
     "submissionFailed": "Cevabınız gönderilemedi",
     "sessionInvalid": "Mülakat oturumunuz geçersiz",
     "networkError": "Ağ hatası oluştu. Lütfen bağlantınızı kontrol edin.",
     "serverError": "Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.",
-    "unexpectedError": "Beklenmeyen bir hata oluştu"
+    "unexpectedError": "Beklenmeyen bir hata oluştu",
+    "restartFailed": "Görüşme yeniden başlatılamadı. Lütfen tekrar deneyin."
+  },
+  "modal": {
+    "confirmSelection": "Vize Türü Seçimini Onayla",
+    "selectionDescription": "{{visaCode}} kodunu vize türü öneriniz olarak seçiyorsunuz.",
+    "completionNote": "Bu, görüşmeyi tamamlayacak ve bu vize türünü hukuk uzmanlarımızla çalışmak için önerilen başlangıç noktanız olarak ayarlayacaktır.",
+    "legalDisclaimer": "Bu sadece bir öneridir ve yasal bir tavsiye değildir. Hukuk uzmanlarımız davanızı inceleyecek ve resmi rehberlik sağlayacaktır."
+  },
+  "errorRecovery": {
+    "title": "Görüşme Hatası",
+    "description": "Görüşme oturumunuzda bir sorunla karşılaştık.",
+    "options": {
+      "retry": "Tekrar Dene",
+      "restart": "Görüşmeyi Yeniden Başlat",
+      "dashboard": "Kontrol Paneline Dön"
+    },
+    "retryDescription": "Kaldığınız yerden devam etmeyi deneyin.",
+    "restartDescription": "Görüşmeyi baştan yeniden başlatın.",
+    "dashboardDescription": "Kontrol panelinize dönün ve daha sonra tekrar deneyin.",
+    "retryAttempt": "3 üzerinden {{count}} yeniden deneme",
+    "maxRetriesReached": "Maksimum yeniden deneme sayısına ulaşıldı. Lütfen yeniden başlatın veya kontrol paneline dönün."
   }
 }

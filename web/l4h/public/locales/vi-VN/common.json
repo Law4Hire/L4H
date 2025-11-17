@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "Trợ Giúp Nhập Cư Hoa Kỳ",
-    "subtitle": "Được hỗ trợ bởi Law4Hire"
+    "subtitle": "Được hỗ trợ bởi Law4Hire",
+    "tagline": "Hành trình của bạn đến Hoa Kỳ bắt đầu tại đây"
   },
   "loading": "Đang tải...",
   "error": "Lỗi",
@@ -252,5 +253,7 @@
         "description": "Thẻ xanh việc làm ưu tiên thứ năm cho nhà đầu tư."
       }
     }
-  }
+  },
+  "dismiss": "Bỏ qua",
+  "note": "Ghi chú"
 }
