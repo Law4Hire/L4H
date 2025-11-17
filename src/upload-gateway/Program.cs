@@ -3,13 +3,15 @@ using L4H.UploadGateway.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Scalar.AspNetCore;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
-        .WriteTo.Console());
+        .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture));
 
 // Configure services
 builder.Services.AddEndpointsApiExplorer();
