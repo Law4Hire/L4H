@@ -64,7 +64,7 @@ public static class TestServiceRegistration
         services.AddScoped<AntivirusScanService>();
         
         // Configure upload options to disable antivirus scan for all tests
-        services.Configure<L4H.Api.Models.UploadOptions>(options =>
+        services.Configure<L4H.Shared.Models.UploadOptions>(options =>
         {
             options.DisableAntivirusScan = true;
         });

@@ -41,7 +41,8 @@
       "Bash(done)",
       "Bash(powershell.exe -Command \"(Get-Content src/api/Program.cs) -replace ''L4H.Api.Models.UploadOptions'', ''UploadOptions'' | Set-Content src/api/Program.cs\")",
       "Bash(for file in tests/api.tests/Controllers/MessagingControllerTests.cs tests/api.tests/Controllers/UploadsControllerTests.cs tests/api.tests/Integration/UploadWorkflowIntegrationTests.cs tests/api.tests/Services/AntivirusScanServiceTests.cs tests/api.tests/Services/UploadTokenServiceTests.cs)",
-      "Bash(do powershell.exe -Command \"(Get-Content ''$file'') -replace ''using L4H.Api.Models;'', ''using L4H.Shared.Models;'' | Set-Content ''$file''\")"
+      "Bash(do powershell.exe -Command \"(Get-Content ''$file'') -replace ''using L4H.Api.Models;'', ''using L4H.Shared.Models;'' | Set-Content ''$file''\")",
+      "Bash(powershell.exe -Command \"(Get-Content tests/api.tests/TestServiceRegistration.cs) -replace ''L4H.Api.Models'', ''L4H.Shared.Models'' | Set-Content tests/api.tests/TestServiceRegistration.cs\")"
     ],
     "deny": [],
     "ask": []
