@@ -10,10 +10,10 @@
   
   "progress": {
     "title": "Postęp Rozmowy",
-    "stats": "Pytanie {{current}} | {{remaining}} typów wiz pozostało",
-    "currentQuestion": "Pytanie {{current}}",
-    "remainingVisas": "{{count}} typów wiz pozostało",
-    "completionPercentage": "{{percentage}}% ukończone"
+    "stats": "Pytanie +(current) | +(remaining) typów wiz pozostało",
+    "currentQuestion": "Pytanie +(current)",
+    "remainingVisas": "+(count) typów wiz pozostało",
+    "completionPercentage": "+(percentage)% ukończone"
   },
   
   "buttons": {
@@ -38,7 +38,7 @@
     "title": "Rozmowa Zakończona",
     "congratulations": "Gratulacje!",
     "description": "Na podstawie Twoich odpowiedzi mamy dla Ciebie rekomendację wizy.",
-    "stats": "Odpowiedziane pytania: {{count}} | Zawężone z 88+ typów wiz",
+    "stats": "Odpowiedziane pytania: +(count) | Zawężone z 88+ typów wiz",
     "recommendedVisa": "Rekomendowany Typ Wizy",
     "backToDashboard": "Powrót do Panelu",
     "viewPackages": "Zobacz Pakiety Usług",

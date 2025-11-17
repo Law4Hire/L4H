@@ -144,8 +144,8 @@ const resources = {
       'visaLibrary.modal.category': 'Category',
       'visaLibrary.modal.description': 'Description',
       'visaLibrary.modal.nextSteps': 'Next Steps',
-      'visaLibrary.modal.readyToApply': 'Ready to apply for the {{code}} visa? Our immigration attorneys can guide you through the entire process.',
-      'visaLibrary.modal.applyFor': 'Apply for {{code}} Visa',
+      'visaLibrary.modal.readyToApply': 'Ready to apply for the +(code) visa? Our immigration attorneys can guide you through the entire process.',
+      'visaLibrary.modal.applyFor': 'Apply for +(code) Visa',
       'visaLibrary.cta.title': 'Need Help Choosing the Right Visa?',
       'visaLibrary.cta.description': 'Our immigration experts can help you determine which visa category fits your situation best.',
       'visaLibrary.cta.button': 'Start Your Application',
@@ -260,7 +260,7 @@ const resources = {
       emailInvalid: 'Please enter a valid email address',
       passwordTooShort: 'Password must be at least 8 characters',
       passwordNeedsSpecialChar: 'Password must contain at least one special character',
-      passwordNeedsMoreClasses: 'Password must contain at least {{count}} different character types',
+      passwordNeedsMoreClasses: 'Password must contain at least +(count) different character types',
       rateLimitExceeded: 'Too many requests. Please try again later.',
       passwordMinLength: 'Password must be at least 8 characters',
       dontHaveAccount: "Don't have an account?",
@@ -501,7 +501,7 @@ const resources = {
       loading: 'Loading...',
       progress: {
         title: 'Adaptive Interview Progress',
-        stats: 'Question {{current}} | {{remaining}} visa types remaining'
+        stats: 'Question +(current) | +(remaining) visa types remaining'
       },
       next: 'Next Question'
     },
@@ -606,8 +606,8 @@ const resources = {
       'visaLibrary.modal.category': 'Categoría',
       'visaLibrary.modal.description': 'Descripción',
       'visaLibrary.modal.nextSteps': 'Siguientes pasos',
-      'visaLibrary.modal.readyToApply': '¿Listo para solicitar la visa {{code}}? Nuestros abogados de inmigración pueden guiarte en todo el proceso.',
-      'visaLibrary.modal.applyFor': 'Solicitar visa {{code}}',
+      'visaLibrary.modal.readyToApply': '¿Listo para solicitar la visa +(code)? Nuestros abogados de inmigración pueden guiarte en todo el proceso.',
+      'visaLibrary.modal.applyFor': 'Solicitar visa +(code)',
       'visaLibrary.visas.B1.name': 'Visitante de negocios',
       'visaLibrary.visas.B1.description': 'Visa de visitante de negocios para actividades comerciales temporales en los Estados Unidos.',
       'visaLibrary.visas.B2.name': 'Visitante turista',
@@ -659,7 +659,7 @@ const resources = {
       passwordTooShort: 'La contraseña debe tener al menos 8 caracteres',
       passwordMinLength: 'La contraseña debe tener al menos 6 caracteres',
       passwordNeedsSpecialChar: 'La contraseña debe contener al menos un carácter especial',
-      passwordNeedsMoreClasses: 'La contraseña debe contener al menos {{count}} tipos de caracteres diferentes',
+      passwordNeedsMoreClasses: 'La contraseña debe contener al menos +(count) tipos de caracteres diferentes',
       rateLimitExceeded: 'Demasiadas solicitudes. Por favor intenta de nuevo más tarde.',
       dontHaveAccount: '¿No tienes una cuenta?',
       signUpNow: 'Regístrate ahora',
@@ -896,7 +896,7 @@ const resources = {
       loading: 'Cargando...',
       progress: {
         title: 'Progreso de Entrevista Adaptativa',
-        stats: 'Pregunta {{current}} | {{remaining}} tipos de visa restantes'
+        stats: 'Pregunta +(current) | +(remaining) tipos de visa restantes'
       },
       next: 'Siguiente Pregunta',
       backToDashboard: 'Volver al Panel',
@@ -1017,8 +1017,8 @@ const resources = {
       'visaLibrary.modal.category': 'الفئة',
       'visaLibrary.modal.description': 'الوصف',
       'visaLibrary.modal.nextSteps': 'الخطوات التالية',
-      'visaLibrary.modal.readyToApply': 'هل أنت مستعد للتقدم بطلب للحصول على تأشيرة {{code}}؟ يمكن لمحامينا توجيهك خلال العملية بأكملها.',
-      'visaLibrary.modal.applyFor': 'التقدم للحصول على تأشيرة {{code}}',
+      'visaLibrary.modal.readyToApply': 'هل أنت مستعد للتقدم بطلب للحصول على تأشيرة +(code)؟ يمكن لمحامينا توجيهك خلال العملية بأكملها.',
+      'visaLibrary.modal.applyFor': 'التقدم للحصول على تأشيرة +(code)',
     },
     nav: {
       login: 'تسجيل الدخول',
@@ -1066,7 +1066,7 @@ const resources = {
       passwordTooShort: 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل',
       passwordMinLength: 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل',
       passwordNeedsSpecialChar: 'يجب أن تحتوي كلمة المرور على حرف خاص واحد على الأقل',
-      passwordNeedsMoreClasses: 'يجب أن تحتوي كلمة المرور على {{count}} أنواع أحرف مختلفة على الأقل',
+      passwordNeedsMoreClasses: 'يجب أن تحتوي كلمة المرور على +(count) أنواع أحرف مختلفة على الأقل',
       rateLimitExceeded: 'طلبات كثيرة جداً. يرجى المحاولة مرة أخرى لاحقاً.',
       alreadyHaveAccount: 'هل لديك حساب بالفعل؟',
     },
@@ -1300,7 +1300,7 @@ const resources = {
       loading: 'جاري التحميل...',
       progress: {
         title: 'تقدم المقابلة التكيفية',
-        stats: 'السؤال {{current}} | {{remaining}} أنواع الفيزا المتبقية'
+        stats: 'السؤال +(current) | +(remaining) أنواع الفيزا المتبقية'
       },
       next: 'السؤال التالي',
       backToDashboard: 'العودة إلى اللوحة',
@@ -1396,8 +1396,7 @@ const resources = {
       'appointments.caseId': 'কেস আইডি',
       'appointments.date': 'তারিখ ও সময়',
       'appointments.notes': 'বিঃদ্রঃ',
-      'appointments.scheduleFirst': 'শুরু করার জন্য
-  your first appointment to get started',
+      'appointments.scheduleFirst': 'শুরু করার জন্য your first appointment to get started',
       'appointments.durationHelper': 'মিনিটে সময়কাল',
       // Messages keys
       'messages.title': 'বার্তা',
@@ -1436,8 +1435,8 @@ const resources = {
       'visaLibrary.modal.category': 'বিভাগ',
       'visaLibrary.modal.description': 'বর্ণনা',
       'visaLibrary.modal.nextSteps': 'পরবর্তী পদক্ষেপ',
-      'visaLibrary.modal.readyToApply': '{{code}} ভিসার জন্য আবেদন করতে প্রস্তুত? আমাদের ইমিগ্রেশন আইনজীবীরা সম্পূর্ণ প্রক্রিয়ায় আপনাকে নির্দেশনা দিতে পারেন।',
-      'visaLibrary.modal.applyFor': '{{code}} ভিসার জন্য আবেদন করুন',
+      'visaLibrary.modal.readyToApply': '+(code) ভিসার জন্য আবেদন করতে প্রস্তুত? আমাদের ইমিগ্রেশন আইনজীবীরা সম্পূর্ণ প্রক্রিয়ায় আপনাকে নির্দেশনা দিতে পারেন।',
+      'visaLibrary.modal.applyFor': '+(code) ভিসার জন্য আবেদন করুন',
       'visaLibrary.visas.B1.name': 'বিজনেস ভিজিটর',
       'visaLibrary.visas.B1.description': 'আস্থায় অস্থায়ী ব্যবসায়িক কার্যকলাপের জন্য বিজনেস ভিজিটর ভিসা।',
       'visaLibrary.visas.B2.name': 'ট্যুরিস্ট ভিজিটর',
@@ -1566,7 +1565,7 @@ const resources = {
       passwordTooShort: 'Das Passwort muss mindestens 8 Zeichen lang sein',
       passwordMinLength: 'Das Passwort muss mindestens 8 Zeichen lang sein',
       passwordNeedsSpecialChar: 'Das Passwort muss mindestens ein Sonderzeichen enthalten',
-      passwordNeedsMoreClasses: 'Das Passwort muss mindestens {{count}} verschiedene Zeichentypen enthalten',
+      passwordNeedsMoreClasses: 'Das Passwort muss mindestens +(count) verschiedene Zeichentypen enthalten',
       rateLimitExceeded: 'Zu viele Anfragen. Bitte versuchen Sie es später erneut.',
       alreadyHaveAccount: 'Bereits ein Konto vorhanden?',
     },
@@ -1593,3 +1592,139 @@ const resources = {
       messages: 'Nachrichten',
       caseStatus: 'Fall-Status',
     },
+  },
+}
+
+// Cookie utility functions
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null
+  return null
+}
+
+function setCookie(name: string, value: string, days = 365): void {
+  if (typeof document === 'undefined') return
+
+  const expires = new Date()
+  expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000))
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`
+}
+
+// Get saved language from cookie or default to browser preference
+function getInitialLanguage(): string {
+  // First check for saved language in cookie
+  const savedLanguage = getCookie('l4h-language')
+  if (savedLanguage && Object.keys(CULTURE_NAMES).includes(savedLanguage)) {
+    return savedLanguage
+  }
+
+  // Fall back to browser language detection
+  if (typeof navigator !== 'undefined') {
+    const browserLang = navigator.language
+    // Check if we support the exact language
+    if (Object.keys(CULTURE_NAMES).includes(browserLang)) {
+      return browserLang
+    }
+
+    // Check if we support the language family (e.g., 'en' from 'en-GB')
+    const langFamily = browserLang.split('-')[0]
+    const supportedLang = Object.keys(CULTURE_NAMES).find(lang => lang.startsWith(langFamily))
+    if (supportedLang) {
+      return supportedLang
+    }
+  }
+
+  // Default to English
+  return 'en-US'
+}
+
+// Initialize i18next with all namespaces
+const initPromise = i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: getInitialLanguage(),
+    fallbackLng: 'en-US',
+    defaultNS: 'common',
+    ns: ['common', 'nav', 'auth', 'status', 'pricing', 'appointments', 'messages', 'uploads', 'admin', 'reports', 'login', 'app', 'brand', 'dashboard', 'case', 'landing', 'interview', 'questions', 'options', 'outcomes'],
+    interpolation: {
+      escapeValue: false,
+      // Use +() syntax instead of +() for placeholders
+      prefix: '+(',
+      suffix: ')'
+    },
+    react: {
+      useSuspense: true // Enable suspense for proper loading
+    },
+    debug: true,
+    returnEmptyString: false, // Always return the key if translation not found
+    returnNull: false,
+    keySeparator: '.',
+    nsSeparator: ':',
+    saveMissing: false
+  })
+
+// Ensure i18n is ready and register interview resources
+export const i18nReady = initPromise.then(async () => {
+  // Interview resources are now loaded via the new i18n-config system
+  // No need to load from CSV anymore
+
+  // Expose i18n to window for debugging
+  if (typeof window !== 'undefined') {
+    (window as any).i18next = i18n
+  }
+})
+
+export default i18n
+
+// Culture interface for API responses
+export interface Culture {
+  code: string
+  displayName: string
+}
+
+// Get supported cultures from local definitions
+export function getSupportedCultures(): Culture[] {
+  return Object.entries(CULTURE_NAMES).map(([code, displayName]) => ({
+    code,
+    displayName
+  }))
+}
+
+// Set culture locally only
+export async function setCulture(cultureCode: string): Promise<void> {
+  await i18n.changeLanguage(cultureCode)
+  setRTLDirection(cultureCode)
+  // Save language preference to cookie
+  setCookie('l4h-language', cultureCode)
+}
+
+// Note: CSRF token function removed as it's not used in local-only mode
+
+// Set RTL direction based on language
+export function setRTLDirection(languageCode: string): void {
+  const htmlElement = document.documentElement
+  const isRTL = RTL_LANGUAGES.some(rtlLang =>
+    languageCode.toLowerCase().startsWith(rtlLang.toLowerCase())
+  )
+
+  htmlElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr')
+  htmlElement.setAttribute('lang', languageCode)
+}
+
+// Check if current language is RTL
+export function isRTL(): boolean {
+  const currentLang = i18n.language
+  return RTL_LANGUAGES.some(rtlLang =>
+    currentLang.toLowerCase().startsWith(rtlLang.toLowerCase())
+  )
+}
+
+// Hook for using translations with namespace support
+export function useT(namespace?: string) {
+  const { t } = useTranslation(namespace)
+  return t
+}

@@ -94,7 +94,7 @@
     "category": "Kategori",
     "description": "Deskripsi",
     "nextSteps": "Langkah Selanjutnya",
-    "readyToApply": "Siap mengajukan visa {{code}}? Pengacara imigrasi kami dapat membimbing Anda melalui seluruh proses.",
-    "applyFor": "Ajukan Visa {{code}}"
+    "readyToApply": "Siap mengajukan visa +(code)? Pengacara imigrasi kami dapat membimbing Anda melalui seluruh proses.",
+    "applyFor": "Ajukan Visa +(code)"
   }
 }

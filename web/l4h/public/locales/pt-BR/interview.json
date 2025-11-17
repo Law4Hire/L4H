@@ -10,10 +10,10 @@
   
   "progress": {
     "title": "Progresso da Entrevista",
-    "stats": "Pergunta {{current}} | {{remaining}} tipos de visto restantes",
-    "currentQuestion": "Pergunta {{current}}",
-    "remainingVisas": "{{count}} tipos de visto restantes",
-    "completionPercentage": "{{percentage}}% concluído"
+    "stats": "Pergunta +(current) | +(remaining) tipos de visto restantes",
+    "currentQuestion": "Pergunta +(current)",
+    "remainingVisas": "+(count) tipos de visto restantes",
+    "completionPercentage": "+(percentage)% concluído"
   },
   
   "buttons": {
@@ -38,7 +38,7 @@
     "title": "Entrevista Concluída",
     "congratulations": "Parabéns!",
     "description": "Com base em suas respostas, temos uma recomendação de visto para você.",
-    "stats": "Perguntas respondidas: {{count}} | Reduzido de 88+ tipos de visto",
+    "stats": "Perguntas respondidas: +(count) | Reduzido de 88+ tipos de visto",
     "recommendedVisa": "Tipo de Visto Recomendado",
     "backToDashboard": "Voltar ao Painel",
     "viewPackages": "Ver Pacotes de Serviço",

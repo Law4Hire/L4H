@@ -13,8 +13,8 @@
     "category": "Category",
     "description": "Description",
     "nextSteps": "Next Steps",
-    "readyToApply": "Ready to apply for the {{code}} visa? Our immigration attorneys can guide you through the entire process.",
-    "applyFor": "Apply for {{code}} Visa"
+    "readyToApply": "Ready to apply for the +(code) visa? Our immigration attorneys can guide you through the entire process.",
+    "applyFor": "Apply for +(code) Visa"
   },
   
   "cta": {

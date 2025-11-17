@@ -86,7 +86,7 @@
     "emailInvalid": "Veuillez saisir une adresse e-mail valide",
     "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
     "passwordNeedsSpecialChar": "Le mot de passe doit contenir au moins un caractère spécial",
-    "passwordNeedsMoreClasses": "Le mot de passe doit contenir au moins {{count}} types de caractères différents",
+    "passwordNeedsMoreClasses": "Le mot de passe doit contenir au moins +(count) types de caractères différents",
     "rateLimitExceeded": "Trop de demandes. Veuillez réessayer plus tard.",
     "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
     "dontHaveAccount": "Vous n'avez pas de compte ?",
@@ -168,8 +168,8 @@
       "category": "Catégorie",
       "description": "Description",
       "nextSteps": "Prochaines Étapes",
-      "readyToApply": "Prêt à demander le visa {{code}} ? Nos avocats en immigration peuvent vous guider tout au long du processus.",
-      "applyFor": "Demander le Visa {{code}}"
+      "readyToApply": "Prêt à demander le visa +(code) ? Nos avocats en immigration peuvent vous guider tout au long du processus.",
+      "applyFor": "Demander le Visa +(code)"
     },
     "cta": {
       "title": "Besoin d'aide pour choisir le bon visa ?",

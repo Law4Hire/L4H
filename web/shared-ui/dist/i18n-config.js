@@ -627,6 +627,9 @@ const initI18n = (config) => {
         // Interpolation settings
         interpolation: {
             escapeValue: false, // React already escapes values
+            // Use +() syntax instead of {{}} for placeholders
+            prefix: '+(',
+            suffix: ')',
             format: (value, format, lng) => {
                 // Custom formatting for numbers, dates, etc.
                 if (format === 'number') {

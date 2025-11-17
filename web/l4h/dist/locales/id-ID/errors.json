@@ -49,8 +49,8 @@
     "dateFormat": "Silakan masukkan tanggal yang valid.",
     "fileSize": "Ukuran file melebihi batas maksimum.",
     "fileType": "Jenis file tidak didukung.",
-    "minLength": "Harus minimal {{min}} karakter.",
-    "maxLength": "Tidak boleh lebih dari {{max}} karakter.",
+    "minLength": "Harus minimal +(min) karakter.",
+    "maxLength": "Tidak boleh lebih dari +(max) karakter.",
     "numeric": "Silakan masukkan angka yang valid.",
     "alphanumeric": "Hanya huruf dan angka yang diizinkan."
   },
