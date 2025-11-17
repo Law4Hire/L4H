@@ -27,26 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {
-    // Return a mock implementation for now
-    return {
-      user: {
-        id: 1,
-        email: 'admin@cannlaw.com',
-        role: 'Admin' as const,
-        name: 'Admin User',
-        attorneyId: undefined,
-        isAdmin: true,
-        isLegalProfessional: false
-      },
-      isLoading: false,
-      isAuthenticated: true,
-      login: async () => ({ success: true }),
-      logout: () => {},
-      hasRole: (role: string) => role === 'Admin',
-      isAdmin: true,
-      isLegalProfessional: false,
-      canAccessClient: () => true
-    }
+    throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
 }
@@ -80,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('jwt_token')
       }
     } catch (error) {
-      console.error('Token validation error:', error)
+      // Token validation error - remove invalid token
       localStorage.removeItem('jwt_token')
     } finally {
       setIsLoading(false)

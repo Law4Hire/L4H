@@ -49,8 +49,8 @@
     "dateFormat": "Inserisci una data valida.",
     "fileSize": "La dimensione del file supera il limite massimo.",
     "fileType": "Il tipo di file non è supportato.",
-    "minLength": "Deve essere di almeno {{min}} caratteri.",
-    "maxLength": "Non deve superare {{max}} caratteri.",
+    "minLength": "Deve essere di almeno +(min) caratteri.",
+    "maxLength": "Non deve superare +(max) caratteri.",
     "numeric": "Inserisci un numero valido.",
     "alphanumeric": "Sono consentiti solo lettere e numeri."
   },

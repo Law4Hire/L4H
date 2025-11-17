@@ -10,10 +10,10 @@
   
   "progress": {
     "title": "انٹرویو کی پیش قدمی",
-    "stats": "سوال {{current}} | {{remaining}} ویزا اقسام باقی ہیں",
-    "currentQuestion": "سوال {{current}}",
-    "remainingVisas": "{{count}} ویزا اقسام باقی ہیں",
-    "completionPercentage": "{{percentage}}% مکمل"
+    "stats": "سوال +(current) | +(remaining) ویزا اقسام باقی ہیں",
+    "currentQuestion": "سوال +(current)",
+    "remainingVisas": "+(count) ویزا اقسام باقی ہیں",
+    "completionPercentage": "+(percentage)% مکمل"
   },
   
   "buttons": {
@@ -38,7 +38,7 @@
     "title": "انٹرویو مکمل",
     "congratulations": "مبارک ہو!",
     "description": "آپ کے جوابات کی بنیاد پر، ہمارے پاس آپ کے لیے ویزا کی سفارش ہے۔",
-    "stats": "جواب دیے گئے سوالات: {{count}} | 88+ ویزا اقسام سے کم کیا گیا",
+    "stats": "جواب دیے گئے سوالات: +(count) | 88+ ویزا اقسام سے کم کیا گیا",
     "recommendedVisa": "تجویز کردہ ویزا قسم",
     "backToDashboard": "ڈیش بورڈ پر واپس جائیں",
     "viewPackages": "سروس پیکجز دیکھیں",

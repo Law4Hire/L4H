@@ -105,6 +105,9 @@ i18n
 
     interpolation: {
       escapeValue: false,
+      // Use +() syntax instead of {{}} for placeholders
+      prefix: '+(',
+      suffix: ')',
     },
 
     react: {

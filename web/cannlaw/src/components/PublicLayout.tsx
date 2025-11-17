@@ -21,13 +21,18 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
     { name: 'Contact/Consultation', href: '/contact' }
   ]
 
-  const socialMediaPlatforms = siteConfig?.socialMediaPlatforms 
-    ? JSON.parse(siteConfig.socialMediaPlatforms) 
-    : []
+  // Safely parse JSON with error handling
+  const safeJsonParse = <T,>(jsonString: string | undefined | null, fallback: T): T => {
+    if (!jsonString) return fallback
+    try {
+      return JSON.parse(jsonString) as T
+    } catch (error) {
+      return fallback
+    }
+  }
 
-  const locations = siteConfig?.locations 
-    ? JSON.parse(siteConfig.locations) 
-    : []
+  const socialMediaPlatforms = safeJsonParse(siteConfig?.socialMediaPlatforms, [])
+  const locations = safeJsonParse(siteConfig?.locations, [])
 
   return (
     <div className="min-h-screen bg-white">

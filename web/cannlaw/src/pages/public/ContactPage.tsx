@@ -27,17 +27,27 @@ const ContactPage: React.FC = () => {
     setSubmitStatus('idle')
 
     try {
-      // TODO: Implement actual form submission to API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-      setSubmitStatus('success')
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        consultationType: 'general'
+      const response = await fetch('/v1/public/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
       })
+
+      if (response.ok) {
+        setSubmitStatus('success')
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: '',
+          consultationType: 'general'
+        })
+      } else {
+        setSubmitStatus('error')
+      }
     } catch (error) {
       setSubmitStatus('error')
     } finally {
@@ -55,8 +65,18 @@ const ContactPage: React.FC = () => {
     )
   }
 
-  const locations = siteConfig?.locations ? JSON.parse(siteConfig.locations) : []
-  const socialMediaPlatforms = siteConfig?.socialMediaPlatforms ? JSON.parse(siteConfig.socialMediaPlatforms) : []
+  // Safely parse JSON with error handling
+  const safeJsonParse = <T,>(jsonString: string | undefined | null, fallback: T): T => {
+    if (!jsonString) return fallback
+    try {
+      return JSON.parse(jsonString) as T
+    } catch (error) {
+      return fallback
+    }
+  }
+
+  const locations = safeJsonParse(siteConfig?.locations, [])
+  const socialMediaPlatforms = safeJsonParse(siteConfig?.socialMediaPlatforms, [])
 
   return (
     <PublicLayout>

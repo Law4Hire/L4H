@@ -21,8 +21,18 @@ const HomePage: React.FC = () => {
     )
   }
 
+  // Safely parse JSON with error handling
+  const safeJsonParse = <T,>(jsonString: string | undefined | null, fallback: T): T => {
+    if (!jsonString) return fallback
+    try {
+      return JSON.parse(jsonString) as T
+    } catch (error) {
+      return fallback
+    }
+  }
+
   const managingAttorney = attorneys?.find(a => a.isManagingAttorney) || attorneys?.[0]
-  const uniqueSellingPoints = siteConfig?.uniqueSellingPoints ? JSON.parse(siteConfig.uniqueSellingPoints) : []
+  const uniqueSellingPoints = safeJsonParse(siteConfig?.uniqueSellingPoints, [])
 
   return (
     <PublicLayout>

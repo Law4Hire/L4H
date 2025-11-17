@@ -19,9 +19,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Localization;
 using L4H.Api.Json;
 using L4H.Api.Configuration;
-// using FluentValidation;
-// using FluentValidation.AspNetCore;
-// using L4H.Api.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using L4H.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,52 +41,24 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.TypeInfoResolver = new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver();
     });
 
-// Validators temporarily disabled for deployment
-// builder.Services.AddScoped<IValidator<SignupRequest>, SignupRequestValidator>();
-// builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
-// builder.Services.AddScoped<IValidator<UpdateProfileRequest>, UpdateProfileRequestValidator>();
-// builder.Services.AddScoped<IValidator<ForgotPasswordRequest>, ForgotPasswordRequestValidator>();
-// builder.Services.AddScoped<IValidator<ResetPasswordRequest>, ResetPasswordRequestValidator>();
-// builder.Services.AddScoped<IValidator<CreateApprovedDoctorRequest>, CreateApprovedDoctorRequestValidator>();
-// builder.Services.AddScoped<IValidator<CreateWorkflowRequest>, CreateWorkflowRequestValidator>();
-// builder.Services.AddScoped<IValidator<CreateWorkflowStepRequest>, CreateWorkflowStepRequestValidator>();
-// builder.Services.AddScoped<IValidator<CreateWorkflowDoctorRequest>, CreateWorkflowDoctorRequestValidator>();
+// FluentValidation - Re-enabled for input validation
+builder.Services.AddScoped<IValidator<SignupRequest>, SignupRequestValidator>();
+builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateProfileRequest>, UpdateProfileRequestValidator>();
+builder.Services.AddScoped<IValidator<ForgotPasswordRequest>, ForgotPasswordRequestValidator>();
+builder.Services.AddScoped<IValidator<ResetPasswordRequest>, ResetPasswordRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateApprovedDoctorRequest>, CreateApprovedDoctorRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateWorkflowRequest>, CreateWorkflowRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateWorkflowStepRequest>, CreateWorkflowStepRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateWorkflowDoctorRequest>, CreateWorkflowDoctorRequestValidator>();
+builder.Services.AddScoped<IValidator<ContactFormRequest>, ContactFormRequestValidator>();
 
-// builder.Services.AddFluentValidationAutoValidation();
-// builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// Swagger temporarily disabled due to OpenAPI package compatibility issues in .NET 10 RC
-// Will be re-enabled when Swashbuckle supports .NET 10 or we migrate to Microsoft.AspNetCore.OpenApi
-// builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen(c =>
-// {
-//     c.SwaggerDoc("v1", new() { Title = "L4H API", Version = "v1" });
-//
-//     // Add JWT authentication to Swagger
-//     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-//     {
-//         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-//         Name = "Authorization",
-//         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-//         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-//         Scheme = "Bearer"
-//     });
-//
-//     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-//     {
-//         {
-//             new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-//             {
-//                 Reference = new Microsoft.OpenApi.Models.OpenApiReference
-//                 {
-//                     Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-//                     Id = "Bearer"
-//                 }
-//             },
-//             Array.Empty<string>()
-//         }
-//     });
-// });
+// OpenAPI and Scalar - Modern API documentation UI (replacing Swashbuckle)
+builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
 
 // Add DbContext
 builder.Services.AddDbContext<L4HDbContext>(opt =>
@@ -276,12 +248,16 @@ var app = builder.Build();
 Console.WriteLine("[STARTUP] Application built successfully");
 
 // Configure the HTTP request pipeline
-// Swagger temporarily disabled due to OpenAPI package compatibility issues in .NET 10 RC
-// if (app.Environment.IsDevelopment())
-// {
-//     app.UseSwagger();
-//     app.UseSwaggerUI();
-// }
+// OpenAPI and Scalar UI - Available in all environments
+app.MapOpenApi();
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
+{
+    app.MapScalarApiReference(options =>
+    {
+        options.Title = "L4H API Documentation";
+        options.Theme = Scalar.AspNetCore.ScalarTheme.Purple;
+    });
+}
 
 // Ensure database is created and migrated for Development, Testing, and Production
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") || app.Environment.IsProduction())

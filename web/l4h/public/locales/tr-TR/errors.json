@@ -49,8 +49,8 @@
     "dateFormat": "Lütfen geçerli bir tarih girin.",
     "fileSize": "Dosya boyutu maksimum sınırı aşıyor.",
     "fileType": "Dosya türü desteklenmiyor.",
-    "minLength": "En az {{min}} karakter olmalıdır.",
-    "maxLength": "{{max}} karakterden fazla olmamalıdır.",
+    "minLength": "En az +(min) karakter olmalıdır.",
+    "maxLength": "+(max) karakterden fazla olmamalıdır.",
     "numeric": "Lütfen geçerli bir sayı girin.",
     "alphanumeric": "Sadece harfler ve sayılara izin verilir."
   },

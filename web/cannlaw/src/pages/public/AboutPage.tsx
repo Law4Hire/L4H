@@ -18,7 +18,17 @@ const AboutPage: React.FC = () => {
     )
   }
 
-  const locations = siteConfig?.locations ? JSON.parse(siteConfig.locations) : []
+  // Safely parse JSON with error handling
+  const safeJsonParse = <T,>(jsonString: string | undefined | null, fallback: T): T => {
+    if (!jsonString) return fallback
+    try {
+      return JSON.parse(jsonString) as T
+    } catch (error) {
+      return fallback
+    }
+  }
+
+  const locations = safeJsonParse(siteConfig?.locations, [])
   const managingAttorney = attorneys?.find(a => a.isManagingAttorney) || attorneys?.[0]
 
   return (
@@ -124,19 +134,26 @@ const AboutPage: React.FC = () => {
                     {managingAttorney.bio || 'Experienced immigration attorney providing comprehensive legal services with a focus on client success and satisfaction.'}
                   </p>
                   
-                  {managingAttorney.credentials && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2">Credentials:</h4>
-                      <ul className="text-sm text-gray-700 space-y-1">
-                        {JSON.parse(managingAttorney.credentials).map((credential: string, index: number) => (
-                          <li key={index} className="flex items-start">
-                            <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-2 flex-shrink-0"></span>
-                            {credential}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {managingAttorney.credentials && (() => {
+                    try {
+                      const credentials = JSON.parse(managingAttorney.credentials) as string[]
+                      return (
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">Credentials:</h4>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            {credentials.map((credential: string, index: number) => (
+                              <li key={index} className="flex items-start">
+                                <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                                {credential}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    } catch {
+                      return null
+                    }
+                  })()}
 
                   <div className="flex flex-col sm:flex-row gap-2 text-sm text-gray-600">
                     {managingAttorney.email && (

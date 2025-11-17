@@ -28,11 +28,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
 
   const startInterviewSession = async () => {
     try {
-      console.log('🔍 Starting interview session...')
-
       // Get user's case
       const userCases = await cases.mine()
-      console.log('🔍 User cases:', userCases)
 
       if (!userCases || userCases.length === 0) {
         showError('No case found. Please contact support.')
@@ -41,11 +38,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       }
 
       const caseId = userCases[0].id || userCases[0].caseId
-      console.log('🔍 Using caseId:', caseId)
 
       // Start interview session
       const session = await interview.start(caseId)
-      console.log('🔍 Started interview session:', session)
 
       if (session && session.sessionId) {
         navigate(`/interview?sessionId=${session.sessionId}`)
@@ -54,7 +49,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         navigate('/dashboard')
       }
     } catch (error) {
-      console.error('🔍 Error starting interview session:', error)
+      console.error('Error starting interview session:', error)
       showError('Failed to start interview session')
       navigate('/dashboard')
     }
@@ -77,7 +72,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         window.dispatchEvent(new Event('jwt-token-changed'))
         success(t('login', { ns: 'auth' }) + ' ' + t('success', { ns: 'common' }))
         if (onSuccess) {
-          console.log('🔍 Using onSuccess callback instead of redirect logic')
           onSuccess()
         } else {
           // Determine redirect path based on user type and completion status
