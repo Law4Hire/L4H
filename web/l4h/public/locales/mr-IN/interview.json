@@ -9,10 +9,10 @@
   "complete": "मुलाखत पूर्ण करा",
   "progress": {
     "title": "मुलाखतीची प्रगती",
-    "stats": "प्रश्न {{current}} | {{remaining}} व्हिसा प्रकार शिल्लक",
-    "currentQuestion": "प्रश्न {{current}}",
-    "remainingVisas": "{{count}} व्हिसा प्रकार शिल्लक",
-    "completionPercentage": "{{percentage}}% पूर्ण"
+    "stats": "प्रश्न +(current) | +(remaining) व्हिसा प्रकार शिल्लक",
+    "currentQuestion": "प्रश्न +(current)",
+    "remainingVisas": "+(count) व्हिसा प्रकार शिल्लक",
+    "completionPercentage": "+(percentage)% पूर्ण"
   },
   "buttons": {
     "next": "पुढे",
@@ -40,7 +40,7 @@
     "title": "मुलाखत पूर्ण",
     "congratulations": "अभिनंदन!",
     "description": "आपल्या उत्तरांच्या आधारे, आमच्याकडे आपल्यासाठी व्हिसाची शिफारस आहे.",
-    "stats": "उत्तर दिलेले प्रश्न: {{count}} | ८८+ व्हिसा प्रकारांमधून कमी केले",
+    "stats": "उत्तर दिलेले प्रश्न: +(count) | ८८+ व्हिसा प्रकारांमधून कमी केले",
     "recommendedVisa": "शिफारस केलेला व्हिसा प्रकार",
     "backToDashboard": "डॅशबोर्डवर परत जा",
     "viewPackages": "सेवा पॅकेजेस पहा",

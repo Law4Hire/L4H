@@ -85,7 +85,7 @@
     "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
     "passwordTooShort": "Mật khẩu phải có ít nhất 8 ký tự",
     "passwordNeedsSpecialChar": "Mật khẩu phải chứa ít nhất một ký tự đặc biệt",
-    "passwordNeedsMoreClasses": "Mật khẩu phải chứa ít nhất {{count}} loại ký tự khác nhau",
+    "passwordNeedsMoreClasses": "Mật khẩu phải chứa ít nhất +(count) loại ký tự khác nhau",
     "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau.",
     "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
     "dontHaveAccount": "Chưa có tài khoản?",
@@ -167,8 +167,8 @@
       "category": "Danh mục",
       "description": "Mô tả",
       "nextSteps": "Các bước tiếp theo",
-      "readyToApply": "Sẵn sàng đăng ký thị thực {{code}}? Các luật sư di trú của chúng tôi có thể hướng dẫn bạn trong suốt quá trình.",
-      "applyFor": "Đăng ký thị thực {{code}}"
+      "readyToApply": "Sẵn sàng đăng ký thị thực +(code)? Các luật sư di trú của chúng tôi có thể hướng dẫn bạn trong suốt quá trình.",
+      "applyFor": "Đăng ký thị thực +(code)"
     },
     "cta": {
       "title": "Cần giúp đỡ chọn đúng thị thực?",

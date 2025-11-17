@@ -88,7 +88,7 @@
     "emailInvalid": "Por favor ingrese un correo electrónico válido",
     "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
     "passwordNeedsSpecialChar": "La contraseña debe contener al menos un carácter especial",
-    "passwordNeedsMoreClasses": "La contraseña debe contener al menos {{count}} tipos de caracteres diferentes",
+    "passwordNeedsMoreClasses": "La contraseña debe contener al menos +(count) tipos de caracteres diferentes",
     "rateLimitExceeded": "Demasiadas solicitudes. Por favor intente más tarde.",
     "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
     "dontHaveAccount": "¿No tienes una cuenta?",
@@ -170,8 +170,8 @@
       "category": "Categoría",
       "description": "Descripción",
       "nextSteps": "Siguientes Pasos",
-      "readyToApply": "¿Listo para solicitar la visa {{code}}? Nuestros abogados de inmigración pueden guiarte a través de todo el proceso.",
-      "applyFor": "Solicitar Visa {{code}}"
+      "readyToApply": "¿Listo para solicitar la visa +(code)? Nuestros abogados de inmigración pueden guiarte a través de todo el proceso.",
+      "applyFor": "Solicitar Visa +(code)"
     },
     "cta": {
       "title": "¿Necesitas ayuda eligiendo la visa correcta?",

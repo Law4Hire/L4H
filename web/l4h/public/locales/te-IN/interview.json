@@ -9,10 +9,10 @@
   "complete": "ఇంటర్వ్యూ పూర్తి చేయండి",
   "progress": {
     "title": "ఇంటర్వ్యూ పురోగతి",
-    "stats": "ప్రశ్న {{current}} | {{remaining}} వీసా రకాలు మిగిలి ఉన్నాయి",
-    "currentQuestion": "ప్రశ్న {{current}}",
-    "remainingVisas": "{{count}} వీసా రకాలు మిగిలి ఉన్నాయి",
-    "completionPercentage": "{{percentage}}% పూర్తయింది"
+    "stats": "ప్రశ్న +(current) | +(remaining) వీసా రకాలు మిగిలి ఉన్నాయి",
+    "currentQuestion": "ప్రశ్న +(current)",
+    "remainingVisas": "+(count) వీసా రకాలు మిగిలి ఉన్నాయి",
+    "completionPercentage": "+(percentage)% పూర్తయింది"
   },
   "buttons": {
     "next": "తదుపరి",
@@ -40,7 +40,7 @@
     "title": "ఇంటర్వ్యూ పూర్తయింది",
     "congratulations": "అభినందనలు!",
     "description": "మీ సమాధానాల ఆధారంగా, మేము మీ కోసం వీసా సిఫార్సు కలిగి ఉన్నాము.",
-    "stats": "సమాధానం ఇచ్చిన ప్రశ్నలు: {{count}} | 88+ వీసా రకాల నుండి తగ్గించబడింది",
+    "stats": "సమాధానం ఇచ్చిన ప్రశ్నలు: +(count) | 88+ వీసా రకాల నుండి తగ్గించబడింది",
     "recommendedVisa": "సిఫార్సు చేయబడిన వీసా రకం",
     "backToDashboard": "డాష్‌బోర్డ్‌కు తిరిగి వెళ్లండి",
     "viewPackages": "సేవా ప్యాకేజీలను చూడండి",

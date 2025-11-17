@@ -9,10 +9,10 @@
   "complete": "Mülakatı Tamamla",
   "progress": {
     "title": "Mülakat İlerlemesi",
-    "stats": "Soru {{current}} | {{remaining}} vize türü kaldı",
-    "currentQuestion": "Soru {{current}}",
-    "remainingVisas": "{{count}} vize türü kaldı",
-    "completionPercentage": "%{{percentage}} tamamlandı"
+    "stats": "Soru +(current) | +(remaining) vize türü kaldı",
+    "currentQuestion": "Soru +(current)",
+    "remainingVisas": "+(count) vize türü kaldı",
+    "completionPercentage": "%+(percentage) tamamlandı"
   },
   "buttons": {
     "next": "İleri",
@@ -40,7 +40,7 @@
     "title": "Mülakat Tamamlandı",
     "congratulations": "Tebrikler!",
     "description": "Cevaplarınıza dayanarak, sizin için bir vize önerimiz var.",
-    "stats": "Cevaplanan sorular: {{count}} | 88+ vize türünden daraltıldı",
+    "stats": "Cevaplanan sorular: +(count) | 88+ vize türünden daraltıldı",
     "recommendedVisa": "Önerilen Vize Türü",
     "backToDashboard": "Kontrol Paneline Dön",
     "viewPackages": "Hizmet Paketlerini Görüntüle",

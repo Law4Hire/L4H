@@ -85,7 +85,7 @@
     "emailInvalid": "Wprowadź prawidłowy adres email",
     "passwordTooShort": "Hasło musi mieć co najmniej 8 znaków",
     "passwordNeedsSpecialChar": "Hasło musi zawierać co najmniej jeden znak specjalny",
-    "passwordNeedsMoreClasses": "Hasło musi zawierać co najmniej {{count}} różnych typów znaków",
+    "passwordNeedsMoreClasses": "Hasło musi zawierać co najmniej +(count) różnych typów znaków",
     "rateLimitExceeded": "Zbyt wiele żądań. Spróbuj ponownie później.",
     "passwordMinLength": "Hasło musi mieć co najmniej 8 znaków",
     "dontHaveAccount": "Nie masz konta?",
@@ -167,8 +167,8 @@
       "category": "Kategoria",
       "description": "Opis",
       "nextSteps": "Kolejne kroki",
-      "readyToApply": "Gotowy do aplikacji o wizę {{code}}? Nasi prawnicy imigracyjni poprowadzą Cię przez cały proces.",
-      "applyFor": "Aplikuj o wizę {{code}}"
+      "readyToApply": "Gotowy do aplikacji o wizę +(code)? Nasi prawnicy imigracyjni poprowadzą Cię przez cały proces.",
+      "applyFor": "Aplikuj o wizę +(code)"
     },
     "cta": {
       "title": "Potrzebujesz pomocy w wyborze odpowiedniej wizy?",

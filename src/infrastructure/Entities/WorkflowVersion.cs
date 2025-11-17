@@ -1,4 +1,5 @@
 using L4H.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -20,8 +21,16 @@ public class WorkflowVersion
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties
+    [JsonIgnore]
+
     public VisaType? VisaType { get; set; }
+    [JsonIgnore]
+
     public User? ApprovedByUser { get; set; }
+    [JsonIgnore]
+
     public ICollection<WorkflowStep> Steps { get; set; } = new List<WorkflowStep>();
+    [JsonIgnore]
+
     public ICollection<WorkflowDoctor> Doctors { get; set; } = new List<WorkflowDoctor>();
 }

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using L4H.Infrastructure.Data;
+using L4H.Shared.Models;
+using FluentValidation;
 
 namespace L4H.Api.Controllers;
 
@@ -10,10 +12,17 @@ namespace L4H.Api.Controllers;
 public class PublicController : ControllerBase
 {
     private readonly L4HDbContext _context;
+    private readonly IValidator<ContactFormRequest> _contactFormValidator;
+    private readonly ILogger<PublicController> _logger;
 
-    public PublicController(L4HDbContext context)
+    public PublicController(
+        L4HDbContext context,
+        IValidator<ContactFormRequest> contactFormValidator,
+        ILogger<PublicController> logger)
     {
         _context = context;
+        _contactFormValidator = contactFormValidator;
+        _logger = logger;
     }
 
     /// <summary>
@@ -69,6 +78,62 @@ public class PublicController : ControllerBase
             .ConfigureAwait(false);
 
         return Ok(visaList);
+    }
+
+    /// <summary>
+    /// Submit a contact form inquiry
+    /// </summary>
+    [HttpPost("contact")]
+    [ProducesResponseType<ContactFormResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SubmitContactForm([FromBody] ContactFormRequest request)
+    {
+        // Validate request
+        var validationResult = await _contactFormValidator.ValidateAsync(request).ConfigureAwait(false);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Validation Failed",
+                Detail = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)),
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
+
+        try
+        {
+            // Generate reference ID for tracking
+            var referenceId = $"INQ-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}".Substring(0, 24);
+
+            // Log the contact form submission
+            _logger.LogInformation(
+                "Contact form submitted: {ReferenceId}, Name: {Name}, Email: {Email}, Type: {Type}",
+                referenceId, request.Name, request.Email, request.ConsultationType);
+
+            // TODO: In production, you would:
+            // 1. Save to database (ContactInquiry table)
+            // 2. Send email notification to staff
+            // 3. Send confirmation email to submitter
+            // 4. Integrate with CRM system
+
+            // For now, we'll just log and return success
+            return Ok(new ContactFormResponse
+            {
+                Success = true,
+                Message = "Thank you for contacting us! We'll get back to you within 24 hours.",
+                ReferenceId = referenceId
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing contact form submission");
+            return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Title = "Server Error",
+                Detail = "An error occurred while processing your request. Please try again later.",
+                Status = StatusCodes.Status500InternalServerError
+            });
+        }
     }
 
     private static string GetVisaDescription(string code)

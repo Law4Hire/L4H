@@ -9,10 +9,10 @@
   "complete": "Завершить интервью",
   "progress": {
     "title": "Прогресс интервью",
-    "stats": "Вопрос {{current}} | {{remaining}} типов виз осталось",
-    "currentQuestion": "Вопрос {{current}}",
-    "remainingVisas": "{{count}} типов виз осталось",
-    "completionPercentage": "{{percentage}}% завершено"
+    "stats": "Вопрос +(current) | +(remaining) типов виз осталось",
+    "currentQuestion": "Вопрос +(current)",
+    "remainingVisas": "+(count) типов виз осталось",
+    "completionPercentage": "+(percentage)% завершено"
   },
   "buttons": {
     "next": "Далее",
@@ -40,7 +40,7 @@
     "title": "Интервью завершено",
     "congratulations": "Поздравляем!",
     "description": "На основе ваших ответов у нас есть рекомендация по визе для вас.",
-    "stats": "Отвеченных вопросов: {{count}} | Сужено с 88+ типов виз",
+    "stats": "Отвеченных вопросов: +(count) | Сужено с 88+ типов виз",
     "recommendedVisa": "Рекомендуемый тип визы",
     "backToDashboard": "Вернуться к панели управления",
     "viewPackages": "Просмотреть пакеты услуг",

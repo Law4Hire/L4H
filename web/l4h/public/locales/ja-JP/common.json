@@ -87,7 +87,7 @@
     "emailInvalid": "Please enter a valid email address",
     "passwordTooShort": "Password must be at least 8 characters",
     "passwordNeedsSpecialChar": "Password must contain at least one special character",
-    "passwordNeedsMoreClasses": "Password must contain at least {{count}} different character types",
+    "passwordNeedsMoreClasses": "Password must contain at least +(count) different character types",
     "rateLimitExceeded": "Too many requests. Please try again later.",
     "passwordMinLength": "Password must be at least 8 characters",
     "dontHaveAccount": "Don't have an account?",
@@ -169,8 +169,8 @@
       "category": "カテゴリ",
       "description": "説明",
       "nextSteps": "次のステップ",
-      "readyToApply": "{{code}}ビザの申請準備はできましたか？当社の移民弁護士がプロセス全体をガイドします。",
-      "applyFor": "{{code}}ビザに申請"
+      "readyToApply": "+(code)ビザの申請準備はできましたか？当社の移民弁護士がプロセス全体をガイドします。",
+      "applyFor": "+(code)ビザに申請"
     },
     "cta": {
       "title": "適切なビザを選ぶお手伝いが必要ですか？",

@@ -52,8 +52,8 @@
     "dateFormat": "Digite uma data válida.",
     "fileSize": "O tamanho do arquivo excede o limite máximo.",
     "fileType": "Tipo de arquivo não suportado.",
-    "minLength": "Deve ter pelo menos {{min}} caracteres.",
-    "maxLength": "Não deve ter mais de {{max}} caracteres.",
+    "minLength": "Deve ter pelo menos +(min) caracteres.",
+    "maxLength": "Não deve ter mais de +(max) caracteres.",
     "numeric": "Digite um número válido.",
     "alphanumeric": "Apenas letras e números são permitidos."
   },

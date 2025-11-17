@@ -9,10 +9,10 @@
   "complete": "Hoàn thành phỏng vấn",
   "progress": {
     "title": "Tiến độ phỏng vấn",
-    "stats": "Câu hỏi {{current}} | {{remaining}} loại visa còn lại",
-    "currentQuestion": "Câu hỏi {{current}}",
-    "remainingVisas": "{{count}} loại visa còn lại",
-    "completionPercentage": "{{percentage}}% hoàn thành"
+    "stats": "Câu hỏi +(current) | +(remaining) loại visa còn lại",
+    "currentQuestion": "Câu hỏi +(current)",
+    "remainingVisas": "+(count) loại visa còn lại",
+    "completionPercentage": "+(percentage)% hoàn thành"
   },
   "buttons": {
     "next": "Tiếp theo",
@@ -40,7 +40,7 @@
     "title": "Phỏng vấn hoàn thành",
     "congratulations": "Chúc mừng!",
     "description": "Dựa trên câu trả lời của bạn, chúng tôi có đề xuất visa cho bạn.",
-    "stats": "Câu hỏi đã trả lời: {{count}} | Thu hẹp từ 88+ loại visa",
+    "stats": "Câu hỏi đã trả lời: +(count) | Thu hẹp từ 88+ loại visa",
     "recommendedVisa": "Loại Visa được đề xuất",
     "backToDashboard": "Quay lại bảng điều khiển",
     "viewPackages": "Xem gói dịch vụ",

@@ -442,63 +442,116 @@ export const invoices = {
 }
 
 // Interview API methods
+// New unified interview API
 export const interview = {
-  async start(caseId: string) {
-    return fetchJson('/v1/interview/start', {
+  // Start a new anonymous interview
+  async startAnonymous(languageCode?: string) {
+    return fetchJson<{
+      sessionToken: string
+      sessionId: string
+      firstQuestion: {
+        key: string
+        text: string
+        category: string
+        inputType: string
+        options: Array<{ value: string; label: string }>
+        isRequired: boolean
+        order: number
+      }
+    }>('/interview/anonymous/start', {
       method: 'POST',
-      body: JSON.stringify({ caseId })
+      body: JSON.stringify({ languageCode })
     })
   },
 
-  async nextQuestion(sessionId: string) {
-    return fetchJson('/v1/interview/next-question', {
+  // Resume an existing anonymous interview
+  async resumeAnonymous(sessionToken: string) {
+    return fetchJson<{
+      sessionId: string
+      previousAnswers: Array<{
+        question: string
+        answer: string
+        answeredAt: string
+      }>
+      nextQuestion: any | null
+      isComplete: boolean
+      evaluations: any[] | null
+    }>('/interview/anonymous/resume', {
       method: 'POST',
-      body: JSON.stringify({ sessionId })
+      body: JSON.stringify({ sessionToken })
     })
   },
-  
-  async answer(data: {
-    sessionId: string
-    stepNumber: number
-    questionKey: string
-    answerValue: string
+
+  // Submit an answer and get next question
+  async submitAnswer(sessionToken: string, questionKey: string, answer: string) {
+    return fetchJson<{
+      isComplete: boolean
+      nextQuestion: any | null
+      totalAnswers: number
+      remainingVisasCount: number
+    }>('/interview/anonymous/answer', {
+      method: 'POST',
+      body: JSON.stringify({ sessionToken, questionKey, answer })
+    })
+  },
+
+  // Complete the interview and get evaluations
+  async complete(sessionToken: string) {
+    return fetchJson<{
+      sessionId: string
+      evaluations: Array<{
+        visaTypeId: number
+        visaCode: string
+        visaName: string
+        status: string
+        matchScore: number
+        rank: number
+        explanation: string
+        missingInformation: string[]
+        requiredDocuments: string[]
+        keyBenefits: string[]
+        isUserSelected: boolean
+        isAttorneyLocked: boolean
+        lockReason?: string
+      }>
+      totalQuestionsAnswered: number
+    }>('/interview/anonymous/complete', {
+      method: 'POST',
+      body: JSON.stringify({ sessionToken })
+    })
+  },
+
+  // Get visa evaluations for a session
+  async getEvaluations(sessionToken: string) {
+    return fetchJson(`/interview/anonymous/evaluations/${sessionToken}`)
+  },
+
+  // User selects their preferred visa
+  async selectVisa(sessionToken: string, visaTypeId: number) {
+    return fetchJson('/interview/anonymous/select-visa', {
+      method: 'POST',
+      body: JSON.stringify({ sessionToken, visaTypeId })
+    })
+  },
+
+  // Create account with interview data
+  async registerWithInterview(data: {
+    anonymousToken: string
+    email: string
+    password: string
+    firstName: string
+    lastName: string
   }) {
-    return fetchJson('/v1/interview/answer', {
+    return fetchJson<{
+      sessionId: string
+      userId: string
+      email: string
+      success: boolean
+      errorMessage?: string
+    }>('/interview/anonymous/register', {
       method: 'POST',
       body: JSON.stringify(data)
     })
-  },
-
-  async selectVisaType(sessionId: string, visaTypeCode: string) {
-    return fetchJson('/v1/interview/select-visa-type', {
-      method: 'POST',
-      body: JSON.stringify({ sessionId, visaTypeCode })
-    })
-  },
-
-  async complete(sessionId: string) {
-    return fetchJson('/v1/interview/complete', {
-      method: 'POST',
-      body: JSON.stringify({ sessionId })
-    })
-  },
-  
-  async rerun(caseId: string) {
-    return fetchJson('/v1/interview/rerun', {
-      method: 'POST',
-      body: JSON.stringify({ caseId })
-    })
-  },
-  
-  async lock(caseId: string) {
-    return fetchJson('/v1/interview/lock', {
-      method: 'POST',
-      body: JSON.stringify({ caseId })
-    })
-  },
-  
-  async history() {
-    return fetchJson('/v1/interview/history')
   }
 }
 

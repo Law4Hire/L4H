@@ -52,8 +52,8 @@
     "dateFormat": "Vui lòng nhập ngày hợp lệ.",
     "fileSize": "Kích thước tệp vượt quá giới hạn tối đa.",
     "fileType": "Loại tệp không được hỗ trợ.",
-    "minLength": "Phải có ít nhất {{min}} ký tự.",
-    "maxLength": "Không được vượt quá {{max}} ký tự.",
+    "minLength": "Phải có ít nhất +(min) ký tự.",
+    "maxLength": "Không được vượt quá +(max) ký tự.",
     "numeric": "Vui lòng nhập số hợp lệ.",
     "alphanumeric": "Chỉ cho phép chữ cái và số."
   },

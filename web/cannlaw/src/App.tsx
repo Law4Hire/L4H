@@ -1,40 +1,49 @@
+import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Layout, RouteGuard, ToastContainer, useToast, useCannlawT } from '@l4h/shared-ui'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ClientProtectedRoute } from './components/ClientProtectedRoute'
 
+// Lazy load page components for code-splitting
 // Public pages
-import HomePage from './pages/public/HomePage'
-import AboutPage from './pages/public/AboutPage'
-import ServicesPage from './pages/public/ServicesPage'
-import AttorneysPage from './pages/public/AttorneysPage'
-import ContactPage from './pages/public/ContactPage'
-import FeesPage from './pages/public/FeesPage'
+const HomePage = lazy(() => import('./pages/public/HomePage'))
+const AboutPage = lazy(() => import('./pages/public/AboutPage'))
+const ServicesPage = lazy(() => import('./pages/public/ServicesPage'))
+const AttorneysPage = lazy(() => import('./pages/public/AttorneysPage'))
+const ContactPage = lazy(() => import('./pages/public/ContactPage'))
+const FeesPage = lazy(() => import('./pages/public/FeesPage'))
 
 // Auth pages
-import LoginPage from './pages/LoginPage'
+const LoginPage = lazy(() => import('./pages/LoginPage'))
 
 // Legal Professional Dashboard
-import LegalDashboard from './pages/dashboard/LegalDashboard'
-import ClientManagement from './pages/dashboard/ClientManagement'
-import ClientProfilePage from './pages/dashboard/ClientProfilePage'
-import TimeTrackingPage from './pages/dashboard/TimeTrackingPage'
+const LegalDashboard = lazy(() => import('./pages/dashboard/LegalDashboard'))
+const ClientManagement = lazy(() => import('./pages/dashboard/ClientManagement'))
+const ClientProfilePage = lazy(() => import('./pages/dashboard/ClientProfilePage'))
+const TimeTrackingPage = lazy(() => import('./pages/dashboard/TimeTrackingPage'))
 
 // Admin billing
-import BillingDashboard from './pages/admin/BillingDashboard'
+const BillingDashboard = lazy(() => import('./pages/admin/BillingDashboard'))
 
 // Admin pages
-import AdminPage from './pages/AdminPage'
-import AdminPricingPage from './pages/AdminPricingPage'
-import AdminWorkflowsPage from './pages/AdminWorkflowsPage'
-import AdminTimeEntriesPage from './pages/AdminTimeEntriesPage'
-import AdminReportsPage from './pages/AdminReportsPage'
-import SiteConfigPage from './pages/admin/SiteConfigPage'
-import AttorneyManagementPage from './pages/admin/AttorneyManagementPage'
+const AdminPage = lazy(() => import('./pages/AdminPage'))
+const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
+const AdminWorkflowsPage = lazy(() => import('./pages/AdminWorkflowsPage'))
+const AdminTimeEntriesPage = lazy(() => import('./pages/AdminTimeEntriesPage'))
+const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
+const SiteConfigPage = lazy(() => import('./pages/admin/SiteConfigPage'))
+const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
 
 // Legacy pages (keeping for compatibility)
-import SchedulePage from './pages/SchedulePage'
-import CasesPage from './pages/CasesPage'
+const SchedulePage = lazy(() => import('./pages/SchedulePage'))
+const CasesPage = lazy(() => import('./pages/CasesPage'))
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+)
 
 function App() {
   const t = useCannlawT()
@@ -42,7 +51,8 @@ function App() {
 
   return (
     <>
-      <Routes>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -213,7 +223,8 @@ function App() {
         
         {/* Fallback for authenticated users */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        </Routes>
+      </Suspense>
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </>
   )

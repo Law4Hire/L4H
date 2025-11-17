@@ -1,19 +1,21 @@
-using L4H.UploadGateway.Models;
+using L4H.Shared.Models;
 using L4H.UploadGateway.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Scalar.AspNetCore;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure Serilog
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration)
+        .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture));
+
 // Configure services
 builder.Services.AddEndpointsApiExplorer();
-
-// Swagger temporarily disabled due to Swashbuckle .NET 10 compatibility issues
-// TODO: Re-enable when Swashbuckle supports .NET 10 or migrate to Microsoft.AspNetCore.OpenApi
-// if (builder.Environment.EnvironmentName != "Test")
-// {
-//     builder.Services.AddSwaggerGen();
-// }
+builder.Services.AddOpenApi();
 
 // Configure upload options
 builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
@@ -32,19 +34,18 @@ builder.WebHost.ConfigureKestrel(options =>
 // Register services
 builder.Services.AddScoped<UploadTokenService>();
 
-// Add logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-
 var app = builder.Build();
 
-// Configure pipeline
-// Swagger temporarily disabled due to Swashbuckle .NET 10 compatibility issues
-// if (app.Environment.IsDevelopment())
-// {
-//     app.UseSwagger();
-//     app.UseSwaggerUI();
-// }
+// Configure pipeline - OpenAPI and Scalar UI
+app.MapOpenApi();
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
+{
+    app.MapScalarApiReference(options =>
+    {
+        options.Title = "L4H Upload Gateway API";
+        options.Theme = Scalar.AspNetCore.ScalarTheme.Purple;
+    });
+}
 
 // Health endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));

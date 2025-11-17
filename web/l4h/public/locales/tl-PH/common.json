@@ -87,7 +87,7 @@
     "emailInvalid": "Please enter a valid email address",
     "passwordTooShort": "Password must be at least 8 characters",
     "passwordNeedsSpecialChar": "Password must contain at least one special character",
-    "passwordNeedsMoreClasses": "Password must contain at least {{count}} different character types",
+    "passwordNeedsMoreClasses": "Password must contain at least +(count) different character types",
     "rateLimitExceeded": "Too many requests. Please try again later.",
     "passwordMinLength": "Password must be at least 8 characters",
     "dontHaveAccount": "Don't have an account?",
@@ -169,8 +169,8 @@
       "category": "Category",
       "description": "Description",
       "nextSteps": "Next Steps",
-      "readyToApply": "Ready to apply for the {{code}} visa? Our immigration attorneys can guide you through the entire process.",
-      "applyFor": "Apply for {{code}} Visa"
+      "readyToApply": "Ready to apply for the +(code) visa? Our immigration attorneys can guide you through the entire process.",
+      "applyFor": "Apply for +(code) Visa"
     },
     "cta": {
       "title": "Need Help Choosing the Right Visa?",

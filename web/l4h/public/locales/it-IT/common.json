@@ -85,7 +85,7 @@
     "emailInvalid": "Inserisci un indirizzo email valido",
     "passwordTooShort": "La password deve essere di almeno 8 caratteri",
     "passwordNeedsSpecialChar": "La password deve contenere almeno un carattere speciale",
-    "passwordNeedsMoreClasses": "La password deve contenere almeno {{count}} tipi di caratteri diversi",
+    "passwordNeedsMoreClasses": "La password deve contenere almeno +(count) tipi di caratteri diversi",
     "rateLimitExceeded": "Troppe richieste. Riprova più tardi.",
     "passwordMinLength": "La password deve essere di almeno 8 caratteri",
     "dontHaveAccount": "Non hai un account?",
@@ -167,8 +167,8 @@
       "category": "Categoria",
       "description": "Descrizione",
       "nextSteps": "Prossimi Passi",
-      "readyToApply": "Pronto a richiedere il visto {{code}}? I nostri avvocati per l'immigrazione possono guidarti attraverso l'intero processo.",
-      "applyFor": "Richiedi Visto {{code}}"
+      "readyToApply": "Pronto a richiedere il visto +(code)? I nostri avvocati per l'immigrazione possono guidarti attraverso l'intero processo.",
+      "applyFor": "Richiedi Visto +(code)"
     },
     "cta": {
       "title": "Hai Bisogno di Aiuto per Scegliere il Visto Giusto?",

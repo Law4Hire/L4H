@@ -87,7 +87,7 @@
     "emailInvalid": "Please enter a valid email address",
     "passwordTooShort": "Password must be at least 8 characters",
     "passwordNeedsSpecialChar": "Password must contain at least one special character",
-    "passwordNeedsMoreClasses": "Password must contain at least {{count}} different character types",
+    "passwordNeedsMoreClasses": "Password must contain at least +(count) different character types",
     "rateLimitExceeded": "Too many requests. Please try again later.",
     "passwordMinLength": "Password must be at least 8 characters",
     "dontHaveAccount": "Don't have an account?",
@@ -169,8 +169,8 @@
       "category": "카테고리",
       "description": "설명",
       "nextSteps": "다음 단계",
-      "readyToApply": "{{code}} 비자 신청 준비가 되셨나요? 당사의 이민 변호사가 전체 과정을 안내해 드립니다.",
-      "applyFor": "{{code}} 비자 신청"
+      "readyToApply": "+(code) 비자 신청 준비가 되셨나요? 당사의 이민 변호사가 전체 과정을 안내해 드립니다.",
+      "applyFor": "+(code) 비자 신청"
     },
     "cta": {
       "title": "올바른 비자 선택에 도움이 필요하신가요?",

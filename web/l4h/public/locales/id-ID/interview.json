@@ -9,10 +9,10 @@
   "complete": "Selesaikan Wawancara",
   "progress": {
     "title": "Kemajuan Wawancara",
-    "stats": "Pertanyaan {{current}} | {{remaining}} jenis visa tersisa",
-    "currentQuestion": "Pertanyaan {{current}}",
-    "remainingVisas": "{{count}} jenis visa tersisa",
-    "completionPercentage": "{{percentage}}% selesai"
+    "stats": "Pertanyaan +(current) | +(remaining) jenis visa tersisa",
+    "currentQuestion": "Pertanyaan +(current)",
+    "remainingVisas": "+(count) jenis visa tersisa",
+    "completionPercentage": "+(percentage)% selesai"
   },
   "buttons": {
     "next": "Selanjutnya",
@@ -40,7 +40,7 @@
     "title": "Wawancara Selesai",
     "congratulations": "Selamat!",
     "description": "Berdasarkan jawaban Anda, kami memiliki rekomendasi visa untuk Anda.",
-    "stats": "Pertanyaan dijawab: {{count}} | Dipersempit dari 88+ jenis visa",
+    "stats": "Pertanyaan dijawab: +(count) | Dipersempit dari 88+ jenis visa",
     "recommendedVisa": "Jenis Visa yang Direkomendasikan",
     "backToDashboard": "Kembali ke Dasbor",
     "viewPackages": "Lihat Paket Layanan",

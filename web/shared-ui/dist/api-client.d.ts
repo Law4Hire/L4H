@@ -101,19 +101,73 @@ export declare const invoices: {
     download(invoiceId: string): Promise<any>;
 };
 export declare const interview: {
-    start(caseId: string): Promise<any>;
-    nextQuestion(sessionId: string): Promise<any>;
-    answer(data: {
+    startAnonymous(languageCode?: string): Promise<{
+        sessionToken: string;
         sessionId: string;
-        stepNumber: number;
-        questionKey: string;
-        answerValue: string;
-    }): Promise<any>;
-    selectVisaType(sessionId: string, visaTypeCode: string): Promise<any>;
-    complete(sessionId: string): Promise<any>;
-    rerun(caseId: string): Promise<any>;
-    lock(caseId: string): Promise<any>;
-    history(): Promise<any>;
+        firstQuestion: {
+            key: string;
+            text: string;
+            category: string;
+            inputType: string;
+            options: Array<{
+                value: string;
+                label: string;
+            }>;
+            isRequired: boolean;
+            order: number;
+        };
+    }>;
+    resumeAnonymous(sessionToken: string): Promise<{
+        sessionId: string;
+        previousAnswers: Array<{
+            question: string;
+            answer: string;
+            answeredAt: string;
+        }>;
+        nextQuestion: any | null;
+        isComplete: boolean;
+        evaluations: any[] | null;
+    }>;
+    submitAnswer(sessionToken: string, questionKey: string, answer: string): Promise<{
+        isComplete: boolean;
+        nextQuestion: any | null;
+        totalAnswers: number;
+        remainingVisasCount: number;
+    }>;
+    complete(sessionToken: string): Promise<{
+        sessionId: string;
+        evaluations: Array<{
+            visaTypeId: number;
+            visaCode: string;
+            visaName: string;
+            status: string;
+            matchScore: number;
+            rank: number;
+            explanation: string;
+            missingInformation: string[];
+            requiredDocuments: string[];
+            keyBenefits: string[];
+            isUserSelected: boolean;
+            isAttorneyLocked: boolean;
+            lockReason?: string;
+        }>;
+        totalQuestionsAnswered: number;
+    }>;
+    getEvaluations(sessionToken: string): Promise<any>;
+    selectVisa(sessionToken: string, visaTypeId: number): Promise<any>;
+    registerWithInterview(data: {
+        anonymousToken: string;
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+    }): Promise<{
+        sessionId: string;
+        userId: string;
+        email: string;
+        success: boolean;
+        errorMessage?: string;
+    }>;
 };
 export declare const admin: {
     pricing(): Promise<any>;

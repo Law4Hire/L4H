@@ -1014,10 +1014,16 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<Guid?>("AssignedStaffId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("AttorneySelectedVisaTypeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsInterviewLocked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisaLockedByAttorney")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset>("LastActivityAt")
@@ -1037,10 +1043,20 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("VisaLockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("VisaLockedByStaffId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int?>("VisaTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AttorneySelectedVisaTypeId");
+
+                    b.HasIndex("IsVisaLockedByAttorney");
 
                     b.HasIndex("PackageId");
 
@@ -2047,7 +2063,10 @@ namespace L4H.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CaseId")
+                    b.Property<Guid?>("AnonymousToken")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CaseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("FinishedAt")
@@ -2064,10 +2083,12 @@ namespace L4H.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AnonymousToken");
 
                     b.HasIndex("CaseId");
 
@@ -3447,6 +3468,135 @@ namespace L4H.Infrastructure.Migrations
                     b.ToTable("VisaClasses");
                 });
 
+            modelBuilder.Entity("L4H.Infrastructure.Entities.VisaEligibilityResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EligibilityStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("InterviewSessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MatchScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MetRequirements")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("Rationale")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("UnmetRequirements")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<int>("VisaTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InterviewSessionId");
+
+                    b.HasIndex("VisaTypeId");
+
+                    b.HasIndex("InterviewSessionId", "VisaTypeId")
+                        .IsUnique();
+
+                    b.ToTable("VisaEligibilityResults");
+                });
+
+            modelBuilder.Entity("L4H.Infrastructure.Entities.VisaEvaluation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Explanation")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsAttorneyLocked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUserSelected")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LockReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("LockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LockedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("MatchScore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("MissingInformation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequiredDocuments")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnlockReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("UnlockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UserSelectedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("VisaTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsAttorneyLocked");
+
+                    b.HasIndex("IsUserSelected");
+
+                    b.HasIndex("LockedByUserId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("VisaTypeId");
+
+                    b.HasIndex("SessionId", "Rank");
+
+                    b.ToTable("VisaEvaluations");
+                });
+
             modelBuilder.Entity("L4H.Infrastructure.Entities.VisaRecommendation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3459,8 +3609,14 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("EligibilityStatus")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("LockedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("MatchScore")
+                        .HasColumnType("int");
 
                     b.Property<string>("Rationale")
                         .HasMaxLength(2000)
@@ -3851,6 +4007,11 @@ namespace L4H.Infrastructure.Migrations
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Case", b =>
                 {
+                    b.HasOne("L4H.Infrastructure.Entities.VisaType", "AttorneySelectedVisaType")
+                        .WithMany()
+                        .HasForeignKey("AttorneySelectedVisaTypeId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("L4H.Infrastructure.Entities.Package", "Package")
                         .WithMany("Cases")
                         .HasForeignKey("PackageId")
@@ -3866,6 +4027,8 @@ namespace L4H.Infrastructure.Migrations
                         .WithMany("Cases")
                         .HasForeignKey("VisaTypeId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("AttorneySelectedVisaType");
 
                     b.Navigation("Package");
 
@@ -4075,14 +4238,12 @@ namespace L4H.Infrastructure.Migrations
                     b.HasOne("L4H.Infrastructure.Entities.Case", "Case")
                         .WithMany("InterviewSessions")
                         .HasForeignKey("CaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("L4H.Infrastructure.Entities.User", "User")
                         .WithMany("InterviewSessions")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Case");
 
@@ -4359,6 +4520,51 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("RequestedByStaff");
                 });
 
+            modelBuilder.Entity("L4H.Infrastructure.Entities.VisaEligibilityResult", b =>
+                {
+                    b.HasOne("L4H.Infrastructure.Entities.InterviewSession", "InterviewSession")
+                        .WithMany("VisaEligibilityResults")
+                        .HasForeignKey("InterviewSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("L4H.Infrastructure.Entities.VisaType", "VisaType")
+                        .WithMany()
+                        .HasForeignKey("VisaTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("InterviewSession");
+
+                    b.Navigation("VisaType");
+                });
+
+            modelBuilder.Entity("L4H.Infrastructure.Entities.VisaEvaluation", b =>
+                {
+                    b.HasOne("L4H.Infrastructure.Entities.User", "LockedByUser")
+                        .WithMany()
+                        .HasForeignKey("LockedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("L4H.Infrastructure.Entities.InterviewSession", "Session")
+                        .WithMany("VisaEvaluations")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("L4H.Infrastructure.Entities.VisaType", "VisaType")
+                        .WithMany()
+                        .HasForeignKey("VisaTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LockedByUser");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("VisaType");
+                });
+
             modelBuilder.Entity("L4H.Infrastructure.Entities.VisaRecommendation", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.Case", "Case")
@@ -4499,6 +4705,10 @@ namespace L4H.Infrastructure.Migrations
             modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewSession", b =>
                 {
                     b.Navigation("QAs");
+
+                    b.Navigation("VisaEligibilityResults");
+
+                    b.Navigation("VisaEvaluations");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Invoice", b =>

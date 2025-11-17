@@ -43,20 +43,46 @@ interface TimeEntry {
   createdAt: string
 }
 
+interface Client {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string
+  dateOfBirth?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+interface Case {
+  id: string
+  clientId: number
+  caseType: string
+  status: string
+  description?: string
+  createdAt: string
+}
+
 const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   useAuth() // For future authentication checks
   const { getClient } = useClients()
-  
-  const [client, setClient] = useState<any>(null)
+
+  const [client, setClient] = useState<Client | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const [editedClient, setEditedClient] = useState<any>(null)
+  const [editedClient, setEditedClient] = useState<Client | null>(null)
   // Modal states for future implementation
   const [, setShowCaseModal] = useState(false)
   const [, setShowDocumentModal] = useState(false)
-  const [, setSelectedCase] = useState<any>(null)
+  const [, setSelectedCase] = useState<Case | null>(null)
   const [documents, setDocuments] = useState<Document[]>([])
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([])
   const [activeTab, setActiveTab] = useState('overview')

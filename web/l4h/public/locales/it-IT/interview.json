@@ -9,10 +9,10 @@
   "complete": "Completa Colloquio",
   "progress": {
     "title": "Progresso del Colloquio",
-    "stats": "Domanda {{current}} | {{remaining}} tipi di visto rimanenti",
-    "currentQuestion": "Domanda {{current}}",
-    "remainingVisas": "{{count}} tipi di visto rimanenti",
-    "completionPercentage": "{{percentage}}% completato"
+    "stats": "Domanda +(current) | +(remaining) tipi di visto rimanenti",
+    "currentQuestion": "Domanda +(current)",
+    "remainingVisas": "+(count) tipi di visto rimanenti",
+    "completionPercentage": "+(percentage)% completato"
   },
   "buttons": {
     "next": "Avanti",
@@ -40,7 +40,7 @@
     "title": "Colloquio Completato",
     "congratulations": "Congratulazioni!",
     "description": "Basandoci sulle tue risposte, abbiamo una raccomandazione di visto per te.",
-    "stats": "Domande risposte: {{count}} | Ridotto da 88+ tipi di visto",
+    "stats": "Domande risposte: +(count) | Ridotto da 88+ tipi di visto",
     "recommendedVisa": "Tipo di Visto Raccomandato",
     "backToDashboard": "Torna alla Dashboard",
     "viewPackages": "Visualizza Pacchetti di Servizio",

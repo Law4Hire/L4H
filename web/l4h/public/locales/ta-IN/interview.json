@@ -9,10 +9,10 @@
   "complete": "நேர்காணலை முடி",
   "progress": {
     "title": "நேர்காணல் முன்னேற்றம்",
-    "stats": "கேள்வி {{current}} | {{remaining}} விசா வகைகள் மீதமுள்ளன",
-    "currentQuestion": "கேள்வி {{current}}",
-    "remainingVisas": "{{count}} விசா வகைகள் மீதமுள்ளன",
-    "completionPercentage": "{{percentage}}% முடிந்தது"
+    "stats": "கேள்வி +(current) | +(remaining) விசா வகைகள் மீதமுள்ளன",
+    "currentQuestion": "கேள்வி +(current)",
+    "remainingVisas": "+(count) விசா வகைகள் மீதமுள்ளன",
+    "completionPercentage": "+(percentage)% முடிந்தது"
   },
   "buttons": {
     "next": "அடுத்து",
@@ -40,7 +40,7 @@
     "title": "நேர்காணல் முடிந்தது",
     "congratulations": "வாழ்த்துகள்!",
     "description": "உங்கள் பதில்களின் அடிப்படையில், உங்களுக்கு விசா பரிந்துரை உள்ளது.",
-    "stats": "பதிலளிக்கப்பட்ட கேள்விகள்: {{count}} | 88+ விசா வகைகளிலிருந்து குறைக்கப்பட்டது",
+    "stats": "பதிலளிக்கப்பட்ட கேள்விகள்: +(count) | 88+ விசா வகைகளிலிருந்து குறைக்கப்பட்டது",
     "recommendedVisa": "பரிந்துரைக்கப்பட்ட விசா வகை",
     "backToDashboard": "கட்டுப்பாட்டு பலகைக்குத் திரும்பு",
     "viewPackages": "சேவை தொகுப்புகளைப் பார்",

@@ -1,28 +1,37 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Layout, RouteGuard, ToastContainer, useToast, useTranslation } from '@l4h/shared-ui'
-import LandingPage from './pages/LandingPage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import ProfileCompletionPage from './pages/ProfileCompletionPage'
-import DashboardPage from './pages/DashboardPage'
-import PricingPage from './pages/PricingPage'
-import SchedulingPage from './pages/SchedulingPage'
-import AppointmentsPage from './pages/AppointmentsPage'
-import MessagesPage from './pages/MessagesPage'
-import UploadsPage from './pages/UploadsPage'
-import InvoicesPage from './pages/InvoicesPage'
-import VerifyPage from './pages/VerifyPage'
-import VisaLibraryPage from './pages/VisaLibraryPage'
-import InterviewPage from './pages/InterviewPage'
-import AdminPage from './pages/AdminPage'
-import UserManagementPage from './pages/UserManagementPage'
-import UserDetailPage from './pages/UserDetailPage'
-import AdminPricingPage from './pages/AdminPricingPage'
 import { InterviewProvider } from './InterviewContext';
-import AdminCaseManagementPage from './pages/AdminCaseManagementPage'
-import CaseDetailPage from './pages/CaseDetailPage'
 import { useAuth } from './hooks/useAuth'
+
+// Lazy load page components for code-splitting
+const LandingPage = lazy(() => import('./pages/LandingPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const RegisterPage = lazy(() => import('./pages/RegisterPage'))
+const ProfileCompletionPage = lazy(() => import('./pages/ProfileCompletionPage'))
+const DashboardPage = lazy(() => import('./pages/DashboardPage'))
+const PricingPage = lazy(() => import('./pages/PricingPage'))
+const SchedulingPage = lazy(() => import('./pages/SchedulingPage'))
+const AppointmentsPage = lazy(() => import('./pages/AppointmentsPage'))
+const MessagesPage = lazy(() => import('./pages/MessagesPage'))
+const UploadsPage = lazy(() => import('./pages/UploadsPage'))
+const InvoicesPage = lazy(() => import('./pages/InvoicesPage'))
+const VerifyPage = lazy(() => import('./pages/VerifyPage'))
+const VisaLibraryPage = lazy(() => import('./pages/VisaLibraryPage'))
+const InterviewPage = lazy(() => import('./pages/InterviewPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
+const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
+const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
+const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
+const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
+const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+)
 
 function App() {
   const { t } = useTranslation()
@@ -31,19 +40,20 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route 
-          path="/" 
-          element={
-            <Layout 
-              showUserMenu={true} 
-              user={user} 
-              isAuthenticated={isAuthenticated}
-            >
-              <LandingPage />
-            </Layout>
-          } 
-        />
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Layout
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <LandingPage />
+              </Layout>
+            }
+          />
         <Route 
           path="/login" 
           element={
@@ -211,22 +221,20 @@ function App() {
             </RouteGuard>
           } 
         />
-        <Route 
-          path="/interview" 
+        <Route
+          path="/interview"
           element={
-            <RouteGuard>
-              <Layout 
-                title={t('nav.interview')} 
-                showUserMenu={true} 
-                user={user} 
-                isAuthenticated={isAuthenticated}
-              >
-                <InterviewProvider>
-                  <InterviewPage />
-                </InterviewProvider>
-              </Layout>
-            </RouteGuard>
-          } 
+            <Layout
+              title={t('nav.interview')}
+              showUserMenu={true}
+              user={user}
+              isAuthenticated={isAuthenticated}
+            >
+              <InterviewProvider>
+                <InterviewPage />
+              </InterviewProvider>
+            </Layout>
+          }
         />
         <Route 
           path="/admin" 
@@ -318,8 +326,9 @@ function App() {
             </RouteGuard>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </>
   )

@@ -1,6 +1,6 @@
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
-using L4H.Api.Models;
+using L4H.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text;

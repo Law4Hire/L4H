@@ -52,8 +52,8 @@
     "dateFormat": "Veuillez saisir une date valide.",
     "fileSize": "La taille du fichier dépasse la limite maximale.",
     "fileType": "Le type de fichier n'est pas pris en charge.",
-    "minLength": "Doit contenir au moins {{min}} caractères.",
-    "maxLength": "Ne doit pas dépasser {{max}} caractères.",
+    "minLength": "Doit contenir au moins +(min) caractères.",
+    "maxLength": "Ne doit pas dépasser +(max) caractères.",
     "numeric": "Veuillez saisir un nombre valide.",
     "alphanumeric": "Seules les lettres et les chiffres sont autorisés."
   },

@@ -19,7 +19,7 @@ const LandingPage: React.FC = () => {
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
             <button
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/interview')}
               className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border-none rounded-lg px-8 py-4 text-lg cursor-pointer transition-colors duration-200"
             >
               {t('hero.startCase', { ns: 'landing' })}

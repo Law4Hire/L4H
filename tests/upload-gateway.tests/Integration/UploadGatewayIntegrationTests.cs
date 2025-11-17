@@ -1,5 +1,5 @@
 using FluentAssertions;
-using L4H.UploadGateway.Models;
+using L4H.Shared.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;

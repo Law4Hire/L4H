@@ -77,46 +77,67 @@ const AttorneysPage: React.FC = () => {
                   )}
 
                   {/* Practice Areas */}
-                  {attorney.practiceAreas && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Practice Areas:</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {JSON.parse(attorney.practiceAreas).slice(0, 3).map((area: string, index: number) => (
-                          <span 
-                            key={index}
-                            className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
-                          >
-                            {area}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  {attorney.practiceAreas && (() => {
+                    try {
+                      const practiceAreas = JSON.parse(attorney.practiceAreas) as string[]
+                      return (
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-gray-900 mb-2 text-sm">Practice Areas:</h4>
+                          <div className="flex flex-wrap gap-1">
+                            {practiceAreas.slice(0, 3).map((area: string, index: number) => (
+                              <span
+                                key={index}
+                                className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
+                              >
+                                {area}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    } catch {
+                      return null
+                    }
+                  })()}
 
                   {/* Languages */}
-                  {attorney.languages && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Languages:</h4>
-                      <p className="text-gray-600 text-sm">
-                        {JSON.parse(attorney.languages).join(', ')}
-                      </p>
-                    </div>
-                  )}
+                  {attorney.languages && (() => {
+                    try {
+                      const languages = JSON.parse(attorney.languages) as string[]
+                      return (
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-gray-900 mb-2 text-sm">Languages:</h4>
+                          <p className="text-gray-600 text-sm">
+                            {languages.join(', ')}
+                          </p>
+                        </div>
+                      )
+                    } catch {
+                      return null
+                    }
+                  })()}
 
                   {/* Credentials */}
-                  {attorney.credentials && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Credentials:</h4>
-                      <ul className="text-xs text-gray-600 space-y-1">
-                        {JSON.parse(attorney.credentials).slice(0, 2).map((credential: string, index: number) => (
-                          <li key={index} className="flex items-start">
-                            <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
-                            {credential}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {attorney.credentials && (() => {
+                    try {
+                      const credentials = JSON.parse(attorney.credentials) as string[]
+                      return (
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-gray-900 mb-2 text-sm">Credentials:</h4>
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            {credentials.slice(0, 2).map((credential: string, index: number) => (
+                              <li key={index} className="flex items-start">
+                                <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
+                                {credential}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    } catch {
+                      return null
+                    }
+                  })()}
 
                   {/* Contact Info */}
                   <div className="border-t pt-4 space-y-2">
