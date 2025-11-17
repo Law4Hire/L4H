@@ -267,7 +267,7 @@ builder.Services.AddScoped<ICalendarProvider, FakeGraphCalendarProvider>();
 builder.Services.AddScoped<IMeetingsProvider, FakeMeetingsProvider>();
 
 // Configure Upload settings
-builder.Services.Configure<L4H.Api.Models.UploadOptions>(builder.Configuration.GetSection("Uploads"));
+builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
 
 // Register upload token service
 builder.Services.AddScoped<UploadTokenService>();

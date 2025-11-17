@@ -38,7 +38,8 @@
       "Bash(powershell.exe -Command \"(Get-Content src/api/Services/UploadTokenService.cs) -replace ''using L4H.Api.Models;'', ''using L4H.Shared.Models;'' | Set-Content src/api/Services/UploadTokenService.cs\")",
       "Bash(for file in src/api/Controllers/UploadsController.cs src/api/Services/AntivirusScanService.cs src/api/Services/Providers/IPaymentProvider.cs src/api/Services/UploadTokenService.cs)",
       "Bash(do powershell.exe -Command \"(Get-Content ''$file'') | Select-Object -Unique | Set-Content ''$file''\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(powershell.exe -Command \"(Get-Content src/api/Program.cs) -replace ''L4H.Api.Models.UploadOptions'', ''UploadOptions'' | Set-Content src/api/Program.cs\")"
     ],
     "deny": [],
     "ask": []
