@@ -17,7 +17,14 @@
     "loadFailed": "Error al cargar las traducciones para este idioma.",
     "fallbackActive": "Algunas traducciones no están disponibles. Mostrando inglés como respaldo.",
     "missingKey": "Traducción no encontrada para este texto.",
-    "parsingError": "Error al analizar el archivo de traducción."
+    "parsingError": "Error al analizar el archivo de traducción.",
+    "retrying": "Reintentando... ({{count}})",
+    "retryFailed": "Reintento {{count}} falló",
+    "failedLanguages": "Idiomas fallidos: {{languages}}",
+    "networkError": "Error de red al cargar las traducciones.",
+    "serverError": "Error del servidor al cargar las traducciones.",
+    "timeoutError": "La carga de traducciones expiró.",
+    "unknownError": "Ocurrió un error desconocido al cargar las traducciones."
   },
   
   "interview": {
