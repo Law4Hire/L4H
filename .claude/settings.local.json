@@ -31,7 +31,14 @@
       "Bash(git push:*)",
       "Bash(gh run view:*)",
       "Bash(powershell.exe -Command \"(Get-Content tests/upload-gateway.tests/Services/UploadTokenServiceTests.cs) -replace ''using L4H.UploadGateway.Models;'', ''using L4H.Shared.Models;'' | Set-Content tests/upload-gateway.tests/Services/UploadTokenServiceTests.cs\")",
-      "Bash(powershell.exe -Command \"(Get-Content tests/upload-gateway.tests/Integration/UploadGatewayIntegrationTests.cs) -replace ''using L4H.UploadGateway.Models;'', ''using L4H.Shared.Models;'' | Set-Content tests/upload-gateway.tests/Integration/UploadGatewayIntegrationTests.cs\")"
+      "Bash(powershell.exe -Command \"(Get-Content tests/upload-gateway.tests/Integration/UploadGatewayIntegrationTests.cs) -replace ''using L4H.UploadGateway.Models;'', ''using L4H.Shared.Models;'' | Set-Content tests/upload-gateway.tests/Integration/UploadGatewayIntegrationTests.cs\")",
+      "Bash(powershell.exe -Command \"(Get-Content src/api/Controllers/UploadsController.cs) -replace ''using L4H.Api.Models;'', ''using L4H.Shared.Models;'' | Set-Content src/api/Controllers/UploadsController.cs\")",
+      "Bash(powershell.exe -Command \"(Get-Content src/api/Services/AntivirusScanService.cs) -replace ''using L4H.Api.Models;'', ''using L4H.Shared.Models;'' | Set-Content src/api/Services/AntivirusScanService.cs\")",
+      "Bash(powershell.exe -Command \"(Get-Content src/api/Services/Providers/IPaymentProvider.cs) -replace ''using L4H.Api.Models;'', ''using L4H.Shared.Models;'' | Set-Content src/api/Services/Providers/IPaymentProvider.cs\")",
+      "Bash(powershell.exe -Command \"(Get-Content src/api/Services/UploadTokenService.cs) -replace ''using L4H.Api.Models;'', ''using L4H.Shared.Models;'' | Set-Content src/api/Services/UploadTokenService.cs\")",
+      "Bash(for file in src/api/Controllers/UploadsController.cs src/api/Services/AntivirusScanService.cs src/api/Services/Providers/IPaymentProvider.cs src/api/Services/UploadTokenService.cs)",
+      "Bash(do powershell.exe -Command \"(Get-Content ''$file'') | Select-Object -Unique | Set-Content ''$file''\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
