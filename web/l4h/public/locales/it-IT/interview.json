@@ -7,7 +7,6 @@
   "previous": "Domanda Precedente",
   "restart": "Reimposta Colloquio",
   "complete": "Completa Colloquio",
-  
   "progress": {
     "title": "Progresso del Colloquio",
     "stats": "Domanda {{current}} | {{remaining}} tipi di visto rimanenti",
@@ -15,7 +14,6 @@
     "remainingVisas": "{{count}} tipi di visto rimanenti",
     "completionPercentage": "{{percentage}}% completato"
   },
-  
   "buttons": {
     "next": "Avanti",
     "previous": "Precedente",
@@ -23,7 +21,6 @@
     "complete": "Completa",
     "skip": "Salta Domanda"
   },
-  
   "messages": {
     "selectOption": "Seleziona un'opzione per continuare",
     "required": "Questa domanda è obbligatoria",
@@ -31,9 +28,14 @@
     "error": "Si è verificato un errore durante il caricamento della domanda",
     "sessionExpired": "La tua sessione di colloquio è scaduta. Ricomincia.",
     "invalidAnswer": "Fornisci una risposta valida",
-    "completionFailed": "Impossibile completare il colloquio. Riprova."
+    "completionFailed": "Impossibile completare il colloquio. Riprova.",
+    "selectVisaDirectly": "Fare clic su un tipo di visto per selezionarlo direttamente:",
+    "selectVisa": "Seleziona tipo di visto {{code}}",
+    "retrySuccess": "Riconnessione riuscita! Continua la tua intervista.",
+    "interviewRestarted": "L'intervista è stata riavviata. Ricominciando da capo!",
+    "connectionLost": "Connessione persa. I tuoi progressi sono stati salvati.",
+    "recoveringSession": "Recupero della sessione di intervista..."
   },
-  
   "completion": {
     "title": "Colloquio Completato",
     "congratulations": "Congratulazioni!",
@@ -44,7 +46,6 @@
     "viewPackages": "Visualizza Pacchetti di Servizio",
     "startApplication": "Inizia Richiesta"
   },
-  
   "categories": {
     "visitTransit": "Visita e Transito",
     "studyExchange": "Studio e Scambio",
@@ -56,7 +57,6 @@
     "adoption": "Adozione Straniera",
     "citizenship": "Cittadinanza (N-400)"
   },
-  
   "questions": {
     "category": "Quale categoria si adatta meglio alla tua situazione?",
     "purpose": "Qual è lo scopo principale della tua visita negli Stati Uniti?",
@@ -70,7 +70,6 @@
     "citizenship": "Qual è il tuo paese di cittadinanza?",
     "residence": "Qual è il tuo paese di residenza?"
   },
-  
   "options": {
     "yes": "Sì",
     "no": "No",
@@ -85,13 +84,33 @@
     "moreThan3Years": "Più di 3 anni",
     "permanent": "Residenza permanente"
   },
-  
   "errors": {
     "loadingFailed": "Impossibile caricare le domande del colloquio",
     "submissionFailed": "Impossibile inviare la tua risposta",
     "sessionInvalid": "La tua sessione di colloquio non è valida",
     "networkError": "Si è verificato un errore di rete. Controlla la tua connessione.",
     "serverError": "Si è verificato un errore del server. Riprova più tardi.",
-    "unexpectedError": "Si è verificato un errore imprevisto"
+    "unexpectedError": "Si è verificato un errore imprevisto",
+    "restartFailed": "Riavvio dell'intervista fallito. Si prega di riprovare."
+  },
+  "modal": {
+    "confirmSelection": "Conferma Selezione Tipo di Visto",
+    "selectionDescription": "Stai selezionando {{visaCode}} come suggerimento per il tipo di visto.",
+    "completionNote": "Questo completerà l'intervista e imposterà questo tipo di visto come punto di partenza suggerito per lavorare con i nostri professionisti legali.",
+    "legalDisclaimer": "Questo è solo un suggerimento e non una raccomandazione legale. I nostri professionisti legali esamineranno il tuo caso e forniranno una guida ufficiale."
+  },
+  "errorRecovery": {
+    "title": "Errore Intervista",
+    "description": "Abbiamo riscontrato un problema con la tua sessione di intervista.",
+    "options": {
+      "retry": "Riprova",
+      "restart": "Riavvia Intervista",
+      "dashboard": "Torna alla Dashboard"
+    },
+    "retryDescription": "Tenta di continuare da dove ti sei fermato.",
+    "restartDescription": "Ricomincia l'intervista dall'inizio.",
+    "dashboardDescription": "Torna alla tua dashboard e riprova più tardi.",
+    "retryAttempt": "Tentativo {{count}} di 3",
+    "maxRetriesReached": "Raggiunto il numero massimo di tentativi. Si prega di riavviare o tornare alla dashboard."
   }
 }

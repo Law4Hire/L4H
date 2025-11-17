@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "Bantuan Imigrasi AS",
-    "subtitle": "Didukung oleh Law4Hire"
+    "subtitle": "Didukung oleh Law4Hire",
+    "tagline": "Perjalanan Anda ke Amerika Serikat dimulai di sini"
   },
   "loading": "Memuat...",
   "error": "Kesalahan",
@@ -252,5 +253,7 @@
         "description": "Fifth preference employment-based green card for investors."
       }
     }
-  }
+  },
+  "dismiss": "Tutup",
+  "note": "Catatan"
 }

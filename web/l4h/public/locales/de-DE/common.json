@@ -1,7 +1,8 @@
 {
   "brand": {
     "title": "US-Einwanderungshilfe",
-    "subtitle": "Betrieben von Law4Hire"
+    "subtitle": "Betrieben von Law4Hire",
+    "tagline": "Ihre Reise in die Vereinigten Staaten beginnt hier"
   },
   "loading": "Laden...",
   "error": "Fehler",
@@ -39,7 +40,6 @@
   "undo": "Rückgängig",
   "redo": "Wiederholen",
   "getStarted": "Loslegen",
-  
   "nav": {
     "dashboard": "Dashboard",
     "pricing": "Preise",
@@ -253,5 +253,7 @@
         "description": "Beschäftigungsbasierte Green Card fünfter Präferenz für Investoren."
       }
     }
-  }
+  },
+  "dismiss": "Verwerfen",
+  "note": "Hinweis"
 }
