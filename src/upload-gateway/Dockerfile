@@ -4,9 +4,11 @@ EXPOSE 7070
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0.100-rc.2 AS build
 WORKDIR /src
-COPY ["src/upload-gateway/L4H.UploadGateway.csproj", "src/upload-gateway/"]
-RUN dotnet restore "src/upload-gateway/L4H.UploadGateway.csproj"
-COPY . .
+COPY ["src/upload-gateway/L4H.UploadGateway.csproj", "upload-gateway/"]
+COPY ["src/shared/L4H.Shared.csproj", "shared/"]
+RUN dotnet restore "upload-gateway/L4H.UploadGateway.csproj"
+COPY ["src/upload-gateway/", "upload-gateway/"]
+COPY ["src/shared/", "shared/"]
 WORKDIR "/src/upload-gateway"
 RUN dotnet build "L4H.UploadGateway.csproj" -c Release -o /app/build
 

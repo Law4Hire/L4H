@@ -3,17 +3,17 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0.100-rc.2 AS build
 WORKDIR /src
 
 # Copy project files
-COPY ["src/api/L4H.Api.csproj", "src/api/"]
-COPY ["src/shared/L4H.Shared.csproj", "src/shared/"]
-COPY ["src/infrastructure/L4H.Infrastructure.csproj", "src/infrastructure/"]
+COPY ["src/api/L4H.Api.csproj", "api/"]
+COPY ["src/shared/L4H.Shared.csproj", "shared/"]
+COPY ["src/infrastructure/L4H.Infrastructure.csproj", "infrastructure/"]
 
 # Restore dependencies
-RUN dotnet restore "src/api/L4H.Api.csproj"
+RUN dotnet restore "api/L4H.Api.csproj"
 
 # Copy source code
-COPY ["src/api/", "src/api/"]
-COPY ["src/shared/", "src/shared/"]
-COPY ["src/infrastructure/", "src/infrastructure/"]
+COPY ["src/api/", "api/"]
+COPY ["src/shared/", "shared/"]
+COPY ["src/infrastructure/", "infrastructure/"]
 
 # Build the application
 WORKDIR /src/api
