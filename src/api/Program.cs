@@ -376,7 +376,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             Console.WriteLine("[STARTUP] Starting seed runner...");
             logger.LogInformation("Starting seed runner...");
             var seedRunner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
+            Console.WriteLine("[STARTUP] About to await seedRunner.RunAllAsync()...");
             await seedRunner.RunAllAsync().ConfigureAwait(false);
+            Console.WriteLine("[STARTUP] seedRunner.RunAllAsync() await completed");
             Console.WriteLine("[STARTUP] Seed runner completed");
             logger.LogInformation("Seed runner completed");
         }
