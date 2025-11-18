@@ -223,8 +223,16 @@ builder.Services.AddScoped<IAdminSeedService, AdminSeedService>();
 builder.Services.AddScoped<IPricingSeedService, PricingSeedService>();
 builder.Services.AddScoped<CountriesSeeder>();
 
+// Legacy interview services (deprecated)
 // builder.Services.AddScoped<IInterviewRecommender, RuleBasedRecommender>();
 // builder.Services.AddScoped<IAdaptiveInterviewService, AdaptiveInterviewService>();
+
+// New interview services
+builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IInterviewOrchestrator, L4H.Infrastructure.Services.Interview.InterviewOrchestrator>();
+builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IQuestionEngine, L4H.Infrastructure.Services.Interview.QuestionEngine>();
+builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.ISessionManager, L4H.Infrastructure.Services.Interview.SessionManager>();
+builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IVisaEvaluationEngine, L4H.Infrastructure.Services.Interview.VisaEvaluationEngine>();
+
 // builder.Services.AddScoped<ICitizenshipCaseService, CitizenshipCaseService>();
 builder.Services.AddScoped<IAdoptionCaseService, AdoptionCaseService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
