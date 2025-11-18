@@ -72,12 +72,18 @@ public class QuestionEngine : IQuestionEngine
         List<VisaType> remainingVisas,
         int questionsAnswered)
     {
+        // Never complete if we haven't asked any questions yet
+        if (questionsAnswered == 0)
+        {
+            return false;
+        }
+
         // Complete if we've narrowed down to 3 or fewer visas with pricing
         var commercialVisas = remainingVisas
             .Where(v => v.PricingRules.Any())
             .ToList();
 
-        if (commercialVisas.Count <= 3)
+        if (commercialVisas.Count <= 3 && commercialVisas.Count > 0)
         {
             return true;
         }
@@ -88,8 +94,8 @@ public class QuestionEngine : IQuestionEngine
             return true;
         }
 
-        // Complete if no commercially available visas remain
-        if (!commercialVisas.Any())
+        // Complete if no commercially available visas remain (but only after asking some questions)
+        if (!commercialVisas.Any() && questionsAnswered >= 3)
         {
             return true;
         }
