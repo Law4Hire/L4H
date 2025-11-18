@@ -34,27 +34,39 @@ public class AdminSeedService : IAdminSeedService
 
     public async Task SeedAdminAsync()
     {
+        Console.WriteLine("[AdminSeedService] Starting SeedAdminAsync method");
         const string adminEmail = "dcann@cannlaw.com";
         const string testEmail = "abu@testing.com";
         const string defaultPassword = "SecureTest123!"; // Hardcoded for development/testing
 
+        Console.WriteLine("[AdminSeedService] About to log with ILogger");
         _logger.LogInformation("Creating admin and test users with default password for development");
+        Console.WriteLine("[AdminSeedService] ILogger call completed");
 
         try
         {
+            Console.WriteLine("[AdminSeedService] About to seed admin user...");
             // Seed admin user
             await SeedUserIfNotExists(adminEmail, defaultPassword, "Denise", "Cann", isAdmin: true, isStaff: false).ConfigureAwait(false);
+            Console.WriteLine("[AdminSeedService] Admin user seeded");
 
+            Console.WriteLine("[AdminSeedService] About to seed test user...");
             // Seed test user as legal professional
             await SeedUserIfNotExists(testEmail, defaultPassword, "Abu", "Testing", isAdmin: false, isStaff: true).ConfigureAwait(false);
+            Console.WriteLine("[AdminSeedService] Test user seeded");
 
+            Console.WriteLine("[AdminSeedService] About to seed demo verification token...");
             // Seed demo verification token for testing
             await SeedDemoVerificationTokenAsync().ConfigureAwait(false);
+            Console.WriteLine("[AdminSeedService] Demo verification token seeded");
 
             _logger.LogInformation("Successfully completed user seeding");
+            Console.WriteLine("[AdminSeedService] SeedAdminAsync completed successfully");
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"[AdminSeedService] EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"[AdminSeedService] Stack trace: {ex.StackTrace}");
             _logger.LogError(ex, "Failed to seed users");
             throw;
         }
@@ -62,16 +74,22 @@ public class AdminSeedService : IAdminSeedService
 
     private async Task SeedUserIfNotExists(string email, string password, string firstName, string lastName, bool isAdmin, bool isStaff)
     {
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Starting for {email}");
+
         // Check if user already exists
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Checking if {email} exists...");
         var existingUser = await _context.Users
             .FirstOrDefaultAsync(u => u.Email == email).ConfigureAwait(false);
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Query completed, existingUser is {(existingUser == null ? "null" : "not null")}");
 
         if (existingUser != null)
         {
+            Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] User {email} already exists, skipping");
             _logger.LogDebug("User {Email} already exists, skipping seed", email);
             return;
         }
 
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Creating new user {email}");
         // Create user
         var user = new User
         {
@@ -88,8 +106,10 @@ public class AdminSeedService : IAdminSeedService
             IsActive = true // Seeded users should be active
         };
 
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Adding user to context");
         _context.Users.Add(user);
-        
+
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Creating inactive case for user");
         // Create inactive case for each user
         var userCase = new Case
         {
@@ -99,12 +119,16 @@ public class AdminSeedService : IAdminSeedService
             LastActivityAt = DateTime.UtcNow
         };
 
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Adding case to context");
         _context.Cases.Add(userCase);
 
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] About to call SaveChangesAsync...");
         await _context.SaveChangesAsync().ConfigureAwait(false);
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] SaveChangesAsync completed");
 
         var role = isAdmin ? "Admin" : isStaff ? "Legal Professional" : "User";
         _logger.LogInformation("Successfully created {Role} user {Email}", role, email);
+        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Completed successfully for {email}");
     }
 
     private async Task SeedDemoVerificationTokenAsync()
