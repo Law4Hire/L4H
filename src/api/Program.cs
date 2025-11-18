@@ -340,14 +340,18 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") 
 }
 
 // Seed admin and pricing data for Development and Production (skip Testing)
+Console.WriteLine($"[STARTUP] Environment: {app.Environment.EnvironmentName}, IsDevelopment: {app.Environment.IsDevelopment()}, IsProduction: {app.Environment.IsProduction()}");
+Console.WriteLine("[STARTUP] Checking if seeding should run...");
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
+    Console.WriteLine("[STARTUP] Seeding condition met, starting seed process...");
     using (var scope = app.Services.CreateScope())
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
         try
         {
+            Console.WriteLine("[STARTUP] About to start admin seed...");
             logger.LogInformation("Starting admin seed...");
             var adminSeedService = scope.ServiceProvider.GetRequiredService<IAdminSeedService>();
             await adminSeedService.SeedAdminAsync().ConfigureAwait(false);
