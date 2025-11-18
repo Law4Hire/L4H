@@ -351,25 +351,33 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
         try
         {
-            Console.WriteLine("[STARTUP] About to start admin seed...");
-            logger.LogInformation("Starting admin seed...");
-            var adminSeedService = scope.ServiceProvider.GetRequiredService<IAdminSeedService>();
-            await adminSeedService.SeedAdminAsync().ConfigureAwait(false);
-            logger.LogInformation("Admin seed completed");
+            // Admin and pricing seeds temporarily commented out to isolate issue
+            // Console.WriteLine("[STARTUP] About to start admin seed...");
+            // logger.LogInformation("Starting admin seed...");
+            // var adminSeedService = scope.ServiceProvider.GetRequiredService<IAdminSeedService>();
+            // Console.WriteLine("[STARTUP] About to await admin seed...");
+            // await adminSeedService.SeedAdminAsync().ConfigureAwait(false);
+            // Console.WriteLine("[STARTUP] Admin seed await completed - control returned to Program.cs");
+            // logger.LogInformation("Admin seed completed");
 
-            logger.LogInformation("Starting pricing data seed...");
-            var pricingSeedService = scope.ServiceProvider.GetRequiredService<IPricingSeedService>();
-            await pricingSeedService.SeedPricingDataAsync().ConfigureAwait(false);
-            logger.LogInformation("Pricing data seed completed");
+            // Console.WriteLine("[STARTUP] About to start pricing data seed...");
+            // logger.LogInformation("Starting pricing data seed...");
+            // var pricingSeedService = scope.ServiceProvider.GetRequiredService<IPricingSeedService>();
+            // await pricingSeedService.SeedPricingDataAsync().ConfigureAwait(false);
+            // logger.LogInformation("Pricing data seed completed");
 
+            Console.WriteLine("[STARTUP] Starting countries seed...");
             logger.LogInformation("Starting countries seed...");
             var countriesSeeder = scope.ServiceProvider.GetRequiredService<CountriesSeeder>();
             await countriesSeeder.ExecuteAsync().ConfigureAwait(false);
+            Console.WriteLine("[STARTUP] Countries seed completed");
             logger.LogInformation("Countries seed completed");
 
+            Console.WriteLine("[STARTUP] Starting seed runner...");
             logger.LogInformation("Starting seed runner...");
             var seedRunner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
             await seedRunner.RunAllAsync().ConfigureAwait(false);
+            Console.WriteLine("[STARTUP] Seed runner completed");
             logger.LogInformation("Seed runner completed");
         }
         catch (Exception ex)

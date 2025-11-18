@@ -52,7 +52,11 @@
       "Bash(gh run:*)",
       "Bash(git fetch:*)",
       "Bash(git merge:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(git pull:*)",
+      "Bash(bash:*)",
+      "Bash(gh workflow:*)"
     ],
     "deny": [],
     "ask": []
