@@ -18,10 +18,11 @@ export default defineConfig(({ mode }) => {
         assetFileNames: 'assets/[name]-[hash].[ext]',
         // Manual chunks for better code-splitting and caching
         manualChunks: (id) => {
-          // Vendor chunk for core React libraries
+          // Vendor chunk for core React libraries and React-dependent UI libraries
           if (id.includes('node_modules/react') ||
               id.includes('node_modules/react-dom') ||
-              id.includes('node_modules/react-router-dom')) {
+              id.includes('node_modules/react-router-dom') ||
+              id.includes('node_modules/lucide-react')) {
             return 'vendor-react';
           }
           // Separate chunk for @tanstack/react-query
