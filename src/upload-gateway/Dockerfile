@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["src/upload-gateway/L4H.UploadGateway.csproj", "src/upload-gateway/"]
 RUN dotnet restore "src/upload-gateway/L4H.UploadGateway.csproj"
 COPY . .
-WORKDIR "/src/src/upload-gateway"
+WORKDIR "/src/upload-gateway"
 RUN dotnet build "L4H.UploadGateway.csproj" -c Release -o /app/build
 
 FROM build AS publish

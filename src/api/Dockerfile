@@ -16,7 +16,7 @@ COPY ["src/shared/", "src/shared/"]
 COPY ["src/infrastructure/", "src/infrastructure/"]
 
 # Build the application
-WORKDIR /src/src/api
+WORKDIR /src/api
 RUN dotnet build "L4H.Api.csproj" -c Release -o /app/build
 
 # Publish the application
