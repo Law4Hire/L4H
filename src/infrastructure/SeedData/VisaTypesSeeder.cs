@@ -21,14 +21,8 @@ public class VisaTypesSeeder : ISeedTask
 
     public async Task ExecuteAsync()
     {
-        var existingCount = await _context.VisaTypes.CountAsync().ConfigureAwait(false);
-        if (existingCount > 0)
-        {
-            _logger.LogDebug("Visa Types already seeded ({Count} records), skipping", existingCount);
-            return;
-        }
-
         var visaTypes = GetVisaTypesData();
+        var addedCount = 0;
 
         foreach (var visaTypeData in visaTypes)
         {
@@ -41,11 +35,20 @@ public class VisaTypesSeeder : ISeedTask
                     Name = visaTypeData.Name,
                     IsActive = visaTypeData.IsActive
                 });
+                addedCount++;
             }
         }
 
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-        _logger.LogInformation("Visa Types seed data loaded successfully with {Count} visa types.", visaTypes.Count);
+        if (addedCount > 0)
+        {
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            var totalCount = await _context.VisaTypes.CountAsync().ConfigureAwait(false);
+            _logger.LogInformation("Added {AddedCount} new visa types. Total visa types in database: {TotalCount}", addedCount, totalCount);
+        }
+        else
+        {
+            _logger.LogDebug("All {Count} visa types already exist in database, no changes needed", visaTypes.Count);
+        }
     }
 
     private List<VisaTypeData> GetVisaTypesData()
