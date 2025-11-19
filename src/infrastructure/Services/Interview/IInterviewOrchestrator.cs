@@ -100,7 +100,6 @@ public class InterviewProgressResult
     public bool IsComplete { get; set; }
     public InterviewQuestion? NextQuestion { get; set; }
     public int TotalAnswers { get; set; }
-    public int RemainingVisasCount { get; set; }
 }
 
 /// <summary>

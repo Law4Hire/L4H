@@ -45,31 +45,44 @@ public class DecisionTreeQuestionEngine : IQuestionEngine
         var category = answers["category"];
 
         // Step 3: Category-specific questions
+        InterviewQuestion? categoryQuestion = null;
         switch (category)
         {
             case "nonimmigrant":
-                return GetNonimmigrantQuestions(answers);
+                categoryQuestion = GetNonimmigrantQuestions(answers);
+                break;
 
             case "immigrant":
-                return GetImmigrantQuestions(answers);
+                categoryQuestion = GetImmigrantQuestions(answers);
+                break;
 
             case "citizen":
-                return GetCitizenshipQuestions(answers);
+                categoryQuestion = GetCitizenshipQuestions(answers);
+                break;
 
             case "investor":
-                return GetInvestorQuestions(answers);
+                categoryQuestion = GetInvestorQuestions(answers);
+                break;
 
             case "family":
-                return GetFamilyBasedQuestions(answers);
+                categoryQuestion = GetFamilyBasedQuestions(answers);
+                break;
 
             case "student":
-                return GetStudentQuestions(answers);
+                categoryQuestion = GetStudentQuestions(answers);
+                break;
+        }
+
+        // If we have a category-specific question, return it
+        if (categoryQuestion != null)
+        {
+            return categoryQuestion;
         }
 
         // Step 4: Contact information collection
         if (!HasAllContactInfo(answers))
         {
-            return GetContactInfoQuestion(answers);
+            return await GetContactInfoQuestion(answers);
         }
 
         // All done
@@ -80,9 +93,10 @@ public class DecisionTreeQuestionEngine : IQuestionEngine
         List<VisaType> remainingVisas,
         int questionsAnswered)
     {
-        // Complete when we have location, category, specific visa narrowing, and contact info
-        // This will be determined by GetNextQuestionAsync returning null
-        return false; // Let GetNextQuestionAsync drive completion
+        // Completion is determined by GetNextQuestionAsync returning null
+        // This method is kept for interface compatibility but not actively used in SubmitAnswerAsync
+        // The orchestrator now checks if GetNextQuestionAsync returns null to determine completion
+        return false;
     }
 
     private InterviewQuestion GetLocationQuestion()
@@ -642,7 +656,7 @@ public class DecisionTreeQuestionEngine : IQuestionEngine
                (answers.ContainsKey("us_address") || answers.ContainsKey("foreign_address"));
     }
 
-    private InterviewQuestion? GetContactInfoQuestion(Dictionary<string, string> answers)
+    private async Task<InterviewQuestion?> GetContactInfoQuestion(Dictionary<string, string> answers)
     {
         // Collect contact information in sequence
         if (!answers.ContainsKey("full_name"))
@@ -689,15 +703,26 @@ public class DecisionTreeQuestionEngine : IQuestionEngine
 
         if (!answers.ContainsKey("current_country"))
         {
+            // Get countries from database for dropdown
+            var countries = await _context.Countries
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.Name)
+                .Select(c => new QuestionOption
+                {
+                    Value = c.Iso2,
+                    Label = c.Name
+                })
+                .ToListAsync();
+
             return new InterviewQuestion
             {
                 Key = "current_country",
                 Text = "What country do you currently reside in?",
                 Category = "contact",
-                InputType = "text",
+                InputType = "select",
                 Order = 103,
                 IsRequired = true,
-                Options = new List<QuestionOption>()
+                Options = countries
             };
         }
 

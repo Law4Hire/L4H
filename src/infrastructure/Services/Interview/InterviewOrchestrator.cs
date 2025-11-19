@@ -106,22 +106,17 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         // Get updated answers
         var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
 
-        // Check if we have enough information
-        var remainingVisas = await _evaluationEngine.GetRemainingVisasAsync(answers);
-        var isComplete = await _questionEngine.IsCompleteAsync(remainingVisas, answers.Count);
+        // Always get the next question to determine if we're done
+        var nextQuestion = await _questionEngine.GetNextQuestionAsync(session, answers);
 
-        InterviewQuestion? nextQuestion = null;
-        if (!isComplete)
-        {
-            nextQuestion = await _questionEngine.GetNextQuestionAsync(session, answers);
-        }
+        // If there's no next question, the interview is complete
+        var isComplete = nextQuestion == null;
 
         return new InterviewProgressResult
         {
             IsComplete = isComplete,
             NextQuestion = nextQuestion,
-            TotalAnswers = answers.Count,
-            RemainingVisasCount = remainingVisas.Count
+            TotalAnswers = answers.Count
         };
     }
 

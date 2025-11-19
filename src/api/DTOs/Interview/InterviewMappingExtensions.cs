@@ -110,8 +110,7 @@ public static class InterviewMappingExtensions
         {
             IsComplete = result.IsComplete,
             NextQuestion = result.NextQuestion?.ToDTO(),
-            TotalAnswers = result.TotalAnswers,
-            RemainingVisasCount = result.RemainingVisasCount
+            TotalAnswers = result.TotalAnswers
         };
     }
 

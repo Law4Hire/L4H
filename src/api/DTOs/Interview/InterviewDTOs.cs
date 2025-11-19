@@ -36,7 +36,6 @@ public class SubmitAnswerResponse
     public bool IsComplete { get; set; }
     public QuestionDTO? NextQuestion { get; set; }
     public int TotalAnswers { get; set; }
-    public int RemainingVisasCount { get; set; }
 }
 
 /// <summary>
