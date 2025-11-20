@@ -325,4 +325,28 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         // For now, return the top-ranked evaluation
         return evaluationResults.FirstOrDefault();
     }
+
+    public async Task<SessionLockStatusResult> GetSessionLockStatusAsync(Guid sessionId)
+    {
+        var session = await _context.InterviewSessions
+            .Include(s => s.Case)
+            .ThenInclude(c => c!.AttorneySelectedVisaType)
+            .FirstOrDefaultAsync(s => s.Id == sessionId);
+
+        if (session?.Case == null)
+        {
+            // If there's no case, it can't be locked.
+            return new SessionLockStatusResult { IsLocked = false };
+        }
+
+        var caseEntity = session.Case;
+        return new SessionLockStatusResult
+        {
+            IsLocked = caseEntity.IsVisaLockedByAttorney,
+            LockedVisaTypeId = caseEntity.AttorneySelectedVisaTypeId,
+            LockedVisaName = caseEntity.AttorneySelectedVisaType?.Name,
+            LockedByStaffId = caseEntity.VisaLockedByStaffId,
+            LockedAt = caseEntity.VisaLockedAt
+        };
+    }
 }

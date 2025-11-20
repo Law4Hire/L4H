@@ -122,4 +122,23 @@ public class ProfessionalInterviewController : ControllerBase
             return StatusCode(500, new { error = "Failed to get evaluations" });
         }
     }
+
+    /// <summary>
+    /// Gets the lock status for a session.
+    /// </summary>
+    [HttpGet("session/{sessionId}/lock-status")]
+    [AllowAnonymous] // Allow anonymous users to check status before retaking
+    public async Task<ActionResult<SessionLockStatusResult>> GetSessionLockStatus(Guid sessionId)
+    {
+        try
+        {
+            var result = await _orchestrator.GetSessionLockStatusAsync(sessionId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting lock status for session {SessionId}", sessionId);
+            return StatusCode(500, new { error = "Failed to get lock status" });
+        }
+    }
 }

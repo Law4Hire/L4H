@@ -73,6 +73,23 @@ public interface IInterviewOrchestrator
     /// Runs evaluation after checklist completion and before contact info collection
     /// </summary>
     Task<VisaEvaluationResult?> RunEvaluationBeforeContactAsync(Guid sessionToken);
+
+    /// <summary>
+    /// Gets the lock status for a session.
+    /// </summary>
+    Task<SessionLockStatusResult> GetSessionLockStatusAsync(Guid sessionId);
+}
+
+/// <summary>
+/// Result of checking a session's lock status.
+/// </summary>
+public record SessionLockStatusResult
+{
+    public bool IsLocked { get; init; }
+    public int? LockedVisaTypeId { get; init; }
+    public string? LockedVisaName { get; init; }
+    public Guid? LockedByStaffId { get; init; }
+    public DateTime? LockedAt { get; init; }
 }
 
 /// <summary>
