@@ -112,11 +112,39 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         // If there's no next question, the interview is complete
         var isComplete = nextQuestion == null;
 
+        // Check if we just completed a checklist
+        var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue);
+        bool isChecklistComplete = false;
+        int? checklistProgress = null;
+        int? checklistTotal = null;
+        VisaEvaluationResult? evaluation = null;
+
+        // If the current question was a checklist question, calculate progress
+        if (questionKey.StartsWith("checklist_"))
+        {
+            // Count checklist answers
+            var checklistAnswers = answersDict.Where(kvp => kvp.Key.StartsWith("checklist_")).ToList();
+            checklistProgress = checklistAnswers.Count;
+
+            // Try to determine total from subcategory (requires question engine method)
+            // For now, we'll check if the next question is NOT a checklist question
+            isChecklistComplete = nextQuestion != null && nextQuestion.Category != "checklist";
+
+            if (isChecklistComplete && checklistProgress.HasValue)
+            {
+                checklistTotal = checklistProgress;
+            }
+        }
+
         return new InterviewProgressResult
         {
             IsComplete = isComplete,
             NextQuestion = nextQuestion,
-            TotalAnswers = answers.Count
+            TotalAnswers = answers.Count,
+            IsChecklistComplete = isChecklistComplete,
+            ChecklistProgress = checklistProgress,
+            ChecklistTotal = checklistTotal,
+            Evaluation = evaluation
         };
     }
 
@@ -262,5 +290,39 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         string reason)
     {
         await _sessionManager.UnlockVisaAsync(sessionId, visaTypeId, reason);
+    }
+
+    public async Task<VisaEvaluationResult?> RunEvaluationBeforeContactAsync(Guid sessionToken)
+    {
+        var session = await _sessionManager.GetSessionByTokenAsync(sessionToken);
+        if (session == null)
+        {
+            throw new InvalidOperationException($"Session with token {sessionToken} not found");
+        }
+
+        // Get all answers so far
+        var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
+        var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue);
+
+        // Determine the visa type from subcategory answer
+        if (!answersDict.TryGetValue("subcategory", out var subcategory))
+        {
+            return null; // No subcategory selected yet
+        }
+
+        // Get checklist answers to include in evaluation
+        var checklistAnswers = answersDict.Where(kvp => kvp.Key.StartsWith("checklist_")).ToList();
+        if (checklistAnswers.Count == 0)
+        {
+            return null; // No checklist answers yet
+        }
+
+        // Run evaluation for this specific visa type
+        var evaluationResults = await _evaluationEngine.EvaluateAllVisasAsync(answers);
+
+        // Find the evaluation for the selected subcategory
+        // The evaluation engine will need to match the subcategory to a visa type
+        // For now, return the top-ranked evaluation
+        return evaluationResults.FirstOrDefault();
     }
 }

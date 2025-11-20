@@ -36,6 +36,10 @@ public class SubmitAnswerResponse
     public bool IsComplete { get; set; }
     public QuestionDTO? NextQuestion { get; set; }
     public int TotalAnswers { get; set; }
+    public bool IsChecklistComplete { get; set; }
+    public int? ChecklistProgress { get; set; }
+    public int? ChecklistTotal { get; set; }
+    public EvaluationSummaryDTO? Evaluation { get; set; }
 }
 
 /// <summary>
@@ -180,4 +184,43 @@ public class UnlockVisaRequest
     public Guid SessionId { get; set; }
     public int VisaTypeId { get; set; }
     public string Reason { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Checklist question DTO with yes/no options
+/// </summary>
+public class ChecklistQuestionDTO
+{
+    public string Id { get; set; } = string.Empty;
+    public string Text { get; set; } = string.Empty;
+    public string Answer { get; set; } = string.Empty; // "yes", "no", or empty if not answered
+    public int Order { get; set; }
+}
+
+/// <summary>
+/// Checklist answers DTO to store all yes/no responses
+/// </summary>
+public class ChecklistAnswersDTO
+{
+    public string VisaType { get; set; } = string.Empty;
+    public List<ChecklistQuestionDTO> Questions { get; set; } = new();
+    public int TotalQuestions { get; set; }
+    public int AnsweredQuestions { get; set; }
+    public bool IsComplete { get; set; }
+}
+
+/// <summary>
+/// Evaluation summary DTO for mid-interview results (shown after checklist)
+/// </summary>
+public class EvaluationSummaryDTO
+{
+    public string VisaType { get; set; } = string.Empty;
+    public string VisaName { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty; // Eligible, Potential, NotEligible
+    public decimal MatchScore { get; set; }
+    public string Explanation { get; set; } = string.Empty;
+    public List<string> Strengths { get; set; } = new();
+    public List<string> Concerns { get; set; } = new();
+    public List<string> NextSteps { get; set; } = new();
+    public bool ShowContactForm { get; set; } = true;
 }

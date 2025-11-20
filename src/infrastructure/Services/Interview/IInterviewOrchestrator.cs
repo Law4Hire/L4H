@@ -68,6 +68,11 @@ public interface IInterviewOrchestrator
         Guid sessionId,
         int visaTypeId,
         string reason);
+
+    /// <summary>
+    /// Runs evaluation after checklist completion and before contact info collection
+    /// </summary>
+    Task<VisaEvaluationResult?> RunEvaluationBeforeContactAsync(Guid sessionToken);
 }
 
 /// <summary>
@@ -100,6 +105,10 @@ public class InterviewProgressResult
     public bool IsComplete { get; set; }
     public InterviewQuestion? NextQuestion { get; set; }
     public int TotalAnswers { get; set; }
+    public bool IsChecklistComplete { get; set; }
+    public int? ChecklistProgress { get; set; }
+    public int? ChecklistTotal { get; set; }
+    public VisaEvaluationResult? Evaluation { get; set; }
 }
 
 /// <summary>

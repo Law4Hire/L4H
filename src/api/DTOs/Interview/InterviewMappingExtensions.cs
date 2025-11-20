@@ -110,7 +110,57 @@ public static class InterviewMappingExtensions
         {
             IsComplete = result.IsComplete,
             NextQuestion = result.NextQuestion?.ToDTO(),
-            TotalAnswers = result.TotalAnswers
+            TotalAnswers = result.TotalAnswers,
+            IsChecklistComplete = false,
+            ChecklistProgress = null,
+            ChecklistTotal = null,
+            Evaluation = null
+        };
+    }
+
+    public static ChecklistAnswersDTO ToChecklistAnswersDTO(
+        string visaType,
+        List<(string id, string text)> checklistDefinition,
+        Dictionary<string, string> answers)
+    {
+        var questions = new List<ChecklistQuestionDTO>();
+        for (int i = 0; i < checklistDefinition.Count; i++)
+        {
+            var (id, text) = checklistDefinition[i];
+            var checklistKey = $"checklist_{id}";
+            questions.Add(new ChecklistQuestionDTO
+            {
+                Id = id,
+                Text = text,
+                Answer = answers.ContainsKey(checklistKey) ? answers[checklistKey] : string.Empty,
+                Order = i + 1
+            });
+        }
+
+        var answeredCount = questions.Count(q => !string.IsNullOrEmpty(q.Answer));
+        return new ChecklistAnswersDTO
+        {
+            VisaType = visaType,
+            Questions = questions,
+            TotalQuestions = questions.Count,
+            AnsweredQuestions = answeredCount,
+            IsComplete = answeredCount == questions.Count
+        };
+    }
+
+    public static EvaluationSummaryDTO ToEvaluationSummaryDTO(this VisaEvaluationResult result)
+    {
+        return new EvaluationSummaryDTO
+        {
+            VisaType = result.VisaType.Code,
+            VisaName = result.VisaType.Name,
+            Status = result.Status.ToString(),
+            MatchScore = result.MatchScore,
+            Explanation = result.Explanation,
+            Strengths = new List<string>(),
+            Concerns = result.MissingInformation,
+            NextSteps = new List<string> { "Complete contact information to proceed with your application" },
+            ShowContactForm = true
         };
     }
 

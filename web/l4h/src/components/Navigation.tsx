@@ -60,7 +60,9 @@ export const Navigation: React.FC = () => {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <LanguageSwitcher variant="compact" />
+          <div style={{ display: 'none', width: '0' }}>
+            <LanguageSwitcher variant="compact" />
+          </div>
           <button
             onClick={() => navigate('/visa-library')}
             style={{ 
