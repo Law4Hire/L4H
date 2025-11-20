@@ -111,10 +111,10 @@ public static class InterviewMappingExtensions
             IsComplete = result.IsComplete,
             NextQuestion = result.NextQuestion?.ToDTO(),
             TotalAnswers = result.TotalAnswers,
-            IsChecklistComplete = false,
-            ChecklistProgress = null,
-            ChecklistTotal = null,
-            Evaluation = null
+            IsChecklistComplete = result.IsChecklistComplete,
+            ChecklistProgress = result.ChecklistProgress,
+            ChecklistTotal = result.ChecklistTotal,
+            Evaluation = result.Evaluation?.ToEvaluationSummaryDTO()
         };
     }
 

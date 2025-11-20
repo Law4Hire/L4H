@@ -70,4 +70,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # Personal scripts
+
 startGemini.ps1
+
+
+
+# Build output
+
+/web/l4h/dist/
+
+dist/

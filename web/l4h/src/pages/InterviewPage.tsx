@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button, Input, Modal, interview, useToast, useTranslation } from '@l4h/shared-ui'
+import { Card, Button, Input, interview, useToast, useTranslation } from '@l4h/shared-ui'
 import { useRTL } from '@l4h/shared-ui'
 
 interface Question {
@@ -13,20 +13,16 @@ interface Question {
   order: number
 }
 
-interface VisaEvaluation {
-  visaTypeId: number
-  visaCode: string
+interface EvaluationSummary {
+  visaType: string
   visaName: string
   status: string
   matchScore: number
-  rank: number
   explanation: string
-  missingInformation: string[]
-  requiredDocuments: string[]
-  keyBenefits: string[]
-  isUserSelected: boolean
-  isAttorneyLocked: boolean
-  lockReason?: string
+  strengths: string[]
+  concerns: string[]
+  nextSteps: string[]
+  showContactForm: boolean
 }
 
 const InterviewPage: React.FC = () => {
@@ -43,19 +39,16 @@ const InterviewPage: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [questionCount, setQuestionCount] = useState(0)
-  const [remainingVisas, setRemainingVisas] = useState<number>(0)
 
-  // Results state
+  // Evaluation state (shown after checklist completion)
+  const [currentEvaluation, setCurrentEvaluation] = useState<EvaluationSummary | null>(null)
+
+  // Checklist progress
+  const [checklistProgress, setChecklistProgress] = useState<number | null>(null)
+  const [checklistTotal, setChecklistTotal] = useState<number | null>(null)
+
+  // Completion state
   const [isComplete, setIsComplete] = useState(false)
-  const [evaluations, setEvaluations] = useState<VisaEvaluation[]>([])
-  const [selectedVisaId, setSelectedVisaId] = useState<number | null>(null)
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false)
-
-  // Registration form
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
 
   useEffect(() => {
     startInterview()
@@ -94,11 +87,26 @@ const InterviewPage: React.FC = () => {
       )
 
       setQuestionCount(response.totalAnswers)
-      setRemainingVisas(response.remainingVisasCount)
+
+      // Check if evaluation was returned (after checklist completion)
+      if (response.evaluation && !currentEvaluation) {
+        setCurrentEvaluation(response.evaluation)
+        showSuccess(`Great! You may be eligible for ${response.evaluation.visaName}`)
+      }
+
+      // Update checklist progress if provided
+      if (response.checklistProgress !== undefined) {
+        setChecklistProgress(response.checklistProgress)
+      }
+      if (response.checklistTotal !== undefined) {
+        setChecklistTotal(response.checklistTotal)
+      }
 
       if (response.isComplete) {
-        // Interview is complete, get evaluations
-        await completeInterview()
+        // Interview is complete
+        setIsComplete(true)
+        setCurrentQuestion(null)
+        showSuccess(t('interview:completed'))
       } else if (response.nextQuestion) {
         setCurrentQuestion(response.nextQuestion)
         setCurrentAnswer('')
@@ -111,84 +119,74 @@ const InterviewPage: React.FC = () => {
     }
   }
 
-  const completeInterview = async () => {
-    if (!sessionToken) return
+  const renderEvaluationBanner = () => {
+    if (!currentEvaluation) return null
 
-    try {
-      setIsLoading(true)
-      const response = await interview.complete(sessionToken)
+    return (
+      <Card className="max-w-2xl mx-auto mb-6 p-6 bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-300">
+        <div className="flex items-start">
+          <div className="flex-shrink-0 mr-4">
+            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+              {Math.round(currentEvaluation.matchScore)}%
+            </div>
+          </div>
 
-      setEvaluations(response.evaluations)
-      setIsComplete(true)
-      setCurrentQuestion(null)
+          <div className="flex-grow">
+            <h3 className="text-xl font-bold text-blue-900 mb-1">
+              {currentEvaluation.visaName}
+            </h3>
+            <p className="text-sm text-gray-600 mb-2">
+              {currentEvaluation.visaType} - {currentEvaluation.status}
+            </p>
+            <p className="text-gray-700 mb-3">
+              {currentEvaluation.explanation}
+            </p>
 
-      showSuccess(t('interview:completed'))
-    } catch (error: any) {
-      console.error('Failed to complete interview:', error)
-      showError(error.message || t('errors:interview.completeFailed'))
-    } finally {
-      setIsLoading(false)
-    }
-  }
+            {currentEvaluation.strengths && currentEvaluation.strengths.length > 0 && (
+              <div className="mb-2">
+                <p className="text-sm font-semibold text-green-700 mb-1">Strengths:</p>
+                <ul className="list-disc list-inside text-sm text-gray-700">
+                  {currentEvaluation.strengths.map((strength, i) => (
+                    <li key={i}>{strength}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-  const handleVisaSelection = async (visaId: number) => {
-    if (!sessionToken) return
+            {currentEvaluation.concerns && currentEvaluation.concerns.length > 0 && (
+              <div className="mb-2">
+                <p className="text-sm font-semibold text-orange-700 mb-1">Important Notes:</p>
+                <ul className="list-disc list-inside text-sm text-gray-700">
+                  {currentEvaluation.concerns.map((concern, i) => (
+                    <li key={i}>{concern}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-    try {
-      setSelectedVisaId(visaId)
-      await interview.selectVisa(sessionToken, visaId)
-      showSuccess(t('interview:visaSelected'))
-    } catch (error: any) {
-      console.error('Failed to select visa:', error)
-      showError(error.message || t('errors:interview.selectFailed'))
-    }
-  }
-
-  const handleRegister = async () => {
-    if (!sessionToken || !email || !password || !firstName || !lastName) {
-      showError(t('errors:registration.allFieldsRequired'))
-      return
-    }
-
-    try {
-      setIsLoading(true)
-      const response = await interview.registerWithInterview({
-        anonymousToken: sessionToken,
-        email,
-        password,
-        firstName,
-        lastName
-      })
-
-      if (response.success) {
-        showSuccess(t('registration:success'))
-        navigate('/dashboard')
-      } else {
-        showError(response.errorMessage || t('errors:registration.failed'))
-      }
-    } catch (error: any) {
-      console.error('Failed to register:', error)
-      showError(error.message || t('errors:registration.failed'))
-    } finally {
-      setIsLoading(false)
-    }
+            <p className="text-sm text-blue-800 font-medium mt-3">
+              Please continue with your contact information below to receive your full evaluation.
+            </p>
+          </div>
+        </div>
+      </Card>
+    )
   }
 
   const renderQuestion = () => {
     if (!currentQuestion) return null
+
+    const isChecklistQuestion = currentQuestion.key.startsWith('checklist_')
 
     return (
       <Card className="max-w-2xl mx-auto p-6">
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm text-gray-500">
-              {t('interview:question')} {questionCount}
+              {isChecklistQuestion && checklistProgress && checklistTotal
+                ? `Checklist Question ${checklistProgress} of ${checklistTotal}`
+                : `Question ${questionCount}`}
             </span>
-            {remainingVisas > 0 && (
-              <span className="text-sm text-blue-600">
-                {remainingVisas} {t('interview:visasRemaining')}
-              </span>
-            )}
           </div>
 
           <h2 className="text-xl font-semibold mb-4">{currentQuestion.text}</h2>
@@ -234,107 +232,60 @@ const InterviewPage: React.FC = () => {
             disabled={isLoading || !currentAnswer.trim()}
             isLoading={isLoading}
           >
-            {t('common:continue')}
+            {t('common:submit')}
           </Button>
         </div>
       </Card>
     )
   }
 
-  const renderResults = () => {
-    if (!isComplete || evaluations.length === 0) return null
-
-    // Filter to show only Eligible and Potential visas
-    const relevantEvaluations = evaluations.filter(
-      (e) => e.status === 'Eligible' || e.status === 'Potential'
-    )
+  const renderCompletionMessage = () => {
+    if (!isComplete) return null
 
     return (
-      <div className="max-w-4xl mx-auto">
-        <Card className="p-6 mb-6">
-          <h1 className="text-2xl font-bold mb-2">{t('interview:resultsTitle')}</h1>
-          <p className="text-gray-600 mb-4">
-            {t('interview:resultsDescription', { count: relevantEvaluations.length })}
-          </p>
-        </Card>
+      <div className="max-w-2xl mx-auto">
+        <Card className="p-8 text-center">
+          <div className="mb-6">
+            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Interview Complete!
+            </h1>
+            <p className="text-gray-600 mb-4">
+              Thank you for completing the interview. We will review your information and contact you shortly.
+            </p>
+          </div>
 
-        <div className="space-y-4">
-          {relevantEvaluations.map((evaluation) => (
-            <Card
-              key={evaluation.visaTypeId}
-              className={`p-6 cursor-pointer transition-all ${
-                selectedVisaId === evaluation.visaTypeId
-                  ? 'border-2 border-blue-500 shadow-lg'
-                  : 'border border-gray-200 hover:shadow-md'
-              } ${evaluation.isAttorneyLocked ? 'bg-yellow-50' : ''}`}
-              onClick={() => handleVisaSelection(evaluation.visaTypeId)}
+          {currentEvaluation && (
+            <div className="bg-blue-50 rounded-lg p-6 mb-6 text-left">
+              <h3 className="text-lg font-semibold mb-2">Your Recommended Visa:</h3>
+              <p className="text-2xl font-bold text-blue-700 mb-2">{currentEvaluation.visaName}</p>
+              <p className="text-gray-700 mb-3">{currentEvaluation.explanation}</p>
+              <p className="text-sm text-gray-600">
+                Match Score: <span className="font-bold text-blue-600">{Math.round(currentEvaluation.matchScore)}%</span>
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <Button
+              onClick={() => navigate('/dashboard')}
+              size="large"
+              className="w-full"
             >
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="text-lg font-semibold">{evaluation.visaName}</h3>
-                  <span className="text-sm text-gray-500">{evaluation.visaCode}</span>
-                </div>
-
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {Math.round(evaluation.matchScore)}%
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {evaluation.status === 'Eligible' ? '✓ Eligible' : '~ Potential'}
-                  </div>
-                  {evaluation.isAttorneyLocked && (
-                    <div className="text-xs text-yellow-700 font-semibold mt-1">
-                      🔒 Recommended by Attorney
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <p className="text-gray-700 mb-3">{evaluation.explanation}</p>
-
-              {evaluation.keyBenefits.length > 0 && (
-                <div className="mb-3">
-                  <p className="text-sm font-semibold text-gray-700 mb-1">
-                    {t('interview:keyBenefits')}:
-                  </p>
-                  <ul className="list-disc list-inside text-sm text-gray-600">
-                    {evaluation.keyBenefits.slice(0, 3).map((benefit, i) => (
-                      <li key={i}>{benefit}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {evaluation.missingInformation.length > 0 && (
-                <div className="text-sm text-orange-600">
-                  <p className="font-semibold">{t('interview:missingInfo')}:</p>
-                  <ul className="list-disc list-inside">
-                    {evaluation.missingInformation.map((info, i) => (
-                      <li key={i}>{info}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </Card>
-          ))}
-        </div>
-
-        <Card className="p-6 mt-6">
-          <h3 className="text-lg font-semibold mb-4">{t('interview:nextSteps')}</h3>
-          <p className="text-gray-600 mb-4">
-            {selectedVisaId
-              ? t('interview:createAccountSelected')
-              : t('interview:selectVisaFirst')}
-          </p>
-
-          <Button
-            onClick={() => setShowRegistrationModal(true)}
-            disabled={!selectedVisaId}
-            size="large"
-            className="w-full"
-          >
-            {t('interview:createAccount')}
-          </Button>
+              Go to Dashboard
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/')}
+              className="w-full"
+            >
+              Return to Home
+            </Button>
+          </div>
         </Card>
       </div>
     )
@@ -342,65 +293,9 @@ const InterviewPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
+      {!isComplete && renderEvaluationBanner()}
       {!isComplete && currentQuestion && renderQuestion()}
-      {isComplete && renderResults()}
-
-      {/* Registration Modal */}
-      <Modal
-        isOpen={showRegistrationModal}
-        onClose={() => setShowRegistrationModal(false)}
-        title={t('registration:createAccount')}
-      >
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label={t('registration:firstName')}
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
-            />
-            <Input
-              label={t('registration:lastName')}
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              required
-            />
-          </div>
-
-          <Input
-            label={t('registration:email')}
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-          <Input
-            label={t('registration:password')}
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <div className="flex justify-end space-x-3 mt-6">
-            <Button
-              variant="outline"
-              onClick={() => setShowRegistrationModal(false)}
-            >
-              {t('common:cancel')}
-            </Button>
-
-            <Button
-              onClick={handleRegister}
-              disabled={isLoading || !email || !password || !firstName || !lastName}
-              isLoading={isLoading}
-            >
-              {t('registration:register')}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      {isComplete && renderCompletionMessage()}
     </div>
   )
 }
