@@ -854,6 +854,7 @@ public class AdminController : ControllerBase
             .Include(c => c.VisaType)
             .Include(c => c.Package)
             .Include(c => c.PriceSnapshots.OrderByDescending(p => p.CreatedAt))
+            .Include(c => c.InterviewSessions)
             .OrderByDescending(c => c.LastActivityAt)
             .ToListAsync().ConfigureAwait(false);
 
@@ -869,6 +870,8 @@ public class AdminController : ControllerBase
             VisaTypeName = c.VisaType?.Name,
             PackageCode = c.Package?.Code,
             PackageDisplayName = c.Package?.DisplayName,
+            InterviewSessionId = c.InterviewSessions.OrderByDescending(s => s.CreatedAt).FirstOrDefault()?.Id,
+            IsVisaLockedByAttorney = c.IsVisaLockedByAttorney,
             LatestPriceSnapshot = c.PriceSnapshots.FirstOrDefault() != null 
                 ? new AdminPriceSnapshotResponse
                 {
@@ -1163,6 +1166,8 @@ public class AdminCaseResponse
     public string? PackageCode { get; set; }
     public string? PackageDisplayName { get; set; }
     public AdminPriceSnapshotResponse? LatestPriceSnapshot { get; set; }
+    public Guid? InterviewSessionId { get; set; }
+    public bool IsVisaLockedByAttorney { get; set; }
 }
 
 public class AdminPriceSnapshotResponse

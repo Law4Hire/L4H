@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button, useToast } from '@l4h/shared-ui'
+import { Card, Button, useToast, Modal } from '@l4h/shared-ui'
+import { interview, professional } from '@l4h/shared-ui'
+import { Lock } from 'lucide-react'
 
 interface AdminPriceSnapshotResponse {
   id: number
@@ -23,6 +25,16 @@ interface AdminCaseResponse {
   packageCode?: string
   packageDisplayName?: string
   latestPriceSnapshot?: AdminPriceSnapshotResponse
+  interviewSessionId?: string
+  isVisaLockedByAttorney: boolean
+}
+
+interface VisaEvaluation {
+    visaTypeId: number
+    visaName: string;
+    status: string;
+    matchScore: number;
+    explanation: string;
 }
 
 const statusColors = {
@@ -48,6 +60,12 @@ const AdminCaseManagementPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [updatingCaseId, setUpdatingCaseId] = useState<string | null>(null)
   const { success, error } = useToast()
+
+  // State for the review modal
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<AdminCaseResponse | null>(null);
+  const [evaluations, setEvaluations] = useState<VisaEvaluation[]>([]);
+  const [isEvaluationsLoading, setIsEvaluationsLoading] = useState(false);
 
   useEffect(() => {
     loadCases()
@@ -119,6 +137,41 @@ const AdminCaseManagementPage: React.FC = () => {
       error('Failed to update case status', err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setUpdatingCaseId(null)
+    }
+  }
+
+  const handleOpenReviewModal = async (caseItem: AdminCaseResponse) => {
+    if (!caseItem.interviewSessionId) {
+        error("No interview session found for this case.");
+        return;
+    }
+    setSelectedCase(caseItem);
+    setIsReviewModalOpen(true);
+    try {
+        setIsEvaluationsLoading(true);
+        const evals = await professional.getSessionEvaluations(caseItem.interviewSessionId);
+        setEvaluations(evals);
+    } catch (err) {
+        error("Failed to load interview evaluations.");
+    } finally {
+        setIsEvaluationsLoading(false);
+    }
+  }
+
+  const handleLockVisa = async (visaTypeId: number, reason: string) => {
+    if (!selectedCase || !selectedCase.interviewSessionId) return;
+
+    try {
+        await professional.lockVisa({
+            sessionId: selectedCase.interviewSessionId,
+            visaTypeId,
+            reason,
+        });
+        success("Visa has been locked for this case.");
+        setIsReviewModalOpen(false);
+        loadCases(); // Refresh cases to show lock status
+    } catch (err) {
+        error("Failed to lock visa.");
     }
   }
 
@@ -217,6 +270,7 @@ const AdminCaseManagementPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
+                        {caseItem.isVisaLockedByAttorney && <Lock className="w-4 h-4 inline-block mr-1 text-blue-600" />}
                         {caseItem.visaTypeCode || 'N/A'}
                       </div>
                       <div className="text-sm text-gray-500">
@@ -248,7 +302,7 @@ const AdminCaseManagementPage: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(caseItem.lastActivityAt)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <select
                         value={caseItem.status}
                         onChange={(e) => {
@@ -265,6 +319,15 @@ const AdminCaseManagementPage: React.FC = () => {
                           </option>
                         ))}
                       </select>
+                      {caseItem.interviewSessionId && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenReviewModal(caseItem)}
+                        >
+                            Review
+                        </Button>
+                      )}
                       {updatingCaseId === caseItem.id && (
                         <div className="mt-1 text-xs text-gray-500">Updating...</div>
                       )}
@@ -276,6 +339,35 @@ const AdminCaseManagementPage: React.FC = () => {
           </div>
         )}
       </Card>
+      
+      <Modal open={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} title={`Review Interview: ${selectedCase?.userName}`}>
+        {isEvaluationsLoading ? (
+            <p>Loading evaluations...</p>
+        ) : (
+            <div className="space-y-4">
+                {evaluations.map(e => (
+                    <div key={e.visaTypeId} className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h3 className="text-lg font-semibold">{e.visaName} ({e.status})</h3>
+                                <p className="text-sm text-gray-600">{e.explanation}</p>
+                            </div>
+                            <Button
+                                size="sm"
+                                onClick={() => handleLockVisa(e.visaTypeId, "Attorney recommendation after review.")}
+                                disabled={selectedCase?.isVisaLockedByAttorney}
+                            >
+                                Lock
+                            </Button>
+                        </div>
+                        <div className="text-right mt-2 font-bold">
+                            Score: <span className="text-green-500">{Math.round(e.matchScore)}%</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        )}
+      </Modal>
     </div>
   )
 }

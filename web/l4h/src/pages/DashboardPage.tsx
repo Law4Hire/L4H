@@ -11,6 +11,8 @@ interface Case {
   createdAt: string
   visaTypeName?: string
   visaTypeCode?: string
+  interviewSessionId?: string
+  isVisaLockedByAttorney: boolean
 }
 
 interface VisaRecommendation {
@@ -28,6 +30,7 @@ const DashboardPage: React.FC = () => {
   const [showRecommendationModal, setShowRecommendationModal] = useState(false)
   const [selectedRecommendation, setSelectedRecommendation] = useState<VisaRecommendation | null>(null)
   const [showResetWarning, setShowResetWarning] = useState(false)
+  const [showLockWarning, setShowLockWarning] = useState(false)
   const [existingVisaType, setExistingVisaType] = useState<string | null>(null)
 
   // Fetch cases using React Query
@@ -45,6 +48,12 @@ const DashboardPage: React.FC = () => {
 
       // Use the first available case for the interview
       const activeCase = casesList[0]
+
+      // Check for attorney lock first
+      if (activeCase.isVisaLockedByAttorney) {
+          setShowLockWarning(true);
+          return;
+      }
 
       // Check if case already has a visa type assigned
       if (activeCase.visaTypeCode || activeCase.visaTypeName) {
@@ -65,6 +74,11 @@ const DashboardPage: React.FC = () => {
     }
   }
 
+  const handleProceedWithRetake = () => {
+    setShowLockWarning(false);
+    setShowResetWarning(true); // Show the original reset warning
+  }
+  
   const handleConfirmReset = async () => {
     try {
       const activeCase = casesList[0]
@@ -314,6 +328,37 @@ const DashboardPage: React.FC = () => {
               Reset and Start New Interview
             </Button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Lock Warning Modal */}
+      <Modal
+        isOpen={showLockWarning}
+        onClose={() => setShowLockWarning(false)}
+        title="Interview Locked"
+      >
+        <div className="space-y-4">
+            <p className="text-gray-700 dark:text-gray-300">
+                Your visa recommendation has been locked by an attorney.
+            </p>
+            <p className="text-gray-700 dark:text-gray-300">
+                Retaking the interview may have consequences for your case.
+            </p>
+            <div className="flex justify-end space-x-3 pt-4">
+                <Button
+                variant="outline"
+                onClick={() => setShowLockWarning(false)}
+                >
+                Cancel
+                </Button>
+                <Button
+                variant="primary"
+                onClick={handleProceedWithRetake}
+                className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                Proceed Anyway
+                </Button>
+            </div>
         </div>
       </Modal>
     </div>
