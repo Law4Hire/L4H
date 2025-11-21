@@ -19,6 +19,7 @@ const InvoicesPage = lazy(() => import('./pages/InvoicesPage'))
 const VerifyPage = lazy(() => import('./pages/VerifyPage'))
 const VisaLibraryPage = lazy(() => import('./pages/VisaLibraryPage'))
 const InterviewPage = lazy(() => import('./pages/InterviewPage'))
+const VisaResultsPage = lazy(() => import('./pages/VisaResultsPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
 const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
@@ -233,6 +234,19 @@ function App() {
               <InterviewProvider>
                 <InterviewPage />
               </InterviewProvider>
+            </Layout>
+          }
+        />
+        <Route
+          path="/results"
+          element={
+            <Layout
+              title={t('nav.results', 'Results')}
+              showUserMenu={true}
+              user={user}
+              isAuthenticated={isAuthenticated}
+            >
+              <VisaResultsPage />
             </Layout>
           }
         />

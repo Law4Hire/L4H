@@ -23,10 +23,12 @@ const InterviewPage: React.FC = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Start the interview on component mount
+  // Navigate to results page when interview is complete
   useEffect(() => {
-    startInterview();
-  }, []);
+    if (isComplete && sessionToken) {
+      navigate('/results', { state: { sessionToken } });
+    }
+  }, [isComplete, sessionToken, navigate]);
 
   const startInterview = async () => {
     try {
@@ -99,20 +101,6 @@ const InterviewPage: React.FC = () => {
       </div>
     );
   };
-  
-  const renderCompletion = () => {
-    return (
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Interview Complete!</h1>
-        <p className="text-xl text-gray-600 mb-8">
-          Thank you for completing the initial assessment.
-        </p>
-        <Button onClick={() => navigate('/dashboard')} size="lg">
-          See My Results
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
@@ -128,7 +116,14 @@ const InterviewPage: React.FC = () => {
             </button>
           )}
           
-          {isComplete ? renderCompletion() : renderQuestion()}
+          {isComplete ? (
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">Interview Complete!</h1>
+              <p className="text-xl text-gray-600 mb-8">
+                Navigating to your results...
+              </p>
+            </div>
+          ) : renderQuestion()}
         </div>
 
         <div className="text-center mt-6 text-gray-600">
