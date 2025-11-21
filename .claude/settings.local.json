@@ -60,7 +60,21 @@
       "Bash(python:*)",
       "Bash(md5sum:*)",
       "Bash(winpty docker exec:*)",
-      "Bash(MSYS_NO_PATHCONV=1 docker exec:*)"
+      "Bash(MSYS_NO_PATHCONV=1 docker exec:*)",
+      "Bash(TOKEN=\"7c613608-fc4b-4d9c-ac7b-4847f976e500\")",
+      "Bash(TOKEN=\"db851ca5-9c81-4454-b950-3bc4a0af3157\")",
+      "Bash(echo \"Step 7: Full Name\" curl -X POST http://localhost:8765/api/interview/anonymous/answer -H \"Content-Type: application/json\" -d \"{\"\"sessionToken\"\":\"\"$TOKEN\"\",\"\"questionKey\"\":\"\"full_name\"\",\"\"answer\"\":\"\"John Doe\"\"}\" -s)",
+      "Bash(echo \"\" echo \"Step 8: Email\" curl -X POST http://localhost:8765/api/interview/anonymous/answer -H \"Content-Type: application/json\" -d \"{\"\"sessionToken\"\":\"\"$TOKEN\"\",\"\"questionKey\"\":\"\"email\"\",\"\"answer\"\":\"\"john@example.com\"\"}\" -s)",
+      "Bash(echo \"\" echo \"Step 9: Phone\" curl -X POST http://localhost:8765/api/interview/anonymous/answer -H \"Content-Type: application/json\" -d \"{\"\"sessionToken\"\":\"\"$TOKEN\"\",\"\"questionKey\"\":\"\"phone\"\",\"\"answer\"\":\"\"+1-555-123-4567\"\"}\" -s)",
+      "Bash(echo \"\" echo \"Step 10: Country\" curl -X POST http://localhost:8765/api/interview/anonymous/answer -H \"Content-Type: application/json\" -d \"{\"\"sessionToken\"\":\"\"$TOKEN\"\",\"\"questionKey\"\":\"\"current_country\"\",\"\"answer\"\":\"\"Canada\"\"}\" -s)",
+      "Bash(echo \"\" echo \"Step 11: Foreign Address (should be asked since location=outside_us)\" curl -X POST http://localhost:8765/api/interview/anonymous/answer -H \"Content-Type: application/json\" -d \"{\"\"sessionToken\"\":\"\"$TOKEN\"\",\"\"questionKey\"\":\"\"foreign_address\"\",\"\"answer\"\":\"\"123 Main St, Toronto, Canada\"\"}\" -s)",
+      "Bash(taskkill:*)",
+      "Bash(timeout:*)",
+      "Bash(echo \"Testing: Start interview and check for remainingVisasCount removal\" curl -s -X POST http://localhost:8765/api/interview/anonymous/start -H \"Content-Type: application/json\" -d '{}')",
+      "WebFetch(domain:claude.ai)",
+      "Bash(docker-compose down:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(netstat:*)"
     ],
     "deny": [],
     "ask": []

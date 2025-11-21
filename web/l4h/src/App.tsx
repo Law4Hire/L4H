@@ -7,8 +7,7 @@ import { useAuth } from './hooks/useAuth'
 // Lazy load page components for code-splitting
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
-const RegisterPage = lazy(() => import('./pages/RegisterPage'))
-const ProfileCompletionPage = lazy(() => import('./pages/ProfileCompletionPage'))
+const SinglePageRegistration = lazy(() => import('./pages/SinglePageRegistration'))
 const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const PricingPage = lazy(() => import('./pages/PricingPage'))
 const SchedulingPage = lazy(() => import('./pages/SchedulingPage'))
@@ -68,29 +67,15 @@ function App() {
           } 
         />
         <Route 
-          path="/register" 
+          path="/register-interview" 
           element={
             <Layout 
               showUserMenu={false} 
               user={user} 
               isAuthenticated={isAuthenticated}
             >
-              <RegisterPage />
+              <SinglePageRegistration />
             </Layout>
-          } 
-        />
-        <Route 
-          path="/profile-completion" 
-          element={
-            <RouteGuard>
-              <Layout 
-                showUserMenu={false} 
-                user={user} 
-                isAuthenticated={isAuthenticated}
-              >
-                <ProfileCompletionPage />
-              </Layout>
-            </RouteGuard>
           } 
         />
         <Route 

@@ -77,7 +77,7 @@ const VisaResultsPage: React.FC = () => {
         ))}
 
         <div className="mt-8 text-center">
-          <Button onClick={() => navigate('/register')} size="lg">
+          <Button onClick={() => navigate('/register-interview', { state: { sessionToken } })} size="lg">
             Register to Proceed
           </Button>
         </div>

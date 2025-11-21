@@ -1,0 +1,83 @@
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button, Input, useToast } from '@l4h/shared-ui';
+import { interview } from '@l4h/shared-ui';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const registrationSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  phone: z.string().min(10, "A valid phone number is required"),
+  dob: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid date of birth"),
+  countryOfCitizenship: z.string().min(1, "Country of citizenship is required"),
+  // Add other fields as necessary from the GITHUB_ISSUES.md
+});
+
+type RegistrationFormValues = z.infer<typeof registrationSchema>;
+
+const SinglePageRegistration: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { error: showError, success: showSuccess } = useToast();
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegistrationFormValues>({
+    resolver: zodResolver(registrationSchema),
+  });
+
+  const sessionToken = location.state?.sessionToken;
+
+  const onSubmit = async (data: RegistrationFormValues) => {
+    if (!sessionToken) {
+        showError("No session token found. Please complete the interview first.");
+        navigate('/interview');
+        return;
+    }
+      
+    try {
+      // The API expects a different structure, this is a placeholder
+      // for the call to interview.registerWithInterview
+      await interview.registerWithInterview({
+        anonymousToken: sessionToken,
+        ...data,
+      });
+
+      showSuccess("Registration successful! Redirecting to dashboard...");
+      navigate('/dashboard');
+    } catch (err: any) {
+      showError(err.message || "Registration failed. Please try again.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="max-w-4xl w-full bg-white rounded-lg shadow-xl p-8">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Create Your Account</h1>
+        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* Personal Information */}
+          <div className="md:col-span-2 font-bold text-xl mb-2">Personal Information</div>
+          <Input label="First Name" {...register("firstName")} error={errors.firstName?.message} />
+          <Input label="Last Name" {...register("lastName")} error={errors.lastName?.message} />
+          <Input label="Email Address" type="email" {...register("email")} error={errors.email?.message} />
+          <Input label="Password" type="password" {...register("password")} error={errors.password?.message} />
+          <Input label="Date of Birth" type="date" {...register("dob")} error={errors.dob?.message} />
+          <Input label="Country of Citizenship" {...register("countryOfCitizenship")} error={errors.countryOfCitizenship?.message} />
+          <Input label="Phone Number" type="tel" {...register("phone")} error={errors.phone?.message} />
+
+          {/* More fields to be added here based on GITHUB_ISSUES.md */}
+
+          <div className="md:col-span-2 mt-6">
+            <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting} className="w-full">
+              {isSubmitting ? 'Registering...' : 'Create Account & See Results'}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default SinglePageRegistration;
