@@ -2,7 +2,6 @@ using FluentAssertions;
 using L4H.Shared.Models;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
-using L4H.Shared.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;

@@ -1,7 +1,6 @@
 using FluentAssertions;
 using L4H.Shared.Models;
 using L4H.Api.Services;
-using L4H.Shared.Models;
 using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
 using Xunit;

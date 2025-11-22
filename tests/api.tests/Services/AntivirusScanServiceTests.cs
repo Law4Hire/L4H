@@ -3,7 +3,6 @@ using L4H.Shared.Models;
 using L4H.Api.Services;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
-using L4H.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

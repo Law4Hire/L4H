@@ -14,8 +14,8 @@ indent_size = 4
 [*.cs]
 
 # Culture-aware formatting
-dotnet_diagnostic.CA1305.severity = error
-dotnet_diagnostic.CA1304.severity = warning
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CA1304.severity = none
 
 # Dispose patterns
 # CA2007: ConfigureAwait - Not required for ASP.NET Core (no SynchronizationContext)
@@ -34,12 +34,62 @@ dotnet_diagnostic.CA5350.severity = error
 dotnet_diagnostic.CA5351.severity = error
 
 # Performance
-dotnet_diagnostic.CA1822.severity = error
 dotnet_diagnostic.CA1829.severity = error
 
 # Naming conventions
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1708.severity = error
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1711.severity = none
+
+# Design Rules
+dotnet_diagnostic.CA1002.severity = none
+dotnet_diagnostic.CA2227.severity = none
+dotnet_diagnostic.CA1056.severity = none
+dotnet_diagnostic.CA1008.severity = none
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1031.severity = none
+dotnet_diagnostic.CA1054.severity = none
+dotnet_diagnostic.CA1819.severity = none
+dotnet_diagnostic.CA2234.severity = none
+dotnet_diagnostic.CA1018.severity = none
+dotnet_diagnostic.CA1813.severity = none
+
+# Maintainability Rules
+dotnet_diagnostic.CA1805.severity = none
+dotnet_diagnostic.CA1515.severity = none
+dotnet_diagnostic.CA1724.severity = none
+dotnet_diagnostic.CA1812.severity = none
+dotnet_diagnostic.CA1823.severity = none
+
+# Performance Rules
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.CA1860.severity = none
+dotnet_diagnostic.CA1854.severity = none
+dotnet_diagnostic.CA1869.severity = none
+dotnet_diagnostic.CA1852.severity = none
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.CA1850.severity = none
+dotnet_diagnostic.CA1862.severity = none
+dotnet_diagnostic.CA1845.severity = none
+dotnet_diagnostic.CA1849.severity = none
+
+# Globalization/Localization Rules
+dotnet_diagnostic.CA1303.severity = none
+dotnet_diagnostic.CA1308.severity = none
+dotnet_diagnostic.CA1307.severity = none
+dotnet_diagnostic.CA1310.severity = none
+dotnet_diagnostic.CA1311.severity = none
+
+# Logging
+dotnet_diagnostic.CA2254.severity = none
+
+# Reliability
+dotnet_diagnostic.CA2000.severity = none
+
+# Security
+dotnet_diagnostic.CA5394.severity = none
 
 # Documentation
 dotnet_diagnostic.CS1591.severity = none

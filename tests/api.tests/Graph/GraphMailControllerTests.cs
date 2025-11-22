@@ -251,7 +251,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         await context.SaveChangesAsync();
     }
 
-    private async Task<string> GetAuthTokenAsync(bool isAdmin = false)
+    private new async Task<string> GetAuthTokenAsync(bool isAdmin = false)
     {
         using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();

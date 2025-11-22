@@ -870,7 +870,7 @@ public class AdminController : ControllerBase
             VisaTypeName = c.VisaType?.Name,
             PackageCode = c.Package?.Code,
             PackageDisplayName = c.Package?.DisplayName,
-            InterviewSessionId = c.InterviewSessions.OrderByDescending(s => s.CreatedAt).FirstOrDefault()?.Id,
+            InterviewSessionId = c.InterviewSessions.OrderByDescending(s => s.StartedAt).FirstOrDefault()?.Id,
             IsVisaLockedByAttorney = c.IsVisaLockedByAttorney,
             LatestPriceSnapshot = c.PriceSnapshots.FirstOrDefault() != null 
                 ? new AdminPriceSnapshotResponse
