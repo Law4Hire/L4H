@@ -17,6 +17,7 @@ spec:
       containers:
       - name: scraper
         image: ghcr.io/law4hire/l4h-scraper:latest  # Will be updated by CI/CD
+        imagePullPolicy: IfNotPresent
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"

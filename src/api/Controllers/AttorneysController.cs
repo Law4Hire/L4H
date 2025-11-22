@@ -163,16 +163,16 @@ public class AttorneysController : ControllerBase
         try
         {
             // Delete old photo if exists
-            if (!string.IsNullOrEmpty(attorney.PhotoUrl))
+            if (attorney.PhotoUrl != null)
             {
-                await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl);
+                await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
             }
 
             // Upload new photo
             var photoUrl = await _fileUploadService.UploadAttorneyPhotoAsync(photo, attorney.Name);
             
             // Update attorney record
-            attorney.PhotoUrl = photoUrl;
+            attorney.PhotoUrl = new Uri(photoUrl, UriKind.RelativeOrAbsolute);
             attorney.UpdatedAt = DateTime.UtcNow;
             
             await _context.SaveChangesAsync().ConfigureAwait(false);
@@ -204,10 +204,10 @@ public class AttorneysController : ControllerBase
             return NotFound();
         }
 
-        if (!string.IsNullOrEmpty(attorney.PhotoUrl))
+        if (attorney.PhotoUrl != null)
         {
-            await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl);
-            attorney.PhotoUrl = string.Empty;
+            await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
+            attorney.PhotoUrl = null;
             attorney.UpdatedAt = DateTime.UtcNow;
             
             await _context.SaveChangesAsync().ConfigureAwait(false);
@@ -244,9 +244,9 @@ public class AttorneysController : ControllerBase
         }
 
         // Delete attorney photo if exists
-        if (!string.IsNullOrEmpty(attorney.PhotoUrl))
+        if (attorney.PhotoUrl != null)
         {
-            await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl);
+            await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
         }
 
         _context.Attorneys.Remove(attorney);
@@ -284,6 +284,7 @@ public class AttorneysController : ControllerBase
             Bio = "Denise S. Cann is the managing attorney at Cann Legal Group, specializing in comprehensive immigration law with offices in the United States and Taiwan. With extensive experience in family-based immigration, employment visas, and complex waiver cases, she provides fast, efficient, and convenient legal representation from stateside through consular processing.",
             Email = "dcann@cannlaw.com",
             Phone = "(410) 783-1888",
+            PhotoUrl = new Uri("https://example.com/default_attorney_photo.jpg"), // Provide a default URI
             Credentials = credentials,
             PracticeAreas = practiceAreas,
             Languages = languages,

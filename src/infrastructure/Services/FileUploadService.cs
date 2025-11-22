@@ -176,16 +176,16 @@ public class FileUploadService : IFileUploadService
         }
 
         // Delete existing photo if it exists
-        if (!string.IsNullOrEmpty(attorney.PhotoUrl))
+        if (attorney.PhotoUrl != null)
         {
-            await DeleteFileAsync(attorney.PhotoUrl);
+            await DeleteFileAsync(attorney.PhotoUrl.ToString());
         }
 
         // Upload new photo
         var photoUrl = await UploadAttorneyPhotoAsync(file, attorney.Name);
 
         // Update attorney record
-        attorney.PhotoUrl = photoUrl;
+        attorney.PhotoUrl = new Uri(photoUrl, UriKind.RelativeOrAbsolute);
         attorney.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
@@ -301,7 +301,7 @@ public class FileUploadService : IFileUploadService
         try
         {
             // Delete physical file
-            await DeleteFileAsync(document.FileUrl);
+            await DeleteFileAsync(document.FileUrl.ToString());
 
             // Log the deletion
             await LogDocumentAccessAsync(documentId, deletedBy, "Delete");

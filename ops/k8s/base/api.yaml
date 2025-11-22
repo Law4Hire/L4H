@@ -65,6 +65,7 @@ spec:
       containers:
       - name: api
         image: ghcr.io/law4hire/l4h-api:latest  # Will be updated by CI/CD
+        imagePullPolicy: IfNotPresent
         command: ["/bin/sh"]
         args:
           - -c

@@ -76,7 +76,8 @@ public class CannlawClientBillingSeeder : ISeedTask
                 DisplayOrder = 1,
                 Credentials = "[\"J.D. Harvard Law School\", \"Licensed in NY, CA, FL\", \"Member of AILA\"]",
                 PracticeAreas = "[\"Family Immigration\", \"Naturalization\", \"Deportation Defense\", \"Business Immigration\"]",
-                Languages = "[\"English\", \"Spanish\", \"French\"]"
+                Languages = "[\"English\", \"Spanish\", \"French\"]",
+                PhotoUrl = new Uri("https://example.com/sarah_johnson_photo.jpg")
             },
             new Attorney
             {
@@ -94,7 +95,8 @@ public class CannlawClientBillingSeeder : ISeedTask
                 DisplayOrder = 2,
                 Credentials = "[\"J.D. Stanford Law School\", \"Licensed in CA, NY\", \"Certified Immigration Specialist\"]",
                 PracticeAreas = "[\"Business Immigration\", \"Employment Visas\", \"EB-5 Investment\", \"PERM Labor Certification\"]",
-                Languages = "[\"English\", \"Mandarin\", \"Cantonese\"]"
+                Languages = "[\"English\", \"Mandarin\", \"Cantonese\"]",
+                PhotoUrl = new Uri("https://example.com/michael_chen_photo.jpg")
             },
             new Attorney
             {
@@ -112,7 +114,8 @@ public class CannlawClientBillingSeeder : ISeedTask
                 DisplayOrder = 3,
                 Credentials = "[\"J.D. Georgetown University Law Center\", \"Licensed in NY, NJ\", \"Certified in Immigration Law\"]",
                 PracticeAreas = "[\"Asylum & Refugee Law\", \"Family Immigration\", \"VAWA Petitions\", \"Removal Defense\"]",
-                Languages = "[\"English\", \"Spanish\", \"Portuguese\"]"
+                Languages = "[\"English\", \"Spanish\", \"Portuguese\"]",
+                PhotoUrl = new Uri("https://example.com/maria_rodriguez_photo.jpg")
             }
         };
 

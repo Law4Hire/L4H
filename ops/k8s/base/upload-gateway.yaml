@@ -32,6 +32,7 @@ spec:
       containers:
       - name: upload-gateway
         image: ghcr.io/law4hire/l4h-upload-gateway:latest  # Will be updated by CI/CD
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 7070
           name: http

@@ -4,16 +4,19 @@ using L4H.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace L4H.Infrastructure.Migrations
+namespace L4H.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(L4HDbContext))]
-    partial class L4HDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251122212306_PhotoUrlToNullableAndCollectionFixes")]
+    partial class PhotoUrlToNullableAndCollectionFixes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

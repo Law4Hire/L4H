@@ -9,7 +9,9 @@ var builder = Host.CreateApplicationBuilder(args);
 
 // Add services
 builder.Services.AddDbContext<L4HDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")
+        ?? builder.Configuration["SqlServer:ConnectionString"]
+        ?? builder.Configuration["ConnectionStrings:SqlServer"]));
 
 // Add localization
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
