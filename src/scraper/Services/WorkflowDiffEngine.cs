@@ -8,6 +8,7 @@ public class WorkflowDiffEngine : IWorkflowDiff
 {
     public WorkflowDiffResult Diff(WorkflowVersion? approved, NormalizedWorkflow incoming)
     {
+        ArgumentNullException.ThrowIfNull(incoming);
         var result = new WorkflowDiffResult();
         
         if (approved == null)

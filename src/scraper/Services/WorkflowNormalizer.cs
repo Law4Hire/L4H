@@ -20,6 +20,7 @@ public class WorkflowNormalizer : IWorkflowNormalizer
 
     public NormalizedWorkflow Normalize(ScrapeResult raw)
     {
+        ArgumentNullException.ThrowIfNull(raw);
         var context = BrowsingContext.New(_config);
         var document = context.OpenAsync(req => req.Content(raw.Content)).Result;
         
@@ -286,13 +287,13 @@ public class WorkflowNormalizer : IWorkflowNormalizer
     private static bool IsStepTitle(string title)
     {
         var stepKeywords = new[] { "step", "requirement", "examination", "appointment", "fee", "interview", "document", "form" };
-        return stepKeywords.Any(keyword => title.ToLower(CultureInfo.InvariantCulture).Contains(keyword));
+        return stepKeywords.Any(keyword => title.Contains(keyword, StringComparison.OrdinalIgnoreCase));
     }
 
     private static string GenerateStepKey(string title)
     {
         // Generate a stable key from the title
-        var clean = Regex.Replace(title.ToLower(CultureInfo.InvariantCulture), @"[^a-z0-9\s]", "");
+        var clean = Regex.Replace(title.ToLowerInvariant(), @"[^a-z0-9\s]", "");
         var words = clean.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         
         // Take first few meaningful words
@@ -304,6 +305,6 @@ public class WorkflowNormalizer : IWorkflowNormalizer
     {
         using var sha256 = SHA256.Create();
         var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(content));
-        return Convert.ToHexString(bytes).ToLower(CultureInfo.InvariantCulture);
+        return Convert.ToHexString(bytes).ToLowerInvariant();
     }
 }

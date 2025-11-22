@@ -13,12 +13,13 @@ public class UploadTokenService
 
     public UploadTokenService(IOptions<UploadOptions> options)
     {
+        ArgumentNullException.ThrowIfNull(options);
         _options = options.Value;
     }
 
     public bool ValidateToken(string token, out TokenPayload? payload)
     {
-        payload = null;
+        ArgumentNullException.ThrowIfNull(token);
         
         try
         {
@@ -59,8 +60,15 @@ public class UploadTokenService
 
             return true;
         }
-        catch
+        catch (FormatException)
         {
+            // Token is not valid base64url, likely malformed
+            return false;
+        }
+        catch (Exception ex)
+        {
+            // Log other unexpected exceptions
+            // _logger.LogError(ex, "Unexpected error during token validation."); // Inject logger for this
             return false;
         }
     }
@@ -98,7 +106,7 @@ public class UploadTokenService
         var filename = originalFilename;
 
         // For path traversal attempts like "../../../etc/passwd", just take the base filename
-        if (filename.Contains("../") || filename.Contains("..\\"))
+        if (filename.Contains("../", StringComparison.Ordinal) || filename.Contains("..\\", StringComparison.Ordinal))
         {
             filename = Path.GetFileName(filename);
         }

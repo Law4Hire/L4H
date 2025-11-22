@@ -33,6 +33,8 @@ public class FakeWorkflowSource : IWorkflowSource
 
     public async Task<ScrapeResult> FetchAsync(string visaTypeCode, string countryIso2, CancellationToken ct)
     {
+        ArgumentNullException.ThrowIfNull(visaTypeCode);
+        ArgumentNullException.ThrowIfNull(countryIso2);
         // First try embassy source (unless marked unavailable)
         if (!_unavailableCountries.ContainsKey(countryIso2))
         {
@@ -47,7 +49,7 @@ public class FakeWorkflowSource : IWorkflowSource
 
     private async Task<ScrapeResult?> TryFetchEmbassyAsync(string visaTypeCode, string countryIso2, CancellationToken ct)
     {
-        var fixturePath = Path.Combine(_fixturesPath, $"embassy_{countryIso2.ToLower(CultureInfo.InvariantCulture)}_doctors.html");
+        var fixturePath = Path.Combine(_fixturesPath, $"embassy_{countryIso2.ToLowerInvariant()}_doctors.html");
         
         if (!File.Exists(fixturePath))
             return null;
@@ -60,7 +62,7 @@ public class FakeWorkflowSource : IWorkflowSource
             CountryCode = countryIso2,
             VisaTypeCode = visaTypeCode,
             Content = content,
-            Url = $"https://embassy-{countryIso2.ToLower(CultureInfo.InvariantCulture)}.example.com/doctors",
+            Url = $"https://embassy-{countryIso2.ToLowerInvariant()}.example.com/doctors",
             FetchedAt = DateTime.UtcNow,
             ContentType = "text/html",
             Headers = new Dictionary<string, string>
@@ -73,7 +75,7 @@ public class FakeWorkflowSource : IWorkflowSource
 
     private async Task<ScrapeResult> FetchUscisAsync(string visaTypeCode, string countryIso2, CancellationToken ct)
     {
-        var fixturePath = Path.Combine(_fixturesPath, $"uscis_{visaTypeCode.ToLower(CultureInfo.InvariantCulture)}_requirements.html");
+        var fixturePath = Path.Combine(_fixturesPath, $"uscis_{visaTypeCode.ToLowerInvariant()}_requirements.html");
         
         string content;
         if (File.Exists(fixturePath))
@@ -92,7 +94,7 @@ public class FakeWorkflowSource : IWorkflowSource
             CountryCode = countryIso2,
             VisaTypeCode = visaTypeCode,
             Content = content,
-            Url = $"https://www.uscis.gov/working-in-the-united-states/{visaTypeCode.ToLower(CultureInfo.InvariantCulture)}",
+            Url = $"https://www.uscis.gov/working-in-the-united-states/{visaTypeCode.ToLowerInvariant()}",
             FetchedAt = DateTime.UtcNow,
             ContentType = "text/html",
             Headers = new Dictionary<string, string>

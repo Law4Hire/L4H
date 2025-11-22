@@ -44,9 +44,9 @@ public class Worker : BackgroundService
                 await Task.Delay(_interval, stoppingToken).ConfigureAwait(false);
                 await RunScrapingCycleAsync(stoppingToken).ConfigureAwait(false);
             }
-            catch (OperationCanceledException)
+            catch (TaskCanceledException)
             {
-                // Expected when cancellation is requested
+                // Expected when cancellation is requested during Task.Delay
                 break;
             }
             catch (Exception ex)
@@ -73,8 +73,8 @@ public class Worker : BackgroundService
             var visaTypes = await context.VisaTypes.ToListAsync(cancellationToken).ConfigureAwait(false);
             var countries = await GetActiveCountriesAsync(context, cancellationToken).ConfigureAwait(false);
             
+            using var semaphore = new SemaphoreSlim(GetMaxConcurrency(), GetMaxConcurrency()); // CA2000 fix
             var tasks = new List<Task>();
-            var semaphore = new SemaphoreSlim(GetMaxConcurrency(), GetMaxConcurrency());
             
             foreach (var visaType in visaTypes)
             {
@@ -93,9 +93,17 @@ public class Worker : BackgroundService
             
             _logger.LogInformation(_localizer["Scraper.RunCompleted"]);
         }
+        catch (TaskCanceledException)
+        {
+            _logger.LogInformation("Scraping cycle was cancelled due to task cancellation.");
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Database error during scraping cycle");
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during scraping cycle");
+            _logger.LogError(ex, "Unexpected error during scraping cycle");
         }
     }
 
@@ -143,7 +151,7 @@ public class Worker : BackgroundService
         try
         {
             // Simple ISO 8601 duration parsing
-            if (cronString.StartsWith("P"))
+            if (cronString.StartsWith("P", StringComparison.Ordinal))
             {
                 return TimeSpan.ParseExact(cronString, @"\P%d\D", null);
             }
@@ -154,9 +162,13 @@ public class Worker : BackgroundService
                 return TimeSpan.FromHours(hours);
             }
         }
-        catch
+        catch (FormatException)
         {
-            _logger.LogWarning("Could not parse interval '{Interval}', using default 3 days", cronString);
+            _logger.LogWarning("Could not parse interval '{Interval}' as ISO 8601 duration, checking for hours format.", cronString);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error when parsing interval '{Interval}', using default 3 days", cronString);
         }
         
         return TimeSpan.FromDays(3);

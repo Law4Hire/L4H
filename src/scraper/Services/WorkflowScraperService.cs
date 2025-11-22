@@ -100,13 +100,49 @@ public class WorkflowScraperService
                 Messages = { _localizer["Scraper.RunCompleted"] }
             };
         }
-        catch (Exception ex)
+        catch (OperationCanceledException)
         {
-            _logger.LogError(ex, "Error during scraping for {VisaType} {Country}", visaTypeCode, countryCode);
+            _logger.LogInformation(_localizer["Scraper.RunCanceled"], visaTypeCode, countryCode);
             return new ScraperResult
             {
                 Success = false,
-                Errors = { ex.Message }
+                Errors = { _localizer["Scraper.RunCanceled"] }
+            };
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Database error during scraping for {VisaType} {Country}", visaTypeCode, countryCode);
+            return new ScraperResult
+            {
+                Success = false,
+                Errors = { _localizer["Scraper.DatabaseError", ex.Message] }
+            };
+        }
+        catch (InvalidOperationException ex) // e.g., VisaType not found
+        {
+            _logger.LogError(ex, "Configuration error during scraping for {VisaType} {Country}", visaTypeCode, countryCode);
+            return new ScraperResult
+            {
+                Success = false,
+                Errors = { _localizer["Scraper.ConfigurationError", ex.Message] }
+            };
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "HTTP request error during scraping for {VisaType} {Country}", visaTypeCode, countryCode);
+            return new ScraperResult
+            {
+                Success = false,
+                Errors = { _localizer["Scraper.NetworkError", ex.Message] }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error during scraping for {VisaType} {Country}", visaTypeCode, countryCode);
+            return new ScraperResult
+            {
+                Success = false,
+                Errors = { _localizer["Scraper.UnexpectedError", ex.Message] }
             };
         }
     }
