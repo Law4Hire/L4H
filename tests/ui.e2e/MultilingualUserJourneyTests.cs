@@ -352,7 +352,7 @@ public class MultilingualUserJourneyTests : IClassFixture<PlaywrightFixture>
                 var button = buttons.First();
                 var buttonText = await button.TextContentAsync().ConfigureAwait(false) ?? "";
                 
-                if (!string.IsNullOrWhiteSpace(buttonText) && !buttonText.ToLower().Contains("skip"))
+                if (!string.IsNullOrWhiteSpace(buttonText) && !buttonText.Contains("skip", StringComparison.OrdinalIgnoreCase))
                 {
                     await button.ClickAsync().ConfigureAwait(false);
                     _output.WriteLine($"🔘 Selected option: {buttonText}");
@@ -388,13 +388,13 @@ public class MultilingualUserJourneyTests : IClassFixture<PlaywrightFixture>
 
     private string GetLocalizedInputValue(string inputType, string placeholder, LanguageTestInfo langInfo)
     {
-        return inputType.ToLower() switch
+        return inputType.ToLowerInvariant() switch
         {
-            "email" => $"test-{langInfo.EnglishName.ToLower()}@example.com",
+            "email" => $"test-{langInfo.EnglishName.ToLowerInvariant()}@example.com",
             "number" => "25",
-            _ when placeholder.ToLower().Contains("age") => "25",
-            _ when placeholder.ToLower().Contains("year") => "2020",
-            _ when placeholder.ToLower().Contains("name") => GetLocalizedName(langInfo, "first"),
+            _ when placeholder.Contains("age", StringComparison.OrdinalIgnoreCase) => "25",
+            _ when placeholder.Contains("year", StringComparison.OrdinalIgnoreCase) => "2020",
+            _ when placeholder.Contains("name", StringComparison.OrdinalIgnoreCase) => GetLocalizedName(langInfo, "first"),
             _ => "Test Response"
         };
     }

@@ -17,7 +17,7 @@ public class Attorney
     public string Bio { get; set; } = string.Empty;
     
     [MaxLength(500)]
-    public string PhotoUrl { get; set; } = string.Empty;
+    public Uri? PhotoUrl { get; set; }
     
     [MaxLength(255)]
     public string Email { get; set; } = string.Empty;
@@ -47,9 +47,9 @@ public class Attorney
     public int DisplayOrder { get; set; }
     
     // Navigation properties for client billing system
-    public List<Client> AssignedClients { get; set; } = new();
-    public List<TimeEntry> TimeEntries { get; set; } = new();
-    public List<BillingRate> BillingRates { get; set; } = new();
+    public ICollection<Client> AssignedClients { get; } = new List<Client>();
+    public ICollection<TimeEntry> TimeEntries { get; } = new List<TimeEntry>();
+    public ICollection<BillingRate> BillingRates { get; } = new List<BillingRate>();
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

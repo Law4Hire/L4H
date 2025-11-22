@@ -62,7 +62,7 @@ public sealed class UploadGatewayIntegrationTests : IClassFixture<WebApplication
         // Arrange
         var token = GenerateValidToken();
         var fileContent = "This is a test file content for upload testing";
-        var content = new StringContent(fileContent, Encoding.UTF8, "text/plain");
+        using var content = new StringContent(fileContent, Encoding.UTF8, "text/plain");
 
         // Act
         var response = await _client.PutAsync($"/gateway/uploads/{token}", content);
@@ -93,7 +93,7 @@ public sealed class UploadGatewayIntegrationTests : IClassFixture<WebApplication
     {
         // Arrange
         var invalidToken = "invalid-token";
-        var content = new StringContent("test", Encoding.UTF8, "text/plain");
+        using var content = new StringContent("test", Encoding.UTF8, "text/plain");
 
         // Act
         var response = await _client.PutAsync($"/gateway/uploads/{invalidToken}", content);
@@ -109,7 +109,7 @@ public sealed class UploadGatewayIntegrationTests : IClassFixture<WebApplication
     {
         // Arrange
         var expiredToken = GenerateExpiredToken();
-        var content = new StringContent("test", Encoding.UTF8, "text/plain");
+        using var content = new StringContent("test", Encoding.UTF8, "text/plain");
 
         // Act
         var response = await _client.PutAsync($"/gateway/uploads/{expiredToken}", content);
@@ -125,7 +125,7 @@ public sealed class UploadGatewayIntegrationTests : IClassFixture<WebApplication
     {
         // Arrange
         var token = GenerateValidToken();
-        var content = new StringContent("test", Encoding.UTF8, "application/pdf"); // Wrong content type
+        using var content = new StringContent("test", Encoding.UTF8, "application/pdf"); // Wrong content type
 
         // Act
         var response = await _client.PutAsync($"/gateway/uploads/{token}", content);
@@ -142,7 +142,7 @@ public sealed class UploadGatewayIntegrationTests : IClassFixture<WebApplication
         // Arrange
         var token = GenerateValidTokenWithSize(1024); // Token says 1KB
         var largeContent = new string('x', 2048); // But we send 2KB
-        var content = new StringContent(largeContent, Encoding.UTF8, "text/plain");
+        using var content = new StringContent(largeContent, Encoding.UTF8, "text/plain");
 
         // Act
         var response = await _client.PutAsync($"/gateway/uploads/{token}", content);

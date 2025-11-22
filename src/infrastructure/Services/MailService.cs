@@ -37,7 +37,7 @@ namespace L4H.Infrastructure.Services
                 EnableSsl = true,
             };
 
-            var mailMessage = new MailMessage(from, to, subject, body)
+            using var mailMessage = new MailMessage(from, to, subject, body)
             {
                 IsBodyHtml = true,
             };

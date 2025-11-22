@@ -38,7 +38,8 @@
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="Scalar.AspNetCore" Version="1.2.66" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.12.6" />
   </ItemGroup>
 
   <ItemGroup>

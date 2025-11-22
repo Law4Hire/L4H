@@ -305,8 +305,8 @@ public class LanguageSwitchingWorkflowTests : IClassFixture<PlaywrightFixture>
             {
                 var buttonText = await button.TextContentAsync().ConfigureAwait(false) ?? "";
                 if (!string.IsNullOrWhiteSpace(buttonText) && 
-                    !buttonText.ToLower().Contains("skip") &&
-                    !buttonText.ToLower().Contains("language") &&
+                    !buttonText.ToLowerInvariant().Contains("skip", StringComparison.OrdinalIgnoreCase) &&
+                    !buttonText.ToLowerInvariant().Contains("language", StringComparison.OrdinalIgnoreCase) &&
                     buttonText.Length > 2)
                 {
                     await button.ClickAsync().ConfigureAwait(false);

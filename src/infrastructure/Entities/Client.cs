@@ -34,9 +34,9 @@ public class Client
     public Attorney? AssignedAttorney { get; set; }
     
     // Navigation properties
-    public List<CannlawCase> Cases { get; set; } = new();
-    public List<Document> Documents { get; set; } = new();
-    public List<TimeEntry> TimeEntries { get; set; } = new();
+    public ICollection<CannlawCase> Cases { get; } = new List<CannlawCase>();
+    public ICollection<Document> Documents { get; } = new List<Document>();
+    public ICollection<TimeEntry> TimeEntries { get; } = new List<TimeEntry>();
     
     // Audit Fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

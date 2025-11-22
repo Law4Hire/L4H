@@ -22,7 +22,7 @@ public class CannlawCase
     public DateTime? CompletionDate { get; set; }
     
     // Status tracking
-    public List<CaseStatusHistory> StatusHistory { get; set; } = new();
+    public ICollection<CaseStatusHistory> StatusHistory { get; } = new List<CaseStatusHistory>();
     
     [MaxLength(2000)]
     public string Notes { get; set; } = string.Empty;

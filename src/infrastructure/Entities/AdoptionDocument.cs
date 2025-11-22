@@ -53,6 +53,7 @@ public class AdoptionDocument
 
 public enum AdoptionDocumentType
 {
+    None = 0,
     // Child Documents
     ChildBirthCertificate = 1,
     ChildPassport = 2,
@@ -100,6 +101,7 @@ public enum AdoptionDocumentType
 
 public enum AdoptionDocumentStatus
 {
+    None = 0,
     NotStarted = 1,
     InProgress = 2,
     Submitted = 3,

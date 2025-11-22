@@ -273,13 +273,13 @@ public class RetentionService
     {
         var medicalKeywords = new[] { "medical", "health", "doctor", "hospital", "prescription" };
         return medicalKeywords.Any(keyword => 
-            upload.OriginalName.ToLowerInvariant().Contains(keyword));
+            upload.OriginalName.Contains(keyword, StringComparison.OrdinalIgnoreCase));
     }
     
     private static bool IsHighSensitivityDocument(Upload upload)
     {
         var sensitiveKeywords = new[] { "ssn", "social", "passport", "license", "birth" };
         return sensitiveKeywords.Any(keyword => 
-            upload.OriginalName.ToLowerInvariant().Contains(keyword));
+            upload.OriginalName.Contains(keyword, StringComparison.OrdinalIgnoreCase));
     }
 }

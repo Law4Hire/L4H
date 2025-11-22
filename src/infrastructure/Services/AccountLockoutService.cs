@@ -29,6 +29,8 @@ public class AccountLockoutService : IAccountLockoutService
         IStringLocalizer<L4H.Infrastructure.Resources.Shared> localizer,
         ILogger<AccountLockoutService> logger)
     {
+        ArgumentNullException.ThrowIfNull(authConfig);
+        
         _context = context;
         _authConfig = authConfig.Value;
         _localizer = localizer;

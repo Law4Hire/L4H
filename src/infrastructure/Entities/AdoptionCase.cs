@@ -115,6 +115,7 @@ public class AdoptionCase
 
 public enum AdoptionType
 {
+    None = 0,
     International = 1,
     Domestic = 2,
     Relative = 3,
@@ -123,6 +124,7 @@ public enum AdoptionType
 
 public enum AdoptionVisaType
 {
+    None = 0,
     IR3 = 1, // Adoption completed abroad
     IR4 = 2  // Adoption to be completed in US
 }
