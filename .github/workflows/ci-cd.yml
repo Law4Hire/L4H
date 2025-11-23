@@ -88,7 +88,7 @@ jobs:
         ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
 
     - name: Run .NET tests
-      run: dotnet test --configuration Release --verbosity normal --filter "Category!=E2E" /p:TreatWarningsAsErrors=false
+      run: dotnet test --no-build --configuration Release --verbosity normal --filter "Category!=E2E" /p:TreatWarningsAsErrors=false
       env:
         ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
 
