@@ -60,6 +60,3 @@ export {
   formatPercentage,
   formatList,
 } from './formatters'
-
-// Accessibility features
-export * from './accessibility'
