@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button, Input, useToast, useTranslation, admin } from '@l4h/shared-ui'
+import { Card, Button, Input, useToast, admin } from '@l4h/shared-ui'
 import { useNavigate, useParams } from 'react-router-dom'
 
 interface User {
@@ -15,7 +15,6 @@ interface User {
 }
 
 const UserDetailPage: React.FC = () => {
-  const { t } = useTranslation()
   const { success, error } = useToast()
   const navigate = useNavigate()
   const { userId } = useParams<{ userId: string }>()

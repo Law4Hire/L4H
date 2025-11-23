@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Button, Input, LanguageSwitcher, auth, setJwtToken, useToast, useTranslation, cases, interview } from '@l4h/shared-ui'
+import { Button, Input, auth, setJwtToken, useToast, cases, interview } from '@l4h/shared-ui'
 
 interface LoginFormData {
   email: string
@@ -192,7 +192,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
           </div>
 
           <div className="flex justify-center">
-            <LanguageSwitcher variant="compact" />
+            
           </div>
         </form>
       </div>

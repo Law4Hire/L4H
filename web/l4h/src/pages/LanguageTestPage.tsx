@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { LanguageSwitchingTest } from '../../../shared-ui/src/components/LanguageSwitchingTest';
 import { TranslationFeedbackWidget } from '../../../shared-ui/src/components/TranslationFeedbackWidget';
 import { TranslationMonitoringDashboard } from '../../../shared-ui/src/components/TranslationMonitoringDashboard';
@@ -16,8 +15,7 @@ interface TestResult {
 }
 
 export const LanguageTestPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const [testResults, setTestResults] = useState<TestResult[]>([]);
+    const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [showMonitoring, setShowMonitoring] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
 

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { useTranslation, Trans } from 'react-i18next'
 import { L4HI18nProvider } from '../../providers/L4HI18nProvider'
 import { CannlawI18nProvider } from '../../providers/CannlawI18nProvider'
 
@@ -78,9 +77,7 @@ vi.mock('../../components/LanguageChangeNotifier', () => ({
 // Mock react-i18next
 const mockUseTranslation = vi.fn()
 vi.mock('react-i18next', () => ({
-  I18nextProvider: ({ children }: any) => <div>{children}</div>,
-  useTranslation: () => mockUseTranslation(),
-  Trans: ({ i18nKey, values, components }: any) => {
+  I18nextProvider: ({ children }: any) => <div>{children}</div>: () => mockUseTranslation(): ({ i18nKey, values, components }: any) => {
     // Simple Trans component mock
     let text = i18nKey
     if (values) {

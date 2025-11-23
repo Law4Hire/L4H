@@ -1,7 +1,5 @@
 import React, { forwardRef, useEffect, useRef, useCallback } from 'react'
 import { useAccessibilityI18n } from '../hooks/useAccessibilityI18n'
-import { useTranslation } from 'react-i18next'
-
 export interface AccessibleContentProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Content to render
@@ -65,7 +63,6 @@ export const AccessibleContent = forwardRef<HTMLElement, AccessibleContentProps>
   style,
   ...props
 }, ref) => {
-  const { i18n } = useTranslation()
   const {
     currentLanguage,
     textDirection,

@@ -38,8 +38,7 @@ let csrfTokenExpiry: number = 0
 // Cookie endpoints that require CSRF token
 const COOKIE_ENDPOINTS = [
   '/v1/auth/login',
-  '/v1/auth/remember',
-  '/v1/i18n/culture'
+  '/v1/auth/remember'
 ]
 
 // Get CSRF token
@@ -279,20 +278,6 @@ export const auth = {
     return fetchJson('/v1/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(profileData)
-    })
-  }
-}
-
-// I18n API methods
-export const i18n = {
-  async supported() {
-    return fetchJson<Array<{ code: string; displayName: string }>>('/v1/i18n/supported')
-  },
-  
-  async setCulture(culture: string) {
-    return fetchJson('/v1/i18n/culture', {
-      method: 'POST',
-      body: JSON.stringify({ culture })
     })
   }
 }

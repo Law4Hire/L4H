@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { appointments } from '@l4h/shared-ui'
-import { useTranslation } from '@l4h/shared-ui'
 import { Calendar, Plus, Clock, MapPin, Users } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -15,7 +14,6 @@ interface Appointment {
 }
 
 export default function AppointmentsPage() {
-  const { t } = useTranslation()
   const { success, error } = useToast()
   const queryClient = useQueryClient()
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -39,16 +37,16 @@ export default function AppointmentsPage() {
       queryClient.invalidateQueries({ queryKey: ['appointments'] })
       setShowCreateModal(false)
       setNewAppointment({ caseId: '', scheduledAt: '', duration: 60, notes: '' })
-      success(t('appointments.appointmentCreated'))
+      success('Appointment created successfully')
     },
     onError: (err) => {
-      error(t('common.error'), err instanceof Error ? err.message : '')
+      error('Error', err instanceof Error ? err.message : '')
     }
   })
 
   const handleCreateAppointment = () => {
     if (!newAppointment.caseId || !newAppointment.scheduledAt) {
-      error(t('common.error'), t('validation.requiredFields', { defaultValue: 'Please fill in all required fields' }))
+      error('Error', t('validation.requiredFields', { defaultValue: 'Please fill in all required fields' }))
       return
     }
 
@@ -61,7 +59,7 @@ export default function AppointmentsPage() {
         <Card>
           <EmptyState
             icon={Calendar}
-            title={t('common.loading')}
+            title={'Loading...'}
           />
         </Card>
       </Container>
@@ -71,10 +69,10 @@ export default function AppointmentsPage() {
   return (
     <Container>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{t('appointments.title')}</h1>
+        <h1 className="text-2xl font-bold">{'My Appointments'}</h1>
         <Button onClick={() => setShowCreateModal(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          {t('appointments.createAppointment')}
+          {'Create Appointment'}
         </Button>
       </div>
 
@@ -82,12 +80,12 @@ export default function AppointmentsPage() {
         <Card>
           <EmptyState
             icon={Calendar}
-            title={t('appointments.noAppointments')}
+            title={'No appointments found'}
             description={t('appointments.scheduleFirst', { defaultValue: 'Schedule your first appointment to get started' })}
             action={
               <Button onClick={() => setShowCreateModal(true)}>
                 <Plus className="h-4 w-4 mr-2" />
-                {t('appointments.createAppointment')}
+                {'Create Appointment'}
               </Button>
             }
           />
@@ -108,7 +106,7 @@ export default function AppointmentsPage() {
                   <div className="flex items-center space-x-4 mb-2">
                     <Clock className="h-4 w-4 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      {appointment.duration} {t('appointments.duration')}
+                      {appointment.duration} {'minutes'}
                     </span>
                   </div>
 
@@ -140,19 +138,19 @@ export default function AppointmentsPage() {
       <Modal
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        title={t('appointments.createAppointment')}
+        title={'Create Appointment'}
         size="md"
       >
         <div className="space-y-4">
           <Input
-            label={t('appointments.caseId')}
+            label={'Case ID'}
             value={newAppointment.caseId}
             onChange={(e) => setNewAppointment(prev => ({ ...prev, caseId: e.target.value }))}
             required
           />
 
           <Input
-            label={t('appointments.date')}
+            label={'Date & Time'}
             type="datetime-local"
             value={newAppointment.scheduledAt}
             onChange={(e) => setNewAppointment(prev => ({ ...prev, scheduledAt: e.target.value }))}
@@ -160,15 +158,15 @@ export default function AppointmentsPage() {
           />
 
           <Input
-            label={t('appointments.duration')}
+            label={'minutes'}
             type="number"
             value={newAppointment.duration}
             onChange={(e) => setNewAppointment(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-            helperText={t('appointments.durationHelper', { defaultValue: `Duration in ${t('appointments.duration')}` })}
+            helperText={t('appointments.durationHelper', { defaultValue: `Duration in ${'minutes'}` })}
           />
 
           <Input
-            label={t('appointments.notes')}
+            label={'Notes'}
             value={newAppointment.notes}
             onChange={(e) => setNewAppointment(prev => ({ ...prev, notes: e.target.value }))}
             multiline
@@ -180,13 +178,13 @@ export default function AppointmentsPage() {
               variant="outline"
               onClick={() => setShowCreateModal(false)}
             >
-              {t('common.cancel')}
+              {'Cancel'}
             </Button>
             <Button
               onClick={handleCreateAppointment}
               loading={createAppointmentMutation.isPending}
             >
-              {t('common.save')}
+              {'Save'}
             </Button>
           </div>
         </div>

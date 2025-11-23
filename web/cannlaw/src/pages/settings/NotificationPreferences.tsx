@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from '@l4h/shared-ui';
 import { useNotificationPreferences, NotificationType, NotificationPriority } from '../../hooks/useNotifications';
 
 const NotificationPreferences: React.FC = () => {

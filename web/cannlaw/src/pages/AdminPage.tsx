@@ -1,10 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { Card, Button } from '@l4h/shared-ui'
 
 const AdminPage: React.FC = () => {
-  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const handleUserManagement = () => {
@@ -39,7 +37,7 @@ const AdminPage: React.FC = () => {
             {t('admin.title')}
           </h1>
           <p className="text-gray-600">
-            {t('app.tagline')}
+            {'Your immigration journey starts here.'}
           </p>
         </div>
       </div>
@@ -77,7 +75,7 @@ const AdminPage: React.FC = () => {
             Manage pricing plans and service costs
           </p>
           <Button onClick={handlePricingEditor}>
-            {t('common.edit')}
+            {'Edit'}
           </Button>
         </Card>
 
@@ -95,7 +93,7 @@ const AdminPage: React.FC = () => {
             Review and approve workflow changes
           </p>
           <Button onClick={handleWorkflowReview}>
-            {t('common.view')}
+            {'View'}
           </Button>
         </Card>
       </div>

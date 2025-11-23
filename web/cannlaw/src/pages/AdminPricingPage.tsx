@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Container, Card, Button, Input, useToast } from '@l4h/shared-ui'
 import { admin } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
 import { Save, Plus, Trash2, Edit } from 'lucide-react'
 
 interface PricingEntry {
@@ -15,7 +14,6 @@ interface PricingEntry {
 }
 
 export default function AdminPricingPage() {
-  const { t } = useTranslation()
   const { success, error: showError } = useToast()
   const queryClient = useQueryClient()
   // const [editingEntry, setEditingEntry] = useState<PricingEntry | null>(null)
@@ -38,11 +36,11 @@ export default function AdminPricingPage() {
     mutationFn: admin.updatePricing,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-pricing'] })
-      success(t('common.success'), 'Pricing updated successfully')
+      success('Success', 'Pricing updated successfully')
       // setEditingEntry(null)
     },
     onError: (err) => {
-      showError(t('common.error'), err instanceof Error ? err.message : '')
+      showError('Error', err instanceof Error ? err.message : '')
     }
   })
 
@@ -55,7 +53,7 @@ export default function AdminPricingPage() {
 
   const handleAddEntry = () => {
     if (!newEntry.visaType || !newEntry.packageType || !newEntry.country) {
-      showError(t('common.error'), 'Please fill in all required fields')
+      showError('Error', 'Please fill in all required fields')
       return
     }
 
@@ -83,7 +81,7 @@ export default function AdminPricingPage() {
       <Container>
         <Card>
           <div className="flex items-center justify-center py-12">
-            <div className="text-lg">{t('common.loading')}</div>
+            <div className="text-lg">{'Loading...'}</div>
           </div>
         </Card>
       </Container>

@@ -2,7 +2,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Container, Card, Button, useToast } from '@l4h/shared-ui'
 import { admin } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
 import { CheckCircle, XCircle, Clock, User, Calendar } from 'lucide-react'
 
 interface TimeEntry {
@@ -19,7 +18,6 @@ interface TimeEntry {
 }
 
 export default function AdminTimeEntriesPage() {
-  const { t } = useTranslation()
   const { success, error: showError } = useToast()
   const queryClient = useQueryClient()
 
@@ -34,10 +32,10 @@ export default function AdminTimeEntriesPage() {
     mutationFn: admin.approveTimeEntry,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-time-entries'] })
-      success(t('common.success'), 'Time entry approved')
+      success('Success', 'Time entry approved')
     },
     onError: (err) => {
-      showError(t('common.error'), err instanceof Error ? err.message : '')
+      showError('Error', err instanceof Error ? err.message : '')
     }
   })
 
@@ -47,10 +45,10 @@ export default function AdminTimeEntriesPage() {
       admin.rejectTimeEntry(entryId, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-time-entries'] })
-      success(t('common.success'), 'Time entry rejected')
+      success('Success', 'Time entry rejected')
     },
     onError: (err) => {
-      showError(t('common.error'), err instanceof Error ? err.message : '')
+      showError('Error', err instanceof Error ? err.message : '')
     }
   })
 
@@ -86,7 +84,7 @@ export default function AdminTimeEntriesPage() {
       <Container>
         <Card>
           <div className="flex items-center justify-center py-12">
-            <div className="text-lg">{t('common.loading')}</div>
+            <div className="text-lg">{'Loading...'}</div>
           </div>
         </Card>
       </Container>

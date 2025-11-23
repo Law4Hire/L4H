@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { Button, LanguageSwitcher, authClient } from '@l4h/shared-ui'
+import { Button, authClient } from '@l4h/shared-ui'
 
 const LoginPage: React.FC = () => {
   const { t } = useTranslation(['auth', 'login', 'common'])
@@ -114,7 +113,7 @@ const LoginPage: React.FC = () => {
           </div>
 
           <div className="flex justify-center">
-            <LanguageSwitcher className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            
           </div>
         </form>
       </div>

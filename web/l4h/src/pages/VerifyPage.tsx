@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Container, Card, Button, EmptyState } from '@l4h/shared-ui'
-import { auth, useToast, useTranslation } from '@l4h/shared-ui'
+import { auth, useToast } from '@l4h/shared-ui'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 
 function VerifyPageContent() {

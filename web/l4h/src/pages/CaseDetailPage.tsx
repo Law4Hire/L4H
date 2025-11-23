@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Card, Button, Modal, cases, interview, useToast, useTranslation, useQuery } from '@l4h/shared-ui'
+import { Card, Button, Modal, cases, interview, useToast, useQuery } from '@l4h/shared-ui'
 
 interface CaseDetailData {
   id: string
@@ -30,7 +30,6 @@ interface VisaRecommendation {
 }
 
 const CaseDetailPage: React.FC = () => {
-  const { t } = useTranslation()
   const navigate = useNavigate()
   const { id: caseId } = useParams<{ id: string }>()
   const { error: showError, success: showSuccess } = useToast()
@@ -105,7 +104,7 @@ const CaseDetailPage: React.FC = () => {
   if (isCaseLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-lg">{t('common.loading')}</div>
+        <div className="text-lg">{'Loading...'}</div>
       </div>
     )
   }
@@ -115,18 +114,18 @@ const CaseDetailPage: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {t('case.detail.title')}
+            {'Case Detail'}
           </h1>
           <Button
             variant="outline"
             onClick={() => navigate('/dashboard')}
           >
-            {t('common.back')}
+            {'Back'}
           </Button>
         </div>
         <Card>
           <div className="text-red-600 text-center py-8">
-            {t('case.detail.error')}
+            {'Error loading case details.'}
           </div>
         </Card>
       </div>
@@ -142,7 +141,7 @@ const CaseDetailPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {t('case.detail.title')}
+            {'Case Detail'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             Case #{caseDetail.id.slice(-8)}
@@ -152,22 +151,22 @@ const CaseDetailPage: React.FC = () => {
           variant="outline"
           onClick={() => navigate('/dashboard')}
         >
-          {t('common.back')}
+          {'Back'}
         </Button>
       </div>
 
       {/* Case Overview */}
-      <Card title={t('case.detail.overview')}>
+      <Card title={'Case Overview'}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t('case.detail.status')}
+              {'Status'}
             </h3>
             {getStatusBadge(caseDetail.status)}
           </div>
           <div>
             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t('case.detail.created')}
+              {'Created'}
             </h3>
             <p className="text-gray-900 dark:text-gray-100">
               {new Date(caseDetail.createdAt).toLocaleDateString()}
@@ -175,7 +174,7 @@ const CaseDetailPage: React.FC = () => {
           </div>
           <div>
             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t('case.detail.lastActivity')}
+              {'Last Activity'}
             </h3>
             <p className="text-gray-900 dark:text-gray-100">
               {new Date(caseDetail.lastActivityAt).toLocaleDateString()}
@@ -184,7 +183,7 @@ const CaseDetailPage: React.FC = () => {
           {hasVisaType && (
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                {t('case.detail.visaType')}
+                {'Visa Type'}
               </h3>
               <p className="text-gray-900 dark:text-gray-100">
                 {caseDetail.visaTypeName} ({caseDetail.visaTypeCode})
@@ -195,15 +194,15 @@ const CaseDetailPage: React.FC = () => {
       </Card>
 
       {/* Interview Status */}
-      <Card title={t('case.detail.interviewStatus')}>
+      <Card title={'Interview Status'}>
         {!hasRecommendation ? (
           <div className="text-center py-8">
             <div className="mb-4">
               <div className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                {t('case.detail.interviewIncomplete')}
+                {'Interview Incomplete'}
               </div>
               <p className="text-gray-600 dark:text-gray-400">
-                {t('case.detail.interviewIncompleteDescription')}
+                {'The adaptive interview has not been completed yet.'}
               </p>
             </div>
             <Button
@@ -211,17 +210,17 @@ const CaseDetailPage: React.FC = () => {
               onClick={handleStartInterview}
               disabled={isInterviewLoading}
             >
-              {isInterviewLoading ? t('common.loading') : t('case.detail.startInterview')}
+              {isInterviewLoading ? 'Loading...' : 'Start Interview'}
             </Button>
           </div>
         ) : (
           <div className="text-center py-8">
             <div className="mb-4">
               <div className="text-lg font-medium text-green-600 dark:text-green-400 mb-2">
-                {t('case.detail.interviewComplete')}
+                {'Interview Complete'}
               </div>
               <p className="text-gray-600 dark:text-gray-400">
-                {t('case.detail.interviewCompleteDescription')}
+                {'The adaptive interview has been completed.'}
               </p>
             </div>
             <div className="flex justify-center space-x-4">
@@ -229,13 +228,13 @@ const CaseDetailPage: React.FC = () => {
                 variant="outline"
                 onClick={handleViewRecommendation}
               >
-                {t('case.detail.viewRecommendation')}
+                {'View Recommendation'}
               </Button>
               <Button
                 variant="secondary"
                 onClick={handleStartInterview}
               >
-                {t('case.detail.retakeInterview')}
+                {'Retake Interview'}
               </Button>
             </div>
           </div>
@@ -244,11 +243,11 @@ const CaseDetailPage: React.FC = () => {
 
       {/* Package Information */}
       {caseDetail.packageCode && (
-        <Card title={t('case.detail.servicePackage')}>
+        <Card title={'Service Package'}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                {t('case.detail.package')}
+                {'Package'}
               </h3>
               <p className="text-gray-900 dark:text-gray-100">
                 {caseDetail.packageDisplayName} ({caseDetail.packageCode})
@@ -257,7 +256,7 @@ const CaseDetailPage: React.FC = () => {
             {caseDetail.latestPriceSnapshot && (
               <div>
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                  {t('case.detail.price')}
+                  {'Price'}
                 </h3>
                 <p className="text-gray-900 dark:text-gray-100">
                   {caseDetail.latestPriceSnapshot.total.toFixed(2)} {caseDetail.latestPriceSnapshot.currency}
@@ -270,7 +269,7 @@ const CaseDetailPage: React.FC = () => {
 
       {/* Next Steps */}
       {!hasVisaType && (
-        <Card title={t('case.detail.nextSteps')}>
+        <Card title={'Next Steps'}>
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
@@ -280,10 +279,10 @@ const CaseDetailPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {t('case.detail.step1Title')}
+                  {'Complete Your Interview'}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('case.detail.step1Description')}
+                  {'Our adaptive interview will help us determine the best visa options for you.'}
                 </p>
               </div>
             </div>
@@ -295,10 +294,10 @@ const CaseDetailPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {t('case.detail.step2Title')}
+                  {'Select a Service Package'}
                 </h3>
                 <p className="text-sm text-gray-400 dark:text-gray-500">
-                  {t('case.detail.step2Description')}
+                  {'Choose a service package that fits your needs.'}
                 </p>
               </div>
             </div>
@@ -310,10 +309,10 @@ const CaseDetailPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {t('case.detail.step3Title')}
+                  {'Schedule Your Consultation'}
                 </h3>
                 <p className="text-sm text-gray-400 dark:text-gray-500">
-                  {t('case.detail.step3Description')}
+                  {'Schedule a consultation with one of our immigration experts.'}
                 </p>
               </div>
             </div>
@@ -325,22 +324,22 @@ const CaseDetailPage: React.FC = () => {
       <Modal
         isOpen={showRecommendationModal}
         onClose={() => setShowRecommendationModal(false)}
-        title={t('case.detail.visaRecommendation')}
+        title={'Visa Recommendation'}
       >
         {selectedRecommendation && (
           <div className="space-y-6">
             <div className="text-center">
               <div className="text-lg font-semibold text-green-600 mb-2">
-                {t('interview.complete.congratulations')}
+                {'Congratulations!'}
               </div>
               <p className="text-gray-600 dark:text-gray-400">
-                {t('interview.complete.description')}
+                {'Based on your answers, we have a visa recommendation for you.'}
               </p>
             </div>
 
             <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
               <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-2">
-                {t('interview.recommended.visa')}
+                {'Recommended Visa Type'}
               </h3>
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">
                 {selectedRecommendation.visaType}
@@ -351,10 +350,10 @@ const CaseDetailPage: React.FC = () => {
             </div>
 
             <div className="text-sm text-gray-500 dark:text-gray-400 text-center">
-              {t('case.detail.recommendationGenerated')} {new Date(selectedRecommendation.createdAt).toLocaleDateString()}
+              {'Recommendation generated on'} {new Date(selectedRecommendation.createdAt).toLocaleDateString()}
               {selectedRecommendation.isLocked && (
                 <span className="block mt-1 text-yellow-600 dark:text-yellow-400">
-                  {t('case.detail.recommendationLocked')}
+                  {'This recommendation has been finalized by our legal team.'}
                 </span>
               )}
             </div>
@@ -364,7 +363,7 @@ const CaseDetailPage: React.FC = () => {
                 variant="outline"
                 onClick={() => setShowRecommendationModal(false)}
               >
-                {t('common.close')}
+                {'Close'}
               </Button>
               <Button
                 variant="primary"
@@ -373,7 +372,7 @@ const CaseDetailPage: React.FC = () => {
                   navigate('/pricing')
                 }}
               >
-                {t('case.detail.viewPackages')}
+                {'View Service Packages'}
               </Button>
             </div>
           </div>

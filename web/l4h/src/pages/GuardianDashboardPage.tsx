@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button, useToast, useTranslation, useQuery } from '@l4h/shared-ui'
+import { Card, Button, useToast, useQuery } from '@l4h/shared-ui'
 
 interface ChildCaseDetails {
   id: string

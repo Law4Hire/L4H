@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Layout, RouteGuard, ToastContainer, useToast, useTranslation } from '@l4h/shared-ui'
+import { Layout, RouteGuard, ToastContainer, useToast } from '@l4h/shared-ui'
 import { InterviewProvider } from './InterviewContext';
 import { useAuth } from './hooks/useAuth'
 
@@ -34,7 +34,6 @@ const LoadingFallback = () => (
 )
 
 function App() {
-  const { t } = useTranslation()
   const { toasts, removeToast } = useToast()
   const { isAuthenticated, user } = useAuth()
 
@@ -107,7 +106,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('nav.dashboard')} 
+                title={'Dashboard'} 
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -122,7 +121,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('nav.pricing')} 
+                title={'Pricing'} 
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -137,7 +136,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('nav.scheduling')} 
+                title={'Schedule Interview'} 
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -152,7 +151,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('nav.appointments')} 
+                title={'Appointments'} 
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -167,7 +166,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('nav.messages')} 
+                title={'Messages'} 
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -182,7 +181,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('nav.uploads')} 
+                title={'Uploads'} 
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -197,7 +196,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('nav.invoices')} 
+                title={'Invoices'} 
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -211,7 +210,7 @@ function App() {
           path="/interview"
           element={
             <Layout
-              title={t('nav.interview')}
+              title={'Interview'}
               showUserMenu={true}
               user={user}
               isAuthenticated={isAuthenticated}
@@ -240,7 +239,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('nav.admin')} 
+                title={'Admin'} 
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -255,7 +254,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout
-                title={t('admin.userManagement')}
+                title={'User Management'}
                 showUserMenu={true}
                 user={user}
                 isAuthenticated={isAuthenticated}
@@ -270,7 +269,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout
-                title={t('admin.userDetails')}
+                title={'User Details'}
                 showUserMenu={true}
                 user={user}
                 isAuthenticated={isAuthenticated}
@@ -285,7 +284,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout 
-                title={t('admin.pricingManagement')}
+                title={'Pricing Management'}
                 showUserMenu={true} 
                 user={user} 
                 isAuthenticated={isAuthenticated}
@@ -300,7 +299,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout
-                title={t('admin.caseManagement')}
+                title={'Case Management'}
                 showUserMenu={true}
                 user={user}
                 isAuthenticated={isAuthenticated}
@@ -315,7 +314,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout
-                title={t('case.detail.title')}
+                title={'Case Detail'}
                 showUserMenu={true}
                 user={user}
                 isAuthenticated={isAuthenticated}

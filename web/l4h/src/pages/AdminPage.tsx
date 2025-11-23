@@ -1,9 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button, useTranslation } from '@l4h/shared-ui'
+import { Card, Button } from '@l4h/shared-ui'
 
 const AdminPage: React.FC = () => {
-  const { t } = useTranslation()
   const navigate = useNavigate()
 
   return (
@@ -12,7 +11,7 @@ const AdminPage: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            {t('nav.admin')}
+            {'Admin'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             Administrative dashboard for managing the Law4Hire platform

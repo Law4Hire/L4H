@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Card, apiClient, type Case } from '@l4h/shared-ui'
 
 const CasesPage: React.FC = () => {
-  const { t } = useTranslation()
   const [cases, setCases] = useState<Case[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -16,7 +14,7 @@ const CasesPage: React.FC = () => {
         const allCases = await apiClient.getMyCases()
         setCases(allCases)
       } catch (err) {
-        setError(t('common.error'))
+        setError('Error')
         console.error('Failed to load cases:', err)
       } finally {
         setLoading(false)
@@ -44,7 +42,7 @@ const CasesPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-lg">{t('common.loading')}</div>
+        <div className="text-lg">{'Loading...'}</div>
       </div>
     )
   }
@@ -99,10 +97,10 @@ const CasesPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900 mr-4">
-                        {t('common.view')}
+                        {'View'}
                       </button>
                       <button className="text-indigo-600 hover:text-indigo-900">
-                        {t('common.edit')}
+                        {'Edit'}
                       </button>
                     </td>
                   </tr>

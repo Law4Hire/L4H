@@ -1,7 +1,5 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from '@l4h/shared-ui'
-
 const LandingPage: React.FC = () => {
   const navigate = useNavigate()
   const { t } = useTranslation(['landing', 'common'])

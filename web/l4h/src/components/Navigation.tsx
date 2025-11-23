@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LanguageSwitcher, useTranslation } from '@l4h/shared-ui'
 import { useAuth, getUserDisplayName } from '../hooks/useAuth'
 
 export const Navigation: React.FC = () => {
@@ -61,7 +60,7 @@ export const Navigation: React.FC = () => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{ display: 'none', width: '0' }}>
-            <LanguageSwitcher variant="compact" />
+            
           </div>
           <button
             onClick={() => navigate('/visa-library')}

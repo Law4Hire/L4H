@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { Container, Card, Button, EmptyState, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { uploads } from '@l4h/shared-ui'
-import { useTranslation } from '@l4h/shared-ui'
 import { Upload, File, Download, Trash2, CheckCircle, AlertTriangle, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -15,7 +14,6 @@ interface UploadedFile {
 }
 
 export default function UploadsPage() {
-  const { t } = useTranslation()
   const { success, error } = useToast()
   const queryClient = useQueryClient()
   const [dragActive, setDragActive] = useState(false)
@@ -60,10 +58,10 @@ export default function UploadsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['uploads'] })
-      success(t('uploads.uploadComplete'))
+      success('File uploaded successfully')
     },
     onError: (err) => {
-      error(t('uploads.uploadFailed'), err instanceof Error ? err.message : '')
+      error('File upload failed', err instanceof Error ? err.message : '')
     }
   })
 
@@ -96,7 +94,7 @@ export default function UploadsPage() {
   const handleFileUpload = async (file: File) => {
     // Validate file size (25MB limit)
     if (file.size > 25 * 1024 * 1024) {
-      error(t('uploads.fileTooLarge'))
+      error('File is too large. Maximum size is 25MB.')
       return
     }
 
@@ -110,7 +108,7 @@ export default function UploadsPage() {
     ]
 
     if (!allowedTypes.includes(file.type)) {
-      error(t('uploads.invalidFileType'))
+      error('Invalid file type.')
       return
     }
 
@@ -138,13 +136,13 @@ export default function UploadsPage() {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'clean':
-        return t('uploads.fileClean')
+        return 'File is clean'
       case 'infected':
-        return t('uploads.virusDetected')
+        return 'Virus detected!'
       case 'quarantined':
-        return t('uploads.fileQuarantined')
+        return 'File is quarantined'
       default:
-        return t('status.pending')
+        return 'Pending'
     }
   }
 
@@ -162,7 +160,7 @@ export default function UploadsPage() {
         <Card>
           <EmptyState
             icon={Upload}
-            title={t('common.loading')}
+            title={'Loading...'}
           />
         </Card>
       </Container>
@@ -172,7 +170,7 @@ export default function UploadsPage() {
   return (
     <Container>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{t('uploads.title')}</h1>
+        <h1 className="text-2xl font-bold">{'File Uploads'}</h1>
       </div>
 
       {/* Upload Area */}
@@ -190,10 +188,10 @@ export default function UploadsPage() {
         >
           <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {t('uploads.dragDrop')}
+            {'Drag and drop files here'}
           </h3>
           <p className="text-gray-600 mb-4">
-            {t('uploads.or')} <span className="text-blue-600">{t('uploads.browseFiles')}</span>
+            {'or'} <span className="text-blue-600">{'browse files'}</span>
           </p>
           <input
             type="file"
@@ -206,10 +204,10 @@ export default function UploadsPage() {
             htmlFor="file-upload"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer"
           >
-            {t('uploads.uploadFiles')}
+            {'Upload Files'}
           </label>
           <p className="text-sm text-gray-500 mt-2">
-            {t('uploads.maxSize')} • {t('uploads.fileTypes')}
+            {'Max file size: 25MB'} • {'Allowed file types: PDF, JPG, PNG, DOC, DOCX'}
           </p>
         </div>
       </Card>
@@ -219,7 +217,7 @@ export default function UploadsPage() {
         <Card>
           <EmptyState
             icon={File}
-            title={t('uploads.noFiles')}
+            title={'No files uploaded yet'}
             description="Upload your first file to get started"
           />
         </Card>
@@ -283,7 +281,7 @@ export default function UploadsPage() {
           <Card className="p-6">
             <div className="flex items-center space-x-3">
               <Upload className="h-6 w-6 animate-pulse" />
-              <span>{t('uploads.uploading')}</span>
+              <span>{'Uploading...'}</span>
             </div>
           </Card>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useTranslation, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
+import { useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { useNavigate } from 'react-router-dom'
 import { Card, Button, pricing, cases, useToast } from '@l4h/shared-ui'
 import { useAuth } from '../hooks/useAuth'
@@ -21,7 +21,6 @@ interface Case {
 }
 
 const PricingPage: React.FC = () => {
-  const { t } = useTranslation()
   const navigate = useNavigate()
   const { success, error: showError } = useToast()
   const queryClient = useQueryClient()
@@ -58,7 +57,7 @@ const PricingPage: React.FC = () => {
       navigate('/scheduling')
     },
     onError: (err) => {
-      showError(err instanceof Error ? err.message : t('common.error'))
+      showError(err instanceof Error ? err.message : 'Error')
     }
   })
 
@@ -77,7 +76,7 @@ const PricingPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-lg">{t('common.loading')}</div>
+        <div className="text-lg">{'Loading...'}</div>
       </div>
     )
   }
@@ -86,16 +85,16 @@ const PricingPage: React.FC = () => {
     <div className="space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          {t('pricing.title')}
+          {'Our Service Packages'}
         </h1>
         <p className="text-lg text-gray-600">
-          {t('pricing.selectPlan')}
+          {'Select a plan that works for you'}
         </p>
       </div>
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-md p-4" role="alert">
-          <div className="text-red-800">{t('common.error')}</div>
+          <div className="text-red-800">{'Error'}</div>
         </div>
       )}
 
@@ -118,7 +117,7 @@ const PricingPage: React.FC = () => {
 
                 <div className="mb-6">
                   <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t('pricing.features')}
+                    {'Features'}
                   </h4>
                   <ul className="space-y-2">
                     {pkg.features.map((feature, index) => (
@@ -149,8 +148,8 @@ const PricingPage: React.FC = () => {
                     variant={selectedPackage === pkg.id ? 'secondary' : 'primary'}
                   >
                     {selectedPackage === pkg.id
-                      ? t('pricing.currentPlan')
-                      : t('pricing.choosePlan')
+                      ? 'Current Plan'
+                      : 'Choose Plan'
                     }
                   </Button>
                 </div>
@@ -158,7 +157,7 @@ const PricingPage: React.FC = () => {
                 {selectedPackage === pkg.id && (
                   <div className="absolute top-4 right-4">
                     <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
-                      {t('pricing.currentPlan')}
+                      {'Current Plan'}
                     </div>
                   </div>
                 )}

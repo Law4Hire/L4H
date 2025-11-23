@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button, Modal, cases, interview, useToast, useTranslation, useQuery } from '@l4h/shared-ui'
+import { Card, Button, Modal, cases, interview, useToast, useQuery } from '@l4h/shared-ui'
 
 import NextSteps from '../components/NextSteps';
 import { useAuth } from '../hooks/useAuth';
@@ -23,7 +23,6 @@ interface VisaRecommendation {
 }
 
 const DashboardPage: React.FC = () => {
-  const { t } = useTranslation()
   const navigate = useNavigate()
   const { error: showError } = useToast()
   const { user } = useAuth();
@@ -130,7 +129,7 @@ const DashboardPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-lg">{t('common.loading')}</div>
+        <div className="text-lg">{'Loading...'}</div>
       </div>
     )
   }
@@ -141,16 +140,16 @@ const DashboardPage: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            {t('dashboard.welcome')}
+            {'Welcome to your Dashboard'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {t('brand.tagline')}
+            {'Your journey to the United States starts here'}
           </p>
         </div>
       </div>
 
       {/* Quick Links */}
-      <Card title={t('dashboard.quickLinks')}>
+      <Card title={'Quick Links'}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Button
             variant="outline"
@@ -158,7 +157,7 @@ const DashboardPage: React.FC = () => {
             onClick={handleStartInterview}
           >
             <div className="text-lg mb-1">🎤</div>
-            <div className="text-sm">{t('dashboard.interview')}</div>
+            <div className="text-sm">{'Start Interview'}</div>
           </Button>
           
           <Button
@@ -167,7 +166,7 @@ const DashboardPage: React.FC = () => {
             onClick={() => navigate('/pricing')}
           >
             <div className="text-lg mb-1">💰</div>
-            <div className="text-sm">{t('dashboard.pricing')}</div>
+            <div className="text-sm">{'View Pricing'}</div>
           </Button>
           
           <Button
@@ -176,7 +175,7 @@ const DashboardPage: React.FC = () => {
             onClick={() => navigate('/appointments')}
           >
             <div className="text-lg mb-1">📅</div>
-            <div className="text-sm">{t('dashboard.appointments')}</div>
+            <div className="text-sm">{'My Appointments'}</div>
           </Button>
           
           <Button
@@ -185,16 +184,16 @@ const DashboardPage: React.FC = () => {
             onClick={() => navigate('/messages')}
           >
             <div className="text-lg mb-1">💬</div>
-            <div className="text-sm">{t('dashboard.messages')}</div>
+            <div className="text-sm">{'Messages'}</div>
           </Button>
         </div>
       </Card>
 
       {/* Case Status */}
-      <Card title={t('dashboard.caseStatus')}>
+      <Card title={'Case Status'}>
         {error ? (
           <div className="text-red-600 text-center py-4">
-            {t('common.error')}
+            {'Error'}
           </div>
         ) : casesList.length === 0 ? (
           <div className="text-gray-500 dark:text-gray-400 text-center py-4">
@@ -224,7 +223,7 @@ const DashboardPage: React.FC = () => {
                     variant="outline"
                     onClick={() => handleViewCase(caseItem.id)}
                   >
-                    {t('common.view')}
+                    {'View'}
                   </Button>
                 </div>
                 {caseItem.visaTypeCode && user?.country && (
@@ -279,7 +278,7 @@ const DashboardPage: React.FC = () => {
                 variant="outline"
                 onClick={() => setShowRecommendationModal(false)}
               >
-                {t('common.close')}
+                {'Close'}
               </Button>
               <Button
                 variant="primary"

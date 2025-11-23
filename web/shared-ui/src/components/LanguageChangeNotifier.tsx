@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
 import { CULTURE_NAMES } from '../i18n-config'
 import { useAccessibilityI18n } from '../hooks/useAccessibilityI18n'
 
@@ -43,7 +42,6 @@ export function LanguageChangeNotifier({
   announceToScreenReader = true,
   notificationClassName
 }: LanguageChangeNotifierProps) {
-  const { i18n } = useTranslation()
   const { announceToScreenReader: announce } = useAccessibilityI18n({
     announceLanguageChanges: false // We'll handle this manually
   })

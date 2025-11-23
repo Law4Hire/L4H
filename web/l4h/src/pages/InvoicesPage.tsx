@@ -1,7 +1,6 @@
 import React from 'react'
 import { Container, Card, Button, EmptyState, useToast, useQuery } from '@l4h/shared-ui'
 import { invoices } from '@l4h/shared-ui'
-import { useTranslation } from '@l4h/shared-ui'
 import { FileText, Download, Eye, Calendar, DollarSign } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -18,7 +17,6 @@ interface Invoice {
 }
 
 export default function InvoicesPage() {
-  const { t } = useTranslation()
   const { success, error } = useToast()
 
   // Fetch invoices
@@ -40,9 +38,9 @@ export default function InvoicesPage() {
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-      success(t('common.success'), 'Invoice downloaded successfully')
+      success('Success', 'Invoice downloaded successfully')
     } catch (err) {
-      error(t('common.error'), err instanceof Error ? err.message : '')
+      error('Error', err instanceof Error ? err.message : '')
     }
   }
 
@@ -72,7 +70,7 @@ export default function InvoicesPage() {
         <Card>
           <EmptyState
             icon={FileText}
-            title={t('common.loading')}
+            title={'Loading...'}
           />
         </Card>
       </Container>
@@ -82,7 +80,7 @@ export default function InvoicesPage() {
   return (
     <Container>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{t('nav.invoices')}</h1>
+        <h1 className="text-2xl font-bold">{'Invoices'}</h1>
       </div>
 
       {invoicesList.length === 0 ? (

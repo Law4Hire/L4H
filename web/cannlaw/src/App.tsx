@@ -111,7 +111,7 @@ function App() {
           path="/schedule" 
           element={
             <RouteGuard>
-              <Layout title={t('nav.schedule')}>
+              <Layout title={'Schedule'}>
                 <SchedulePage />
               </Layout>
             </RouteGuard>
@@ -121,7 +121,7 @@ function App() {
           path="/cases" 
           element={
             <RouteGuard>
-              <Layout title={t('nav.cases')}>
+              <Layout title={'Cases'}>
                 <CasesPage />
               </Layout>
             </RouteGuard>

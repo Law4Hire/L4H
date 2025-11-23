@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useTranslation, useQuery } from '@l4h/shared-ui';
+import { useQuery } from '@l4h/shared-ui';
 
 interface NextStepsProps {
   visaTypeCode: string;
@@ -14,9 +14,7 @@ interface WorkflowStep {
 }
 
 const NextSteps: React.FC<NextStepsProps> = ({ visaTypeCode, countryCode }) => {
-  const { t } = useTranslation();
-
-  const { data: steps = [], isLoading, error } = useQuery<WorkflowStep[]>({
+    const { data: steps = [], isLoading, error } = useQuery<WorkflowStep[]>({
     queryKey: ['workflow', visaTypeCode, countryCode],
     queryFn: async () => {
       const response = await fetch(`/api/v1/workflows?visaType=${visaTypeCode}&country=${countryCode}`);
@@ -29,11 +27,11 @@ const NextSteps: React.FC<NextStepsProps> = ({ visaTypeCode, countryCode }) => {
   });
 
   if (isLoading) {
-    return <div>{t('common.loading')}</div>;
+    return <div>{'Loading...'}</div>;
   }
 
   if (error) {
-    return <div className="text-red-600">{t('common.error')}</div>;
+    return <div className="text-red-600">{'Error'}</div>;
   }
 
   return (

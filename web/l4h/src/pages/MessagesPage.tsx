@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { messages } from '@l4h/shared-ui'
-import { useTranslation } from '@l4h/shared-ui'
 import { MessageCircle, Plus, Send, Mail, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -28,7 +27,6 @@ interface Message {
 }
 
 export default function MessagesPage() {
-  const { t } = useTranslation()
   const { success, error } = useToast()
   const queryClient = useQueryClient()
   const [selectedThread, setSelectedThread] = useState<string | null>(null)
@@ -60,16 +58,16 @@ export default function MessagesPage() {
       queryClient.invalidateQueries({ queryKey: ['messages', selectedThread] })
       setShowComposeModal(false)
       setNewMessage({ subject: '', content: '', recipientId: '' })
-      success(t('messages.messageSent'))
+      success('Message sent successfully')
     },
     onError: (err) => {
-      error(t('common.error'), err instanceof Error ? err.message : '')
+      error('Error', err instanceof Error ? err.message : '')
     }
   })
 
   const handleSendMessage = () => {
     if (!newMessage.subject || !newMessage.content) {
-      error(t('common.error'), t('validation.requiredFields', { defaultValue: 'Please fill in all required fields' }))
+      error('Error', t('validation.requiredFields', { defaultValue: 'Please fill in all required fields' }))
       return
     }
 
@@ -86,7 +84,7 @@ export default function MessagesPage() {
         <Card>
           <EmptyState
             icon={MessageCircle}
-            title={t('common.loading')}
+            title={'Loading...'}
           />
         </Card>
       </Container>
@@ -96,26 +94,26 @@ export default function MessagesPage() {
   return (
     <Container>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{t('messages.title')}</h1>
+        <h1 className="text-2xl font-bold">{'Messages'}</h1>
         <Button onClick={() => setShowComposeModal(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          {t('messages.compose')}
+          {'Compose'}
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Threads List */}
         <div className="lg:col-span-1">
-          <Card title={t('messages.inbox')}>
+          <Card title={'Inbox'}>
             {threads.length === 0 ? (
               <EmptyState
                 icon={MessageCircle}
-                title={t('messages.noMessages')}
+                title={'No messages found'}
                 description={t('messages.startConversation', { defaultValue: 'Start a conversation' })}
                 action={
                   <Button onClick={() => setShowComposeModal(true)}>
                     <Plus className="h-4 w-4 mr-2" />
-                    {t('messages.compose')}
+                    {'Compose'}
                   </Button>
                 }
               />
@@ -162,7 +160,7 @@ export default function MessagesPage() {
               {messagesLoading ? (
                 <EmptyState
                   icon={MessageCircle}
-                  title={t('common.loading')}
+                  title={'Loading...'}
                 />
               ) : (
                 <div className="space-y-4">
@@ -208,19 +206,19 @@ export default function MessagesPage() {
       <Modal
         open={showComposeModal}
         onClose={() => setShowComposeModal(false)}
-        title={t('messages.newMessage')}
+        title={'New Message'}
         size="md"
       >
         <div className="space-y-4">
           <Input
-            label={t('messages.subject')}
+            label={'Subject'}
             value={newMessage.subject}
             onChange={(e) => setNewMessage(prev => ({ ...prev, subject: e.target.value }))}
             required
           />
 
           <Input
-            label={t('messages.recipient')}
+            label={'Recipient'}
             value={newMessage.recipientId}
             onChange={(e) => setNewMessage(prev => ({ ...prev, recipientId: e.target.value }))}
             placeholder={t('messages.recipientPlaceholder', { defaultValue: 'Enter recipient email or ID' })}
@@ -228,7 +226,7 @@ export default function MessagesPage() {
           />
 
           <Input
-            label={t('messages.message')}
+            label={'Message'}
             value={newMessage.content}
             onChange={(e) => setNewMessage(prev => ({ ...prev, content: e.target.value }))}
             multiline
@@ -241,14 +239,14 @@ export default function MessagesPage() {
               variant="outline"
               onClick={() => setShowComposeModal(false)}
             >
-              {t('common.cancel')}
+              {'Cancel'}
             </Button>
             <Button
               onClick={handleSendMessage}
               loading={sendMessageMutation.isPending}
             >
               <Send className="h-4 w-4 mr-2" />
-              {t('common.save')}
+              {'Save'}
             </Button>
           </div>
         </div>

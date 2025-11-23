@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useTranslation } from '../i18n-provider-simple'
-import { LanguageSwitcher } from '../LanguageSwitcher'
 import { useTheme } from '../ThemeProvider'
 import { Sun, Moon } from '../Icon'
 import { Button } from './Button'
@@ -106,10 +104,10 @@ export const Layout: React.FC<LayoutProps> = ({
                 onClick={() => navigate('/visa-library')}
                 className={getCurrentPath() === '/visa-library' ? 'bg-blue-50 text-blue-600' : ''}
               >
-                {_t('nav.visaLibrary')}
+                {_'Visa Library'}
               </Button>
 
-              <LanguageSwitcher variant="compact" />
+              
               
               <Button
                 variant="ghost"
@@ -128,7 +126,7 @@ export const Layout: React.FC<LayoutProps> = ({
                     className="text-sm"
                     onClick={() => setShowUserDropdown(!showUserDropdown)}
                   >
-                    {_t('nav.hello')} {getUserDisplayName(user)}
+                    {_'Hello'} {getUserDisplayName(user)}
                   </Button>
                   {showUserDropdown && (
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
@@ -139,7 +137,7 @@ export const Layout: React.FC<LayoutProps> = ({
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
-                        {_t('nav.dashboard')}
+                        {_'Dashboard'}
                       </button>
                       {user?.isAdmin && (
                         <button
@@ -149,7 +147,7 @@ export const Layout: React.FC<LayoutProps> = ({
                           }}
                           className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                          {_t('nav.admin')}
+                          {_'Admin'}
                         </button>
                       )}
                       <button
@@ -159,7 +157,7 @@ export const Layout: React.FC<LayoutProps> = ({
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
-                        {_t('nav.logout')}
+                        {_'Logout'}
                       </button>
                     </div>
                   )}
@@ -171,14 +169,14 @@ export const Layout: React.FC<LayoutProps> = ({
                     size="sm"
                     onClick={() => navigate('/login')}
                   >
-                    {_t('nav.login')}
+                    {_'Login'}
                   </Button>
                   <Button
                     variant="primary"
                     size="sm"
                     onClick={() => navigate('/login')}
                   >
-                    {_t('getStarted')}
+                    {_'Get Started'}
                   </Button>
                 </div>
               )}

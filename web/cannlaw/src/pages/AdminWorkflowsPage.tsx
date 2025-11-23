@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Container, Card, Button, Modal, useToast } from '@l4h/shared-ui'
 import { admin } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
 import { CheckCircle, XCircle, Eye, Clock, User } from 'lucide-react'
 
 interface Workflow {
@@ -20,7 +19,6 @@ interface Workflow {
 }
 
 export default function AdminWorkflowsPage() {
-  const { t } = useTranslation()
   const { success, error: showError } = useToast()
   const queryClient = useQueryClient()
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null)
@@ -37,10 +35,10 @@ export default function AdminWorkflowsPage() {
     mutationFn: admin.approveWorkflow,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-workflows'] })
-      success(t('common.success'), 'Workflow approved successfully')
+      success('Success', 'Workflow approved successfully')
     },
     onError: (err) => {
-      showError(t('common.error'), err instanceof Error ? err.message : '')
+      showError('Error', err instanceof Error ? err.message : '')
     }
   })
 
@@ -50,10 +48,10 @@ export default function AdminWorkflowsPage() {
       admin.rejectWorkflow(workflowId, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-workflows'] })
-      success(t('common.success'), 'Workflow rejected')
+      success('Success', 'Workflow rejected')
     },
     onError: (err) => {
-      showError(t('common.error'), err instanceof Error ? err.message : '')
+      showError('Error', err instanceof Error ? err.message : '')
     }
   })
 
@@ -89,7 +87,7 @@ export default function AdminWorkflowsPage() {
       <Container>
         <Card>
           <div className="flex items-center justify-center py-12">
-            <div className="text-lg">{t('common.loading')}</div>
+            <div className="text-lg">{'Loading...'}</div>
           </div>
         </Card>
       </Container>
@@ -269,7 +267,7 @@ export default function AdminWorkflowsPage() {
                 variant="outline"
                 onClick={() => setShowDiffModal(false)}
               >
-                {t('common.close')}
+                {'Close'}
               </Button>
               {selectedWorkflow.status === 'pending' && (
                 <>

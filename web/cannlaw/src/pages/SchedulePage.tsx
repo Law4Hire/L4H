@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Card, apiClient, type Appointment } from '@l4h/shared-ui'
 
 const SchedulePage: React.FC = () => {
-  const { t } = useTranslation()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -14,7 +12,7 @@ const SchedulePage: React.FC = () => {
         const staffAppointments = await apiClient.getStaffAppointments()
         setAppointments(staffAppointments)
       } catch (err) {
-        setError(t('common.error'))
+        setError('Error')
         console.error('Failed to load appointments:', err)
       } finally {
         setLoading(false)
@@ -42,7 +40,7 @@ const SchedulePage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-lg">{t('common.loading')}</div>
+        <div className="text-lg">{'Loading...'}</div>
       </div>
     )
   }
@@ -76,7 +74,7 @@ const SchedulePage: React.FC = () => {
                     {t('schedule.status')}
                   </th>
                   <th className="relative px-6 py-3">
-                    <span className="sr-only">{t('common.view')}</span>
+                    <span className="sr-only">{'View'}</span>
                   </th>
                 </tr>
               </thead>
@@ -97,7 +95,7 @@ const SchedulePage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900">
-                        {t('common.view')}
+                        {'View'}
                       </button>
                     </td>
                   </tr>
