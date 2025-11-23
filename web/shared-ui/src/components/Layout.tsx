@@ -38,7 +38,6 @@ export const Layout: React.FC<LayoutProps> = ({
   user,
   isAuthenticated = false
 }) => {
-  const { t: _t } = useTranslation()
   const { theme, toggleTheme } = useTheme()
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
@@ -89,8 +88,8 @@ export const Layout: React.FC<LayoutProps> = ({
                   <span className="text-white font-bold text-lg">🇺🇸</span>
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">{_t('brand.title', 'US Immigration Help')}</h1>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">{_t('brand.subtitle', 'Powered by Law4Hire')}</p>
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">US Immigration Help</h1>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Powered by Law4Hire</p>
                 </div>
               </div>
             </div>
@@ -104,11 +103,9 @@ export const Layout: React.FC<LayoutProps> = ({
                 onClick={() => navigate('/visa-library')}
                 className={getCurrentPath() === '/visa-library' ? 'bg-blue-50 text-blue-600' : ''}
               >
-                {_'Visa Library'}
+                Visa Library
               </Button>
 
-              
-              
               <Button
                 variant="ghost"
                 size="sm"
@@ -126,7 +123,7 @@ export const Layout: React.FC<LayoutProps> = ({
                     className="text-sm"
                     onClick={() => setShowUserDropdown(!showUserDropdown)}
                   >
-                    {_'Hello'} {getUserDisplayName(user)}
+                    Hello {getUserDisplayName(user)}
                   </Button>
                   {showUserDropdown && (
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
@@ -137,7 +134,7 @@ export const Layout: React.FC<LayoutProps> = ({
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
-                        {_'Dashboard'}
+                        Dashboard
                       </button>
                       {user?.isAdmin && (
                         <button
@@ -147,7 +144,7 @@ export const Layout: React.FC<LayoutProps> = ({
                           }}
                           className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                          {_'Admin'}
+                          Admin
                         </button>
                       )}
                       <button
@@ -157,7 +154,7 @@ export const Layout: React.FC<LayoutProps> = ({
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
-                        {_'Logout'}
+                        Logout
                       </button>
                     </div>
                   )}
@@ -169,14 +166,14 @@ export const Layout: React.FC<LayoutProps> = ({
                     size="sm"
                     onClick={() => navigate('/login')}
                   >
-                    {_'Login'}
+                    Login
                   </Button>
                   <Button
                     variant="primary"
                     size="sm"
                     onClick={() => navigate('/login')}
                   >
-                    {_'Get Started'}
+                    Get Started
                   </Button>
                 </div>
               )}
