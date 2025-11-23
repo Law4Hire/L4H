@@ -49,6 +49,7 @@ public class FakeWorkflowSource : IWorkflowSource
 
     private async Task<ScrapeResult?> TryFetchEmbassyAsync(string visaTypeCode, string countryIso2, CancellationToken ct)
     {
+#pragma warning disable CA1308 // Normalize strings to uppercase
         var fixturePath = Path.Combine(_fixturesPath, $"embassy_{countryIso2.ToLowerInvariant()}_doctors.html");
         
         if (!File.Exists(fixturePath))
@@ -71,10 +72,12 @@ public class FakeWorkflowSource : IWorkflowSource
                 { "Server", "Embassy-Fake/1.0" }
             }
         };
+#pragma warning restore CA1308
     }
 
     private async Task<ScrapeResult> FetchUscisAsync(string visaTypeCode, string countryIso2, CancellationToken ct)
     {
+#pragma warning disable CA1308 // Normalize strings to uppercase
         var fixturePath = Path.Combine(_fixturesPath, $"uscis_{visaTypeCode.ToLowerInvariant()}_requirements.html");
         
         string content;
@@ -103,6 +106,7 @@ public class FakeWorkflowSource : IWorkflowSource
                 { "Server", "USCIS-Fake/1.0" }
             }
         };
+#pragma warning restore CA1308
     }
 
     private static string GenerateGenericUscisContent(string visaTypeCode, string countryIso2)

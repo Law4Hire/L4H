@@ -293,7 +293,9 @@ public class WorkflowNormalizer : IWorkflowNormalizer
     private static string GenerateStepKey(string title)
     {
         // Generate a stable key from the title
+#pragma warning disable CA1308 // Normalize strings to uppercase
         var clean = Regex.Replace(title.ToLowerInvariant(), @"[^a-z0-9\s]", "");
+#pragma warning restore CA1308
         var words = clean.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         
         // Take first few meaningful words
@@ -305,6 +307,8 @@ public class WorkflowNormalizer : IWorkflowNormalizer
     {
         using var sha256 = SHA256.Create();
         var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(content));
+#pragma warning disable CA1308 // Normalize strings to uppercase
         return Convert.ToHexString(bytes).ToLowerInvariant();
+#pragma warning restore CA1308
     }
 }

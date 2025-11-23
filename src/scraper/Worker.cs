@@ -44,16 +44,18 @@ public class Worker : BackgroundService
                 await Task.Delay(_interval, stoppingToken).ConfigureAwait(false);
                 await RunScrapingCycleAsync(stoppingToken).ConfigureAwait(false);
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
-                // Expected when cancellation is requested during Task.Delay
+                // Expected when cancellation is requested
                 break;
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in scraper worker main loop");
                 // Continue running after error
             }
+#pragma warning restore CA1031
         }
         
         _logger.LogInformation("Scraper Worker stopped at: {time}", DateTimeOffset.Now);
@@ -101,10 +103,12 @@ public class Worker : BackgroundService
         {
             _logger.LogError(ex, "Database error during scraping cycle");
         }
+#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error during scraping cycle");
         }
+#pragma warning restore CA1031
     }
 
     private static async Task ScrapeWithSemaphoreAsync(
@@ -166,10 +170,12 @@ public class Worker : BackgroundService
         {
             _logger.LogWarning("Could not parse interval '{Interval}' as ISO 8601 duration, checking for hours format.", cronString);
         }
+#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error when parsing interval '{Interval}', using default 3 days", cronString);
         }
+#pragma warning restore CA1031
         
         return TimeSpan.FromDays(3);
     }

@@ -17,9 +17,11 @@ public class UploadTokenService
         _options = options.Value;
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Validation should essentially return false on error.")]
     public bool ValidateToken(string token, out TokenPayload? payload)
     {
         ArgumentNullException.ThrowIfNull(token);
+        payload = null;
         
         try
         {
@@ -65,7 +67,7 @@ public class UploadTokenService
             // Token is not valid base64url, likely malformed
             return false;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Log other unexpected exceptions
             // _logger.LogError(ex, "Unexpected error during token validation."); // Inject logger for this

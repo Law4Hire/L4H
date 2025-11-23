@@ -36,6 +36,7 @@ public class WorkflowScraperService
         _localizer = localizer;
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Top-level worker loop must continue running.")]
     public async Task<ScraperResult> ScrapeAndProcessAsync(string visaTypeCode, string countryCode, CancellationToken cancellationToken)
     {
         _logger.LogInformation(_localizer["Scraper.RunStarted"], visaTypeCode, countryCode);
@@ -295,19 +296,17 @@ public class WorkflowScraperService
                 // Create new digest item
                 var digestData = new DigestItemData
                 {
-                    Category = "workflow_drafts",
-                    WorkflowDrafts = new List<WorkflowDraftDigestItem>
-                    {
-                        new WorkflowDraftDigestItem
-                        {
-                            Id = workflow.Id,
-                            CountryCode = workflow.CountryCode,
-                            VisaTypeId = workflow.VisaTypeId,
-                            Source = workflow.Source,
-                            ScrapedAt = workflow.ScrapedAt
-                        }
-                    }
+                    Category = "workflow_drafts"
                 };
+                
+                digestData.WorkflowDrafts.Add(new WorkflowDraftDigestItem
+                {
+                    Id = workflow.Id,
+                    CountryCode = workflow.CountryCode,
+                    VisaTypeId = workflow.VisaTypeId,
+                    Source = workflow.Source,
+                    ScrapedAt = workflow.ScrapedAt
+                });
                 
                 var digestQueue = new DailyDigestQueue
                 {
@@ -330,7 +329,7 @@ public class WorkflowScraperService
     {
         using var sha256 = SHA256.Create();
         var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(content));
-        return Convert.ToHexString(bytes).ToLower(CultureInfo.InvariantCulture);
+        return Convert.ToHexString(bytes).ToUpperInvariant();
     }
 }
 
@@ -338,7 +337,7 @@ public class WorkflowScraperService
 public class DigestItemData
 {
     public required string Category { get; set; }
-    public List<WorkflowDraftDigestItem> WorkflowDrafts { get; set; } = new();
+    public ICollection<WorkflowDraftDigestItem> WorkflowDrafts { get; } = new List<WorkflowDraftDigestItem>();
 }
 
 public class WorkflowDraftDigestItem
