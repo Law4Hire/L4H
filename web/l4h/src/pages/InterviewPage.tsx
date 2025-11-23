@@ -30,11 +30,16 @@ const InterviewPage: React.FC = () => {
     }
   }, [isComplete, sessionToken, navigate]);
 
+  // Start interview on load
+  useEffect(() => {
+    startInterview();
+  }, []);
+
   const startInterview = async () => {
     try {
       setIsLoading(true);
-      // Use the English-only requirement
-      const response = await interview.startAnonymous("en-US");
+      // Use default language (English)
+      const response = await interview.startAnonymous();
       setSessionToken(response.sessionToken);
       setCurrentQuestion(response.firstQuestion);
     } catch (error: any) {
