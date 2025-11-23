@@ -555,6 +555,60 @@ export const interview = {
   }
 }
 
+// Professional Interview API methods
+export const professional = {
+  async lockVisa(data: {
+    sessionId: string
+    visaTypeId: number
+    reason?: string
+  }) {
+    return fetchJson('/interview/professional/lock-visa', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+
+  async unlockVisa(data: {
+    sessionId: string
+    visaTypeId: number
+    reason?: string
+  }) {
+    return fetchJson('/interview/professional/unlock-visa', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+
+  async getSessionEvaluations(sessionId: string) {
+    return fetchJson<Array<{
+      visaTypeId: number
+      visaCode: string
+      visaName: string
+      status: string
+      matchScore: number
+      rank: number
+      explanation: string
+      missingInformation: string[]
+      requiredDocuments: string[]
+      keyBenefits: string[]
+      isUserSelected: boolean
+      isAttorneyLocked: boolean
+      lockReason?: string
+    }>>(`/interview/professional/session/${sessionId}/evaluations`)
+  },
+
+  async getSessionLockStatus(sessionId: string) {
+    return fetchJson<{
+      isLocked: boolean
+      lockedVisaTypeId?: number
+      lockedVisaName?: string
+      lockedReason?: string
+      lockedBy?: string
+      lockedAt?: string
+    }>(`/interview/professional/session/${sessionId}/lock-status`)
+  }
+}
+
 // Admin API methods
 export const admin = {
   async pricing() {

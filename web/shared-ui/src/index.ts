@@ -17,6 +17,7 @@ export {
   uploads, 
   invoices, 
   interview,
+  professional,
   admin,
   fetchJson, 
   ApiError,
