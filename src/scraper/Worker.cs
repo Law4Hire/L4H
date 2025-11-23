@@ -29,6 +29,7 @@ public class Worker : BackgroundService
         _interval = ParseInterval(cronString);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Worker loop must continue running.")]
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Scraper Worker started at: {time}", DateTimeOffset.Now);
@@ -49,18 +50,17 @@ public class Worker : BackgroundService
                 // Expected when cancellation is requested
                 break;
             }
-#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in scraper worker main loop");
                 // Continue running after error
             }
-#pragma warning restore CA1031
         }
         
         _logger.LogInformation("Scraper Worker stopped at: {time}", DateTimeOffset.Now);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Scraping cycle should fail gracefully.")]
     private async Task RunScrapingCycleAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation(_localizer["Scraper.RunStarted"]);
@@ -103,12 +103,10 @@ public class Worker : BackgroundService
         {
             _logger.LogError(ex, "Database error during scraping cycle");
         }
-#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error during scraping cycle");
         }
-#pragma warning restore CA1031
     }
 
     private static async Task ScrapeWithSemaphoreAsync(
@@ -150,6 +148,7 @@ public class Worker : BackgroundService
         return _configuration.GetValue<int>("Scraper:MaxConcurrency", 3);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Fallback logic.")]
     private TimeSpan ParseInterval(string cronString)
     {
         try
@@ -170,12 +169,10 @@ public class Worker : BackgroundService
         {
             _logger.LogWarning("Could not parse interval '{Interval}' as ISO 8601 duration, checking for hours format.", cronString);
         }
-#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error when parsing interval '{Interval}', using default 3 days", cronString);
         }
-#pragma warning restore CA1031
         
         return TimeSpan.FromDays(3);
     }

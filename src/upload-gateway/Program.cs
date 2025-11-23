@@ -147,11 +147,13 @@ app.MapPut("/gateway/uploads/{token}", async (
             sizeBytes = totalBytes
         });
     }
+#pragma warning disable CA1031 // Do not catch general exception types
     catch (Exception ex)
     {
         logger.LogError(ex, "Error processing upload for token {Token}", token);
         return Results.Problem("Internal server error during upload");
     }
+#pragma warning restore CA1031
 });
 
 app.Run();
