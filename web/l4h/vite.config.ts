@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     resolve: {
+      dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'react-i18next', 'i18next'],
       alias: {
         react: path.resolve(__dirname, './node_modules/react'),
         'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
