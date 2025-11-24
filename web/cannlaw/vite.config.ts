@@ -1,8 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    exclude: ['@l4h/shared-ui'],
+  },
+  resolve: {
+    dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'react-i18next', 'i18next', 'use-sync-external-store'],
+    alias: {
+      react: path.resolve(__dirname, './node_modules/react'),
+      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+      'react-router-dom': path.resolve(__dirname, './node_modules/react-router-dom'),
+      '@tanstack/react-query': path.resolve(__dirname, './node_modules/@tanstack/react-query'),
+    },
+  },
   base: '/',
   build: {
     outDir: 'dist',
