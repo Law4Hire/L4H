@@ -29,4 +29,4 @@ export { useRTL } from './hooks/useRTL';
 // Formatters
 export { formatCurrency, formatDate, formatTime, formatDateTime, formatNumber, formatRelativeTime, formatFileSize, formatPercentage, formatList, } from './formatters';
 // I18n
-export { useCannlawT, useT } from './i18n';
+export { useCannlawT, useT, default as i18n } from './i18n';

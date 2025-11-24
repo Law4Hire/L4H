@@ -16,7 +16,12 @@ export const Navigation: React.FC = () => {
 
   const handleLogout = () => {
     // Clear the JWT token and redirect to home
-    import('@l4h/shared-ui').then(({ setJwtToken }) => {
+    import('@l4h/shared-ui').then(async ({ setJwtToken, auth }) => {
+      try {
+        await auth.logoutAll()
+      } catch (e) {
+        console.error('Logout failed', e)
+      }
       setJwtToken(null)
       // Dispatch custom event to notify auth state change
       window.dispatchEvent(new Event('jwt-token-changed'))

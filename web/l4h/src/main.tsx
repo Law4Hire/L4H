@@ -1,12 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ThemeProvider, QueryProvider } from '@l4h/shared-ui'
+import { ThemeProvider, QueryProvider, i18n } from '@l4h/shared-ui'
 import App from './App'
 import './index.css'
 
 // Remove basename to allow direct routing without prefix
 // All routes will be served from the root path
+console.log('i18n initialized:', i18n.isInitialized)
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter

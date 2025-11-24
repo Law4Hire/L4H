@@ -21,4 +21,4 @@ export { QueryProvider, queryClient } from './query-provider';
 export { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 export { useRTL } from './hooks/useRTL';
 export { formatCurrency, formatDate, formatTime, formatDateTime, formatNumber, formatRelativeTime, formatFileSize, formatPercentage, formatList, } from './formatters';
-export { useCannlawT, useT } from './i18n';
+export { useCannlawT, useT, default as i18n } from './i18n';
