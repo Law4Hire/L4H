@@ -40,13 +40,6 @@ export declare const auth: {
         maritalStatus?: string;
     }): Promise<any>;
 };
-export declare const i18n: {
-    supported(): Promise<{
-        code: string;
-        displayName: string;
-    }[]>;
-    setCulture(culture: string): Promise<any>;
-};
 export declare const cases: {
     mine(): Promise<any>;
     get(caseId: string): Promise<any>;
@@ -167,6 +160,41 @@ export declare const interview: {
         email: string;
         success: boolean;
         errorMessage?: string;
+    }>;
+};
+export declare const professional: {
+    lockVisa(data: {
+        sessionId: string;
+        visaTypeId: number;
+        reason?: string;
+    }): Promise<any>;
+    unlockVisa(data: {
+        sessionId: string;
+        visaTypeId: number;
+        reason?: string;
+    }): Promise<any>;
+    getSessionEvaluations(sessionId: string): Promise<{
+        visaTypeId: number;
+        visaCode: string;
+        visaName: string;
+        status: string;
+        matchScore: number;
+        rank: number;
+        explanation: string;
+        missingInformation: string[];
+        requiredDocuments: string[];
+        keyBenefits: string[];
+        isUserSelected: boolean;
+        isAttorneyLocked: boolean;
+        lockReason?: string;
+    }[]>;
+    getSessionLockStatus(sessionId: string): Promise<{
+        isLocked: boolean;
+        lockedVisaTypeId?: number;
+        lockedVisaName?: string;
+        lockedReason?: string;
+        lockedBy?: string;
+        lockedAt?: string;
     }>;
 };
 export declare const admin: {

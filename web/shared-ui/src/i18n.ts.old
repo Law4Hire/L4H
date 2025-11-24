@@ -2,8 +2,8 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import HttpApi from 'i18next-http-backend';
 
-// RTL languages that should flip layout
-const RTL_LANGUAGES = ['ar-SA', 'ur-PK', 'ar', 'ur'];
+// RTL languages that should flip layout - EMPTY FOR ENGLISH ONLY
+const RTL_LANGUAGES: string[] = [];
 
 // Initialize i18next
 i18n
@@ -18,6 +18,9 @@ i18n
       escapeValue: false,
     },
     backend: {
+      // Point to a non-existent path or a simple static path if needed, 
+      // but effectively we only care about en-US.
+      // If l4h uses these files, we need to make sure en-US exists.
       loadPath: '/locales-new/{{lng}}/{{ns}}.json',
     },
   });
@@ -30,72 +33,31 @@ export interface Culture {
   displayName: string;
 }
 
-// Load supported cultures from API
+// Load supported cultures from API - ONLY ENGLISH
 export async function loadSupportedCultures(): Promise<Culture[]> {
-  try {
-    const response = await fetch('/api/v1/i18n/supported');
-    if (!response.ok) {
-      throw new Error(`Failed to load cultures: ${response.status}`);
-    }
-    const cultures = await response.json();
-    // Add the loaded languages to i18next
-    cultures.forEach((culture: Culture) => {
-      i18n.addResourceBundle(culture.code, 'translation', {});
-    });
-    return cultures;
-  } catch (error) {
-    console.warn('Failed to load supported cultures, using fallback:', error);
-    return [
-      { code: 'en-US', displayName: 'English' },
-      { code: 'es-ES', displayName: 'Spanish' },
-    ];
-  }
+  return [
+    { code: 'en-US', displayName: 'English' },
+  ];
 }
 
-// Set culture via API
+// Set culture via API - NO-OP (Enforce English)
 export async function setCulture(cultureCode: string): Promise<void> {
-  try {
-    const response = await fetch('/api/v1/i18n/culture', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ culture: cultureCode }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to set culture: ${response.status}`);
-    }
-
-    // Update i18n language
-    await i18n.changeLanguage(cultureCode);
-
-    // Set RTL direction
-    setRTLDirection(cultureCode);
-  } catch (error) {
-    console.error('Failed to set culture:', error);
-    // Still try to change language locally
-    await i18n.changeLanguage(cultureCode);
-    setRTLDirection(cultureCode);
-  }
+  console.warn('Localization disabled. Only English is supported.');
+  // Force English
+  await i18n.changeLanguage('en-US');
+  setRTLDirection('en-US');
 }
 
-// Set RTL direction based on language
+// Set RTL direction based on language - NO-OP (Enforce LTR)
 export function setRTLDirection(languageCode: string): void {
   const htmlElement = document.documentElement;
-  const isRTL = RTL_LANGUAGES.some((rtlLang) =>
-    languageCode.toLowerCase().startsWith(rtlLang.toLowerCase())
-  );
-
-  htmlElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
-  htmlElement.setAttribute('lang', languageCode);
+  
+  // Force LTR
+  htmlElement.setAttribute('dir', 'ltr');
+  htmlElement.setAttribute('lang', 'en-US');
 }
 
-// Check if current language is RTL
+// Check if current language is RTL - ALWAYS FALSE
 export function isRTL(): boolean {
-  const currentLang = i18n.language;
-  return RTL_LANGUAGES.some((rtlLang) =>
-    currentLang.toLowerCase().startsWith(rtlLang.toLowerCase())
-  );
+  return false;
 }
-

@@ -34,8 +34,7 @@ let csrfTokenExpiry = 0;
 // Cookie endpoints that require CSRF token
 const COOKIE_ENDPOINTS = [
     '/v1/auth/login',
-    '/v1/auth/remember',
-    '/v1/i18n/culture'
+    '/v1/auth/remember'
 ];
 // Get CSRF token
 async function getCsrfToken() {
@@ -229,18 +228,6 @@ export const auth = {
         });
     }
 };
-// I18n API methods
-export const i18n = {
-    async supported() {
-        return fetchJson('/v1/i18n/supported');
-    },
-    async setCulture(culture) {
-        return fetchJson('/v1/i18n/culture', {
-            method: 'POST',
-            body: JSON.stringify({ culture })
-        });
-    }
-};
 // Cases API methods
 export const cases = {
     async mine() {
@@ -393,6 +380,27 @@ export const interview = {
             method: 'POST',
             body: JSON.stringify(data)
         });
+    }
+};
+// Professional Interview API methods
+export const professional = {
+    async lockVisa(data) {
+        return fetchJson('/interview/professional/lock-visa', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+    async unlockVisa(data) {
+        return fetchJson('/interview/professional/unlock-visa', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+    async getSessionEvaluations(sessionId) {
+        return fetchJson(`/interview/professional/session/${sessionId}/evaluations`);
+    },
+    async getSessionLockStatus(sessionId) {
+        return fetchJson(`/interview/professional/session/${sessionId}/lock-status`);
     }
 };
 // Admin API methods
