@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Layout, RouteGuard, ToastContainer, useToast } from '@l4h/shared-ui'
 import { InterviewProvider } from './InterviewContext';
 import { useAuth } from './hooks/useAuth'
@@ -34,6 +35,7 @@ const LoadingFallback = () => (
 )
 
 function App() {
+  const { t } = useTranslation()
   const { toasts, removeToast } = useToast()
   const { isAuthenticated, user } = useAuth()
 
