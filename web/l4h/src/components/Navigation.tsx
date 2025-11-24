@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth, getUserDisplayName } from '../hooks/useAuth'
 
 export const Navigation: React.FC = () => {

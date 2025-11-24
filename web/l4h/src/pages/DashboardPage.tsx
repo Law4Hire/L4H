@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card, Button, Modal, cases, interview, useToast, useQuery } from '@l4h/shared-ui'
 
 import NextSteps from '../components/NextSteps';
@@ -23,6 +24,7 @@ interface VisaRecommendation {
 }
 
 const DashboardPage: React.FC = () => {
+  const { t } = useTranslation(['common', 'dashboard', 'interview'])
   const navigate = useNavigate()
   const { error: showError } = useToast()
   const { user } = useAuth();

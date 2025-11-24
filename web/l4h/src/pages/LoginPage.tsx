@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { Button, Input, auth, setJwtToken, useToast, cases, interview } from '@l4h/shared-ui'
 

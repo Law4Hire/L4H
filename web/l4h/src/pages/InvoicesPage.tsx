@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { Container, Card, Button, EmptyState, useToast, useQuery } from '@l4h/shared-ui'
 import { invoices } from '@l4h/shared-ui'
 import { FileText, Download, Eye, Calendar, DollarSign } from 'lucide-react'
@@ -17,6 +18,7 @@ interface Invoice {
 }
 
 export default function InvoicesPage() {
+  const { t } = useTranslation(['common', 'invoices'])
   const { success, error } = useToast()
 
   // Fetch invoices

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { messages } from '@l4h/shared-ui'
 import { MessageCircle, Plus, Send, Mail, Clock } from 'lucide-react'
@@ -27,6 +28,7 @@ interface Message {
 }
 
 export default function MessagesPage() {
+  const { t } = useTranslation(['common', 'messages'])
   const { success, error } = useToast()
   const queryClient = useQueryClient()
   const [selectedThread, setSelectedThread] = useState<string | null>(null)

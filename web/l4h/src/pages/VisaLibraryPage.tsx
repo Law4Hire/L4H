@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Modal, Button } from '@l4h/shared-ui'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 interface VisaType {
   code: string

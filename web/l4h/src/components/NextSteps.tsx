@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@l4h/shared-ui';
 
 interface NextStepsProps {
@@ -14,6 +15,7 @@ interface WorkflowStep {
 }
 
 const NextSteps: React.FC<NextStepsProps> = ({ visaTypeCode, countryCode }) => {
+    const { t } = useTranslation(['dashboard']);
     const { data: steps = [], isLoading, error } = useQuery<WorkflowStep[]>({
     queryKey: ['workflow', visaTypeCode, countryCode],
     queryFn: async () => {
