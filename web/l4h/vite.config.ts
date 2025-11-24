@@ -1,11 +1,20 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
   return {
     plugins: [react()],
+    resolve: {
+      alias: {
+        react: path.resolve(__dirname, './node_modules/react'),
+        'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+        'react-router-dom': path.resolve(__dirname, './node_modules/react-router-dom'),
+        '@tanstack/react-query': path.resolve(__dirname, './node_modules/@tanstack/react-query'),
+      },
+    },
     base: '/',
     build: {
     outDir: 'dist',
