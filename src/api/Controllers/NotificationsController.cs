@@ -31,19 +31,9 @@ public class NotificationsController : ControllerBase
         [FromQuery] int skip = 0,
         [FromQuery] int take = 50)
     {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var notifications = await _notificationService.GetUserNotificationsAsync(userId, unreadOnly, skip, take);
-            return Ok(notifications);
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting notifications for user");
-            return StatusCode(500, "An error occurred while retrieving notifications");
-        }
-#pragma warning restore CA1031
+        var userId = GetCurrentUserId();
+        var notifications = await _notificationService.GetUserNotificationsAsync(userId, unreadOnly, skip, take);
+        return Ok(notifications);
     }
 
     /// <summary>
@@ -52,19 +42,9 @@ public class NotificationsController : ControllerBase
     [HttpGet("unread-count")]
     public async Task<ActionResult<int>> GetUnreadCount()
     {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var count = await _notificationService.GetUnreadCountAsync(userId);
-            return Ok(count);
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting unread count for user");
-            return StatusCode(500, "An error occurred while retrieving unread count");
-        }
-#pragma warning restore CA1031
+        var userId = GetCurrentUserId();
+        var count = await _notificationService.GetUnreadCountAsync(userId);
+        return Ok(count);
     }
 
     /// <summary>
@@ -73,19 +53,9 @@ public class NotificationsController : ControllerBase
     [HttpPut("{id}/read")]
     public async Task<IActionResult> MarkAsRead(int id)
     {
-        try
-        {
-            var userId = GetCurrentUserId();
-            await _notificationService.MarkAsReadAsync(id, userId);
-            return Ok();
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error marking notification {NotificationId} as read", id);
-            return StatusCode(500, "An error occurred while marking notification as read");
-        }
-#pragma warning restore CA1031
+        var userId = GetCurrentUserId();
+        await _notificationService.MarkAsReadAsync(id, userId);
+        return Ok();
     }
 
     /// <summary>
@@ -94,19 +64,9 @@ public class NotificationsController : ControllerBase
     [HttpPut("read-all")]
     public async Task<IActionResult> MarkAllAsRead()
     {
-        try
-        {
-            var userId = GetCurrentUserId();
-            await _notificationService.MarkAllAsReadAsync(userId);
-            return Ok();
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error marking all notifications as read for user");
-            return StatusCode(500, "An error occurred while marking all notifications as read");
-        }
-#pragma warning restore CA1031
+        var userId = GetCurrentUserId();
+        await _notificationService.MarkAllAsReadAsync(userId);
+        return Ok();
     }
 
     /// <summary>
@@ -115,19 +75,9 @@ public class NotificationsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteNotification(int id)
     {
-        try
-        {
-            var userId = GetCurrentUserId();
-            await _notificationService.DeleteNotificationAsync(id, userId);
-            return Ok();
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error deleting notification {NotificationId}", id);
-            return StatusCode(500, "An error occurred while deleting notification");
-        }
-#pragma warning restore CA1031
+        var userId = GetCurrentUserId();
+        await _notificationService.DeleteNotificationAsync(id, userId);
+        return Ok();
     }
 
     /// <summary>
@@ -136,19 +86,9 @@ public class NotificationsController : ControllerBase
     [HttpGet("preferences")]
     public async Task<ActionResult<List<UserNotificationPreference>>> GetPreferences()
     {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var preferences = await _notificationService.GetUserPreferencesAsync(userId);
-            return Ok(preferences);
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting notification preferences for user");
-            return StatusCode(500, "An error occurred while retrieving notification preferences");
-        }
-#pragma warning restore CA1031
+        var userId = GetCurrentUserId();
+        var preferences = await _notificationService.GetUserPreferencesAsync(userId);
+        return Ok(preferences);
     }
 
     /// <summary>
@@ -159,24 +99,14 @@ public class NotificationsController : ControllerBase
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        try
-        {
-            var userId = GetCurrentUserId();
-            await _notificationService.UpdateUserPreferenceAsync(
-                userId, 
-                request.Type, 
-                request.InAppEnabled, 
-                request.EmailEnabled, 
-                request.MinimumPriority);
-            return Ok();
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error updating notification preference for user");
-            return StatusCode(500, "An error occurred while updating notification preference");
-        }
-#pragma warning restore CA1031
+        var userId = GetCurrentUserId();
+        await _notificationService.UpdateUserPreferenceAsync(
+            userId, 
+            request.Type, 
+            request.InAppEnabled, 
+            request.EmailEnabled, 
+            request.MinimumPriority);
+        return Ok();
     }
 
     /// <summary>
@@ -186,18 +116,8 @@ public class NotificationsController : ControllerBase
     [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<List<NotificationTemplate>>> GetTemplates()
     {
-        try
-        {
-            var templates = await _notificationService.GetTemplatesAsync();
-            return Ok(templates);
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting notification templates");
-            return StatusCode(500, "An error occurred while retrieving notification templates");
-        }
-#pragma warning restore CA1031
+        var templates = await _notificationService.GetTemplatesAsync();
+        return Ok(templates);
     }
 
     /// <summary>
@@ -209,26 +129,12 @@ public class NotificationsController : ControllerBase
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        try
-        {
-            await _notificationService.UpdateTemplateAsync(
-                id, 
-                request.SubjectTemplate, 
-                request.BodyTemplate, 
-                request.EmailBodyTemplate);
-            return Ok();
-        }
-        catch (ArgumentException ex)
-        {
-            return NotFound(ex.Message);
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error updating notification template {TemplateId}", id);
-            return StatusCode(500, "An error occurred while updating notification template");
-        }
-#pragma warning restore CA1031
+        await _notificationService.UpdateTemplateAsync(
+            id, 
+            request.SubjectTemplate, 
+            request.BodyTemplate, 
+            request.EmailBodyTemplate);
+        return Ok();
     }
 
     /// <summary>
@@ -240,23 +146,13 @@ public class NotificationsController : ControllerBase
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        try
-        {
-            await _notificationService.CreateNotificationAsync(
-                new UserId(request.UserId),
-                NotificationType.SystemAlert,
-                request.Title,
-                request.Message,
-                request.Priority);
-            return Ok();
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error sending test notification");
-            return StatusCode(500, "An error occurred while sending test notification");
-        }
-#pragma warning restore CA1031
+        await _notificationService.CreateNotificationAsync(
+            new UserId(request.UserId),
+            NotificationType.SystemAlert,
+            request.Title,
+            request.Message,
+            request.Priority);
+        return Ok();
     }
 
     private UserId GetCurrentUserId()

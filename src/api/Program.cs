@@ -281,6 +281,10 @@ builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uplo
 // Register upload token service
 builder.Services.AddScoped<UploadTokenService>();
 
+// Register Global Exception Handler
+builder.Services.AddExceptionHandler<L4H.Api.Infrastructure.GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 // Seed services
 builder.Services.AddScoped<ISeedTask, CountriesSeeder>();
 builder.Services.AddScoped<ISeedTask, USSubdivisionsSeeder>();
@@ -302,10 +306,9 @@ builder.Services.AddScoped<CountryService>();
 // builder.Services.AddHostedService<DailyDigestService>();
 // builder.Services.AddHostedService<NotificationBackgroundService>();
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-Console.WriteLine("[STARTUP] Building application...");
+Console.WriteLine(Program.StartupLogs.Building);
 var app = builder.Build();
-Console.WriteLine("[STARTUP] Application built successfully");
+Console.WriteLine(Program.StartupLogs.Built);
 
 // Configure the HTTP request pipeline
 // Swagger temporarily disabled due to OpenAPI package compatibility issues in .NET 10 RC
@@ -315,18 +318,20 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(); // Scalar UI at /scalar
 }
 
+app.UseExceptionHandler();
+
 // Ensure database is created and migrated for Development, Testing, and Production
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") || app.Environment.IsProduction())
 {
-    Console.WriteLine("[STARTUP] Starting database migration...");
+    Console.WriteLine(Program.StartupLogs.StartingMigration);
     using (var scope = app.Services.CreateScope())
     {
         try
         {
             var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
-            Console.WriteLine("[STARTUP] DbContext acquired, starting migration...");
+            Console.WriteLine(Program.StartupLogs.DbContextAcquired);
             await context.Database.MigrateAsync().ConfigureAwait(false);
-            Console.WriteLine("[STARTUP] Database migration completed");
+            Console.WriteLine(Program.StartupLogs.MigrationCompleted);
         }
         catch (Exception ex)
         {
@@ -343,10 +348,10 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") 
 
 // Seed admin and pricing data for Development and Production (skip Testing)
 Console.WriteLine($"[STARTUP] Environment: {app.Environment.EnvironmentName}, IsDevelopment: {app.Environment.IsDevelopment()}, IsProduction: {app.Environment.IsProduction()}");
-Console.WriteLine("[STARTUP] Checking if seeding should run...");
+Console.WriteLine(Program.StartupLogs.CheckingSeed);
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
-    Console.WriteLine("[STARTUP] Seeding condition met, starting seed process...");
+    Console.WriteLine(Program.StartupLogs.SeedConditionMet);
     using (var scope = app.Services.CreateScope())
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -368,20 +373,20 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             // await pricingSeedService.SeedPricingDataAsync().ConfigureAwait(false);
             // logger.LogInformation("Pricing data seed completed");
 
-            Console.WriteLine("[STARTUP] Starting countries seed...");
+            Console.WriteLine(Program.StartupLogs.StartingCountriesSeed);
             logger.LogInformation("Starting countries seed...");
             var countriesSeeder = scope.ServiceProvider.GetRequiredService<CountriesSeeder>();
             await countriesSeeder.ExecuteAsync().ConfigureAwait(false);
-            Console.WriteLine("[STARTUP] Countries seed completed");
+            Console.WriteLine(Program.StartupLogs.CountriesSeedCompleted);
             logger.LogInformation("Countries seed completed");
 
-            Console.WriteLine("[STARTUP] Starting seed runner...");
+            Console.WriteLine(Program.StartupLogs.StartingSeedRunner);
             logger.LogInformation("Starting seed runner...");
             var seedRunner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
-            Console.WriteLine("[STARTUP] About to await seedRunner.RunAllAsync()...");
+            Console.WriteLine(Program.StartupLogs.AwaitSeedRunner);
             await seedRunner.RunAllAsync().ConfigureAwait(false);
-            Console.WriteLine("[STARTUP] seedRunner.RunAllAsync() await completed");
-            Console.WriteLine("[STARTUP] Seed runner completed");
+            Console.WriteLine(Program.StartupLogs.SeedRunnerAwaitCompleted);
+            Console.WriteLine(Program.StartupLogs.SeedRunnerCompleted);
             logger.LogInformation("Seed runner completed");
         }
         catch (Exception ex)
@@ -391,7 +396,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         }
     }
 }
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
 app.UseSerilogRequestLogging();
 app.UseRequestLocalization(locOpts);
@@ -415,4 +419,22 @@ v1.MapGet("/ping", () => Results.Ok(new { message = "pong", timestamp = DateTime
 app.Run();
 
 // Make Program class accessible for testing
-public partial class Program { }
+public partial class Program 
+{ 
+    internal static class StartupLogs
+    {
+        public const string Building = "[STARTUP] Building application...";
+        public const string Built = "[STARTUP] Application built successfully";
+        public const string StartingMigration = "[STARTUP] Starting database migration...";
+        public const string DbContextAcquired = "[STARTUP] DbContext acquired, starting migration...";
+        public const string MigrationCompleted = "[STARTUP] Database migration completed";
+        public const string CheckingSeed = "[STARTUP] Checking if seeding should run...";
+        public const string SeedConditionMet = "[STARTUP] Seeding condition met, starting seed process...";
+        public const string StartingCountriesSeed = "[STARTUP] Starting countries seed...";
+        public const string CountriesSeedCompleted = "[STARTUP] Countries seed completed";
+        public const string StartingSeedRunner = "[STARTUP] Starting seed runner...";
+        public const string AwaitSeedRunner = "[STARTUP] About to await seedRunner.RunAllAsync()...";
+        public const string SeedRunnerAwaitCompleted = "[STARTUP] seedRunner.RunAllAsync() await completed";
+        public const string SeedRunnerCompleted = "[STARTUP] Seed runner completed";
+    }
+}

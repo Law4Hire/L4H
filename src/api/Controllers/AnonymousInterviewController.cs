@@ -33,18 +33,8 @@ public class AnonymousInterviewController : ControllerBase
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        try
-        {
-            var result = await _orchestrator.StartAnonymousInterviewAsync(request.LanguageCode);
-            return Ok(result.ToStartResponse());
-        }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error starting anonymous interview");
-            return StatusCode(500, new { error = "Failed to start interview" });
-        }
-#pragma warning restore CA1031
+        var result = await _orchestrator.StartAnonymousInterviewAsync(request.LanguageCode);
+        return Ok(result.ToStartResponse());
     }
 
     /// <summary>
@@ -66,13 +56,6 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
             return NotFound(new { error = ex.Message });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error resuming interview for session {SessionToken}", request.SessionToken);
-            return StatusCode(500, new { error = "Failed to resume interview" });
-        }
-#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -98,13 +81,6 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
             return NotFound(new { error = ex.Message });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error submitting answer for session {SessionToken}", request.SessionToken);
-            return StatusCode(500, new { error = "Failed to submit answer" });
-        }
-#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -126,13 +102,6 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
             return NotFound(new { error = ex.Message });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error completing interview for session {SessionToken}", request.SessionToken);
-            return StatusCode(500, new { error = "Failed to complete interview" });
-        }
-#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -151,13 +120,6 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Session not found: {SessionToken}", sessionToken);
             return NotFound(new { error = ex.Message });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting evaluations for session {SessionToken}", sessionToken);
-            return StatusCode(500, new { error = "Failed to get evaluations" });
-        }
-#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -178,13 +140,6 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Error selecting visa for session {SessionToken}", request.SessionToken);
             return BadRequest(new { error = ex.Message });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error selecting visa for session {SessionToken}", request.SessionToken);
-            return StatusCode(500, new { error = "Failed to select visa" });
-        }
-#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -223,17 +178,5 @@ public class AnonymousInterviewController : ControllerBase
                 ErrorMessage = ex.Message
             });
         }
-#pragma warning disable CA1031
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error registering with interview for token {AnonymousToken}",
-                request.AnonymousToken);
-            return StatusCode(500, new RegisterWithInterviewResponse
-            {
-                Success = false,
-                ErrorMessage = "Failed to create account"
-            });
-        }
-#pragma warning restore CA1031
     }
 }
