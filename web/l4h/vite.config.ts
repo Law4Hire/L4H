@@ -30,7 +30,8 @@ export default defineConfig(({ mode }) => {
           if (id.includes('node_modules/react') ||
               id.includes('node_modules/react-dom') ||
               id.includes('node_modules/react-router-dom') ||
-              id.includes('node_modules/lucide-react')) {
+              id.includes('node_modules/lucide-react') ||
+              id.includes('node_modules/use-sync-external-store')) {
             return 'vendor-react';
           }
           // Separate chunk for @tanstack/react-query

@@ -74,7 +74,8 @@
       "WebFetch(domain:claude.ai)",
       "Bash(docker-compose down:*)",
       "Bash(docker-compose up:*)",
-      "Bash(netstat:*)"
+      "Bash(netstat:*)",
+      "Bash(npm ls:*)"
     ],
     "deny": [],
     "ask": []
