@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
       exclude: ['@l4h/shared-ui'],
     },
     resolve: {
+      preserveSymlinks: true,
       dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'react-i18next', 'i18next', 'use-sync-external-store'],
       alias: {
         react: path.resolve(__dirname, './node_modules/react'),
@@ -21,6 +22,7 @@ export default defineConfig(({ mode }) => {
     },
     base: '/',
     build: {
+    minify: false,
     outDir: 'dist',
     sourcemap: true,
     rollupOptions: {
