@@ -46,15 +46,19 @@ export function clearAllAuthState() {
  * Perform complete logout - clear all auth state and redirect
  */
 export async function performLogout() {
+  console.log('[LOGOUT] Starting logout process...')
+
   // Import shared-ui functions
   const { setJwtToken, auth, clearTokens } = await import('@l4h/shared-ui')
 
-  // Clear tokens immediately
+  // Clear all browser auth state FIRST (before any API calls)
+  clearAllAuthState()
+
+  // Clear tokens in shared-ui module
   setJwtToken(null)
   clearTokens()
 
-  // Clear all browser auth state
-  clearAllAuthState()
+  console.log('[LOGOUT] Local state cleared')
 
   // Try to call backend logoutAll (best effort - requires valid token)
   try {
@@ -62,8 +66,9 @@ export async function performLogout() {
       auth.logoutAll(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
     ])
+    console.log('[LOGOUT] Backend logoutAll succeeded')
   } catch (e) {
-    console.warn('Backend logoutAll failed or timed out:', e)
+    console.warn('[LOGOUT] Backend logoutAll failed or timed out (this is OK):', e)
   }
 
   // Always call anonymous logout to ensure HttpOnly cookies are cleared
@@ -72,13 +77,19 @@ export async function performLogout() {
       auth.logout(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
     ])
+    console.log('[LOGOUT] Backend logout succeeded')
   } catch (e) {
-    console.warn('Backend logout failed or timed out:', e)
+    console.warn('[LOGOUT] Backend logout failed or timed out (this is OK):', e)
   }
 
   // Dispatch event to notify auth state change
   window.dispatchEvent(new Event('jwt-token-changed'))
+  console.log('[LOGOUT] Dispatched jwt-token-changed event')
 
-  // Force reload to home page
-  window.location.href = '/'
+  // Small delay to ensure event handlers fire
+  await new Promise(resolve => setTimeout(resolve, 100))
+
+  console.log('[LOGOUT] Redirecting to home page...')
+  // Force reload to home page with timestamp to prevent caching
+  window.location.href = '/?t=' + Date.now()
 }
