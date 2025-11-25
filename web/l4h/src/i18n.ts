@@ -112,10 +112,11 @@ const resources = {
       signup: 'Create Account',
       registrationSuccess: 'Registration successful! Welcome to Law4Hire.',
       registrationFailed: 'Registration failed. Please try again.',
-    },
-    login: {
-      title: 'Sign In to Law4Hire',
-      subtitle: 'Access your immigration case portal',
+      login: {
+        title: 'Sign In to Law4Hire',
+        subtitle: 'Access your immigration case portal',
+        submit: 'Sign In',
+      },
     },
     app: {
       title: 'Law4Hire',
@@ -350,7 +351,7 @@ i18n
     lng: 'en-US',
     fallbackLng: 'en-US',
     defaultNS: 'common',
-    ns: ['common', 'nav', 'auth', 'login', 'app', 'brand', 'dashboard', 'case', 'landing', 'status', 'pricing', 'appointments', 'messages', 'uploads', 'admin', 'reports'],
+    ns: ['common', 'nav', 'auth', 'app', 'brand', 'dashboard', 'case', 'landing', 'status', 'pricing', 'appointments', 'messages', 'uploads', 'admin', 'reports'],
     interpolation: {
       escapeValue: false,
     },
