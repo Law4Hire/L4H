@@ -76,7 +76,8 @@
       "Bash(docker-compose up:*)",
       "Bash(netstat:*)",
       "Bash(npm ls:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(convert:*)"
     ],
     "deny": [],
     "ask": []
