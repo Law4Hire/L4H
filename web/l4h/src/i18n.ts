@@ -112,7 +112,7 @@ const resources = {
       signup: 'Create Account',
       registrationSuccess: 'Registration successful! Welcome to Law4Hire.',
       registrationFailed: 'Registration failed. Please try again.',
-      login: {
+      loginPage: {
         title: 'Sign In to Law4Hire',
         subtitle: 'Access your immigration case portal',
         submit: 'Sign In',

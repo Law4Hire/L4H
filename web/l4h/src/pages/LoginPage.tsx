@@ -108,7 +108,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-            {t('login.title', { ns: 'auth' })}
+            {t('loginPage.title', { ns: 'auth' })}
           </h2>
         </div>
         
@@ -175,7 +175,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
               disabled={loading}
               className="w-full"
             >
-              {t('login.submit', { ns: 'auth' })}
+              {t('loginPage.submit', { ns: 'auth' })}
             </Button>
           </div>
 

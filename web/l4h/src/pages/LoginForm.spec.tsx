@@ -9,8 +9,8 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
-        'login.title': 'Sign In to Law4Hire',
-        'login.subtitle': 'Access your immigration case portal',
+        'loginPage.title': 'Sign In to Law4Hire',
+        'loginPage.subtitle': 'Access your immigration case portal',
         'auth.email': 'Email',
         'auth.password': 'Password',
         'auth.remember': 'Remember me',
