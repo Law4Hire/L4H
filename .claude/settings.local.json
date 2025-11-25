@@ -77,7 +77,8 @@
       "Bash(netstat:*)",
       "Bash(npm ls:*)",
       "Bash(xargs:*)",
-      "Bash(convert:*)"
+      "Bash(convert:*)",
+      "WebFetch(domain:l4h.74-208-77-43.nip.io)"
     ],
     "deny": [],
     "ask": []

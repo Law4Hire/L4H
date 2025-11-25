@@ -249,11 +249,19 @@ public class AuthController : ControllerBase
         }
 
         var result = await _authService.RefreshFromRememberTokenAsync(rememberToken).ConfigureAwait(false);
-        
+
         if (!result.IsSuccess)
         {
-            // Clear the invalid cookie
-            Response.Cookies.Delete("l4h_remember");
+            // Clear the invalid cookie with proper options
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = HttpContext.Request.IsHttps,
+                SameSite = SameSiteMode.Lax,
+                Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
+                Path = "/"
+            };
+            Response.Cookies.Delete("l4h_remember", cookieOptions);
             return Unauthorized(new { error = result.Error });
         }
 
@@ -290,7 +298,18 @@ public class AuthController : ControllerBase
     [Microsoft.AspNetCore.Authorization.AllowAnonymous]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete("l4h_remember");
+        // CRITICAL: Must use the SAME cookie options that were used during creation
+        // Otherwise the browser won't recognize it as the same cookie and won't delete it
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = HttpContext.Request.IsHttps,
+            SameSite = SameSiteMode.Lax,
+            Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
+            Path = "/"
+        };
+
+        Response.Cookies.Delete("l4h_remember", cookieOptions);
         return Ok(new { message = "Logged out" });
     }
 
@@ -380,9 +399,17 @@ public class AuthController : ControllerBase
         var userId = new UserId(userIdGuid);
 
         await _sessionManagementService.RevokeAllSessionsAsync(userId).ConfigureAwait(false);
-        
-        // Clear remember-me cookie
-        Response.Cookies.Delete("l4h_remember");
+
+        // Clear remember-me cookie with proper options
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = HttpContext.Request.IsHttps,
+            SameSite = SameSiteMode.Lax,
+            Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
+            Path = "/"
+        };
+        Response.Cookies.Delete("l4h_remember", cookieOptions);
 
         return Ok(new { message = _localizer["Auth.LoggedOutAllDevices"] });
     }
