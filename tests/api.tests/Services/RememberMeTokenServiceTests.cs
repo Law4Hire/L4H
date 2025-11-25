@@ -47,7 +47,7 @@ public class RememberMeTokenServiceTests : SqlServerDbTestBase
         var storedToken = await DbContext.RememberMeTokens
             .FirstOrDefaultAsync(t => t.UserId == user.Id);
         Assert.NotNull(storedToken);
-        Assert.True(storedToken.ExpiresAt > DateTime.UtcNow.AddDays(89)); // Should be ~90 days
+        Assert.True(storedToken.ExpiresAt > DateTime.UtcNow.AddDays(29)); // Should be ~30 days (updated from 90)
     }
 
     [Fact]
@@ -71,11 +71,11 @@ public class RememberMeTokenServiceTests : SqlServerDbTestBase
         var originalToken = await _tokenService.CreateRememberMeTokenAsync(user.Id);
 
         // Act
-        var returnedUser = await _tokenService.ValidateAndRotateTokenAsync(originalToken);
+        var result = await _tokenService.ValidateAndRotateTokenAsync(originalToken);
 
         // Assert
-        Assert.NotNull(returnedUser);
-        Assert.Equal(user.Id, returnedUser.Id);
+        Assert.NotNull(result);
+        Assert.Equal(user.Id, result.Value.User.Id);
 
         // Verify original token is revoked
         var originalDbToken = await DbContext.RememberMeTokens

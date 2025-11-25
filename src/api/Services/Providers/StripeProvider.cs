@@ -57,6 +57,8 @@ public class StripeProvider : IPaymentProvider
 
     public Task<RefundResult> ProcessRefundAsync(RefundRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         try
         {
             _logger.LogInformation("Processing Stripe refund for payment {PaymentIntentId}", request.PaymentIntentId);
@@ -72,6 +74,7 @@ public class StripeProvider : IPaymentProvider
                 RefundId = refundId
             });
         }
+#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to process Stripe refund for payment {PaymentIntentId}", request.PaymentIntentId);
@@ -81,10 +84,13 @@ public class StripeProvider : IPaymentProvider
                 ErrorMessage = _localizer["Payments.RefundFailed"]
             });
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 
     public async Task<WebhookResult> ProcessWebhookAsync(WebhookRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         try
         {
             _logger.LogInformation("Processing Stripe webhook");
@@ -130,6 +136,7 @@ public class StripeProvider : IPaymentProvider
                 EventId = webhookData.Id
             };
         }
+#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to process Stripe webhook");
@@ -139,6 +146,7 @@ public class StripeProvider : IPaymentProvider
                 ErrorMessage = _localizer["Payments.WebhookRejected"]
             };
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 
     private static bool ValidateWebhookSignature(string payload, string signature, string secret)
@@ -146,8 +154,8 @@ public class StripeProvider : IPaymentProvider
         try
         {
             var elements = signature.Split(',');
-            var timestamp = elements.FirstOrDefault(e => e.StartsWith("t="))?.Substring(2);
-            var signatureHash = elements.FirstOrDefault(e => e.StartsWith("v1="))?.Substring(3);
+            var timestamp = elements.FirstOrDefault(e => e.StartsWith("t=", StringComparison.Ordinal))?.Substring(2);
+            var signatureHash = elements.FirstOrDefault(e => e.StartsWith("v1=", StringComparison.Ordinal))?.Substring(3);
 
             if (string.IsNullOrEmpty(timestamp) || string.IsNullOrEmpty(signatureHash))
             {
@@ -159,17 +167,20 @@ public class StripeProvider : IPaymentProvider
 
             return signatureHash.Equals(expectedSignature, StringComparison.OrdinalIgnoreCase);
         }
+#pragma warning disable CA1031 // Do not catch general exception types
         catch
         {
             return false;
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 
     private static string ComputeHmacSha256(string payload, string secret)
     {
         using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
         var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
-        return Convert.ToHexString(hash).ToLowerInvariant();
+        // CA1308: Normalize strings to uppercase
+        return Convert.ToHexString(hash).ToUpperInvariant();
     }
 
     private async Task<bool> ProcessWebhookEvent(StripeWebhookData webhookData)

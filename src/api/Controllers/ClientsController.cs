@@ -58,7 +58,7 @@ public class ClientsController : ControllerBase
         // Apply search filters
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var searchLower = search.ToLower();
+            var searchLower = search.ToLowerInvariant();
             query = query.Where(c => 
                 c.FirstName.ToLower().Contains(searchLower) ||
                 c.LastName.ToLower().Contains(searchLower) ||

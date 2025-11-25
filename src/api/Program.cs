@@ -302,6 +302,7 @@ builder.Services.AddScoped<CountryService>();
 // builder.Services.AddHostedService<DailyDigestService>();
 // builder.Services.AddHostedService<NotificationBackgroundService>();
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 Console.WriteLine("[STARTUP] Building application...");
 var app = builder.Build();
 Console.WriteLine("[STARTUP] Application built successfully");
@@ -390,6 +391,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         }
     }
 }
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
 app.UseSerilogRequestLogging();
 app.UseRequestLocalization(locOpts);

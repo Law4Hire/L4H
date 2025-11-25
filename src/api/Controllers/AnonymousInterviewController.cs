@@ -31,16 +31,20 @@ public class AnonymousInterviewController : ControllerBase
     public async Task<ActionResult<StartInterviewResponse>> StartInterview(
         [FromBody] StartInterviewRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         try
         {
             var result = await _orchestrator.StartAnonymousInterviewAsync(request.LanguageCode);
             return Ok(result.ToStartResponse());
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error starting anonymous interview");
             return StatusCode(500, new { error = "Failed to start interview" });
         }
+#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -50,6 +54,8 @@ public class AnonymousInterviewController : ControllerBase
     public async Task<ActionResult<ResumeInterviewResponse>> ResumeInterview(
         [FromBody] ResumeInterviewRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         try
         {
             var result = await _orchestrator.ResumeInterviewAsync(request.SessionToken);
@@ -60,11 +66,13 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
             return NotFound(new { error = ex.Message });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error resuming interview for session {SessionToken}", request.SessionToken);
             return StatusCode(500, new { error = "Failed to resume interview" });
         }
+#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -74,6 +82,8 @@ public class AnonymousInterviewController : ControllerBase
     public async Task<ActionResult<SubmitAnswerResponse>> SubmitAnswer(
         [FromBody] SubmitAnswerRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         try
         {
             var result = await _orchestrator.SubmitAnswerAsync(
@@ -88,11 +98,13 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
             return NotFound(new { error = ex.Message });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error submitting answer for session {SessionToken}", request.SessionToken);
             return StatusCode(500, new { error = "Failed to submit answer" });
         }
+#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -102,6 +114,8 @@ public class AnonymousInterviewController : ControllerBase
     public async Task<ActionResult<CompleteInterviewResponse>> CompleteInterview(
         [FromBody] CompleteInterviewRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         try
         {
             var result = await _orchestrator.CompleteInterviewAsync(request.SessionToken);
@@ -112,11 +126,13 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
             return NotFound(new { error = ex.Message });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error completing interview for session {SessionToken}", request.SessionToken);
             return StatusCode(500, new { error = "Failed to complete interview" });
         }
+#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -135,11 +151,13 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Session not found: {SessionToken}", sessionToken);
             return NotFound(new { error = ex.Message });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting evaluations for session {SessionToken}", sessionToken);
             return StatusCode(500, new { error = "Failed to get evaluations" });
         }
+#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -148,6 +166,8 @@ public class AnonymousInterviewController : ControllerBase
     [HttpPost("select-visa")]
     public async Task<ActionResult> SelectVisa([FromBody] SelectVisaRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         try
         {
             await _orchestrator.SelectVisaAsync(request.SessionToken, request.VisaTypeId);
@@ -158,11 +178,13 @@ public class AnonymousInterviewController : ControllerBase
             _logger.LogWarning(ex, "Error selecting visa for session {SessionToken}", request.SessionToken);
             return BadRequest(new { error = ex.Message });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error selecting visa for session {SessionToken}", request.SessionToken);
             return StatusCode(500, new { error = "Failed to select visa" });
         }
+#pragma warning restore CA1031
     }
 
     /// <summary>
@@ -172,6 +194,8 @@ public class AnonymousInterviewController : ControllerBase
     public async Task<ActionResult<RegisterWithInterviewResponse>> RegisterWithInterview(
         [FromBody] RegisterWithInterviewRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         try
         {
             var session = await _orchestrator.RegisterWithInterviewAsync(
@@ -199,6 +223,7 @@ public class AnonymousInterviewController : ControllerBase
                 ErrorMessage = ex.Message
             });
         }
+#pragma warning disable CA1031
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error registering with interview for token {AnonymousToken}",
@@ -209,5 +234,6 @@ public class AnonymousInterviewController : ControllerBase
                 ErrorMessage = "Failed to create account"
             });
         }
+#pragma warning restore CA1031
     }
 }
