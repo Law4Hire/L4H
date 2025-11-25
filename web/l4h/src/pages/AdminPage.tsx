@@ -55,18 +55,31 @@ const AdminPage: React.FC = () => {
 
         <Card title="Pricing & Packages">
           <p className="text-gray-600 dark:text-gray-400 mb-4">Configure service packages and pricing</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('Manage Pricing button clicked - navigating to /admin/pricing')
-              navigate('/admin/pricing')
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Manage Pricing
-          </Button>
+          <div className="space-y-2">
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => {
+                console.log('Manage Pricing button clicked - navigating to /admin/pricing')
+                navigate('/admin/pricing')
+              }}
+              className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
+              style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
+            >
+              Manage Pricing
+            </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => {
+                console.log('Manage Packages button clicked - navigating to /admin/packages')
+                navigate('/admin/packages')
+              }}
+              className="w-full"
+            >
+              Manage Packages
+            </Button>
+          </div>
         </Card>
 
         <Card title="Reports & Analytics">

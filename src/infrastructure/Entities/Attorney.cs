@@ -3,16 +3,29 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace L4H.Infrastructure.Entities;
 
+public enum ProfessionalType
+{
+    Lawyer = 1,
+    Paralegal = 2,
+    LegalAssistant = 3
+}
+
 public class Attorney
 {
     public int Id { get; set; }
-    
+
     [Required]
     [MaxLength(255)]
     public string Name { get; set; } = string.Empty;
-    
+
     [MaxLength(255)]
     public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Professional type for scheduling purposes.
+    /// Determines if this professional can handle lawyer-only packages.
+    /// </summary>
+    public ProfessionalType ProfessionalType { get; set; } = ProfessionalType.Lawyer;
     
     public string Bio { get; set; } = string.Empty;
     

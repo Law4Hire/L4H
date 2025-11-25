@@ -201,15 +201,79 @@ public class AdminController : ControllerBase
             Description = p.Description,
             SortOrder = p.SortOrder,
             IsActive = p.IsActive,
+            RequiresLawyer = p.RequiresLawyer,
             CreatedAt = p.CreatedAt,
             UpdatedAt = p.UpdatedAt
         }).ToArray();
 
         // Audit log
-        await LogAuditAsync("admin", "packages_view", "Package", "multiple", 
+        await LogAuditAsync("admin", "packages_view", "Package", "multiple",
             new { packageCount = packages.Count }).ConfigureAwait(false);
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Update package settings (RequiresLawyer, IsActive, etc.)
+    /// </summary>
+    /// <param name="id">Package ID</param>
+    /// <param name="request">Update request</param>
+    /// <returns>Success message</returns>
+    [HttpPatch("pricing/packages/{id}")]
+    [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<MessageResponse>> UpdatePackage(
+        int id,
+        [FromBody] UpdatePackageRequest request)
+    {
+        var package = await _context.Packages
+            .FirstOrDefaultAsync(p => p.Id == id).ConfigureAwait(false);
+
+        if (package == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Package Not Found",
+                Detail = $"Package with ID {id} was not found"
+            });
+        }
+
+        var changes = new List<object>();
+
+        if (request.RequiresLawyer.HasValue && package.RequiresLawyer != request.RequiresLawyer.Value)
+        {
+            var oldValue = package.RequiresLawyer;
+            package.RequiresLawyer = request.RequiresLawyer.Value;
+            changes.Add(new { field = "RequiresLawyer", oldValue, newValue = request.RequiresLawyer.Value });
+        }
+
+        if (request.IsActive.HasValue && package.IsActive != request.IsActive.Value)
+        {
+            var oldValue = package.IsActive;
+            package.IsActive = request.IsActive.Value;
+            changes.Add(new { field = "IsActive", oldValue, newValue = request.IsActive.Value });
+        }
+
+        if (changes.Count > 0)
+        {
+            package.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            // Audit log
+            await LogAuditAsync("admin", "package_update", "Package", id.ToString(),
+                new { packageCode = package.Code, changes }).ConfigureAwait(false);
+
+            return Ok(new MessageResponse
+            {
+                Message = $"Package '{package.DisplayName}' updated successfully"
+            });
+        }
+
+        return Ok(new MessageResponse
+        {
+            Message = "No changes were made"
+        });
     }
 
     /// <summary>
@@ -1116,6 +1180,7 @@ public class AdminPackageResponse
     public string Description { get; set; } = string.Empty;
     public int SortOrder { get; set; }
     public bool IsActive { get; set; }
+    public bool RequiresLawyer { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -1313,4 +1378,10 @@ public class DatabaseStatsResponse
     public int TotalVisaTypes { get; set; }
     public int ActiveVisaTypes { get; set; }
     public DateTime GeneratedAt { get; set; }
+}
+
+public class UpdatePackageRequest
+{
+    public bool? RequiresLawyer { get; set; }
+    public bool? IsActive { get; set; }
 }

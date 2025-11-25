@@ -24,6 +24,7 @@ const AdminPage = lazy(() => import('./pages/AdminPage'))
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
 const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
 const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
+const AdminPackagesPage = lazy(() => import('./pages/AdminPackagesPage'))
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 
@@ -281,20 +282,35 @@ function App() {
             </RouteGuard>
           }
         />
-        <Route 
-          path="/admin/pricing" 
+        <Route
+          path="/admin/pricing"
           element={
             <RouteGuard>
-              <Layout 
+              <Layout
                 title={'Pricing Management'}
-                showUserMenu={true} 
-                user={user} 
+                showUserMenu={true}
+                user={user}
                 isAuthenticated={isAuthenticated}
               >
                 <AdminPricingPage />
               </Layout>
             </RouteGuard>
-          } 
+          }
+        />
+        <Route
+          path="/admin/packages"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Package Management'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminPackagesPage />
+              </Layout>
+            </RouteGuard>
+          }
         />
         <Route
           path="/admin/cases"
