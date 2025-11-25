@@ -54,6 +54,7 @@ public record AuthResponse
     public bool IsInterviewComplete { get; init; }
     public bool IsStaff { get; init; }
     public bool IsAdmin { get; init; }
+    public bool IsPersistent { get; init; }
 }
 
 public record MessageResponse

@@ -8,8 +8,8 @@ namespace L4H.Infrastructure.Services;
 
 public interface IRememberMeTokenService
 {
-    Task<string> CreateRememberMeTokenAsync(UserId userId);
-    Task<User?> ValidateAndRotateTokenAsync(string token);
+    Task<string> CreateRememberMeTokenAsync(UserId userId, bool isPersistent = true);
+    Task<(User User, bool IsPersistent)?> ValidateAndRotateTokenAsync(string token);
     Task RevokeAllTokensForUserAsync(UserId userId);
 }
 
@@ -24,7 +24,7 @@ public class RememberMeTokenService : IRememberMeTokenService
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<string> CreateRememberMeTokenAsync(UserId userId)
+    public async Task<string> CreateRememberMeTokenAsync(UserId userId, bool isPersistent = true)
     {
         // Generate a 256-bit (32 bytes) random token
         var tokenBytes = new byte[32];
@@ -39,7 +39,8 @@ public class RememberMeTokenService : IRememberMeTokenService
             UserId = userId,
             TokenHash = tokenHash,
             IssuedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(90) // 90 day expiry
+            ExpiresAt = isPersistent ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddMinutes(10), // 30 days or 10 mins (sliding window)
+            IsPersistent = isPersistent
         };
 
         _context.RememberMeTokens.Add(rememberMeToken);
@@ -48,7 +49,7 @@ public class RememberMeTokenService : IRememberMeTokenService
         return token;
     }
 
-    public async Task<User?> ValidateAndRotateTokenAsync(string token)
+    public async Task<(User User, bool IsPersistent)?> ValidateAndRotateTokenAsync(string token)
     {
         if (string.IsNullOrEmpty(token))
             return null;
@@ -78,13 +79,13 @@ public class RememberMeTokenService : IRememberMeTokenService
         // Revoke the used token
         matchingToken.RevokedAt = now;
 
-        // Create a new token for rotation
-        var newToken = await CreateRememberMeTokenAsync(matchingToken.UserId).ConfigureAwait(false);
+        // Create a new token for rotation, preserving persistence setting
+        var newToken = await CreateRememberMeTokenAsync(matchingToken.UserId, matchingToken.IsPersistent).ConfigureAwait(false);
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         // Return user so caller can generate new JWT and set new cookie
-        return matchingToken.User;
+        return (matchingToken.User, matchingToken.IsPersistent);
     }
 
     public async Task RevokeAllTokensForUserAsync(UserId userId)

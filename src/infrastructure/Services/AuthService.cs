@@ -172,7 +172,8 @@ public class AuthService : IAuthService
             IsProfileComplete = IsProfileComplete(user),
             IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
             IsStaff = user.IsStaff,
-            IsAdmin = user.IsAdmin
+            IsAdmin = user.IsAdmin,
+            IsPersistent = request.RememberMe
         };
 
         return Result<AuthResponse>.Success(response);
@@ -180,12 +181,14 @@ public class AuthService : IAuthService
 
     public async Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token)
     {
-        var user = await _rememberMeTokenService.ValidateAndRotateTokenAsync(token).ConfigureAwait(false);
+        var result = await _rememberMeTokenService.ValidateAndRotateTokenAsync(token).ConfigureAwait(false);
         
-        if (user == null)
+        if (result == null)
         {
             return Result<AuthResponse>.Failure("Invalid or expired remember token");
         }
+
+        var (user, isPersistent) = result.Value;
 
         // Generate new JWT token
         var jwtToken = _jwtTokenService.GenerateAccessToken(user);
@@ -197,7 +200,8 @@ public class AuthService : IAuthService
             IsProfileComplete = IsProfileComplete(user),
             IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
             IsStaff = user.IsStaff,
-            IsAdmin = user.IsAdmin
+            IsAdmin = user.IsAdmin,
+            IsPersistent = isPersistent
         });
     }
 

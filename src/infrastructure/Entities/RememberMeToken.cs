@@ -11,6 +11,7 @@ public class RememberMeToken
     public DateTime IssuedAt { get; set; }
     public DateTime ExpiresAt { get; set; }
     public DateTime? RevokedAt { get; set; }
+    public bool IsPersistent { get; set; }
 
     // Navigation properties
     [JsonIgnore]

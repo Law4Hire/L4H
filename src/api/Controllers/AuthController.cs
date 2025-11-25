@@ -209,18 +209,21 @@ public class AuthController : ControllerBase
             }
         }
 
-        // If remember me was requested, create and set remember token cookie
-        if (request.RememberMe && result.Value!.UserId.HasValue)
+        // If remember me was requested OR to support sliding session for non-remember me, set cookie
+        if (result.Value!.UserId.HasValue)
         {
-            var rememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value!.UserId!.Value).ConfigureAwait(false);
+            // Pass RememberMe flag to service
+            var rememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value!.UserId!.Value, request.RememberMe).ConfigureAwait(false);
             
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = HttpContext.Request.IsHttps,
-                SameSite = SameSiteMode.Lax, // Changed from Strict to Lax for better UX
+                SameSite = SameSiteMode.Lax,
                 Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
-                Expires = DateTimeOffset.UtcNow.AddDays(_authConfig.Remember.Days),
+                Expires = request.RememberMe 
+                    ? DateTimeOffset.UtcNow.AddDays(_authConfig.Remember.Days)
+                    : DateTimeOffset.UtcNow.AddMinutes(10), // Short expiration for non-remember me (sliding window buffer)
                 Path = "/"
             };
 
@@ -257,7 +260,8 @@ public class AuthController : ControllerBase
         // The remember token service already rotated the token, so we need to set the new one
         if (result.Value!.UserId.HasValue)
         {
-            var newRememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value!.UserId!.Value).ConfigureAwait(false);
+            // Create new token preserving persistence from previous token
+            var newRememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value!.UserId!.Value, result.Value.IsPersistent).ConfigureAwait(false);
             
             var cookieOptions = new CookieOptions
             {
@@ -265,7 +269,9 @@ public class AuthController : ControllerBase
                 Secure = HttpContext.Request.IsHttps,
                 SameSite = SameSiteMode.Lax,
                 Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
-                Expires = DateTimeOffset.UtcNow.AddDays(_authConfig.Remember.Days),
+                Expires = result.Value.IsPersistent
+                    ? DateTimeOffset.UtcNow.AddDays(_authConfig.Remember.Days)
+                    : DateTimeOffset.UtcNow.AddMinutes(10),
                 Path = "/"
             };
 
@@ -273,6 +279,19 @@ public class AuthController : ControllerBase
         }
 
         return Ok(result.Value);
+    }
+
+    /// <summary>
+    /// Logout (clear cookies only)
+    /// </summary>
+    /// <returns>Success message</returns>
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("l4h_remember");
+        return Ok(new { message = "Logged out" });
     }
 
     /// <summary>

@@ -279,6 +279,12 @@ export const auth = {
     })
   },
 
+  async logout() {
+    return fetchJson('/v1/auth/logout', {
+      method: 'POST'
+    })
+  },
+
   async updateProfile(profileData: {
     phoneNumber?: string
     streetAddress?: string

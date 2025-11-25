@@ -71,7 +71,7 @@ public class JwtTokenService : IJwtTokenService
             issuer: _config.Issuer,
             audience: _config.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(15), // 15 minute lifetime
+            expires: DateTime.UtcNow.AddMinutes(_config.AccessTokenLifetimeMinutes),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -109,4 +109,5 @@ public class JwtConfig
     public string SigningKey { get; set; } = string.Empty;
     public string Issuer { get; set; } = string.Empty;
     public string Audience { get; set; } = string.Empty;
+    public int AccessTokenLifetimeMinutes { get; set; } = 5;
 }

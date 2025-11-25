@@ -56,14 +56,24 @@ export async function performLogout() {
   // Clear all browser auth state
   clearAllAuthState()
 
-  // Try to call backend logout (best effort - don't wait for it)
+  // Try to call backend logoutAll (best effort - requires valid token)
   try {
     await Promise.race([
       auth.logoutAll(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
     ])
   } catch (e) {
-    console.warn('Backend logout failed or timed out (continuing with client-side logout):', e)
+    console.warn('Backend logoutAll failed or timed out:', e)
+  }
+
+  // Always call anonymous logout to ensure HttpOnly cookies are cleared
+  try {
+    await Promise.race([
+      auth.logout(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
+    ])
+  } catch (e) {
+    console.warn('Backend logout failed or timed out:', e)
   }
 
   // Dispatch event to notify auth state change
