@@ -54,9 +54,8 @@ const SinglePageRegistration: React.FC = () => {
   };
 
   const handleProceedToPurchase = () => {
-    // Redirect to Cannlaw purchase page
-    // Assuming Cannlaw is hosted on a different domain or subdomain
-    window.location.href = 'https://cannlaw.com/purchase'; // Update with actual Cannlaw URL
+    // Navigate to Law4Hire pricing page to select a consultation package
+    navigate('/pricing');
   };
 
   const handleSkipPurchase = () => {
