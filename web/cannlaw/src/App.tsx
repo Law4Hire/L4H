@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Layout, RouteGuard, ToastContainer, useToast, useCannlawT } from '@l4h/shared-ui'
+import { useTranslation } from 'react-i18next'
+import { Layout, RouteGuard, ToastContainer, useToast } from '@l4h/shared-ui'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ClientProtectedRoute } from './components/ClientProtectedRoute'
 
@@ -46,7 +47,7 @@ const LoadingFallback = () => (
 )
 
 function App() {
-  const t = useCannlawT()
+  const { t } = useTranslation()
   const { toasts, removeToast } = useToast()
 
   return (

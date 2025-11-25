@@ -28,5 +28,4 @@ export { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 export { useRTL } from './hooks/useRTL';
 // Formatters
 export { formatCurrency, formatDate, formatTime, formatDateTime, formatNumber, formatRelativeTime, formatFileSize, formatPercentage, formatList, } from './formatters';
-// I18n
-export { useCannlawT, useT, default as i18n } from './i18n';
+// I18n - removed singleton export, each app should create its own i18n instance

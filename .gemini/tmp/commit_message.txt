@@ -1,0 +1,17 @@
+feat: Enforce English-only localization and simplify i18n setup
+
+The project no longer requires multi-language localization and will strictly use English. This commit
+implements the following changes to simplify the i18n setup:
+
+- **Refactored `shared-ui` i18n:**
+    - Modified `web/shared-ui/src/i18n.ts` (legacy system for Cannlaw) to contain only English translations, remove `RTL_LANGUAGES`, and disable language switching/RTL functions.
+    - Modified `web/shared-ui/src/i18n.ts.old` (new system for L4H) to force English, remove dynamic culture loading, and disable RTL.
+    - Added missing `i18next`, `react-i18next`, and `i18next-http-backend` dependencies to `web/shared-ui/package.json`.
+    - Restored `useRTL` hook and `RTLNumber` component in `web/shared-ui` and exported them, fixing Cannlaw build.
+    - Ensured `useCannlawT` and `useT` are correctly exported from `web/shared-ui`.
+- **Removed Language Switchers/Tests:**
+    - Deleted `web/l4h/src/pages/LanguageTestPage.tsx` and `web/l4h/src/components/I18nTest.tsx` as they are no longer needed.
+- **Removed Non-English Locale Data:**
+    - Eliminated all non-English locale data from the build outputs.
+
+These changes streamline the localization setup to align with the "English-only" requirement, reduce codebase complexity, and resolve previous build failures related to missing i18n exports.
