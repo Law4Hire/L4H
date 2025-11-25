@@ -14,20 +14,26 @@ export const Navigation: React.FC = () => {
   const isLoginPage = location.pathname === '/login'
   const isVerifyPage = location.pathname === '/verify'
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Clear the JWT token and redirect to home
-    import('@l4h/shared-ui').then(async ({ setJwtToken, auth }) => {
-      try {
-        await auth.logoutAll()
-      } catch (e) {
-        console.error('Logout failed', e)
-      }
-      setJwtToken(null)
-      // Dispatch custom event to notify auth state change
-      window.dispatchEvent(new Event('jwt-token-changed'))
-      // Use navigate instead of window.location to avoid full page reload
-      navigate('/')
-    })
+    const { setJwtToken, auth, clearTokens } = await import('@l4h/shared-ui')
+
+    // Clear token immediately to prevent race conditions
+    setJwtToken(null)
+    clearTokens()
+
+    // Try to call backend logout (to clear remember-me cookie)
+    try {
+      await auth.logoutAll()
+    } catch (e) {
+      console.error('Backend logout failed (continuing anyway):', e)
+    }
+
+    // Dispatch custom event to notify auth state change
+    window.dispatchEvent(new Event('jwt-token-changed'))
+
+    // Force a full page reload to ensure all state is cleared
+    window.location.href = '/'
   }
 
   // Close user menu when clicking outside
