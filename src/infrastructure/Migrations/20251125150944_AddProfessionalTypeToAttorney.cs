@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace L4H.Infrastructure.Data.Migrations
+namespace L4H.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class AddProfessionalTypeToAttorney : Migration

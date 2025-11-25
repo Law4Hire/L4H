@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using L4H.Shared.Models;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -7,7 +8,7 @@ public class Notification
     public int Id { get; set; }
     
     [Required]
-    public int UserId { get; set; }
+    public UserId UserId { get; set; }
     public User User { get; set; } = null!;
 
     [Required]

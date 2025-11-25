@@ -252,11 +252,20 @@ public class L4HDbContext : DbContext
                     v => v.HasValue ? new UserId(v.Value) : null)
                 .IsRequired(false);
 
+            // Value Comparer for List<string>
+            var stringListComparer = new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<string>>(
+                (c1, c2) => c1!.SequenceEqual(c2!),
+                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => c.ToList());
+
             // JSON column for RequiredDocuments
             entity.Property(e => e.RequiredDocuments)
                 .HasConversion(
                     v => System.Text.Json.JsonSerializer.Serialize(v, (System.Text.Json.JsonSerializerOptions?)null),
-                    v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new List<string>());
+                    v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new List<string>())
+                .Metadata.SetValueComparer(stringListComparer);
+
+            entity.Property(e => e.MatchScore).HasColumnType("decimal(5,2)");
 
             // Relationships
             entity.HasOne(e => e.Session)
@@ -281,6 +290,40 @@ public class L4HDbContext : DbContext
             entity.HasIndex(e => new { e.SessionId, e.Rank }); // Compound index for sorted retrieval
             entity.HasIndex(e => e.IsUserSelected);
             entity.HasIndex(e => e.IsAttorneyLocked);
+        });
+
+        // Configure Notification
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId)
+                .HasConversion(
+                    v => v.Value,
+                    v => new UserId(v));
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.UserId);
+        });
+
+        // Configure UserNotificationPreference
+        modelBuilder.Entity<UserNotificationPreference>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId)
+                .HasConversion(
+                    v => v.Value,
+                    v => new UserId(v));
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => new { e.UserId, e.NotificationType }).IsUnique();
         });
 
         modelBuilder.Entity<VisaRecommendation>(entity =>

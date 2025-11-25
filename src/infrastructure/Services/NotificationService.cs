@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
+using L4H.Shared.Models;
 using System.Text.RegularExpressions;
 
 namespace L4H.Infrastructure.Services;
@@ -19,9 +20,9 @@ public class NotificationService : INotificationService
         _logger = logger;
     }
 
-    public async Task<Notification> CreateNotificationAsync(int userId, NotificationType type, string title, string message,
+    public async Task<Notification> CreateNotificationAsync(UserId userId, NotificationType type, string title, string message,
         NotificationPriority priority = NotificationPriority.Normal, string? actionUrl = null,
-        string? relatedEntityType = null, int? relatedEntityId = null, DateTime? expiresAt = null)
+        string? relatedEntityType = null, int? relatedEntityId = null)
     {
         try
         {
@@ -46,7 +47,6 @@ public class NotificationService : INotificationService
                 ActionUrl = actionUrl,
                 RelatedEntityType = relatedEntityType,
                 RelatedEntityId = relatedEntityId,
-                ExpiresAt = expiresAt,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -69,7 +69,7 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task<List<Notification>> GetUserNotificationsAsync(int userId, bool unreadOnly = false, int skip = 0, int take = 50)
+    public async Task<List<Notification>> GetUserNotificationsAsync(UserId userId, bool unreadOnly = false, int skip = 0, int take = 50)
     {
         try
         {
@@ -94,7 +94,7 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task<int> GetUnreadCountAsync(int userId)
+    public async Task<int> GetUnreadCountAsync(UserId userId)
     {
         try
         {
@@ -109,7 +109,7 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task MarkAsReadAsync(int notificationId, int userId)
+    public async Task MarkAsReadAsync(int notificationId, UserId userId)
     {
         try
         {
@@ -132,7 +132,7 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task MarkAllAsReadAsync(int userId)
+    public async Task MarkAllAsReadAsync(UserId userId)
     {
         try
         {
@@ -156,7 +156,7 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task DeleteNotificationAsync(int notificationId, int userId)
+    public async Task DeleteNotificationAsync(int notificationId, UserId userId)
     {
         try
         {
@@ -179,7 +179,7 @@ public class NotificationService : INotificationService
     }
 
     // Template-based notification methods
-    public async Task SendClientAssignmentNotificationAsync(int attorneyId, int clientId, string clientName)
+    public async Task SendClientAssignmentNotificationAsync(UserId attorneyId, int clientId, string clientName)
     {
         try
         {
@@ -217,7 +217,7 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task SendCaseStatusChangeNotificationAsync(int userId, int caseId, string caseName, string oldStatus, string newStatus)
+    public async Task SendCaseStatusChangeNotificationAsync(UserId userId, int caseId, string caseName, string oldStatus, string newStatus)
     {
         try
         {
@@ -246,27 +246,27 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task SendBillingThresholdWarningAsync(int attorneyId, decimal currentAmount, decimal threshold, string period)
+    public async Task SendBillingThresholdNotificationAsync(UserId attorneyId, int clientId, string clientName, double currentHours, double thresholdHours)
     {
         try
         {
             var template = await GetTemplateAsync(NotificationType.BillingThreshold);
             var tokens = new Dictionary<string, string>
             {
-                { "CurrentAmount", currentAmount.ToString("C") },
-                { "Threshold", threshold.ToString("C") },
-                { "Period", period }
+                { "ClientName", clientName },
+                { "CurrentHours", currentHours.ToString("F1") },
+                { "ThresholdHours", thresholdHours.ToString("F1") }
             };
 
             var title = template != null ? ReplaceTokens(template.SubjectTemplate, tokens) :
                 "Billing Threshold Warning";
 
             var message = template != null ? ReplaceTokens(template.BodyTemplate, tokens) :
-                $"Your billing for {period} has reached {currentAmount:C}, approaching the threshold of {threshold:C}";
+                $"Billing for client {clientName} has reached {currentHours:F1} hours, approaching the threshold of {thresholdHours:F1} hours";
 
             await CreateNotificationAsync(attorneyId, NotificationType.BillingThreshold,
                 title, message, NotificationPriority.High,
-                "/billing", "Billing", null);
+                $"/clients/{clientId}/billing", "Client", clientId);
         }
         catch (Exception ex)
         {
@@ -275,29 +275,29 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task SendDeadlineReminderAsync(int userId, string taskName, DateTime deadline, string? actionUrl = null)
+    public async Task SendDeadlineReminderNotificationAsync(UserId userId, string title, string message, DateTime deadline, bool isCritical)
     {
         try
         {
+            var priority = isCritical ? NotificationPriority.Critical : NotificationPriority.High;
+            
+            // Override with template if available
             var template = await GetTemplateAsync(NotificationType.DeadlineReminder);
-            var tokens = new Dictionary<string, string>
+            if (template != null)
             {
-                { "TaskName", taskName },
-                { "Deadline", deadline.ToString("MMM dd, yyyy") },
-                { "DaysUntil", (deadline.Date - DateTime.UtcNow.Date).Days.ToString() }
-            };
-
-            var title = template != null ? ReplaceTokens(template.SubjectTemplate, tokens) :
-                $"Deadline Reminder: {taskName}";
-
-            var message = template != null ? ReplaceTokens(template.BodyTemplate, tokens) :
-                $"Reminder: '{taskName}' is due on {deadline:MMM dd, yyyy}";
-
-            var priority = deadline.Date <= DateTime.UtcNow.Date.AddDays(1) ? 
-                NotificationPriority.Critical : NotificationPriority.High;
+                var tokens = new Dictionary<string, string>
+                {
+                    { "TaskName", title },
+                    { "Deadline", deadline.ToString("MMM dd, yyyy") },
+                    { "DaysUntil", (deadline.Date - DateTime.UtcNow.Date).Days.ToString() }
+                };
+                
+                title = ReplaceTokens(template.SubjectTemplate, tokens);
+                message = ReplaceTokens(template.BodyTemplate, tokens);
+            }
 
             await CreateNotificationAsync(userId, NotificationType.DeadlineReminder,
-                title, message, priority, actionUrl, "Task", null, deadline.AddDays(1));
+                title, message, priority, null, "Task", null);
         }
         catch (Exception ex)
         {
@@ -306,7 +306,7 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task SendDocumentUploadNotificationAsync(int attorneyId, int clientId, string clientName, string documentName)
+    public async Task SendDocumentUploadNotificationAsync(UserId attorneyId, int clientId, string clientName, string documentName)
     {
         try
         {
@@ -334,16 +334,23 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task SendTimeEntryReminderAsync(int attorneyId, string message)
+    public async Task SendTimeEntryReminderNotificationAsync(UserId attorneyId, string title, string body)
     {
         try
         {
             var template = await GetTemplateAsync(NotificationType.TimeEntryReminder);
-            var title = template != null ? template.SubjectTemplate : "Time Entry Reminder";
-            var body = template != null ? ReplaceTokens(template.BodyTemplate, new Dictionary<string, string>
+            // If template exists, we might ignore title/body args and use template, or use args as tokens?
+            // For now, we'll use args but check template for subject if available
+            
+            if (template != null)
             {
-                { "Message", message }
-            }) : message;
+                title = template.SubjectTemplate;
+                // If body template has token {Message}, use it
+                body = ReplaceTokens(template.BodyTemplate, new Dictionary<string, string>
+                {
+                    { "Message", body }
+                });
+            }
 
             await CreateNotificationAsync(attorneyId, NotificationType.TimeEntryReminder,
                 title, body, NotificationPriority.Normal, "/time-tracking", "TimeEntry", null);
@@ -356,7 +363,7 @@ public class NotificationService : INotificationService
     }
 
     // User preferences methods
-    public async Task<List<UserNotificationPreference>> GetUserPreferencesAsync(int userId)
+    public async Task<List<UserNotificationPreference>> GetUserPreferencesAsync(UserId userId)
     {
         try
         {
@@ -400,7 +407,7 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task UpdateUserPreferenceAsync(int userId, NotificationType type, bool inAppEnabled, bool emailEnabled,
+    public async Task UpdateUserPreferenceAsync(UserId userId, NotificationType type, bool inAppEnabled, bool emailEnabled,
         NotificationPriority minimumPriority)
     {
         try

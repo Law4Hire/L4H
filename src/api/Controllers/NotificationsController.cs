@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using L4H.Infrastructure.Services;
 using L4H.Infrastructure.Entities;
 using L4H.Api.Authorization;
+using L4H.Shared.Models;
 using System.Security.Claims;
 
 namespace L4H.Api.Controllers;
@@ -218,7 +219,7 @@ public class NotificationsController : ControllerBase
         try
         {
             await _notificationService.CreateNotificationAsync(
-                request.UserId,
+                new UserId(request.UserId),
                 NotificationType.SystemAlert,
                 request.Title,
                 request.Message,
@@ -232,14 +233,14 @@ public class NotificationsController : ControllerBase
         }
     }
 
-    private int GetCurrentUserId()
+    private UserId GetCurrentUserId()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
         {
-            throw new UnauthorizedAccessException("User ID not found in token");
+            throw new UnauthorizedAccessException("User ID not found in token or invalid");
         }
-        return userId;
+        return new UserId(userId);
     }
 }
 
@@ -261,7 +262,7 @@ public class UpdateNotificationTemplateRequest
 
 public class SendTestNotificationRequest
 {
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
     public NotificationPriority Priority { get; set; } = NotificationPriority.Normal;

@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace L4H.Infrastructure.Data.Migrations
+namespace L4H.Infrastructure.Migrations
 {
     [DbContext(typeof(L4HDbContext))]
-    [Migration("20251122212306_PhotoUrlToNullableAndCollectionFixes")]
-    partial class PhotoUrlToNullableAndCollectionFixes
+    [Migration("20251125150209_AddRequiresLawyerToPackages")]
+    partial class AddRequiresLawyerToPackages
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2448,6 +2448,9 @@ namespace L4H.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RequiresLawyer")
                         .HasColumnType("bit");
 
                     b.Property<int>("SortOrder")

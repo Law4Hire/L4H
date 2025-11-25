@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace L4H.Infrastructure.Data.Migrations
+namespace L4H.Infrastructure.Migrations
 {
     [DbContext(typeof(L4HDbContext))]
-    [Migration("20251110164502_UpdateInterviewProcessChanges")]
-    partial class UpdateInterviewProcessChanges
+    [Migration("20251125150944_AddProfessionalTypeToAttorney")]
+    partial class AddProfessionalTypeToAttorney
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -759,13 +759,15 @@ namespace L4H.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhotoUrl")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("PracticeAreas")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProfessionalType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -2066,6 +2068,9 @@ namespace L4H.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AnonymousToken")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("CaseId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2087,6 +2092,8 @@ namespace L4H.Infrastructure.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AnonymousToken");
 
                     b.HasIndex("CaseId");
 
@@ -2444,6 +2451,9 @@ namespace L4H.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RequiresLawyer")
                         .HasColumnType("bit");
 
                     b.Property<int>("SortOrder")
@@ -3513,6 +3523,88 @@ namespace L4H.Infrastructure.Data.Migrations
                     b.ToTable("VisaEligibilityResults");
                 });
 
+            modelBuilder.Entity("L4H.Infrastructure.Entities.VisaEvaluation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Explanation")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsAttorneyLocked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUserSelected")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LockReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("LockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LockedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("MatchScore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("MissingInformation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequiredDocuments")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnlockReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("UnlockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UserSelectedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("VisaTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsAttorneyLocked");
+
+                    b.HasIndex("IsUserSelected");
+
+                    b.HasIndex("LockedByUserId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("VisaTypeId");
+
+                    b.HasIndex("SessionId", "Rank");
+
+                    b.ToTable("VisaEvaluations");
+                });
+
             modelBuilder.Entity("L4H.Infrastructure.Entities.VisaRecommendation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4455,6 +4547,32 @@ namespace L4H.Infrastructure.Data.Migrations
                     b.Navigation("VisaType");
                 });
 
+            modelBuilder.Entity("L4H.Infrastructure.Entities.VisaEvaluation", b =>
+                {
+                    b.HasOne("L4H.Infrastructure.Entities.User", "LockedByUser")
+                        .WithMany()
+                        .HasForeignKey("LockedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("L4H.Infrastructure.Entities.InterviewSession", "Session")
+                        .WithMany("VisaEvaluations")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("L4H.Infrastructure.Entities.VisaType", "VisaType")
+                        .WithMany()
+                        .HasForeignKey("VisaTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LockedByUser");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("VisaType");
+                });
+
             modelBuilder.Entity("L4H.Infrastructure.Entities.VisaRecommendation", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.Case", "Case")
@@ -4597,6 +4715,8 @@ namespace L4H.Infrastructure.Data.Migrations
                     b.Navigation("QAs");
 
                     b.Navigation("VisaEligibilityResults");
+
+                    b.Navigation("VisaEvaluations");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Invoice", b =>

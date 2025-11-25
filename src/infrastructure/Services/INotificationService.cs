@@ -1,51 +1,52 @@
 using L4H.Infrastructure.Entities;
+using L4H.Shared.Models;
 
 namespace L4H.Infrastructure.Services;
 
 public interface INotificationService
 {
     // Core notification methods
-    Task<Notification> CreateNotificationAsync(int userId, NotificationType type, string title, string message, 
+    Task<Notification> CreateNotificationAsync(UserId userId, NotificationType type, string title, string message, 
         NotificationPriority priority = NotificationPriority.Normal, string? actionUrl = null, 
-        string? relatedEntityType = null, int? relatedEntityId = null, DateTime? expiresAt = null);
+        string? relatedEntityType = null, int? relatedEntityId = null);
+
+    Task<List<Notification>> GetUserNotificationsAsync(UserId userId, bool unreadOnly = false, int skip = 0, int take = 50);
     
-    Task<List<Notification>> GetUserNotificationsAsync(int userId, bool unreadOnly = false, int skip = 0, int take = 50);
+    Task<int> GetUnreadCountAsync(UserId userId);
     
-    Task<int> GetUnreadCountAsync(int userId);
+    Task MarkAsReadAsync(int notificationId, UserId userId);
     
-    Task MarkAsReadAsync(int notificationId, int userId);
+    Task MarkAllAsReadAsync(UserId userId);
     
-    Task MarkAllAsReadAsync(int userId);
-    
-    Task DeleteNotificationAsync(int notificationId, int userId);
+    Task DeleteNotificationAsync(int notificationId, UserId userId);
     
     // Template-based notifications
-    Task SendClientAssignmentNotificationAsync(int attorneyId, int clientId, string clientName);
+    Task SendClientAssignmentNotificationAsync(UserId attorneyId, int clientId, string clientName);
     
-    Task SendCaseStatusChangeNotificationAsync(int userId, int caseId, string caseName, string oldStatus, string newStatus);
+    Task SendCaseStatusChangeNotificationAsync(UserId userId, int caseId, string caseName, string oldStatus, string newStatus);
     
-    Task SendBillingThresholdWarningAsync(int attorneyId, decimal currentAmount, decimal threshold, string period);
+    Task SendBillingThresholdNotificationAsync(UserId attorneyId, int clientId, string clientName, double currentHours, double thresholdHours);
     
-    Task SendDeadlineReminderAsync(int userId, string taskName, DateTime deadline, string? actionUrl = null);
+    Task SendDeadlineReminderNotificationAsync(UserId userId, string title, string message, DateTime deadline, bool isCritical);
     
-    Task SendDocumentUploadNotificationAsync(int attorneyId, int clientId, string clientName, string documentName);
+    Task SendDocumentUploadNotificationAsync(UserId attorneyId, int clientId, string clientName, string documentName);
     
-    Task SendTimeEntryReminderAsync(int attorneyId, string message);
+    Task SendTimeEntryReminderNotificationAsync(UserId attorneyId, string title, string body);
+
+    // Preferences
+    Task<List<UserNotificationPreference>> GetUserPreferencesAsync(UserId userId);
     
-    // User preferences
-    Task<List<UserNotificationPreference>> GetUserPreferencesAsync(int userId);
-    
-    Task UpdateUserPreferenceAsync(int userId, NotificationType type, bool inAppEnabled, bool emailEnabled, 
+    Task UpdateUserPreferenceAsync(UserId userId, NotificationType type, bool inAppEnabled, bool emailEnabled, 
         NotificationPriority minimumPriority);
     
-    // Template management
+    // Templates
     Task<List<NotificationTemplate>> GetTemplatesAsync();
     
     Task<NotificationTemplate?> GetTemplateAsync(NotificationType type);
     
     Task UpdateTemplateAsync(int templateId, string subjectTemplate, string bodyTemplate, string? emailBodyTemplate);
     
-    // Cleanup and maintenance
+    // System
     Task CleanupExpiredNotificationsAsync();
     
     Task ProcessPendingEmailNotificationsAsync();

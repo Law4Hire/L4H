@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace L4H.Infrastructure.Data.Migrations
+namespace L4H.Infrastructure.Migrations
 {
     [DbContext(typeof(L4HDbContext))]
-    [Migration("20251125150944_AddProfessionalTypeToAttorney")]
-    partial class AddProfessionalTypeToAttorney
+    [Migration("20251125160741_FixShadowPropertiesAndPrecision")]
+    partial class FixShadowPropertiesAndPrecision
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2367,15 +2367,12 @@ namespace L4H.Infrastructure.Data.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId1")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
                 });
@@ -3321,15 +3318,13 @@ namespace L4H.Infrastructure.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId1")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId", "NotificationType")
+                        .IsUnique();
 
                     b.ToTable("UserNotificationPreferences");
                 });
@@ -3554,7 +3549,7 @@ namespace L4H.Infrastructure.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("MatchScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<string>("MissingInformation")
                         .HasColumnType("nvarchar(max)");
@@ -4325,7 +4320,7 @@ namespace L4H.Infrastructure.Data.Migrations
                 {
                     b.HasOne("L4H.Infrastructure.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -4475,7 +4470,7 @@ namespace L4H.Infrastructure.Data.Migrations
                 {
                     b.HasOne("L4H.Infrastructure.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
