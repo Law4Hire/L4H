@@ -166,8 +166,23 @@ async function fetchJson<T = any>(
             }
           }
         } catch (refreshError) {
-          // If refresh fails, fall through to original error handling
+          // If refresh fails, clear auth state and redirect to home
           console.warn('Token refresh failed:', refreshError)
+
+          // Clear all auth state
+          jwtToken = null
+          localStorage.removeItem('jwt_token')
+
+          // If we're in a browser context, trigger logout
+          if (typeof window !== 'undefined' && response.status === 401) {
+            // Dispatch event to notify auth state change
+            window.dispatchEvent(new Event('jwt-token-changed'))
+
+            // Only redirect if not already on public pages
+            if (!window.location.pathname.match(/^\/(login|verify|interview|results|$)/)) {
+              window.location.href = '/'
+            }
+          }
         }
       }
 

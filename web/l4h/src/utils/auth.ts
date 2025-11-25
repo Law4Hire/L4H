@@ -1,0 +1,74 @@
+/**
+ * Delete a cookie by name
+ * Sets expiration to past date to force deletion
+ */
+export function deleteCookie(name: string) {
+  // Delete with various domain/path combinations to ensure it's removed
+  const domains = [
+    '', // Current domain
+    'localhost',
+    window.location.hostname,
+    `.${window.location.hostname}`,
+  ]
+
+  const paths = ['/', '/api']
+
+  domains.forEach(domain => {
+    paths.forEach(path => {
+      let cookieString = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path};`
+      if (domain) {
+        cookieString += ` domain=${domain};`
+      }
+      document.cookie = cookieString
+    })
+  })
+}
+
+/**
+ * Clear all authentication state from the browser
+ */
+export function clearAllAuthState() {
+  // Clear localStorage items
+  localStorage.removeItem('jwt_token')
+
+  // Clear sessionStorage items
+  sessionStorage.clear()
+
+  // Delete auth-related cookies
+  deleteCookie('l4h_remember')
+  deleteCookie('jwt_token')
+  deleteCookie('auth_token')
+  deleteCookie('.AspNetCore.Cookies')
+  deleteCookie('.AspNetCore.Session')
+}
+
+/**
+ * Perform complete logout - clear all auth state and redirect
+ */
+export async function performLogout() {
+  // Import shared-ui functions
+  const { setJwtToken, auth, clearTokens } = await import('@l4h/shared-ui')
+
+  // Clear tokens immediately
+  setJwtToken(null)
+  clearTokens()
+
+  // Clear all browser auth state
+  clearAllAuthState()
+
+  // Try to call backend logout (best effort - don't wait for it)
+  try {
+    await Promise.race([
+      auth.logoutAll(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
+    ])
+  } catch (e) {
+    console.warn('Backend logout failed or timed out (continuing with client-side logout):', e)
+  }
+
+  // Dispatch event to notify auth state change
+  window.dispatchEvent(new Event('jwt-token-changed'))
+
+  // Force reload to home page
+  window.location.href = '/'
+}
