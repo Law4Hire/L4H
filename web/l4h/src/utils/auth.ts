@@ -31,10 +31,18 @@ export function clearAllAuthState() {
   // Clear localStorage items
   localStorage.removeItem('jwt_token')
 
-  // Clear sessionStorage items
-  sessionStorage.clear()
+  // Set a flag to prevent auto-refresh after logout
+  sessionStorage.setItem('logout_in_progress', 'true')
 
-  // Delete auth-related cookies
+  // Clear other sessionStorage items
+  Object.keys(sessionStorage).forEach(key => {
+    if (key !== 'logout_in_progress') {
+      sessionStorage.removeItem(key)
+    }
+  })
+
+  // Delete auth-related cookies (these are HttpOnly so JS can't actually delete them,
+  // but we try anyway for non-HttpOnly cookies)
   deleteCookie('l4h_remember')
   deleteCookie('jwt_token')
   deleteCookie('auth_token')
@@ -60,7 +68,20 @@ export async function performLogout() {
 
   console.log('[LOGOUT] Local state cleared')
 
-  // Try to call backend logoutAll (best effort - requires valid token)
+  // Call backend logout to clear HttpOnly cookies (MUST happen before clearing local state)
+  // This is critical - the l4h_remember cookie is HttpOnly and can only be deleted by the server
+  try {
+    await Promise.race([
+      auth.logout(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
+    ])
+    console.log('[LOGOUT] Backend logout succeeded - HttpOnly cookies cleared')
+  } catch (e) {
+    console.warn('[LOGOUT] Backend logout failed or timed out:', e)
+    // Continue anyway - clear client state even if server call fails
+  }
+
+  // Try to call backend logoutAll to revoke all sessions
   try {
     await Promise.race([
       auth.logoutAll(),
@@ -71,17 +92,6 @@ export async function performLogout() {
     console.warn('[LOGOUT] Backend logoutAll failed or timed out (this is OK):', e)
   }
 
-  // Always call anonymous logout to ensure HttpOnly cookies are cleared
-  try {
-    await Promise.race([
-      auth.logout(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
-    ])
-    console.log('[LOGOUT] Backend logout succeeded')
-  } catch (e) {
-    console.warn('[LOGOUT] Backend logout failed or timed out (this is OK):', e)
-  }
-
   // Dispatch event to notify auth state change
   window.dispatchEvent(new Event('jwt-token-changed'))
   console.log('[LOGOUT] Dispatched jwt-token-changed event')
@@ -90,6 +100,14 @@ export async function performLogout() {
   await new Promise(resolve => setTimeout(resolve, 100))
 
   console.log('[LOGOUT] Redirecting to home page...')
+
+  // Clear the logout flag on the new page after a short delay
+  setTimeout(() => {
+    if (sessionStorage) {
+      sessionStorage.removeItem('logout_in_progress')
+    }
+  }, 500)
+
   // Force reload to home page with timestamp to prevent caching
   window.location.href = '/?t=' + Date.now()
 }

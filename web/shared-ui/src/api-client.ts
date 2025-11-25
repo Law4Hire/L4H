@@ -129,6 +129,17 @@ async function fetchJson<T = any>(
     if (!response.ok) {
       // Try to refresh token on 401 Unauthorized
       if (response.status === 401 && path !== '/v1/auth/remember' && path !== '/v1/auth/login') {
+        // Check if logout is in progress - if so, don't try to refresh
+        const logoutInProgress = typeof sessionStorage !== 'undefined' &&
+                                 sessionStorage.getItem('logout_in_progress') === 'true'
+
+        if (logoutInProgress) {
+          console.log('[AUTH] Logout in progress - skipping auto-refresh')
+          jwtToken = null
+          localStorage.removeItem('jwt_token')
+          throw new Error('User logged out')
+        }
+
         try {
           const refreshResponse = await fetch('/api/v1/auth/remember', {
             method: 'POST',
