@@ -43,21 +43,29 @@ namespace L4H.Infrastructure.Migrations
                 oldClrType: typeof(decimal),
                 oldType: "decimal(18,2)");
 
-            migrationBuilder.AlterColumn<Guid>(
+            // Drop and recreate UserId column to change type from int to uniqueidentifier
+            migrationBuilder.DropColumn(
+                name: "UserId",
+                table: "UserNotificationPreferences");
+
+            migrationBuilder.AddColumn<Guid>(
                 name: "UserId",
                 table: "UserNotificationPreferences",
                 type: "uniqueidentifier",
                 nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int");
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
-            migrationBuilder.AlterColumn<Guid>(
+            // Drop and recreate UserId column to change type from int to uniqueidentifier
+            migrationBuilder.DropColumn(
+                name: "UserId",
+                table: "Notifications");
+
+            migrationBuilder.AddColumn<Guid>(
                 name: "UserId",
                 table: "Notifications",
                 type: "uniqueidentifier",
                 nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int");
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserNotificationPreferences_UserId_NotificationType",
