@@ -29,13 +29,15 @@ const SinglePageRegistration: React.FC = () => {
 
   const sessionToken = location.state?.sessionToken;
 
+  const [showSignupPrompt, setShowSignupPrompt] = React.useState(false);
+
   const onSubmit = async (data: RegistrationFormValues) => {
     if (!sessionToken) {
         showError("No session token found. Please complete the interview first.");
         navigate('/interview');
         return;
     }
-      
+
     try {
       // The API expects a different structure, this is a placeholder
       // for the call to interview.registerWithInterview
@@ -44,19 +46,57 @@ const SinglePageRegistration: React.FC = () => {
         ...data,
       });
 
-      showSuccess("Registration successful! Redirecting to dashboard...");
-      navigate('/dashboard');
+      showSuccess("Registration successful!");
+      setShowSignupPrompt(true);
     } catch (err: any) {
       showError(err.message || "Registration failed. Please try again.");
     }
   };
+
+  const handleProceedToPurchase = () => {
+    // Redirect to Cannlaw purchase page
+    // Assuming Cannlaw is hosted on a different domain or subdomain
+    window.location.href = 'https://cannlaw.com/purchase'; // Update with actual Cannlaw URL
+  };
+
+  const handleSkipPurchase = () => {
+    navigate('/dashboard');
+  };
+
+  if (showSignupPrompt) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="max-w-2xl w-full bg-white rounded-lg shadow-xl p-8">
+          <div className="text-center">
+            <div className="mb-6">
+              <svg className="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Account Created Successfully!</h1>
+            <p className="text-xl text-gray-600 mb-8">
+              Would you like to purchase a consultation package to get started with your visa application?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button onClick={handleSkipPurchase} variant="secondary" size="lg">
+                Not Now
+              </Button>
+              <Button onClick={handleProceedToPurchase} size="lg">
+                View Packages
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="max-w-4xl w-full bg-white rounded-lg shadow-xl p-8">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Create Your Account</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
+
           {/* Personal Information */}
           <div className="md:col-span-2 font-bold text-xl mb-2">Personal Information</div>
           <Input label="First Name" {...register("firstName")} error={errors.firstName?.message} />

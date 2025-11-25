@@ -44,6 +44,18 @@ const VisaResultsPage: React.FC = () => {
     fetchEvaluations();
   }, [sessionToken, navigate, showError]);
 
+  const handleRedoInterview = () => {
+    navigate('/interview');
+  };
+
+  const handleReturnHome = () => {
+    navigate('/');
+  };
+
+  const handleRegister = () => {
+    navigate('/register-interview', { state: { sessionToken } });
+  };
+
   const renderResults = () => {
     if (isLoading) {
       return <div className="text-center"><p>Loading results...</p></div>;
@@ -53,9 +65,17 @@ const VisaResultsPage: React.FC = () => {
       return (
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">No Eligible Visas Found</h2>
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-8">
             Based on the answers provided, we could not find a suitable visa option at this time.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button onClick={handleReturnHome} variant="secondary" size="lg">
+              Return to Home
+            </Button>
+            <Button onClick={handleRedoInterview} size="lg">
+              Redo Interview
+            </Button>
+          </div>
         </div>
       );
     }
@@ -65,20 +85,40 @@ const VisaResultsPage: React.FC = () => {
     return (
       <div className="bg-white rounded-lg shadow-lg p-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">Your Visa Eligibility Results</h1>
-        
-        {eligibleVisas.map((visa, index) => (
-          <div key={index} className="border border-gray-200 rounded-lg p-6 mb-4">
-            <h2 className="text-2xl font-semibold text-blue-600">{visa.visaName}</h2>
-            <p className="text-lg text-gray-700 mt-2">{visa.explanation}</p>
-            <div className="text-right mt-4 font-bold text-xl">
-              Match Score: <span className="text-green-500">{Math.round(visa.matchScore)}%</span>
-            </div>
-          </div>
-        ))}
 
-        <div className="mt-8 text-center">
-          <Button onClick={() => navigate('/register-interview', { state: { sessionToken } })} size="lg">
-            Register to Proceed
+        {/* Light pale green box with visa qualification information */}
+        <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold text-green-800 mb-4">You Qualify For:</h2>
+          {eligibleVisas.map((visa, index) => (
+            <div key={index} className="mb-4 last:mb-0">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-green-900">{visa.visaName}</h3>
+                  <p className="text-gray-700 mt-2">{visa.explanation}</p>
+                </div>
+                <div className="ml-4 text-right">
+                  <span className="inline-block bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    {Math.round(visa.matchScore)}% Match
+                  </span>
+                </div>
+              </div>
+              {index < eligibleVisas.length - 1 && (
+                <hr className="mt-4 border-green-200" />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Three action buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button onClick={handleReturnHome} variant="secondary" size="lg">
+            Return to Home
+          </Button>
+          <Button onClick={handleRedoInterview} variant="secondary" size="lg">
+            Redo Interview
+          </Button>
+          <Button onClick={handleRegister} size="lg">
+            Register
           </Button>
         </div>
       </div>
