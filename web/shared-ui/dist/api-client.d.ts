@@ -28,6 +28,7 @@ export declare const auth: {
         newPassword: string;
     }): Promise<any>;
     logoutAll(): Promise<any>;
+    logout(): Promise<any>;
     updateProfile(profileData: {
         phoneNumber?: string;
         streetAddress?: string;

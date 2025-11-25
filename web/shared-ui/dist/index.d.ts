@@ -11,7 +11,7 @@ export { Card } from './components/Card';
 export { Layout } from './components/Layout';
 export { Container } from './components/Container';
 export { EmptyState } from './components/EmptyState';
-export { Toast, ToastContainer, useToast } from './components/Toast';
+export { Toast, ToastContainer, useToast, ToastProvider } from './components/Toast';
 export { RTLNumber } from './components/RTLNumber';
 export { Icon } from './Icon';
 export * from './Icon';

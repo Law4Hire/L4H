@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, createContext, useContext, useCallback, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { clsx } from 'clsx'
 import { CheckCircle, AlertCircle, Info, AlertTriangle, X } from '../Icon'
@@ -154,11 +154,26 @@ export function ToastContainer({ toasts, onClose }: ToastContainerProps) {
   )
 }
 
-// Toast hook for managing toasts
-export function useToast() {
+interface ToastContextType {
+  toasts: ToastProps[]
+  addToast: (toast: Omit<ToastProps, 'id' | 'onClose'>) => void
+  removeToast: (id: string) => void
+  success: (title: string, message?: string, duration?: number) => void
+  error: (title: string, message?: string, duration?: number) => void
+  warning: (title: string, message?: string, duration?: number) => void
+  info: (title: string, message?: string, duration?: number) => void
+}
+
+const ToastContext = createContext<ToastContextType | undefined>(undefined)
+
+export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastProps[]>([])
 
-  const addToast = (toast: Omit<ToastProps, 'id' | 'onClose'>) => {
+  const removeToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+  }, [])
+
+  const addToast = useCallback((toast: Omit<ToastProps, 'id' | 'onClose'>) => {
     const id = Math.random().toString(36).substr(2, 9)
     const newToast: ToastProps = {
       ...toast,
@@ -166,29 +181,25 @@ export function useToast() {
       onClose: removeToast
     }
     setToasts(prev => [...prev, newToast])
-  }
+  }, [removeToast])
 
-  const removeToast = (id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id))
-  }
-
-  const success = (title: string, message?: string, duration?: number) => {
+  const success = useCallback((title: string, message?: string, duration?: number) => {
     addToast({ type: 'success', title, message, duration })
-  }
+  }, [addToast])
 
-  const error = (title: string, message?: string, duration?: number) => {
+  const error = useCallback((title: string, message?: string, duration?: number) => {
     addToast({ type: 'error', title, message, duration })
-  }
+  }, [addToast])
 
-  const warning = (title: string, message?: string, duration?: number) => {
+  const warning = useCallback((title: string, message?: string, duration?: number) => {
     addToast({ type: 'warning', title, message, duration })
-  }
+  }, [addToast])
 
-  const info = (title: string, message?: string, duration?: number) => {
+  const info = useCallback((title: string, message?: string, duration?: number) => {
     addToast({ type: 'info', title, message, duration })
-  }
+  }, [addToast])
 
-  return {
+  const contextValue = {
     toasts,
     addToast,
     removeToast,
@@ -197,4 +208,20 @@ export function useToast() {
     warning,
     info
   }
+
+  return (
+    <ToastContext.Provider value={contextValue}>
+      {children}
+      <ToastContainer toasts={toasts} onClose={removeToast} />
+    </ToastContext.Provider>
+  )
+}
+
+// Toast hook for managing toasts
+export function useToast() {
+  const context = useContext(ToastContext)
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider')
+  }
+  return context
 }

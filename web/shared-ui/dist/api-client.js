@@ -104,6 +104,15 @@ async function fetchJson(path, init = {}) {
         if (!response.ok) {
             // Try to refresh token on 401 Unauthorized
             if (response.status === 401 && path !== '/v1/auth/remember' && path !== '/v1/auth/login') {
+                // Check if logout is in progress - if so, don't try to refresh
+                const logoutInProgress = typeof sessionStorage !== 'undefined' &&
+                    sessionStorage.getItem('logout_in_progress') === 'true';
+                if (logoutInProgress) {
+                    console.log('[AUTH] Logout in progress - skipping auto-refresh');
+                    jwtToken = null;
+                    localStorage.removeItem('jwt_token');
+                    throw new Error('User logged out');
+                }
                 try {
                     const refreshResponse = await fetch('/api/v1/auth/remember', {
                         method: 'POST',
@@ -138,8 +147,20 @@ async function fetchJson(path, init = {}) {
                     }
                 }
                 catch (refreshError) {
-                    // If refresh fails, fall through to original error handling
+                    // If refresh fails, clear auth state and redirect to home
                     console.warn('Token refresh failed:', refreshError);
+                    // Clear all auth state
+                    jwtToken = null;
+                    localStorage.removeItem('jwt_token');
+                    // If we're in a browser context, trigger logout
+                    if (typeof window !== 'undefined' && response.status === 401) {
+                        // Dispatch event to notify auth state change
+                        window.dispatchEvent(new Event('jwt-token-changed'));
+                        // Only redirect if not already on public pages
+                        if (!window.location.pathname.match(/^\/(login|verify|interview|results|$)/)) {
+                            window.location.href = '/';
+                        }
+                    }
                 }
             }
             const error = data.error || {
@@ -218,6 +239,11 @@ export const auth = {
     },
     async logoutAll() {
         return fetchJson('/v1/auth/logout-all', {
+            method: 'POST'
+        });
+    },
+    async logout() {
+        return fetchJson('/v1/auth/logout', {
             method: 'POST'
         });
     },

@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext, useContext, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { clsx } from 'clsx';
 import { CheckCircle, AlertCircle, Info, AlertTriangle, X } from '../Icon';
@@ -68,10 +68,13 @@ export function ToastContainer({ toasts, onClose }) {
         return null;
     return createPortal(_jsx("div", { className: "pointer-events-none fixed inset-0 z-50 flex items-end px-4 py-6 sm:items-start sm:p-6", "aria-live": "polite", "aria-label": "Notifications", children: _jsx("div", { className: "flex w-full flex-col items-center space-y-4 sm:items-end", children: toasts.map((toast) => (_jsx(Toast, { ...toast, onClose: onClose }, toast.id))) }) }), document.body);
 }
-// Toast hook for managing toasts
-export function useToast() {
+const ToastContext = createContext(undefined);
+export function ToastProvider({ children }) {
     const [toasts, setToasts] = useState([]);
-    const addToast = (toast) => {
+    const removeToast = useCallback((id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, []);
+    const addToast = useCallback((toast) => {
         const id = Math.random().toString(36).substr(2, 9);
         const newToast = {
             ...toast,
@@ -79,23 +82,20 @@ export function useToast() {
             onClose: removeToast
         };
         setToasts(prev => [...prev, newToast]);
-    };
-    const removeToast = (id) => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
-    };
-    const success = (title, message, duration) => {
+    }, [removeToast]);
+    const success = useCallback((title, message, duration) => {
         addToast({ type: 'success', title, message, duration });
-    };
-    const error = (title, message, duration) => {
+    }, [addToast]);
+    const error = useCallback((title, message, duration) => {
         addToast({ type: 'error', title, message, duration });
-    };
-    const warning = (title, message, duration) => {
+    }, [addToast]);
+    const warning = useCallback((title, message, duration) => {
         addToast({ type: 'warning', title, message, duration });
-    };
-    const info = (title, message, duration) => {
+    }, [addToast]);
+    const info = useCallback((title, message, duration) => {
         addToast({ type: 'info', title, message, duration });
-    };
-    return {
+    }, [addToast]);
+    const contextValue = {
         toasts,
         addToast,
         removeToast,
@@ -104,4 +104,13 @@ export function useToast() {
         warning,
         info
     };
+    return (_jsxs(ToastContext.Provider, { value: contextValue, children: [children, _jsx(ToastContainer, { toasts: toasts, onClose: removeToast })] }));
+}
+// Toast hook for managing toasts
+export function useToast() {
+    const context = useContext(ToastContext);
+    if (!context) {
+        throw new Error('useToast must be used within a ToastProvider');
+    }
+    return context;
 }

@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 export interface ToastProps {
     id: string;
     type: 'success' | 'error' | 'warning' | 'info';
@@ -12,12 +13,17 @@ export interface ToastContainerProps {
     onClose: (id: string) => void;
 }
 export declare function ToastContainer({ toasts, onClose }: ToastContainerProps): import("react").ReactPortal | null;
-export declare function useToast(): {
+interface ToastContextType {
     toasts: ToastProps[];
-    addToast: (toast: Omit<ToastProps, "id" | "onClose">) => void;
+    addToast: (toast: Omit<ToastProps, 'id' | 'onClose'>) => void;
     removeToast: (id: string) => void;
     success: (title: string, message?: string, duration?: number) => void;
     error: (title: string, message?: string, duration?: number) => void;
     warning: (title: string, message?: string, duration?: number) => void;
     info: (title: string, message?: string, duration?: number) => void;
-};
+}
+export declare function ToastProvider({ children }: {
+    children: ReactNode;
+}): import("react/jsx-runtime").JSX.Element;
+export declare function useToast(): ToastContextType;
+export {};

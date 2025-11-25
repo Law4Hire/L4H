@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Layout, RouteGuard, ToastContainer, useToast } from '@l4h/shared-ui'
+import { Layout, RouteGuard, ToastProvider } from '@l4h/shared-ui'
 import { InterviewProvider } from './InterviewContext';
 import { useAuth } from './hooks/useAuth'
 
@@ -24,7 +24,6 @@ const AdminPage = lazy(() => import('./pages/AdminPage'))
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
 const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
 const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
-const AdminPackagesPage = lazy(() => import('./pages/AdminPackagesPage'))
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 
@@ -37,11 +36,10 @@ const LoadingFallback = () => (
 
 function App() {
   const { t } = useTranslation()
-  const { toasts, removeToast } = useToast()
   const { isAuthenticated, user } = useAuth()
 
   return (
-    <>
+    <ToastProvider>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route
@@ -282,35 +280,20 @@ function App() {
             </RouteGuard>
           }
         />
-        <Route
-          path="/admin/pricing"
+        <Route 
+          path="/admin/pricing" 
           element={
             <RouteGuard>
-              <Layout
+              <Layout 
                 title={'Pricing Management'}
-                showUserMenu={true}
-                user={user}
+                showUserMenu={true} 
+                user={user} 
                 isAuthenticated={isAuthenticated}
               >
                 <AdminPricingPage />
               </Layout>
             </RouteGuard>
-          }
-        />
-        <Route
-          path="/admin/packages"
-          element={
-            <RouteGuard>
-              <Layout
-                title={'Package Management'}
-                showUserMenu={true}
-                user={user}
-                isAuthenticated={isAuthenticated}
-              >
-                <AdminPackagesPage />
-              </Layout>
-            </RouteGuard>
-          }
+          } 
         />
         <Route
           path="/admin/cases"
@@ -345,8 +328,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-      <ToastContainer toasts={toasts} onClose={removeToast} />
-    </>
+    </ToastProvider>
   )
 }
 
