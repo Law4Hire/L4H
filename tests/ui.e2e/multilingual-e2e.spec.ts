@@ -248,8 +248,7 @@ async registerUser(language: LanguageConfig): Promise<string> {
     const duration = Date.now() - startTime;
     return { result, duration };
   }
-}// Test Su
-ite: Multilingual User Journey Tests
+} // Test Suite: Multilingual User Journey Tests
 test.describe('Multilingual User Journey Tests', () => {
   test('Complete user journey in English', async ({ page }) => {
     const helper = new MultilingualTestHelper(page);

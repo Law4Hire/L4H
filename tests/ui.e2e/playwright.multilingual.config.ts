@@ -7,7 +7,7 @@ import { defineConfig, devices } from '@playwright/test';
  * with appropriate timeouts, retry strategies, and browser settings
  */
 export default defineConfig({
-  testDir: './tests/ui.e2e',
+  testDir: '.',
   testMatch: 'multilingual-e2e.spec.ts',
   
   /* Run tests in files in parallel */

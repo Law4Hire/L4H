@@ -10,6 +10,8 @@
 import { spawn } from 'child_process';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 interface TestRunOptions {
   languages?: string[];
@@ -140,18 +142,18 @@ class MultilingualTestRunner {
     const playwrightArgs = this.buildPlaywrightArgs();
     
     return new Promise((resolve, reject) => {
-      const process = spawn('npx', ['playwright', 'test', ...playwrightArgs], {
+      const childProcess = spawn('npx', ['playwright', 'test', ...playwrightArgs], {
         stdio: 'inherit',
+        shell: true, // Add shell: true to help find npx in PATH
         env: {
           ...process.env,
-          BASE_URL: this.options.baseUrl,
           MULTILINGUAL_LANGUAGES: this.options.languages?.join(','),
           MULTILINGUAL_VERBOSE: this.options.verbose ? 'true' : 'false',
           MULTILINGUAL_DEBUG: this.options.debug ? 'true' : 'false'
         }
       });
 
-      process.on('close', (code) => {
+      childProcess.on('close', (code: number) => {
         if (code === 0) {
           console.log('✅ All tests passed');
           resolve();
@@ -161,7 +163,7 @@ class MultilingualTestRunner {
         }
       });
 
-      process.on('error', (error) => {
+      childProcess.on('error', (error: Error) => {
         console.error(`❌ Failed to start test process: ${error}`);
         reject(error);
       });
@@ -171,11 +173,13 @@ class MultilingualTestRunner {
   private buildPlaywrightArgs(): string[] {
     const args: string[] = [];
 
-    // Use multilingual config
-    args.push('--config', 'tests/ui.e2e/playwright.multilingual.config.ts');
+    // Use absolute path for the config file
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+    const configPath = join(__dirname, 'playwright.multilingual.config.ts');
+    args.push('--config', configPath);
 
-    // Specify test files
-    args.push('tests/ui.e2e/multilingual-e2e.spec.ts');
+    // Test files are specified via testMatch in playwright.multilingual.config.ts, so no need to push here.
 
     // Browser selection
     if (this.options.browsers && this.options.browsers.length > 0) {
@@ -219,10 +223,7 @@ class MultilingualTestRunner {
       args.push('--debug');
     }
 
-    // Verbose mode
-    if (this.options.verbose) {
-      args.push('--verbose');
-    }
+    // Verbose mode (removed as Playwright's 'test' command does not support it directly)
 
     return args;
   }

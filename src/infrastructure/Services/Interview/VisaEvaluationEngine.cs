@@ -23,8 +23,9 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         List<InterviewQA> answers,
         User? user = null)
     {
-        // 1. Get all active visa types
+        // 1. Get all active visa types with related data (prevent N+1 queries)
         var allVisas = await _context.VisaTypes
+            .Include(v => v.PricingRules)
             .Where(v => v.IsActive)
             .ToListAsync();
 
