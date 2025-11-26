@@ -81,33 +81,61 @@ const VisaResultsPage: React.FC = () => {
     }
 
     const eligibleVisas = evaluations.filter(e => e.status === 'Eligible');
+    const potentialVisas = evaluations.filter(e => e.status === 'Potential');
 
     return (
       <div className="bg-white rounded-lg shadow-lg p-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">Your Visa Eligibility Results</h1>
 
-        {/* Light pale green box with visa qualification information */}
-        <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold text-green-800 mb-4">You Qualify For:</h2>
-          {eligibleVisas.map((visa, index) => (
-            <div key={index} className="mb-4 last:mb-0">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-green-900">{visa.visaName}</h3>
-                  <p className="text-gray-700 mt-2">{visa.explanation}</p>
+        {/* Eligible visas - Light pale green box */}
+        {eligibleVisas.length > 0 && (
+          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 mb-8">
+            <h2 className="text-2xl font-bold text-green-800 mb-4">You Qualify For:</h2>
+            {eligibleVisas.map((visa, index) => (
+              <div key={index} className="mb-4 last:mb-0">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold text-green-900">{visa.visaName}</h3>
+                    <p className="text-gray-700 mt-2">{visa.explanation}</p>
+                  </div>
+                  <div className="ml-4 text-right">
+                    <span className="inline-block bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                      {Math.round(visa.matchScore)}% Match
+                    </span>
+                  </div>
                 </div>
-                <div className="ml-4 text-right">
-                  <span className="inline-block bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                    {Math.round(visa.matchScore)}% Match
-                  </span>
-                </div>
+                {index < eligibleVisas.length - 1 && (
+                  <hr className="mt-4 border-green-200" />
+                )}
               </div>
-              {index < eligibleVisas.length - 1 && (
-                <hr className="mt-4 border-green-200" />
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {/* Potential visas - Light pale blue box */}
+        {potentialVisas.length > 0 && (
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-8">
+            <h2 className="text-2xl font-bold text-blue-800 mb-4">Potential Options (May Qualify):</h2>
+            {potentialVisas.map((visa, index) => (
+              <div key={index} className="mb-4 last:mb-0">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold text-blue-900">{visa.visaName}</h3>
+                    <p className="text-gray-700 mt-2">{visa.explanation}</p>
+                  </div>
+                  <div className="ml-4 text-right">
+                    <span className="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                      {Math.round(visa.matchScore)}% Match
+                    </span>
+                  </div>
+                </div>
+                {index < potentialVisas.length - 1 && (
+                  <hr className="mt-4 border-blue-200" />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Three action buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

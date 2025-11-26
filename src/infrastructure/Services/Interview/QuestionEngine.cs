@@ -72,8 +72,9 @@ public class QuestionEngine : IQuestionEngine
         List<VisaType> remainingVisas,
         int questionsAnswered)
     {
-        // Never complete if we haven't asked any questions yet
-        if (questionsAnswered == 0)
+        // MINIMUM 5 questions required before completing (was too early before)
+        // This ensures we gather enough information for quality recommendations
+        if (questionsAnswered < 5)
         {
             return false;
         }
@@ -88,14 +89,14 @@ public class QuestionEngine : IQuestionEngine
             return true;
         }
 
-        // Complete if we've asked 8 or more questions (diminishing returns)
-        if (questionsAnswered >= 8)
+        // Complete if we've asked 10 or more questions (was 8, increased for better accuracy)
+        if (questionsAnswered >= 10)
         {
             return true;
         }
 
-        // Complete if no commercially available visas remain (but only after asking some questions)
-        if (!commercialVisas.Any() && questionsAnswered >= 3)
+        // Complete if no commercially available visas remain
+        if (!commercialVisas.Any())
         {
             return true;
         }
