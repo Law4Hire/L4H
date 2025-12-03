@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../../../shared-ui/src/components/Button';
-import { Card } from '../../../shared-ui/src/components/Card';
-import { Modal } from '../../../shared-ui/src/components/Modal';
-import { Input } from '../../../shared-ui/src/components/Input';
-import { useToast } from '../../../shared-ui/src/components/Toast';
+import { Button, Card, Modal, Input, useToast } from '@l4h/shared-ui';
 
 interface QuestionOption {
   id?: string;
