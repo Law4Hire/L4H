@@ -4,6 +4,7 @@ using L4H.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace L4H.Infrastructure.Migrations
 {
     [DbContext(typeof(L4HDbContext))]
-    partial class L4HDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251201032450_AddAdminPathsTable")]
+    partial class AddAdminPathsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2125,82 +2128,6 @@ namespace L4H.Infrastructure.Migrations
                     b.ToTable("InterviewQAs");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewQuestionEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("DiscriminatesVisaCodes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InputType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRequired")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("SelectionWeight")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Category");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("DisplayOrder");
-
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
-
-                    b.HasIndex("UpdatedByUserId");
-
-                    b.ToTable("InterviewQuestions");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewSession", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2823,56 +2750,6 @@ namespace L4H.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("PricingRules");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.QuestionOptionEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Icon")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DisplayOrder");
-
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("QuestionOptions");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Refund", b =>
@@ -4452,23 +4329,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Session");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewQuestionEntity", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("L4H.Infrastructure.Entities.User", "UpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("UpdatedByUser");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewSession", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.Case", "Case")
@@ -4624,17 +4484,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Package");
 
                     b.Navigation("VisaType");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.QuestionOptionEntity", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.InterviewQuestionEntity", "Question")
-                        .WithMany("Options")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Refund", b =>
@@ -4952,11 +4801,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Fields");
 
                     b.Navigation("Instances");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewQuestionEntity", b =>
-                {
-                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.InterviewSession", b =>

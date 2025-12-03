@@ -1,0 +1,851 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../../../shared-ui/src/components/Button';
+import { Card } from '../../../shared-ui/src/components/Card';
+import { Modal } from '../../../shared-ui/src/components/Modal';
+import { Input } from '../../../shared-ui/src/components/Input';
+import { useToast } from '../../../shared-ui/src/components/Toast';
+
+interface QuestionOption {
+  id?: string;
+  value: string;
+  label: string;
+  displayOrder: number;
+  isActive: boolean;
+  icon?: string;
+  description?: string;
+}
+
+interface InterviewQuestion {
+  id: string;
+  key: string;
+  text: string;
+  category: string;
+  inputType: string;
+  displayOrder: number;
+  isRequired: boolean;
+  isActive: boolean;
+  description?: string;
+  discriminatesVisaCodes?: string;
+  selectionWeight: number;
+  createdAt: string;
+  updatedAt: string;
+  createdByUserEmail?: string;
+  updatedByUserEmail?: string;
+  options: QuestionOption[];
+}
+
+interface QuestionFormData {
+  key: string;
+  text: string;
+  category: string;
+  inputType: string;
+  displayOrder: number;
+  isRequired: boolean;
+  isActive: boolean;
+  description: string;
+  discriminatesVisaCodes: string;
+  selectionWeight: number;
+  options: QuestionOption[];
+}
+
+const CATEGORIES = [
+  { value: 'critical', label: 'Critical (Always First)' },
+  { value: 'work', label: 'Work/Employment' },
+  { value: 'family', label: 'Family' },
+  { value: 'education', label: 'Education' },
+  { value: 'tourism', label: 'Tourism' },
+  { value: 'business', label: 'Business' },
+  { value: 'citizenship', label: 'Citizenship' },
+  { value: 'adoption', label: 'Adoption' },
+  { value: 'refinement', label: 'Refinement' }
+];
+
+const INPUT_TYPES = [
+  { value: 'select', label: 'Dropdown Select' },
+  { value: 'radio', label: 'Radio Buttons' },
+  { value: 'checkbox', label: 'Checkboxes' },
+  { value: 'text', label: 'Text Input' },
+  { value: 'textarea', label: 'Text Area' }
+];
+
+export default function AdminInterviewQuestionsPage() {
+  const navigate = useNavigate();
+  const { success, error } = useToast();
+
+  const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<InterviewQuestion | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState<InterviewQuestion | null>(null);
+  const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const [formData, setFormData] = useState<QuestionFormData>({
+    key: '',
+    text: '',
+    category: 'critical',
+    inputType: 'select',
+    displayOrder: 0,
+    isRequired: true,
+    isActive: true,
+    description: '',
+    discriminatesVisaCodes: '',
+    selectionWeight: 50,
+    options: []
+  });
+
+  useEffect(() => {
+    loadQuestions();
+  }, []);
+
+  const loadQuestions = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch('/api/v1/admin/interview-questions', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to load questions');
+      }
+
+      const data = await response.json();
+      setQuestions(data);
+    } catch (err: any) {
+      error('Failed to load questions', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openCreateModal = () => {
+    setEditingQuestion(null);
+    setFormData({
+      key: '',
+      text: '',
+      category: 'critical',
+      inputType: 'select',
+      displayOrder: questions.length,
+      isRequired: true,
+      isActive: true,
+      description: '',
+      discriminatesVisaCodes: '',
+      selectionWeight: 50,
+      options: []
+    });
+    setShowModal(true);
+  };
+
+  const openEditModal = (question: InterviewQuestion) => {
+    setEditingQuestion(question);
+    setFormData({
+      key: question.key,
+      text: question.text,
+      category: question.category,
+      inputType: question.inputType,
+      displayOrder: question.displayOrder,
+      isRequired: question.isRequired,
+      isActive: question.isActive,
+      description: question.description || '',
+      discriminatesVisaCodes: question.discriminatesVisaCodes || '',
+      selectionWeight: question.selectionWeight,
+      options: question.options.map(o => ({ ...o }))
+    });
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const url = editingQuestion
+        ? `/api/v1/admin/interview-questions/${editingQuestion.id}`
+        : '/api/v1/admin/interview-questions';
+
+      const method = editingQuestion ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to save question');
+      }
+
+      success(editingQuestion ? 'Question updated successfully' : 'Question created successfully');
+      setShowModal(false);
+      loadQuestions();
+    } catch (err: any) {
+      error('Failed to save question', err.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!questionToDelete) return;
+
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`/api/v1/admin/interview-questions/${questionToDelete.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to delete question');
+      }
+
+      success('Question deleted successfully');
+      setShowDeleteConfirm(false);
+      setQuestionToDelete(null);
+      loadQuestions();
+    } catch (err: any) {
+      error('Failed to delete question', err.message);
+    }
+  };
+
+  const moveQuestionUp = async (question: InterviewQuestion) => {
+    const currentIndex = filteredQuestions.findIndex(q => q.id === question.id);
+    if (currentIndex <= 0) return;
+
+    const newQuestions = [...filteredQuestions];
+    const temp = newQuestions[currentIndex - 1].displayOrder;
+    newQuestions[currentIndex - 1].displayOrder = question.displayOrder;
+    newQuestions[currentIndex].displayOrder = temp;
+
+    await reorderQuestions([
+      { questionId: newQuestions[currentIndex - 1].id, displayOrder: newQuestions[currentIndex - 1].displayOrder },
+      { questionId: newQuestions[currentIndex].id, displayOrder: newQuestions[currentIndex].displayOrder }
+    ]);
+  };
+
+  const moveQuestionDown = async (question: InterviewQuestion) => {
+    const currentIndex = filteredQuestions.findIndex(q => q.id === question.id);
+    if (currentIndex >= filteredQuestions.length - 1) return;
+
+    const newQuestions = [...filteredQuestions];
+    const temp = newQuestions[currentIndex + 1].displayOrder;
+    newQuestions[currentIndex + 1].displayOrder = question.displayOrder;
+    newQuestions[currentIndex].displayOrder = temp;
+
+    await reorderQuestions([
+      { questionId: newQuestions[currentIndex].id, displayOrder: newQuestions[currentIndex].displayOrder },
+      { questionId: newQuestions[currentIndex + 1].id, displayOrder: newQuestions[currentIndex + 1].displayOrder }
+    ]);
+  };
+
+  const reorderQuestions = async (updates: { questionId: string; displayOrder: number }[]) => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch('/api/v1/admin/interview-questions/reorder', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ questions: updates })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reorder questions');
+      }
+
+      success('Questions reordered successfully');
+      loadQuestions();
+    } catch (err: any) {
+      error('Failed to reorder questions', err.message);
+    }
+  };
+
+  const toggleActive = async (question: InterviewQuestion) => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`/api/v1/admin/interview-questions/${question.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...question,
+          isActive: !question.isActive
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to toggle question status');
+      }
+
+      success(`Question ${!question.isActive ? 'activated' : 'deactivated'} successfully`);
+      loadQuestions();
+    } catch (err: any) {
+      error('Failed to toggle question status', err.message);
+    }
+  };
+
+  const toggleExpanded = (questionId: string) => {
+    const newExpanded = new Set(expandedQuestions);
+    if (newExpanded.has(questionId)) {
+      newExpanded.delete(questionId);
+    } else {
+      newExpanded.add(questionId);
+    }
+    setExpandedQuestions(newExpanded);
+  };
+
+  const addOption = () => {
+    setFormData({
+      ...formData,
+      options: [
+        ...formData.options,
+        {
+          value: '',
+          label: '',
+          displayOrder: formData.options.length,
+          isActive: true
+        }
+      ]
+    });
+  };
+
+  const updateOption = (index: number, field: keyof QuestionOption, value: any) => {
+    const newOptions = [...formData.options];
+    newOptions[index] = { ...newOptions[index], [field]: value };
+    setFormData({ ...formData, options: newOptions });
+  };
+
+  const removeOption = (index: number) => {
+    const newOptions = formData.options.filter((_, i) => i !== index);
+    setFormData({ ...formData, options: newOptions });
+  };
+
+  const filteredQuestions = questions.filter(question => {
+    // Category filter
+    if (selectedCategory !== 'all' && question.category !== selectedCategory) return false;
+
+    // Status filter
+    if (selectedStatus === 'active' && !question.isActive) return false;
+    if (selectedStatus === 'inactive' && question.isActive) return false;
+
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        question.key.toLowerCase().includes(searchLower) ||
+        question.text.toLowerCase().includes(searchLower) ||
+        question.description?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    return true;
+  });
+
+  const categoryStats = CATEGORIES.reduce((acc, cat) => {
+    acc[cat.value] = questions.filter(q => q.category === cat.value).length;
+    return acc;
+  }, {} as Record<string, number>);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-600">Loading questions...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8 space-y-6">
+      {/* Header */}
+      <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Interview Questions Management</h1>
+              <p className="text-gray-600">
+                Manage interview questions shown to customers. Changes take effect immediately.
+              </p>
+            </div>
+            <Button onClick={openCreateModal}>Add New Question</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <Card>
+          <div className="px-4 py-5">
+            <div className="text-sm font-medium text-gray-500">Total Questions</div>
+            <div className="mt-1 text-3xl font-semibold text-gray-900">{questions.length}</div>
+          </div>
+        </Card>
+        <Card>
+          <div className="px-4 py-5">
+            <div className="text-sm font-medium text-gray-500">Active</div>
+            <div className="mt-1 text-3xl font-semibold text-green-600">
+              {questions.filter(q => q.isActive).length}
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="px-4 py-5">
+            <div className="text-sm font-medium text-gray-500">Inactive</div>
+            <div className="mt-1 text-3xl font-semibold text-gray-400">
+              {questions.filter(q => !q.isActive).length}
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="px-4 py-5">
+            <div className="text-sm font-medium text-gray-500">Critical</div>
+            <div className="mt-1 text-3xl font-semibold text-red-600">
+              {categoryStats.critical || 0}
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="px-4 py-5">
+            <div className="text-sm font-medium text-gray-500">Total Options</div>
+            <div className="mt-1 text-3xl font-semibold text-blue-600">
+              {questions.reduce((sum, q) => sum + q.options.length, 0)}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <div className="px-4 py-5 sm:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Category
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Categories</option>
+                {CATEGORIES.map(cat => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label} ({categoryStats[cat.value] || 0})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Status
+              </label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active Only</option>
+                <option value="inactive">Inactive Only</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Search
+              </label>
+              <Input
+                type="text"
+                placeholder="Search by key, text, or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Questions List */}
+      <Card>
+        <div className="px-4 py-5 sm:p-6">
+          <div className="space-y-4">
+            {filteredQuestions.length === 0 ? (
+              <div className="text-center text-gray-500 py-8">
+                No questions found
+              </div>
+            ) : (
+              filteredQuestions.map((question, index) => (
+                <div
+                  key={question.id}
+                  className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex flex-col items-center">
+                          <span className="text-sm font-medium text-gray-500">
+                            #{question.displayOrder}
+                          </span>
+                          <div className="flex flex-col mt-1">
+                            <button
+                              onClick={() => moveQuestionUp(question)}
+                              disabled={index === 0}
+                              className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              onClick={() => moveQuestionDown(question)}
+                              disabled={index === filteredQuestions.length - 1}
+                              className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs"
+                            >
+                              ▼
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <code className="text-sm font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                              {question.key}
+                            </code>
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                              {question.category}
+                            </span>
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                              {question.inputType}
+                            </span>
+                            {question.isRequired && (
+                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                Required
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-2 text-gray-900 font-medium">{question.text}</p>
+                          {question.description && (
+                            <p className="mt-1 text-sm text-gray-500">{question.description}</p>
+                          )}
+                          <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
+                            <span>{question.options.length} options</span>
+                            {question.discriminatesVisaCodes && (
+                              <span>Visas: {question.discriminatesVisaCodes}</span>
+                            )}
+                            <span>Weight: {question.selectionWeight}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Options (collapsible) */}
+                      {question.options.length > 0 && (
+                        <div className="mt-3 ml-12">
+                          <button
+                            onClick={() => toggleExpanded(question.id)}
+                            className="text-sm text-blue-600 hover:text-blue-800"
+                          >
+                            {expandedQuestions.has(question.id) ? '▼ Hide' : '▶ Show'} {question.options.length} Options
+                          </button>
+                          {expandedQuestions.has(question.id) && (
+                            <div className="mt-2 space-y-1">
+                              {question.options.map((option, idx) => (
+                                <div
+                                  key={option.id || idx}
+                                  className="flex items-center space-x-2 text-sm bg-gray-50 px-3 py-2 rounded"
+                                >
+                                  <span className="text-gray-500">#{option.displayOrder}</span>
+                                  <code className="text-blue-600">{option.value}</code>
+                                  <span className="text-gray-400">→</span>
+                                  <span className="text-gray-900">{option.label}</span>
+                                  {!option.isActive && (
+                                    <span className="text-xs text-red-500">(inactive)</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col items-end space-y-2">
+                      <button
+                        onClick={() => toggleActive(question)}
+                        className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                          question.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {question.isActive ? 'Active' : 'Inactive'}
+                      </button>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => openEditModal(question)}
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => {
+                            setQuestionToDelete(question);
+                            setShowDeleteConfirm(true);
+                          }}
+                          className="text-red-600 hover:text-red-900 text-sm font-medium"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </Card>
+
+      {/* Create/Edit Modal */}
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingQuestion ? 'Edit Interview Question' : 'Create Interview Question'}
+        size="xl"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Question Key * (unique identifier)
+              </label>
+              <Input
+                type="text"
+                value={formData.key}
+                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
+                required
+                placeholder="e.g., employer_sponsor"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category *
+              </label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                {CATEGORIES.map(cat => (
+                  <option key={cat.value} value={cat.value}>{cat.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Question Text *
+            </label>
+            <textarea
+              value={formData.text}
+              onChange={(e) => setFormData({ ...formData, text: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              required
+              placeholder="Enter the question text shown to users"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description (for admins)
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={2}
+              placeholder="Optional description for admin reference"
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Input Type *
+              </label>
+              <select
+                value={formData.inputType}
+                onChange={(e) => setFormData({ ...formData, inputType: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                {INPUT_TYPES.map(type => (
+                  <option key={type.value} value={type.value}>{type.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Display Order
+              </label>
+              <Input
+                type="number"
+                value={formData.displayOrder}
+                onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
+                min={0}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Selection Weight (0-100)
+              </label>
+              <Input
+                type="number"
+                value={formData.selectionWeight}
+                onChange={(e) => setFormData({ ...formData, selectionWeight: parseInt(e.target.value) || 50 })}
+                min={0}
+                max={100}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Discriminates Visa Codes (comma-separated)
+            </label>
+            <Input
+              type="text"
+              value={formData.discriminatesVisaCodes}
+              onChange={(e) => setFormData({ ...formData, discriminatesVisaCodes: e.target.value })}
+              placeholder="e.g., H-1B,L-1,O-1,E-2,TN"
+            />
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.isRequired}
+                onChange={(e) => setFormData({ ...formData, isRequired: e.target.checked })}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <span className="ml-2 text-sm text-gray-900">Required Question</span>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.isActive}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <span className="ml-2 text-sm text-gray-900">Active (visible to users)</span>
+            </label>
+          </div>
+
+          {/* Options Management */}
+          <div className="border-t pt-4">
+            <div className="flex justify-between items-center mb-3">
+              <label className="text-sm font-medium text-gray-700">
+                Answer Options ({formData.options.length})
+              </label>
+              <Button type="button" variant="outline" size="sm" onClick={addOption}>
+                + Add Option
+              </Button>
+            </div>
+
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {formData.options.map((option, index) => (
+                <div key={index} className="flex items-center space-x-2 bg-gray-50 p-2 rounded">
+                  <Input
+                    type="text"
+                    value={option.value}
+                    onChange={(e) => updateOption(index, 'value', e.target.value)}
+                    placeholder="Value (e.g., yes)"
+                    className="flex-1"
+                  />
+                  <Input
+                    type="text"
+                    value={option.label}
+                    onChange={(e) => updateOption(index, 'label', e.target.value)}
+                    placeholder="Label (e.g., Yes)"
+                    className="flex-1"
+                  />
+                  <Input
+                    type="number"
+                    value={option.displayOrder}
+                    onChange={(e) => updateOption(index, 'displayOrder', parseInt(e.target.value) || 0)}
+                    placeholder="Order"
+                    className="w-20"
+                  />
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={option.isActive}
+                      onChange={(e) => updateOption(index, 'isActive', e.target.checked)}
+                      className="h-4 w-4"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => removeOption(index)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4 border-t">
+            <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>
+            <Button type="submit">
+              {editingQuestion ? 'Update Question' : 'Create Question'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        title="Confirm Delete"
+        size="md"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Are you sure you want to delete the question <strong>{questionToDelete?.key}</strong>?
+            This action cannot be undone and will affect the customer interview immediately.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
+}

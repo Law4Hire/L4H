@@ -36,6 +36,9 @@ public class L4HDbContext : DbContext
     public DbSet<RescheduleProposal> RescheduleProposals { get; set; }
     public DbSet<AvailabilityBlock> AvailabilityBlocks { get; set; }
     public DbSet<AdminSettings> AdminSettings { get; set; }
+    public DbSet<AdminPath> AdminPaths { get; set; }
+    public DbSet<InterviewQuestionEntity> InterviewQuestions { get; set; }
+    public DbSet<QuestionOptionEntity> QuestionOptions { get; set; }
     public DbSet<MessageThread> MessageThreads { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<DailyDigestQueue> DailyDigestQueues { get; set; }
@@ -781,6 +784,100 @@ public class L4HDbContext : DbContext
 
             entity.HasIndex(e => e.Key).IsUnique();
             entity.HasIndex(e => e.UpdatedAt);
+        });
+
+        modelBuilder.Entity<AdminPath>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Path).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Icon).HasMaxLength(100);
+            entity.Property(e => e.RequiredRole).HasMaxLength(100);
+
+            entity.Property(e => e.CreatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+
+            entity.Property(e => e.UpdatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(e => e.UpdatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(e => e.ParentPath)
+                .WithMany(e => e.ChildPaths)
+                .HasForeignKey(e => e.ParentPathId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.Path);
+            entity.HasIndex(e => e.DisplayOrder);
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.ParentPathId);
+        });
+
+        modelBuilder.Entity<InterviewQuestionEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Key).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Text).HasMaxLength(2000).IsRequired();
+            entity.Property(e => e.Category).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.InputType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.DiscriminatesVisaCodes).HasMaxLength(500);
+
+            entity.Property(e => e.CreatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+
+            entity.Property(e => e.UpdatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(e => e.UpdatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasIndex(e => e.Key).IsUnique();
+            entity.HasIndex(e => e.Category);
+            entity.HasIndex(e => e.DisplayOrder);
+            entity.HasIndex(e => e.IsActive);
+        });
+
+        modelBuilder.Entity<QuestionOptionEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Value).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Label).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.Icon).HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(1000);
+
+            entity.HasOne(e => e.Question)
+                .WithMany(e => e.Options)
+                .HasForeignKey(e => e.QuestionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.QuestionId);
+            entity.HasIndex(e => e.DisplayOrder);
+            entity.HasIndex(e => e.IsActive);
         });
 
         modelBuilder.Entity<MessageThread>(entity =>

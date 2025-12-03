@@ -82,6 +82,38 @@ const AdminPage: React.FC = () => {
           </div>
         </Card>
 
+        <Card title="Interview Questions">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Manage customer interview questions and flow</p>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              console.log('Manage Interview Questions button clicked - navigating to /admin/interview-questions')
+              navigate('/admin/interview-questions')
+            }}
+            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
+            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
+          >
+            Manage Questions
+          </Button>
+        </Card>
+
+        <Card title="Admin Paths">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Configure admin navigation paths and hierarchy</p>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              console.log('Manage Paths button clicked - navigating to /admin/paths')
+              navigate('/admin/paths')
+            }}
+            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
+            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
+          >
+            Manage Paths
+          </Button>
+        </Card>
+
         <Card title="Reports & Analytics">
           <p className="text-gray-600 dark:text-gray-400 mb-4">View platform statistics and reports</p>
           <div className="text-sm text-gray-500 dark:text-gray-400">Coming soon...</div>

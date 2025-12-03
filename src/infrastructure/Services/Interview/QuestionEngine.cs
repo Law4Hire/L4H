@@ -34,8 +34,8 @@ public class QuestionEngine : IQuestionEngine
             return null;
         }
 
-        // Get all available questions
-        var allQuestions = GetAllQuestions();
+        // Get all available questions FROM DATABASE
+        var allQuestions = await GetAllQuestionsFromDatabaseAsync().ConfigureAwait(false);
 
         // Priority 1: Critical questions (always ask these first)
         var criticalQuestions = allQuestions
@@ -201,9 +201,45 @@ public class QuestionEngine : IQuestionEngine
     }
 
     /// <summary>
-    /// Defines all available interview questions
+    /// Loads all active interview questions from the database.
+    /// Questions are now dynamically managed by admins via the database.
     /// </summary>
-    private List<InterviewQuestion> GetAllQuestions()
+    private async Task<List<InterviewQuestion>> GetAllQuestionsFromDatabaseAsync()
+    {
+        // Query active questions with their options from database
+        var questionsFromDb = await _context.InterviewQuestions
+            .Include(q => q.Options.Where(o => o.IsActive))
+            .Where(q => q.IsActive)
+            .OrderBy(q => q.DisplayOrder)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        // Map database entities to service models
+        return questionsFromDb.Select(q => new InterviewQuestion
+        {
+            Key = q.Key,
+            Text = q.Text,
+            Category = q.Category,
+            InputType = q.InputType,
+            Order = q.DisplayOrder,
+            IsRequired = q.IsRequired,
+            Options = q.Options
+                .OrderBy(o => o.DisplayOrder)
+                .Select(o => new QuestionOption
+                {
+                    Value = o.Value,
+                    Label = o.Label
+                })
+                .ToList()
+        }).ToList();
+    }
+
+    /// <summary>
+    /// DEPRECATED: Old hardcoded question method - replaced with database-driven approach.
+    /// Kept for reference during migration. Questions are now stored in InterviewQuestions table.
+    /// </summary>
+    [Obsolete("Questions are now loaded from database via GetAllQuestionsFromDatabaseAsync()")]
+    private List<InterviewQuestion> GetAllQuestions_LEGACY()
     {
         return new List<InterviewQuestion>
         {

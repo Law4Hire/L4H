@@ -24,6 +24,8 @@ const AdminPage = lazy(() => import('./pages/AdminPage'))
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
 const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
 const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
+const AdminPathsPage = lazy(() => import('./pages/AdminPathsPage'))
+const AdminInterviewQuestionsPage = lazy(() => import('./pages/AdminInterviewQuestionsPage'))
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 
@@ -280,20 +282,50 @@ function App() {
             </RouteGuard>
           }
         />
-        <Route 
-          path="/admin/pricing" 
+        <Route
+          path="/admin/pricing"
           element={
             <RouteGuard>
-              <Layout 
+              <Layout
                 title={'Pricing Management'}
-                showUserMenu={true} 
-                user={user} 
+                showUserMenu={true}
+                user={user}
                 isAuthenticated={isAuthenticated}
               >
                 <AdminPricingPage />
               </Layout>
             </RouteGuard>
-          } 
+          }
+        />
+        <Route
+          path="/admin/paths"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Admin Paths Management'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminPathsPage />
+              </Layout>
+            </RouteGuard>
+          }
+        />
+        <Route
+          path="/admin/interview-questions"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Interview Questions Management'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminInterviewQuestionsPage />
+              </Layout>
+            </RouteGuard>
+          }
         />
         <Route
           path="/admin/cases"
