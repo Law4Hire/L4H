@@ -66,6 +66,12 @@ public class InterviewQuestionEntity
     /// </summary>
     public int SelectionWeight { get; set; } = 50;
 
+    /// <summary>
+    /// Parent question ID for hierarchical questions (null for top-level questions)
+    /// Child questions inherit discrimination codes from their parent
+    /// </summary>
+    public Guid? ParentId { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public UserId? CreatedByUserId { get; set; }
@@ -75,4 +81,8 @@ public class InterviewQuestionEntity
     public User? CreatedByUser { get; set; }
     public User? UpdatedByUser { get; set; }
     public ICollection<QuestionOptionEntity> Options { get; set; } = new List<QuestionOptionEntity>();
+
+    // Hierarchy navigation properties
+    public InterviewQuestionEntity? Parent { get; set; }
+    public ICollection<InterviewQuestionEntity> Children { get; set; } = new List<InterviewQuestionEntity>();
 }

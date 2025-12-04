@@ -92,19 +92,19 @@ export function Modal({
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
       data-testid="modal-backdrop"
       onClick={handleBackdropClick}
     >
       <div className="fixed inset-0 bg-black bg-opacity-50" />
-      
+
       <div
         ref={modalRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         className={clsx(
-          'relative w-full rounded-lg bg-white dark:bg-gray-800 shadow-xl',
+          'relative w-full rounded-lg bg-white dark:bg-gray-800 shadow-xl my-8 flex flex-col max-h-[calc(100vh-4rem)]',
           sizeClasses[size],
           className
         )}
@@ -113,13 +113,13 @@ export function Modal({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
             {title && (
               <h2 id="modal-title" className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {title}
               </h2>
             )}
-            
+
             {showCloseButton && (
               <button
                 type="button"
@@ -132,9 +132,9 @@ export function Modal({
             )}
           </div>
         )}
-        
+
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {children}
         </div>
       </div>

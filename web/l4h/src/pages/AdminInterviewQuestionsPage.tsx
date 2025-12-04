@@ -24,6 +24,7 @@ interface InterviewQuestion {
   description?: string;
   discriminatesVisaCodes?: string;
   selectionWeight: number;
+  parentId?: string;
   createdAt: string;
   updatedAt: string;
   createdByUserEmail?: string;
@@ -42,6 +43,7 @@ interface QuestionFormData {
   description: string;
   discriminatesVisaCodes: string;
   selectionWeight: number;
+  parentId: string | null;
   options: QuestionOption[];
 }
 
@@ -79,6 +81,8 @@ export default function AdminInterviewQuestionsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [categories, setCategories] = useState(CATEGORIES.map(c => ({ ...c })));
 
   const [formData, setFormData] = useState<QuestionFormData>({
     key: '',
@@ -91,6 +95,7 @@ export default function AdminInterviewQuestionsPage() {
     description: '',
     discriminatesVisaCodes: '',
     selectionWeight: 50,
+    parentId: null,
     options: []
   });
 
@@ -121,6 +126,15 @@ export default function AdminInterviewQuestionsPage() {
     }
   };
 
+  // Helper function to generate a key from question text
+  const generateKeyFromText = (text: string): string => {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+      .replace(/\s+/g, '_') // Replace spaces with underscores
+      .substring(0, 50); // Limit to 50 characters
+  };
+
   const openCreateModal = () => {
     setEditingQuestion(null);
     setFormData({
@@ -134,6 +148,7 @@ export default function AdminInterviewQuestionsPage() {
       description: '',
       discriminatesVisaCodes: '',
       selectionWeight: 50,
+      parentId: null,
       options: []
     });
     setShowModal(true);
@@ -152,7 +167,27 @@ export default function AdminInterviewQuestionsPage() {
       description: question.description || '',
       discriminatesVisaCodes: question.discriminatesVisaCodes || '',
       selectionWeight: question.selectionWeight,
+      parentId: question.parentId || null,
       options: question.options.map(o => ({ ...o }))
+    });
+    setShowModal(true);
+  };
+
+  const openCreateChildModal = (parentQuestion: InterviewQuestion) => {
+    setEditingQuestion(null);
+    setFormData({
+      key: '',
+      text: '',
+      category: parentQuestion.category, // Inherit category
+      inputType: 'select',
+      displayOrder: questions.length,
+      isRequired: true,
+      isActive: true,
+      description: '',
+      discriminatesVisaCodes: parentQuestion.discriminatesVisaCodes || '', // Inherit discrimination codes
+      selectionWeight: parentQuestion.selectionWeight, // Inherit weight
+      parentId: parentQuestion.id, // Set parent
+      options: []
     });
     setShowModal(true);
   };
@@ -168,18 +203,52 @@ export default function AdminInterviewQuestionsPage() {
 
       const method = editingQuestion ? 'PUT' : 'POST';
 
+      // Format options properly for backend
+      const formattedOptions = formData.options.map(opt => ({
+        id: opt.id || null, // Backend expects 'id' (lowercase) as Guid? or null
+        value: opt.value,
+        label: opt.label,
+        displayOrder: opt.displayOrder,
+        isActive: opt.isActive,
+        icon: opt.icon || null,
+        description: opt.description || null
+      }));
+
+      // Create proper request payload
+      const payload = {
+        key: formData.key,
+        text: formData.text,
+        category: formData.category,
+        inputType: formData.inputType,
+        displayOrder: formData.displayOrder,
+        isRequired: formData.isRequired,
+        isActive: formData.isActive,
+        description: formData.description || null,
+        discriminatesVisaCodes: formData.discriminatesVisaCodes || null,
+        selectionWeight: formData.selectionWeight,
+        parentId: formData.parentId || null,
+        options: formattedOptions
+      };
+
       const response = await fetch(url, {
         method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to save question');
+        const errorText = await response.text();
+        let errorMessage = 'Failed to save question';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorData.title || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
       success(editingQuestion ? 'Question updated successfully' : 'Question created successfully');
@@ -331,6 +400,30 @@ export default function AdminInterviewQuestionsPage() {
     setFormData({ ...formData, options: newOptions });
   };
 
+  const addCategory = () => {
+    const newValue = `category_${categories.length + 1}`;
+    setCategories([...categories, { value: newValue, label: 'New Category' }]);
+  };
+
+  const updateCategory = (index: number, field: 'value' | 'label', value: string) => {
+    const newCategories = [...categories];
+    newCategories[index] = { ...newCategories[index], [field]: value };
+    setCategories(newCategories);
+  };
+
+  const removeCategory = (index: number) => {
+    const newCategories = categories.filter((_, i) => i !== index);
+    setCategories(newCategories);
+  };
+
+  const saveCategoryChanges = () => {
+    // In a real implementation, you'd save these to the backend
+    // For now, we'll just close the modal
+    // TODO: Persist category changes to backend/config
+    success('Category changes saved locally. Note: These changes are session-only until backend support is added.');
+    setShowCategoryModal(false);
+  };
+
   const filteredQuestions = questions.filter(question => {
     // Category filter
     if (selectedCategory !== 'all' && question.category !== selectedCategory) return false;
@@ -351,6 +444,55 @@ export default function AdminInterviewQuestionsPage() {
 
     return true;
   });
+
+  // Build hierarchical structure for display
+  interface HierarchicalQuestion extends InterviewQuestion {
+    level: number;
+    children: HierarchicalQuestion[];
+  }
+
+  const buildHierarchy = (questions: InterviewQuestion[]): HierarchicalQuestion[] => {
+    const questionMap = new Map<string, HierarchicalQuestion>();
+    const rootQuestions: HierarchicalQuestion[] = [];
+
+    // First pass: create map of all questions with level and empty children
+    questions.forEach(q => {
+      questionMap.set(q.id, { ...q, level: 0, children: [] });
+    });
+
+    // Second pass: build parent-child relationships and calculate levels
+    questions.forEach(q => {
+      const question = questionMap.get(q.id)!;
+      if (q.parentId) {
+        const parent = questionMap.get(q.parentId);
+        if (parent) {
+          question.level = parent.level + 1;
+          parent.children.push(question);
+        } else {
+          // Parent not found (maybe filtered out), treat as root
+          rootQuestions.push(question);
+        }
+      } else {
+        rootQuestions.push(question);
+      }
+    });
+
+    // Flatten hierarchy for display (depth-first)
+    const flattenHierarchy = (questions: HierarchicalQuestion[]): HierarchicalQuestion[] => {
+      const result: HierarchicalQuestion[] = [];
+      questions.forEach(q => {
+        result.push(q);
+        if (q.children.length > 0) {
+          result.push(...flattenHierarchy(q.children));
+        }
+      });
+      return result;
+    };
+
+    return flattenHierarchy(rootQuestions);
+  };
+
+  const hierarchicalQuestions = buildHierarchy(filteredQuestions);
 
   const categoryStats = CATEGORIES.reduce((acc, cat) => {
     acc[cat.value] = questions.filter(q => q.category === cat.value).length;
@@ -429,16 +571,24 @@ export default function AdminInterviewQuestionsPage() {
         <div className="px-4 py-5 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by Category
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Filter by Category
+                </label>
+                <button
+                  onClick={() => setShowCategoryModal(true)}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Edit Categories
+                </button>
+              </div>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Categories</option>
-                {CATEGORIES.map(cat => (
+                {categories.map(cat => (
                   <option key={cat.value} value={cat.value}>
                     {cat.label} ({categoryStats[cat.value] || 0})
                   </option>
@@ -478,19 +628,25 @@ export default function AdminInterviewQuestionsPage() {
       <Card>
         <div className="px-4 py-5 sm:p-6">
           <div className="space-y-4">
-            {filteredQuestions.length === 0 ? (
+            {hierarchicalQuestions.length === 0 ? (
               <div className="text-center text-gray-500 py-8">
                 No questions found
               </div>
             ) : (
-              filteredQuestions.map((question, index) => (
+              hierarchicalQuestions.map((question, index) => (
                 <div
                   key={question.id}
                   className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+                  style={{ marginLeft: `${question.level * 40}px` }}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
+                        {question.level > 0 && (
+                          <div className="text-gray-400 text-sm">
+                            └─
+                          </div>
+                        )}
                         <div className="flex flex-col items-center">
                           <span className="text-sm font-medium text-gray-500">
                             #{question.displayOrder}
@@ -505,7 +661,7 @@ export default function AdminInterviewQuestionsPage() {
                             </button>
                             <button
                               onClick={() => moveQuestionDown(question)}
-                              disabled={index === filteredQuestions.length - 1}
+                              disabled={index === hierarchicalQuestions.length - 1}
                               className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs"
                             >
                               ▼
@@ -586,21 +742,29 @@ export default function AdminInterviewQuestionsPage() {
                       >
                         {question.isActive ? 'Active' : 'Inactive'}
                       </button>
-                      <div className="flex space-x-2">
+                      <div className="flex flex-col space-y-1">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => openEditModal(question)}
+                            className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              setQuestionToDelete(question);
+                              setShowDeleteConfirm(true);
+                            }}
+                            className="text-red-600 hover:text-red-900 text-sm font-medium"
+                          >
+                            Delete
+                          </button>
+                        </div>
                         <button
-                          onClick={() => openEditModal(question)}
-                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                          onClick={() => openCreateChildModal(question)}
+                          className="text-green-600 hover:text-green-900 text-xs font-medium text-left"
                         >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => {
-                            setQuestionToDelete(question);
-                            setShowDeleteConfirm(true);
-                          }}
-                          className="text-red-600 hover:text-red-900 text-sm font-medium"
-                        >
-                          Delete
+                          + Add Child
                         </button>
                       </div>
                     </div>
@@ -620,20 +784,34 @@ export default function AdminInterviewQuestionsPage() {
         size="xl"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Question Key * (unique identifier)
-              </label>
-              <Input
-                type="text"
-                value={formData.key}
-                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
-                required
-                placeholder="e.g., employer_sponsor"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Question Text *
+            </label>
+            <textarea
+              value={formData.text}
+              onChange={(e) => {
+                const newText = e.target.value;
+                setFormData({
+                  ...formData,
+                  text: newText,
+                  // Auto-generate key only for new questions
+                  key: editingQuestion ? formData.key : generateKeyFromText(newText)
+                });
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              required
+              placeholder="Enter the question text shown to users"
+            />
+            {formData.key && (
+              <p className="mt-1 text-xs text-gray-500">
+                Generated key: <code className="bg-gray-100 px-1 py-0.5 rounded">{formData.key}</code>
+              </p>
+            )}
+          </div>
 
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Category *
@@ -644,25 +822,44 @@ export default function AdminInterviewQuestionsPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
-                {CATEGORIES.map(cat => (
+                {categories.map(cat => (
                   <option key={cat.value} value={cat.value}>{cat.label}</option>
                 ))}
               </select>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Question Text *
-            </label>
-            <textarea
-              value={formData.text}
-              onChange={(e) => setFormData({ ...formData, text: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
-              required
-              placeholder="Enter the question text shown to users"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Parent Question (optional)
+              </label>
+              <select
+                value={formData.parentId || ''}
+                onChange={(e) => {
+                  const newParentId = e.target.value || null;
+                  const parentQuestion = questions.find(q => q.id === newParentId);
+
+                  // Inherit discrimination codes from parent
+                  setFormData({
+                    ...formData,
+                    parentId: newParentId,
+                    discriminatesVisaCodes: parentQuestion?.discriminatesVisaCodes || ''
+                  });
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">None (Top-level question)</option>
+                {questions
+                  .filter(q => !editingQuestion || q.id !== editingQuestion.id) // Don't allow selecting itself
+                  .map(q => (
+                    <option key={q.id} value={q.id}>
+                      {q.text.substring(0, 60)}{q.text.length > 60 ? '...' : ''}
+                    </option>
+                  ))}
+              </select>
+              <p className="mt-1 text-xs text-gray-500">
+                Child questions automatically inherit discrimination codes from parent
+              </p>
+            </div>
           </div>
 
           <div>
@@ -723,14 +920,77 @@ export default function AdminInterviewQuestionsPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Discriminates Visa Codes (comma-separated)
+              Discriminates Visa Codes
+              {!editingQuestion && <span className="text-xs text-gray-500 ml-2">(Top-level questions only)</span>}
             </label>
-            <Input
-              type="text"
-              value={formData.discriminatesVisaCodes}
-              onChange={(e) => setFormData({ ...formData, discriminatesVisaCodes: e.target.value })}
-              placeholder="e.g., H-1B,L-1,O-1,E-2,TN"
-            />
+
+            {/* Show as deletable tags for top-level questions or when editing top-level questions */}
+            {(!formData.parentId || (editingQuestion && !editingQuestion.parentId)) ? (
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-md min-h-[42px] bg-white">
+                  {formData.discriminatesVisaCodes?.split(',').filter(code => code.trim()).map((code, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                    >
+                      {code.trim()}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const codes = formData.discriminatesVisaCodes?.split(',').filter(c => c.trim()) || [];
+                          codes.splice(index, 1);
+                          setFormData({ ...formData, discriminatesVisaCodes: codes.join(',') });
+                        }}
+                        className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-blue-600 hover:bg-blue-200 hover:text-blue-900 rounded-full"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )) || <span className="text-gray-400 text-sm">No visa codes specified</span>}
+                </div>
+                <Input
+                  type="text"
+                  placeholder="Add visa code (e.g., H-1B) and press Enter"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const input = e.currentTarget;
+                      const newCode = input.value.trim();
+                      if (newCode) {
+                        const existingCodes = formData.discriminatesVisaCodes?.split(',').filter(c => c.trim()) || [];
+                        if (!existingCodes.includes(newCode)) {
+                          existingCodes.push(newCode);
+                          setFormData({ ...formData, discriminatesVisaCodes: existingCodes.join(',') });
+                        }
+                        input.value = '';
+                      }
+                    }
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm font-medium text-blue-900 mb-2">
+                    Inherited from Parent Question:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.discriminatesVisaCodes?.split(',').filter(code => code.trim()).map((code, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                      >
+                        {code.trim()}
+                      </span>
+                    )) || <span className="text-gray-500 text-sm">No codes inherited (parent has no codes)</span>}
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 italic">
+                  Child questions automatically use the same discrimination codes as their parent.
+                  To change these codes, edit the parent question.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center space-x-4">
@@ -838,6 +1098,64 @@ export default function AdminInterviewQuestionsPage() {
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
               Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Category Editor Modal */}
+      <Modal
+        open={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        title="Edit Interview Categories"
+        size="lg"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Manage the categories used to organize interview questions. Changes will apply to future questions.
+          </p>
+
+          <div className="space-y-2">
+            {categories.map((cat, index) => (
+              <div key={index} className="flex items-center space-x-2 bg-gray-50 p-3 rounded">
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-500 mb-1">Value (key)</label>
+                  <Input
+                    type="text"
+                    value={cat.value}
+                    onChange={(e) => updateCategory(index, 'value', e.target.value)}
+                    placeholder="category_key"
+                    className="mb-2"
+                  />
+                  <label className="block text-xs text-gray-500 mb-1">Label (display name)</label>
+                  <Input
+                    type="text"
+                    value={cat.label}
+                    onChange={(e) => updateCategory(index, 'label', e.target.value)}
+                    placeholder="Display Name"
+                  />
+                </div>
+                <button
+                  onClick={() => removeCategory(index)}
+                  className="mt-6 text-red-600 hover:text-red-800 p-2"
+                  title="Remove category"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <Button type="button" variant="outline" onClick={addCategory} className="w-full">
+            + Add Category
+          </Button>
+
+          <div className="flex justify-end space-x-3 pt-4 border-t">
+            <Button variant="outline" onClick={() => setShowCategoryModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={saveCategoryChanges}>
+              Save Changes
             </Button>
           </div>
         </div>

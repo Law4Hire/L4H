@@ -107,6 +107,7 @@ public class AdminInterviewQuestionsController : ControllerBase
             Description = request.Description,
             DiscriminatesVisaCodes = request.DiscriminatesVisaCodes,
             SelectionWeight = request.SelectionWeight,
+            ParentId = request.ParentId,
             CreatedByUserId = userId,
             UpdatedByUserId = userId,
             CreatedAt = DateTime.UtcNow,
@@ -205,6 +206,7 @@ public class AdminInterviewQuestionsController : ControllerBase
         question.Description = request.Description;
         question.DiscriminatesVisaCodes = request.DiscriminatesVisaCodes;
         question.SelectionWeight = request.SelectionWeight;
+        question.ParentId = request.ParentId;
         question.UpdatedByUserId = userId;
         question.UpdatedAt = DateTime.UtcNow;
 
@@ -463,6 +465,7 @@ public record CreateQuestionRequest
     public string? Description { get; init; }
     public string? DiscriminatesVisaCodes { get; init; }
     public int SelectionWeight { get; init; } = 50;
+    public Guid? ParentId { get; init; }
     public CreateOptionRequest[]? Options { get; init; }
 }
 
@@ -488,6 +491,7 @@ public record UpdateQuestionRequest
     public string? Description { get; init; }
     public string? DiscriminatesVisaCodes { get; init; }
     public int SelectionWeight { get; init; }
+    public Guid? ParentId { get; init; }
     public UpdateOptionRequest[]? Options { get; init; }
 }
 

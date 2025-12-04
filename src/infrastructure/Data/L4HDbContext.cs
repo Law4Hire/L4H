@@ -856,10 +856,17 @@ public class L4HDbContext : DbContext
                 .HasForeignKey(e => e.UpdatedByUserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // Self-referencing relationship for question hierarchy
+            entity.HasOne(e => e.Parent)
+                .WithMany(e => e.Children)
+                .HasForeignKey(e => e.ParentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             entity.HasIndex(e => e.Key).IsUnique();
             entity.HasIndex(e => e.Category);
             entity.HasIndex(e => e.DisplayOrder);
             entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.ParentId);
         });
 
         modelBuilder.Entity<QuestionOptionEntity>(entity =>
