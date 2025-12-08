@@ -114,6 +114,22 @@ const AdminPage: React.FC = () => {
           </Button>
         </Card>
 
+        <Card title="USCIS Forms">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Manage immigration forms, pricing, and dependencies</p>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              console.log('Manage USCIS Forms button clicked - navigating to /admin/uscis-forms')
+              navigate('/admin/uscis-forms')
+            }}
+            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
+            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
+          >
+            Manage Forms
+          </Button>
+        </Card>
+
         <Card title="Reports & Analytics">
           <p className="text-gray-600 dark:text-gray-400 mb-4">View platform statistics and reports</p>
           <div className="text-sm text-gray-500 dark:text-gray-400">Coming soon...</div>

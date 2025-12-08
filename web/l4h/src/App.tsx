@@ -27,6 +27,7 @@ const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
 const AdminPathsPage = lazy(() => import('./pages/AdminPathsPage'))
 const AdminInterviewQuestionsPage = lazy(() => import('./pages/AdminInterviewQuestionsPage'))
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
+const AdminUSCISFormsPage = lazy(() => import('./pages/AdminUSCISFormsPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 
 // Loading fallback component
@@ -338,6 +339,21 @@ function App() {
                 isAuthenticated={isAuthenticated}
               >
                 <AdminCaseManagementPage />
+              </Layout>
+            </RouteGuard>
+          }
+        />
+        <Route
+          path="/admin/uscis-forms"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'USCIS Forms Management'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminUSCISFormsPage />
               </Layout>
             </RouteGuard>
           }

@@ -39,6 +39,13 @@ public class L4HDbContext : DbContext
     public DbSet<AdminPath> AdminPaths { get; set; }
     public DbSet<InterviewQuestionEntity> InterviewQuestions { get; set; }
     public DbSet<QuestionOptionEntity> QuestionOptions { get; set; }
+
+    // USCIS Forms management entities
+    public DbSet<USCISFormEntity> USCISForms { get; set; }
+    public DbSet<FormPricingEntity> FormPricing { get; set; }
+    public DbSet<FormVisaTypeMappingEntity> FormVisaTypeMappings { get; set; }
+    public DbSet<FormDependencyEntity> FormDependencies { get; set; }
+
     public DbSet<MessageThread> MessageThreads { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<DailyDigestQueue> DailyDigestQueues { get; set; }
@@ -1556,6 +1563,171 @@ public class L4HDbContext : DbContext
             entity.Property(e => e.DirectEmail).HasMaxLength(255);
             entity.Property(e => e.OfficeLocation).HasMaxLength(255);
             entity.Property(e => e.DefaultHourlyRate).HasColumnType("decimal(10,2)");
+        });
+
+        // USCIS Forms management entities
+        modelBuilder.Entity<USCISFormEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.FormNumber).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.FormName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(2000);
+            entity.Property(e => e.FormUrl).HasMaxLength(1000);
+
+            // Unique index on FormNumber
+            entity.HasIndex(e => e.FormNumber).IsUnique();
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.CreatedByUserId);
+            entity.HasIndex(e => e.UpdatedByUserId);
+
+            // User relationships
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade cycles
+
+            entity.HasOne(e => e.UpdatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade cycles
+
+            // Configure UserId conversion
+            entity.Property(e => e.CreatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+
+            entity.Property(e => e.UpdatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+        });
+
+        modelBuilder.Entity<FormPricingEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            // Pricing columns with precision for currency
+            entity.Property(e => e.SelfFilePriceUSD).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.ParalegalPriceUSD).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.LawyerPriceUSD).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.LLCFeeUSD).HasColumnType("decimal(10,2)").IsRequired();
+            entity.Property(e => e.LLCFeePercentage).HasColumnType("decimal(5,2)");
+
+            entity.Property(e => e.Description).HasMaxLength(1000);
+
+            entity.HasIndex(e => e.FormId);
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.EffectiveDate);
+            entity.HasIndex(e => e.CreatedByUserId);
+            entity.HasIndex(e => e.UpdatedByUserId);
+
+            // Form relationship
+            entity.HasOne(e => e.Form)
+                .WithMany(f => f.Pricing)
+                .HasForeignKey(e => e.FormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User relationships
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade cycles
+
+            entity.HasOne(e => e.UpdatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade cycles
+
+            // Configure UserId conversion
+            entity.Property(e => e.CreatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+
+            entity.Property(e => e.UpdatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+        });
+
+        modelBuilder.Entity<FormVisaTypeMappingEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+
+            // Composite unique index - one mapping per form-visa combination
+            entity.HasIndex(e => new { e.FormId, e.VisaTypeId }).IsUnique();
+            entity.HasIndex(e => e.VisaTypeId);
+            entity.HasIndex(e => e.DisplayOrder);
+            entity.HasIndex(e => e.CreatedByUserId);
+            entity.HasIndex(e => e.UpdatedByUserId);
+
+            // Form relationship
+            entity.HasOne(e => e.Form)
+                .WithMany(f => f.VisaTypeMappings)
+                .HasForeignKey(e => e.FormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // VisaType relationship
+            entity.HasOne(e => e.VisaType)
+                .WithMany()
+                .HasForeignKey(e => e.VisaTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User relationships
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade cycles
+
+            entity.HasOne(e => e.UpdatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade cycles
+
+            // Configure UserId conversion
+            entity.Property(e => e.CreatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+
+            entity.Property(e => e.UpdatedByUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+        });
+
+        modelBuilder.Entity<FormDependencyEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.DependencyReason).HasMaxLength(1000);
+
+            entity.HasIndex(e => e.ParentFormId);
+            entity.HasIndex(e => e.DependentFormId);
+            entity.HasIndex(e => e.VisaTypeId);
+            entity.HasIndex(e => new { e.ParentFormId, e.VisaTypeId });
+
+            // Parent form relationship
+            entity.HasOne(e => e.ParentForm)
+                .WithMany(f => f.RequiredForms)
+                .HasForeignKey(e => e.ParentFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Dependent form relationship
+            entity.HasOne(e => e.DependentForm)
+                .WithMany(f => f.RequiredByForms)
+                .HasForeignKey(e => e.DependentFormId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade cycles
+
+            // VisaType relationship
+            entity.HasOne(e => e.VisaType)
+                .WithMany()
+                .HasForeignKey(e => e.VisaTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

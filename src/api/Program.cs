@@ -295,6 +295,7 @@ builder.Services.AddScoped<ISeedTask, CountryVisaTypesSeeder>();
 builder.Services.AddScoped<ISeedTask, CannlawClientBillingSeeder>();
 builder.Services.AddScoped<ISeedTask, CannlawConfigurationSeeder>();
 builder.Services.AddScoped<ISeedTask, InterviewQuestionsSeeder>();
+builder.Services.AddScoped<ISeedTask, USCISFormsSeeder>();
 builder.Services.AddScoped<SeedRunner>();
 
 // Workflow and scraper services (for API endpoints)
