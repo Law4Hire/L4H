@@ -52,6 +52,7 @@ public class CannlawClientBillingSeeder : ISeedTask
 
     private async Task SeedAttorneysAsync()
     {
+        // Conditional seeding - only seed if no attorneys exist
         if (await _context.Attorneys.AnyAsync())
         {
             _logger.LogInformation("Attorneys already exist, skipping attorney seeding.");
@@ -62,60 +63,155 @@ public class CannlawClientBillingSeeder : ISeedTask
         {
             new Attorney
             {
-                Name = "Sarah Johnson",
-                Title = "Managing Partner",
-                Bio = "Sarah Johnson is a seasoned immigration attorney with over 15 years of experience helping families navigate complex immigration processes. She specializes in family-based immigration, naturalization, and deportation defense.",
-                Email = "sarah.johnson@cannlaw.com",
-                Phone = "(555) 123-4567",
-                DirectPhone = "(555) 123-4501",
-                DirectEmail = "sarah.direct@cannlaw.com",
-                OfficeLocation = "Main Office - Suite 1200",
-                DefaultHourlyRate = 350.00m,
+                Name = "Denise S. Cann",
+                Title = "Founder and Managing Attorney",
+                Bio = "Denise S. Cann is the founder and managing attorney for Cann Legal Group. She has been practicing immigration law since 1998. Ms. Cann received her Juris Doctor degree from the University of Baltimore School of Law. She is a member of the American Immigration Lawyers Association (AILA).",
+                Email = "dcann@cannlaw.com",
+                Phone = "(410) 783-1888",
+                DirectPhone = "",
+                DirectEmail = "dcann@cannlaw.com",
+                OfficeLocation = "Baltimore Office",
+                DefaultHourlyRate = 450.00m,
                 IsActive = true,
                 IsManagingAttorney = true,
                 DisplayOrder = 1,
-                Credentials = "[\"J.D. Harvard Law School\", \"Licensed in NY, CA, FL\", \"Member of AILA\"]",
-                PracticeAreas = "[\"Family Immigration\", \"Naturalization\", \"Deportation Defense\", \"Business Immigration\"]",
-                Languages = "[\"English\", \"Spanish\", \"French\"]",
-                PhotoUrl = new Uri("https://example.com/sarah_johnson_photo.jpg")
+                Credentials = "[\"J.D. University of Baltimore School of Law\", \"Member of AILA\"]",
+                PracticeAreas = "[\"Employment Immigration\", \"Family Immigration\", \"Deportation Defense\"]",
+                Languages = "[\"English\"]",
+                PhotoUrl = new Uri("https://cannlaw.com/images/denise.jpg")
             },
             new Attorney
             {
-                Name = "Michael Chen",
-                Title = "Senior Associate",
-                Bio = "Michael Chen focuses on business immigration and employment-based visa applications. He has successfully handled hundreds of H-1B, L-1, and EB-5 cases for clients ranging from startups to Fortune 500 companies.",
-                Email = "michael.chen@cannlaw.com",
-                Phone = "(555) 123-4568",
-                DirectPhone = "(555) 123-4502",
-                DirectEmail = "michael.direct@cannlaw.com",
-                OfficeLocation = "Main Office - Suite 1201",
-                DefaultHourlyRate = 275.00m,
+                Name = "Angela Taylor",
+                Title = "Senior Attorney",
+                Bio = "Angela Taylor represents clients in all aspects of immigration law, including family-based petitions, naturalization, and removal defense. She is dedicated to providing compassionate and effective legal representation.",
+                Email = "ataylor@cannlaw.com",
+                Phone = "(410) 783-1888",
+                DirectPhone = "",
+                DirectEmail = "",
+                OfficeLocation = "Baltimore Office",
+                DefaultHourlyRate = 350.00m,
                 IsActive = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 2,
-                Credentials = "[\"J.D. Stanford Law School\", \"Licensed in CA, NY\", \"Certified Immigration Specialist\"]",
-                PracticeAreas = "[\"Business Immigration\", \"Employment Visas\", \"EB-5 Investment\", \"PERM Labor Certification\"]",
-                Languages = "[\"English\", \"Mandarin\", \"Cantonese\"]",
-                PhotoUrl = new Uri("https://example.com/michael_chen_photo.jpg")
+                Credentials = "[\"J.D.\", \"Member of State Bar\"]",
+                PracticeAreas = "[\"Family Immigration\", \"Removal Defense\"]",
+                Languages = "[\"English\"]",
+                PhotoUrl = null
             },
             new Attorney
             {
-                Name = "Maria Rodriguez",
-                Title = "Associate Attorney",
-                Bio = "Maria Rodriguez is passionate about helping individuals and families achieve their American dream. She specializes in asylum cases, family reunification, and VAWA petitions.",
-                Email = "maria.rodriguez@cannlaw.com",
-                Phone = "(555) 123-4569",
-                DirectPhone = "(555) 123-4503",
-                DirectEmail = "maria.direct@cannlaw.com",
-                OfficeLocation = "Branch Office - Downtown",
-                DefaultHourlyRate = 225.00m,
+                Name = "John Charles",
+                Title = "Director of Marketing and Business Development",
+                Bio = "John Charles serves as the Director of Marketing and Business Development. He plays a key role in the firm's outreach and client relations strategies.",
+                Email = "jcharles@cannlaw.com",
+                Phone = "(410) 783-1888",
+                DirectPhone = "",
+                DirectEmail = "",
+                OfficeLocation = "Baltimore Office",
+                DefaultHourlyRate = 0.00m,
                 IsActive = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 3,
-                Credentials = "[\"J.D. Georgetown University Law Center\", \"Licensed in NY, NJ\", \"Certified in Immigration Law\"]",
-                PracticeAreas = "[\"Asylum & Refugee Law\", \"Family Immigration\", \"VAWA Petitions\", \"Removal Defense\"]",
-                Languages = "[\"English\", \"Spanish\", \"Portuguese\"]",
-                PhotoUrl = new Uri("https://example.com/maria_rodriguez_photo.jpg")
+                Credentials = "[]",
+                PracticeAreas = "[\"Business Development\", \"Marketing\"]",
+                Languages = "[\"English\"]",
+                PhotoUrl = null
+            },
+            new Attorney
+            {
+                Name = "Alex Shu",
+                Title = "Attorney",
+                Bio = "Alex Shu is an experienced attorney handling various immigration matters. He is committed to helping clients achieve their immigration goals.",
+                Email = "ashu@cannlaw.com",
+                Phone = "(410) 783-1888",
+                DirectPhone = "",
+                DirectEmail = "",
+                OfficeLocation = "Baltimore Office",
+                DefaultHourlyRate = 300.00m,
+                IsActive = true,
+                IsManagingAttorney = false,
+                DisplayOrder = 4,
+                Credentials = "[\"J.D.\", \"Member of State Bar\"]",
+                PracticeAreas = "[\"Immigration Law\"]",
+                Languages = "[\"English\"]",
+                PhotoUrl = null
+            },
+            new Attorney
+            {
+                Name = "Janice Lin",
+                Title = "Attorney",
+                Bio = "Janice Lin focuses her practice on employment-based and family-based immigration. She works closely with clients to navigate the complex immigration system.",
+                Email = "jlin@cannlaw.com",
+                Phone = "(410) 783-1888",
+                DirectPhone = "",
+                DirectEmail = "",
+                OfficeLocation = "Baltimore Office",
+                DefaultHourlyRate = 300.00m,
+                IsActive = true,
+                IsManagingAttorney = false,
+                DisplayOrder = 5,
+                Credentials = "[\"J.D.\", \"Member of State Bar\"]",
+                PracticeAreas = "[\"Employment Immigration\", \"Family Immigration\"]",
+                Languages = "[\"English\", \"Mandarin\"]",
+                PhotoUrl = null
+            },
+            new Attorney
+            {
+                Name = "Chika Okala",
+                Title = "Attorney",
+                Bio = "Chika Okala provides legal counsel in immigration law, assisting clients with visa applications and compliance issues.",
+                Email = "cokala@cannlaw.com",
+                Phone = "(410) 783-1888",
+                DirectPhone = "",
+                DirectEmail = "",
+                OfficeLocation = "Baltimore Office",
+                DefaultHourlyRate = 300.00m,
+                IsActive = true,
+                IsManagingAttorney = false,
+                DisplayOrder = 6,
+                Credentials = "[\"J.D.\", \"Member of State Bar\"]",
+                PracticeAreas = "[\"Immigration Law\"]",
+                Languages = "[\"English\"]",
+                PhotoUrl = null
+            },
+            new Attorney
+            {
+                Name = "Wen Lee",
+                Title = "Attorney",
+                Bio = "Wen Lee specializes in business immigration, helping companies and individuals with work visas and green cards.",
+                Email = "wlee@cannlaw.com",
+                Phone = "(410) 783-1888",
+                DirectPhone = "",
+                DirectEmail = "",
+                OfficeLocation = "Baltimore Office",
+                DefaultHourlyRate = 300.00m,
+                IsActive = true,
+                IsManagingAttorney = false,
+                DisplayOrder = 7,
+                Credentials = "[\"J.D.\", \"Member of State Bar\"]",
+                PracticeAreas = "[\"Business Immigration\"]",
+                Languages = "[\"English\", \"Mandarin\"]",
+                PhotoUrl = null
+            },
+            new Attorney
+            {
+                Name = "Katherine J. Wong",
+                Title = "Attorney",
+                Bio = "Katherine J. Wong handles a wide range of immigration cases. She is dedicated to providing personalized legal services to her clients.",
+                Email = "kwong@cannlaw.com",
+                Phone = "(410) 783-1888",
+                DirectPhone = "",
+                DirectEmail = "",
+                OfficeLocation = "Baltimore Office",
+                DefaultHourlyRate = 300.00m,
+                IsActive = true,
+                IsManagingAttorney = false,
+                DisplayOrder = 8,
+                Credentials = "[\"J.D.\", \"Member of State Bar\"]",
+                PracticeAreas = "[\"Immigration Law\"]",
+                Languages = "[\"English\"]",
+                PhotoUrl = null
             }
         };
 

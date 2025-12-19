@@ -13,6 +13,7 @@ const ServicesPage = lazy(() => import('./pages/public/ServicesPage'))
 const AttorneysPage = lazy(() => import('./pages/public/AttorneysPage'))
 const ContactPage = lazy(() => import('./pages/public/ContactPage'))
 const FeesPage = lazy(() => import('./pages/public/FeesPage'))
+const ResourcesPage = lazy(() => import('./pages/public/ResourcesPage'))
 
 // Auth pages
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -60,9 +61,17 @@ function App() {
         <Route path="/attorneys" element={<AttorneysPage />} />
         <Route path="/fees" element={<FeesPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/resources" element={<ResourcesPage />} />
         
         {/* Authentication */}
-        <Route path="/login" element={<LoginPage />} />
+        <Route 
+          path="/login" 
+          element={
+            <Layout>
+              <LoginPage />
+            </Layout>
+          } 
+        />
         
         {/* Legal Professional Dashboard - Only for legal professionals */}
         <Route 

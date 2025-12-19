@@ -72,6 +72,13 @@ public class InterviewQuestionEntity
     /// </summary>
     public Guid? ParentId { get; set; }
 
+    /// <summary>
+    /// JSON configuration for special page types (document_upload, attorney_question, etc.)
+    /// Example for document_upload: { "instructionText": "Upload passport", "allowedFileTypes": ["pdf", "jpg"], "maxFiles": 5 }
+    /// Example for attorney_question: { "summaryText": "Your visa options", "ctaText": "Get started" }
+    /// </summary>
+    public string? PageConfig { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public UserId? CreatedByUserId { get; set; }

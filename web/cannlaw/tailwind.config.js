@@ -7,6 +7,32 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Legal Navy
+        navy: {
+          50: '#f0f4f8',
+          100: '#d9e2ec',
+          200: '#bcccdc',
+          300: '#9fb3c8',
+          400: '#829ab1',
+          500: '#627d98',
+          600: '#486581',
+          700: '#334e68',
+          800: '#243b53',
+          900: '#102a43',
+        },
+        // Legal Gold
+        gold: {
+          50: '#fbf7ed',
+          100: '#f5ead2',
+          200: '#eddcb3',
+          300: '#e4cd91',
+          400: '#dac076',
+          500: '#c5a059', // Primary Gold
+          600: '#a78546',
+          700: '#8a6c37',
+          800: '#6e542a',
+          900: '#533f1f',
+        },
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -33,7 +59,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
+        sans: ['Lato', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
+        serif: ['Merriweather', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
       },
       spacing: {
         '18': '4.5rem',

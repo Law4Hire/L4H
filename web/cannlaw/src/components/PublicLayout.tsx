@@ -18,6 +18,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
     { name: 'Services', href: '/services' },
     { name: 'Attorneys/Staff', href: '/attorneys' },
     { name: 'Fees', href: '/fees' },
+    { name: 'Law Library', href: '/resources' },
     { name: 'Contact/Consultation', href: '/contact' }
   ]
 
@@ -31,46 +32,66 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
     }
   }
 
-  const socialMediaPlatforms = safeJsonParse(siteConfig?.socialMediaPlatforms, [])
+  const socialMediaPlatforms = [
+    { name: 'Facebook', url: '#' },
+    { name: 'Twitter', url: '#' },
+    { name: 'WhatsApp', url: '#' },
+    { name: 'LINE', url: '#' },
+    { name: 'Skype', url: '#' }
+  ]
+  
   const locations = safeJsonParse(siteConfig?.locations, [])
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
+      {/* Top Bar for Associate Login */}
+      <div className="bg-navy-900 text-gray-300 py-2 px-4 sm:px-6 lg:px-8 flex justify-between items-center text-xs tracking-wide z-50 relative">
+         <div className="hidden sm:block font-light">
+            Providing Comprehensive Immigration Law Services Since 1998
+         </div>
+         <div className="flex items-center space-x-6 ml-auto">
+            <a href={`tel:${siteConfig?.primaryPhone || '(410) 783-1888'}`} className="hover:text-gold-400 transition-colors flex items-center">
+               <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M20 22.621l-3.521-6.795c-.008.004-1.974.97-2.064 1.011-2.24 1.086-6.799-7.82-4.609-8.994l2.083-1.026-3.493-6.817-2.106 1.039C5.438 1.487 3.235 2.573 2.147 4.604c-1.09 2.031-1.049 4.453.072 6.641 1.637 3.193 4.887 6.443 8.08 8.08 2.188 1.121 4.61 1.162 6.641.072 2.031-1.088 3.117-3.291 3.564-6.148l1.039-2.106-6.817-3.493-1.026 2.083c-1.174 2.19-10.08 6.749-8.994 4.609.041-.09 1.007-2.056 1.011-2.064L22.621 20z"/></svg>
+               {siteConfig?.primaryPhone || '(410) 783-1888'}
+            </a>
+            <span className="text-gray-700">|</span>
+            <Link to="/login" className="font-medium text-gray-500 hover:text-white uppercase transition-colors">
+              Associate Login
+            </Link>
+         </div>
+      </div>
+
+      {/* Main Header */}
+      <header className="bg-white shadow-lg sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            {/* Logo and Firm Name */}
-            <Link to="/" className="flex items-center space-x-3">
-              {siteConfig?.logoUrl ? (
+          <div className="flex justify-between items-center h-24">
+            {/* Logo Area */}
+            <Link to="/" className="flex items-center group overflow-hidden">
+              <div className="flex-shrink-0 mr-4 md:mr-6">
                 <img 
-                  src={siteConfig.logoUrl} 
-                  alt={siteConfig.firmName}
-                  className="h-12 w-auto"
+                  src="https://cannlaw.com/images/logo.gif" 
+                  alt="Cann Legal Group Logo"
+                  className="h-12 md:h-16 w-auto object-contain"
                 />
-              ) : (
-                <div className="h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">CL</span>
-                </div>
-              )}
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">
+              </div>
+              <div className="flex flex-col justify-center border-l border-gray-200 pl-4 md:pl-6 h-12">
+                <h1 className="text-xl md:text-3xl font-serif font-bold text-navy-900 leading-none tracking-tight group-hover:text-gold-600 transition-colors whitespace-nowrap">
                   {siteConfig?.firmName || 'Cann Legal Group'}
                 </h1>
-                <p className="text-sm text-gray-600">Immigration Law Specialists</p>
+                <p className="text-[10px] md:text-xs text-gold-600 font-bold tracking-[0.2em] uppercase mt-1 whitespace-nowrap">Immigration Law Specialists</p>
               </div>
             </Link>
 
-            {/* Navigation */}
-            <nav className="hidden md:flex space-x-8">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex space-x-6 lg:space-x-8">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`text-sm font-medium transition-colors ${
+                  className={`text-sm font-medium transition-colors border-b-2 py-1 ${
                     location.pathname === item.href
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-700 hover:text-blue-600'
+                      ? 'text-blue-900 border-blue-900'
+                      : 'text-gray-600 border-transparent hover:text-blue-900 hover:border-blue-200'
                   }`}
                 >
                   {item.name}
@@ -78,125 +99,114 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
               ))}
             </nav>
 
-            {/* Auth/Dashboard Links */}
-            <div className="flex items-center space-x-4">
+            {/* Client Portal Button */}
+            <div className="hidden md:flex items-center pl-4">
               {isAuthenticated ? (
-                <>
-                  {user?.isLegalProfessional && (
-                    <Link to="/dashboard">
-                      <Button variant="outline" size="sm">
-                        Dashboard
-                      </Button>
-                    </Link>
-                  )}
-                  {user?.isAdmin && (
-                    <Link to="/admin">
-                      <Button variant="outline" size="sm">
-                        Admin
-                      </Button>
-                    </Link>
-                  )}
-                  <span className="text-sm text-gray-600">
-                    Welcome, {user?.firstName || user?.email}
-                  </span>
-                </>
+                <Link to="/dashboard">
+                  <Button variant="outline" size="sm">Dashboard</Button>
+                </Link>
               ) : (
-                <Link to="/login">
-                  <Button variant="primary" size="sm">
-                    Client Login
+                <Link to="/login?type=client">
+                  <Button variant="primary" size="sm" className="bg-blue-900 hover:bg-blue-800 shadow-md">
+                    Client Portal
                   </Button>
                 </Link>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden border-t">
-          <div className="px-4 py-2 space-y-1">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`block px-3 py-2 text-sm font-medium rounded-md ${
-                  location.pathname === item.href
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            
+            {/* Mobile Menu Button (Hamburger) - Simplified for this layout */}
+            <div className="md:hidden flex items-center">
+               <button className="text-gray-500 hover:text-gray-900 focus:outline-none p-2">
+                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                 </svg>
+               </button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main>{children}</main>
+      <main className="flex-grow bg-gray-50">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white">
+      <footer className="bg-gray-900 text-white border-t-8 border-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Firm Info */}
-            <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold mb-4">
-                {siteConfig?.firmName || 'Cann Legal Group'}
-              </h3>
-              <p className="text-gray-300 mb-4">
+            <div className="col-span-1 lg:col-span-1">
+              <div className="flex items-center mb-4">
+                 <div className="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center text-white mr-2">
+                    <span className="font-serif font-bold text-sm">CL</span>
+                 </div>
+                 <h3 className="text-lg font-serif font-bold text-white">
+                   {siteConfig?.firmName || 'Cann Legal Group'}
+                 </h3>
+              </div>
+              <p className="text-gray-400 text-sm mb-6 leading-relaxed">
                 {siteConfig?.primaryFocusStatement || 'Fast, efficient, and convenient. Comprehensive representation from state side through consular processing.'}
               </p>
-              <div className="space-y-2">
-                <p className="text-gray-300">
-                  <strong>Managing Attorney:</strong> {siteConfig?.managingAttorney || 'Denise S. Cann'}
-                </p>
-                <p className="text-gray-300">
-                  <strong>Phone:</strong> {siteConfig?.primaryPhone || '(410) 783-1888'}
-                </p>
-                <p className="text-gray-300">
-                  <strong>Email:</strong> {siteConfig?.email || 'information@cannlaw.com'}
-                </p>
-              </div>
             </div>
 
-            {/* Office Locations */}
+            {/* Contact Info */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Office Locations</h3>
-              <div className="space-y-3">
-                {locations.map((location: any, index: number) => (
-                  <div key={index} className="text-gray-300">
-                    <p className="font-medium">{location.type}</p>
-                    <p>{location.city}</p>
-                    {location.address && <p>{location.address}</p>}
-                    {location.zip && <p>{location.zip}</p>}
-                  </div>
-                ))}
-              </div>
+               <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 border-b border-gray-700 pb-2 inline-block">Contact</h3>
+               <ul className="space-y-3 text-sm text-gray-400">
+                 <li className="flex items-start">
+                   <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                   <span>Baltimore, MD (Headquarters)</span>
+                 </li>
+                 <li className="flex items-center">
+                   <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                   <a href={`tel:${siteConfig?.primaryPhone || '(410) 783-1888'}`} className="hover:text-white transition-colors">{siteConfig?.primaryPhone || '(410) 783-1888'}</a>
+                 </li>
+                 <li className="flex items-center">
+                   <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                   <a href={`mailto:${siteConfig?.email || 'information@cannlaw.com'}`} className="hover:text-white transition-colors">{siteConfig?.email || 'information@cannlaw.com'}</a>
+                 </li>
+               </ul>
             </div>
 
-            {/* Social Media & Contact */}
+            {/* Quick Links */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
-              <div className="space-y-2">
-                {socialMediaPlatforms.map((platform: string, index: number) => (
-                  <p key={index} className="text-gray-300">{platform}</p>
+               <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 border-b border-gray-700 pb-2 inline-block">Quick Links</h3>
+               <ul className="space-y-2 text-sm text-gray-400">
+                  <li><Link to="/services" className="hover:text-blue-400 transition-colors">Our Services</Link></li>
+                  <li><Link to="/attorneys" className="hover:text-blue-400 transition-colors">Attorneys & Staff</Link></li>
+                  <li><Link to="/resources" className="hover:text-blue-400 transition-colors">Law Library</Link></li>
+                  <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Consultation</Link></li>
+               </ul>
+            </div>
+
+            {/* Social Media */}
+            <div>
+              <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 border-b border-gray-700 pb-2 inline-block">Connect</h3>
+              <div className="flex space-x-3 mb-6">
+                {socialMediaPlatforms.map((platform, index) => (
+                  <a 
+                    key={index} 
+                    href={platform.url} 
+                    className="w-8 h-8 bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white rounded flex items-center justify-center transition-all duration-300"
+                    title={platform.name}
+                  >
+                     <span className="sr-only">{platform.name}</span>
+                     {/* Simplified Generic Icon for Socials */}
+                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                       <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.504.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.597 1.028 2.688 0 3.848-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12c0-5.523-4.477-10-10-10z"/>
+                     </svg>
+                  </a>
                 ))}
               </div>
-              <div className="mt-6">
-                <Link to="/contact">
-                  <Button variant="primary" className="w-full">
-                    Schedule Consultation
+              <Link to="/contact">
+                  <Button variant="primary" size="sm" className="w-full">
+                    Schedule Now
                   </Button>
-                </Link>
-              </div>
+              </Link>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <div className="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500 text-xs">
             <p>&copy; {new Date().getFullYear()} {siteConfig?.firmName || 'Cann Legal Group'}. All rights reserved.</p>
-            <p className="mt-2 text-sm">
-              This website is for informational purposes only and does not constitute legal advice.
-            </p>
           </div>
         </div>
       </footer>

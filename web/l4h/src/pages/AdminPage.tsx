@@ -142,7 +142,18 @@ const AdminPage: React.FC = () => {
 
         <Card title="Legal Professionals">
           <p className="text-gray-600 dark:text-gray-400 mb-4">Manage legal professional accounts</p>
-          <div className="text-sm text-gray-500 dark:text-gray-400">Coming soon...</div>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              console.log('Manage Attorneys button clicked - navigating to /admin/attorneys')
+              navigate('/admin/attorneys')
+            }}
+            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
+            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
+          >
+            Manage Attorneys
+          </Button>
         </Card>
       </div>
     </div>

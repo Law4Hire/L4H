@@ -39,6 +39,7 @@ public class L4HDbContext : DbContext
     public DbSet<AdminPath> AdminPaths { get; set; }
     public DbSet<InterviewQuestionEntity> InterviewQuestions { get; set; }
     public DbSet<QuestionOptionEntity> QuestionOptions { get; set; }
+    public DbSet<InterviewDocumentUpload> InterviewDocumentUploads { get; set; }
 
     // USCIS Forms management entities
     public DbSet<USCISFormEntity> USCISForms { get; set; }
@@ -842,6 +843,7 @@ public class L4HDbContext : DbContext
             entity.Property(e => e.InputType).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.DiscriminatesVisaCodes).HasMaxLength(500);
+            entity.Property(e => e.PageConfig).HasMaxLength(4000);
 
             entity.Property(e => e.CreatedByUserId)
                 .HasConversion(
@@ -892,6 +894,43 @@ public class L4HDbContext : DbContext
             entity.HasIndex(e => e.QuestionId);
             entity.HasIndex(e => e.DisplayOrder);
             entity.HasIndex(e => e.IsActive);
+        });
+
+        modelBuilder.Entity<InterviewDocumentUpload>(entity =>
+        {
+            entity.ToTable("InterviewDocumentUploads");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.OriginalFileName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.StoredFileName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.ContentType).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.StoragePath).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+
+            entity.Property(e => e.UserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : (UserId?)null);
+
+            entity.HasOne(e => e.InterviewSession)
+                .WithMany()
+                .HasForeignKey(e => e.InterviewSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Question)
+                .WithMany()
+                .HasForeignKey(e => e.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.InterviewSessionId);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.QuestionId);
         });
 
         modelBuilder.Entity<MessageThread>(entity =>

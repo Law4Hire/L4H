@@ -234,6 +234,61 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Authenticate legal professional or admin
+    /// </summary>
+    /// <param name="request">Login credentials</param>
+    /// <returns>JWT access token if user is authorized attorney/admin</returns>
+    [HttpPost("attorneylogin")]
+    [ProducesResponseType<AuthResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> AttorneyLogin([FromBody] LoginRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.LoginAsync(request).ConfigureAwait(false);
+        
+        if (!result.IsSuccess)
+        {
+            return Unauthorized(new ProblemDetails
+            {
+                Title = "Authentication Failed",
+                Detail = _localizer["Auth.LoginFailed"]
+            });
+        }
+
+        // RBAC Check: Must be Legal Professional (Staff) or Admin
+        if (!result.Value.IsStaff && !result.Value.IsAdmin)
+        {
+            return StatusCode(403, new ProblemDetails
+            {
+                Title = "Access Denied",
+                Detail = "This portal is restricted to authorized legal professionals only."
+            });
+        }
+
+        // Set secure cookie logic similar to standard login...
+        if (result.Value!.UserId.HasValue)
+        {
+            var rememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value!.UserId!.Value, request.RememberMe).ConfigureAwait(false);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = HttpContext.Request.IsHttps,
+                SameSite = SameSiteMode.Lax,
+                Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
+                Expires = DateTimeOffset.UtcNow.AddHours(8), // Shorter session for staff
+                Path = "/"
+            };
+            Response.Cookies.Append("l4h_remember", rememberToken, cookieOptions);
+        }
+
+        return Ok(result.Value);
+    }
+
+    /// <summary>
     /// Exchange remember-me token for new access token
     /// </summary>
     /// <returns>New JWT access token</returns>

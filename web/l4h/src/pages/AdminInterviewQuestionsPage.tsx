@@ -25,6 +25,7 @@ interface InterviewQuestion {
   discriminatesVisaCodes?: string;
   selectionWeight: number;
   parentId?: string;
+  pageConfig?: string;
   createdAt: string;
   updatedAt: string;
   createdByUserEmail?: string;
@@ -44,6 +45,7 @@ interface QuestionFormData {
   discriminatesVisaCodes: string;
   selectionWeight: number;
   parentId: string | null;
+  pageConfig: string;
   options: QuestionOption[];
 }
 
@@ -64,7 +66,9 @@ const INPUT_TYPES = [
   { value: 'radio', label: 'Radio Buttons' },
   { value: 'checkbox', label: 'Checkboxes' },
   { value: 'text', label: 'Text Input' },
-  { value: 'textarea', label: 'Text Area' }
+  { value: 'textarea', label: 'Text Area' },
+  { value: 'document_upload', label: 'Document Upload' },
+  { value: 'attorney_question', label: 'Attorney Question Page' }
 ];
 
 export default function AdminInterviewQuestionsPage() {
@@ -96,12 +100,56 @@ export default function AdminInterviewQuestionsPage() {
     discriminatesVisaCodes: '',
     selectionWeight: 50,
     parentId: null,
+    pageConfig: '',
     options: []
   });
 
   useEffect(() => {
     loadQuestions();
   }, []);
+
+  // Sync formData when editing a question - use id as dependency to ensure it triggers
+  // Also clear formData AND editingQuestion when modal closes to prevent stale data
+  useEffect(() => {
+    console.log('[useEffect] Triggered - editingQuestion:', editingQuestion?.key, 'inputType:', editingQuestion?.inputType, 'showModal:', showModal);
+    if (editingQuestion && showModal) {
+      console.log('[useEffect] Setting formData from editingQuestion with inputType:', editingQuestion.inputType);
+      setFormData({
+        key: editingQuestion.key,
+        text: editingQuestion.text,
+        category: editingQuestion.category,
+        inputType: editingQuestion.inputType,
+        displayOrder: editingQuestion.displayOrder,
+        isRequired: editingQuestion.isRequired,
+        isActive: editingQuestion.isActive,
+        description: editingQuestion.description || '',
+        discriminatesVisaCodes: editingQuestion.discriminatesVisaCodes || '',
+        selectionWeight: editingQuestion.selectionWeight,
+        parentId: editingQuestion.parentId || null,
+        pageConfig: editingQuestion.pageConfig || '',
+        options: editingQuestion.options.map(o => ({ ...o }))
+      });
+    } else if (!showModal) {
+      // Clear both formData AND editingQuestion when modal closes
+      console.log('[useEffect] Modal closed - clearing formData and editingQuestion');
+      setFormData({
+        key: '',
+        text: '',
+        category: '',
+        inputType: 'select',
+        displayOrder: 1,
+        isRequired: false,
+        isActive: true,
+        description: '',
+        discriminatesVisaCodes: '',
+        selectionWeight: 100,
+        parentId: null,
+        pageConfig: '',
+        options: []
+      });
+      setEditingQuestion(null);
+    }
+  }, [editingQuestion?.id, showModal]);
 
   const loadQuestions = async () => {
     try {
@@ -149,13 +197,16 @@ export default function AdminInterviewQuestionsPage() {
       discriminatesVisaCodes: '',
       selectionWeight: 50,
       parentId: null,
+      pageConfig: '',
       options: []
     });
     setShowModal(true);
   };
 
   const openEditModal = (question: InterviewQuestion) => {
+    console.log('[openEditModal] Called with question:', question.key, 'inputType:', question.inputType);
     setEditingQuestion(question);
+    // Set formData synchronously to avoid any rendering delay
     setFormData({
       key: question.key,
       text: question.text,
@@ -168,6 +219,7 @@ export default function AdminInterviewQuestionsPage() {
       discriminatesVisaCodes: question.discriminatesVisaCodes || '',
       selectionWeight: question.selectionWeight,
       parentId: question.parentId || null,
+      pageConfig: question.pageConfig || '',
       options: question.options.map(o => ({ ...o }))
     });
     setShowModal(true);
@@ -187,6 +239,7 @@ export default function AdminInterviewQuestionsPage() {
       discriminatesVisaCodes: parentQuestion.discriminatesVisaCodes || '', // Inherit discrimination codes
       selectionWeight: parentQuestion.selectionWeight, // Inherit weight
       parentId: parentQuestion.id, // Set parent
+      pageConfig: '',
       options: []
     });
     setShowModal(true);
@@ -227,6 +280,7 @@ export default function AdminInterviewQuestionsPage() {
         discriminatesVisaCodes: formData.discriminatesVisaCodes || null,
         selectionWeight: formData.selectionWeight,
         parentId: formData.parentId || null,
+        pageConfig: formData.pageConfig || null,
         options: formattedOptions
       };
 
@@ -241,6 +295,13 @@ export default function AdminInterviewQuestionsPage() {
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('=== API ERROR RESPONSE ===');
+        console.error('Status:', response.status);
+        console.error('Status Text:', response.statusText);
+        console.error('Response body:', errorText);
+        console.error('Request payload was:', payload);
+        console.error('========================');
+
         let errorMessage = 'Failed to save question';
         try {
           const errorData = JSON.parse(errorText);
@@ -992,6 +1053,185 @@ export default function AdminInterviewQuestionsPage() {
               </div>
             )}
           </div>
+
+          {/* Document Upload Configuration */}
+          {formData.inputType === 'document_upload' && (
+            <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+              <h3 className="font-semibold text-blue-900 mb-3">Document Upload Settings</h3>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Upload Instructions
+                  </label>
+                  <textarea
+                    value={(() => {
+                      try {
+                        return formData.pageConfig ? JSON.parse(formData.pageConfig).instructionText || '' : '';
+                      } catch {
+                        return '';
+                      }
+                    })()}
+                    onChange={(e) => {
+                      const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                      config.instructionText = e.target.value;
+                      setFormData({ ...formData, pageConfig: JSON.stringify(config) });
+                    }}
+                    placeholder="e.g., Please upload your passport and supporting documents"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Allowed File Types
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['pdf', 'doc', 'docx', 'jpg', 'png', 'heic', 'xls', 'xlsx', 'csv'].map(type => (
+                      <label key={type} className="flex items-center text-sm">
+                        <input
+                          type="checkbox"
+                          checked={(() => {
+                            try {
+                              const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                              return config.allowedFileTypes?.includes(type) || false;
+                            } catch {
+                              return false;
+                            }
+                          })()}
+                          onChange={(e) => {
+                            try {
+                              const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                              let types = config.allowedFileTypes || [];
+                              if (e.target.checked) {
+                                if (!types.includes(type)) types.push(type);
+                              } else {
+                                types = types.filter((t: string) => t !== type);
+                              }
+                              config.allowedFileTypes = types;
+                              setFormData({ ...formData, pageConfig: JSON.stringify(config) });
+                            } catch {
+                              setFormData({ ...formData, pageConfig: JSON.stringify({ allowedFileTypes: [type] }) });
+                            }
+                          }}
+                          className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        .{type}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Min Files</label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={(() => {
+                        try {
+                          const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                          return config.minFiles || 1;
+                        } catch {
+                          return 1;
+                        }
+                      })()}
+                      onChange={(e) => {
+                        try {
+                          const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                          config.minFiles = parseInt(e.target.value) || 1;
+                          setFormData({ ...formData, pageConfig: JSON.stringify(config) });
+                        } catch {}
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Files</label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={(() => {
+                        try {
+                          const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                          return config.maxFiles || 5;
+                        } catch {
+                          return 5;
+                        }
+                      })()}
+                      onChange={(e) => {
+                        try {
+                          const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                          config.maxFiles = parseInt(e.target.value) || 5;
+                          setFormData({ ...formData, pageConfig: JSON.stringify(config) });
+                        } catch {}
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Attorney Question Configuration */}
+          {formData.inputType === 'attorney_question' && (
+            <div className="border-2 border-purple-200 rounded-lg p-4 bg-purple-50">
+              <h3 className="font-semibold text-purple-900 mb-3">Attorney Question Page Settings</h3>
+              <p className="text-sm text-gray-600 mb-3">
+                This page displays visa results with action buttons.
+                Should be the final question in your interview.
+              </p>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Results Summary Text
+                  </label>
+                  <textarea
+                    value={(() => {
+                      try {
+                        return formData.pageConfig ? JSON.parse(formData.pageConfig).summaryText || '' : '';
+                      } catch {
+                        return '';
+                      }
+                    })()}
+                    onChange={(e) => {
+                      const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                      config.summaryText = e.target.value;
+                      setFormData({ ...formData, pageConfig: JSON.stringify(config) });
+                    }}
+                    placeholder="e.g., Based on your responses, here are your visa options:"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Call-to-Action Text
+                  </label>
+                  <input
+                    type="text"
+                    value={(() => {
+                      try {
+                        return formData.pageConfig ? JSON.parse(formData.pageConfig).ctaText || '' : '';
+                      } catch {
+                        return '';
+                      }
+                    })()}
+                    onChange={(e) => {
+                      const config = formData.pageConfig ? JSON.parse(formData.pageConfig) : {};
+                      config.ctaText = e.target.value;
+                      setFormData({ ...formData, pageConfig: JSON.stringify(config) });
+                    }}
+                    placeholder="e.g., Ready to get started? Register or schedule a consultation."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center space-x-4">
             <label className="flex items-center">

@@ -29,6 +29,7 @@ const AdminInterviewQuestionsPage = lazy(() => import('./pages/AdminInterviewQue
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
 const AdminUSCISFormsPage = lazy(() => import('./pages/AdminUSCISFormsPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
+const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -324,6 +325,21 @@ function App() {
                 isAuthenticated={isAuthenticated}
               >
                 <AdminInterviewQuestionsPage />
+              </Layout>
+            </RouteGuard>
+          }
+        />
+        <Route
+          path="/admin/attorneys"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Attorney Management'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <AttorneyManagementPage />
               </Layout>
             </RouteGuard>
           }

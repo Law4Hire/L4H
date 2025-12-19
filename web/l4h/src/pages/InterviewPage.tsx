@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button, useToast } from '@l4h/shared-ui';
 import { interview } from '@l4h/shared-ui';
 import { ChevronLeft } from 'lucide-react';
+import { DocumentUploadQuestion } from '../components/interview/DocumentUploadQuestion';
+import { AttorneyQuestionPage } from '../components/interview/AttorneyQuestionPage';
 
 // Simplified Question interface to match the backend DTO
 interface Question {
@@ -10,7 +12,17 @@ interface Question {
   text: string;
   category: string;
   inputType: string;
-  options: Array<{ value: string; label:string }>;
+  pageConfig?: string;
+  options: Array<{ value: string; label: string }>;
+}
+
+interface VisaEvaluation {
+  visaName: string;
+  visaCode: string;
+  status: string;
+  matchScore: number;
+  explanation: string;
+  keyBenefits?: string[];
 }
 
 const InterviewPage: React.FC = () => {
@@ -22,6 +34,7 @@ const InterviewPage: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [visaEvaluations, setVisaEvaluations] = useState<VisaEvaluation[]>([]);
 
   // Navigate to results page when interview is complete
   useEffect(() => {
@@ -63,17 +76,54 @@ const InterviewPage: React.FC = () => {
       );
 
       if (response.isComplete) {
+        // Fetch visa evaluations before showing attorney question page
+        try {
+          const evaluations = await interview.getEvaluations(sessionToken);
+          setVisaEvaluations(evaluations);
+        } catch (evalError) {
+          console.error('Failed to fetch visa evaluations:', evalError);
+        }
         setIsComplete(true);
         setCurrentQuestion(null);
-        // User wants to stop before the "green section".
-        // For now, we will show a completion message.
-        // The next step will be to navigate to the results page.
       } else if (response.nextQuestion) {
         setCurrentQuestion(response.nextQuestion);
       }
     } catch (error: any) {
       console.error('Failed to submit answer:', error);
       showError(error.message || 'Failed to submit answer. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDocumentUploadComplete = async (uploadedFiles: any[]) => {
+    if (!sessionToken || !currentQuestion) return;
+
+    // Document upload acts as a regular question - proceed to next
+    // The "answer" is just that upload was completed
+    try {
+      setIsLoading(true);
+      const response = await interview.submitAnswer(
+        sessionToken,
+        currentQuestion.key,
+        'documents_uploaded'  // Special value indicating completion
+      );
+
+      if (response.isComplete) {
+        // Fetch visa evaluations
+        try {
+          const evaluations = await interview.getEvaluations(sessionToken);
+          setVisaEvaluations(evaluations);
+        } catch (evalError) {
+          console.error('Failed to fetch visa evaluations:', evalError);
+        }
+        setIsComplete(true);
+        setCurrentQuestion(null);
+      } else if (response.nextQuestion) {
+        setCurrentQuestion(response.nextQuestion);
+      }
+    } catch (error: any) {
+      showError('Failed to proceed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -89,22 +139,57 @@ const InterviewPage: React.FC = () => {
       return <div className="text-center"><p>No question to display.</p></div>;
     }
 
-    return (
-      <div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">{currentQuestion.text}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {currentQuestion.options.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => handleAnswer(option.value)}
-              className="p-6 border-2 border-gray-300 rounded-lg hover:border-blue-600 hover:bg-blue-50 transition-all text-left"
-            >
-              <h3 className="text-xl font-semibold">{option.label}</h3>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
+    // Route to appropriate component based on input type
+    switch (currentQuestion.inputType) {
+      case 'document_upload':
+        return (
+          <DocumentUploadQuestion
+            question={currentQuestion}
+            sessionToken={sessionToken!}
+            onComplete={handleDocumentUploadComplete}
+          />
+        );
+
+      case 'attorney_question':
+        return (
+          <AttorneyQuestionPage
+            question={currentQuestion}
+            sessionToken={sessionToken!}
+            visaEvaluations={visaEvaluations}
+            onRetakeInterview={() => navigate('/interview')}
+            onRegister={() => navigate('/register', {
+              state: { sessionToken, visaEvaluations }
+            })}
+            onScheduleMeeting={() => navigate('/schedule-meeting', {
+              state: { sessionToken, visaEvaluations }
+            })}
+          />
+        );
+
+      case 'select':
+      case 'radio':
+      case 'checkbox':
+      case 'text':
+      case 'textarea':
+      default:
+        // Existing option button rendering
+        return (
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">{currentQuestion.text}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {currentQuestion.options.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleAnswer(option.value)}
+                  className="p-6 border-2 border-gray-300 rounded-lg hover:border-blue-600 hover:bg-blue-50 transition-all text-left"
+                >
+                  <h3 className="text-xl font-semibold">{option.label}</h3>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+    }
   };
 
   return (

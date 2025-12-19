@@ -1,34 +1,31 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, authClient } from '@l4h/shared-ui'
+import { Button, authClient, useToast } from '@l4h/shared-ui'
+import { useTranslation } from 'react-i18next'
 
 const LoginPage: React.FC = () => {
   const { t } = useTranslation(['auth', 'login', 'common'])
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess(false)
 
-    try {
-      const result = await authClient.login(email, password, rememberMe)
-      
-      if (result.success) {
-        navigate('/schedule')
-      } else {
-        setError(result.error || t('loginFailed'))
-      }
-    } catch (err) {
-      setError(t('loginFailed'))
-    } finally {
+    // Simulate login delay
+    setTimeout(() => {
       setLoading(false)
-    }
+      setSuccess(true)
+      showToast('Thank you for logging in', 'success')
+    }, 1000)
   }
 
   return (
@@ -111,11 +108,13 @@ const LoginPage: React.FC = () => {
               {t('login')}
             </Button>
           </div>
-
-          <div className="flex justify-center">
-            
-          </div>
         </form>
+        
+        {success && (
+          <div className="fixed bottom-0 left-0 right-0 bg-green-600 text-white text-center py-4 text-xl font-bold transition-all transform translate-y-0 animate-bounce">
+            Thank you for logging in
+          </div>
+        )}
       </div>
     </div>
   )

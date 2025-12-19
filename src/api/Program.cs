@@ -38,6 +38,8 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new CaseIdConverter());
         options.JsonSerializerOptions.Converters.Add(new UserIdConverter());
+        // Use camelCase for JSON property names (JavaScript convention)
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         // Explicitly use reflection-based serialization for .NET 10 compatibility
         options.JsonSerializerOptions.TypeInfoResolver = new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver();
         // Handle circular references
@@ -237,6 +239,7 @@ builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IVisaEvaluation
 // builder.Services.AddScoped<ICitizenshipCaseService, CitizenshipCaseService>();
 builder.Services.AddScoped<IAdoptionCaseService, AdoptionCaseService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<L4H.Infrastructure.Services.IInterviewDocumentService, L4H.Infrastructure.Services.InterviewDocumentService>();
 builder.Services.AddScoped<CannlawConfigurationService>();
 
 // Cannlaw client billing services
@@ -360,20 +363,16 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
         try
         {
-            // Admin and pricing seeds temporarily commented out to isolate issue
-            // Console.WriteLine("[STARTUP] About to start admin seed...");
-            // logger.LogInformation("Starting admin seed...");
-            // var adminSeedService = scope.ServiceProvider.GetRequiredService<IAdminSeedService>();
-            // Console.WriteLine("[STARTUP] About to await admin seed...");
-            // await adminSeedService.SeedAdminAsync().ConfigureAwait(false);
-            // Console.WriteLine("[STARTUP] Admin seed await completed - control returned to Program.cs");
-            // logger.LogInformation("Admin seed completed");
+            Console.WriteLine("=== DIAGNOSTIC: About to execute admin seed [TIMESTAMP: 2025-12-13-20:50] ===");
 
-            // Console.WriteLine("[STARTUP] About to start pricing data seed...");
-            // logger.LogInformation("Starting pricing data seed...");
-            // var pricingSeedService = scope.ServiceProvider.GetRequiredService<IPricingSeedService>();
-            // await pricingSeedService.SeedPricingDataAsync().ConfigureAwait(false);
-            // logger.LogInformation("Pricing data seed completed");
+            // Admin and pricing seeds
+            var adminSeedService = scope.ServiceProvider.GetRequiredService<IAdminSeedService>();
+            await adminSeedService.SeedAdminAsync().ConfigureAwait(false);
+            Console.WriteLine("=== DIAGNOSTIC: Admin seed COMPLETED [TIMESTAMP: 2025-12-13-20:50] ===");
+
+            var pricingSeedService = scope.ServiceProvider.GetRequiredService<IPricingSeedService>();
+            await pricingSeedService.SeedPricingDataAsync().ConfigureAwait(false);
+            Console.WriteLine("=== DIAGNOSTIC: Pricing seed COMPLETED ===");
 
             Console.WriteLine(Program.StartupLogs.StartingCountriesSeed);
             logger.LogInformation("Starting countries seed...");
@@ -399,14 +398,26 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     }
 }
 
+Console.WriteLine("[STARTUP] Configuring middleware pipeline...");
 app.UseSerilogRequestLogging();
-app.UseRequestLocalization(locOpts);
-app.UseAuthentication();
-app.UseAuthorization();
+Console.WriteLine("[STARTUP] Serilog request logging configured");
 
+app.UseRequestLocalization(locOpts);
+Console.WriteLine("[STARTUP] Request localization configured");
+
+app.UseAuthentication();
+Console.WriteLine("[STARTUP] Authentication configured");
+
+app.UseAuthorization();
+Console.WriteLine("[STARTUP] Authorization configured");
+
+Console.WriteLine("[STARTUP] Mapping controllers...");
 // Map controllers under /api prefix
 app.MapControllers().RequireHost("*:*"); // Allow all hosts in development
+Console.WriteLine("[STARTUP] Root controllers mapped");
+
 app.MapGroup("/api").MapControllers();
+Console.WriteLine("[STARTUP] /api group controllers mapped");
 
 // Health endpoint is handled by HealthController
 
@@ -417,8 +428,11 @@ var v1 = app.MapGroup("/v1")
 v1.MapGet("/ping", () => Results.Ok(new { message = "pong", timestamp = DateTime.UtcNow }))
     .WithName("Ping")
     .WithSummary("API ping endpoint");
+Console.WriteLine("[STARTUP] API endpoints configured");
 
+Console.WriteLine("[STARTUP] Starting web server...");
 app.Run();
+Console.WriteLine("[STARTUP] Web server started successfully");
 
 // Make Program class accessible for testing
 public partial class Program 

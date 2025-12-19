@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, apiClient, type Case } from '@l4h/shared-ui'
 
 const CasesPage: React.FC = () => {
+  const { t } = useTranslation()
   const [cases, setCases] = useState<Case[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')

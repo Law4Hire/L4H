@@ -107,6 +107,7 @@ public class AdminInterviewQuestionsController : ControllerBase
             Description = request.Description,
             DiscriminatesVisaCodes = request.DiscriminatesVisaCodes,
             SelectionWeight = request.SelectionWeight,
+            PageConfig = request.PageConfig,
             ParentId = request.ParentId,
             CreatedByUserId = userId,
             UpdatedByUserId = userId,
@@ -206,6 +207,7 @@ public class AdminInterviewQuestionsController : ControllerBase
         question.Description = request.Description;
         question.DiscriminatesVisaCodes = request.DiscriminatesVisaCodes;
         question.SelectionWeight = request.SelectionWeight;
+        question.PageConfig = request.PageConfig;
         question.ParentId = request.ParentId;
         question.UpdatedByUserId = userId;
         question.UpdatedAt = DateTime.UtcNow;
@@ -375,6 +377,7 @@ public class AdminInterviewQuestionsController : ControllerBase
             Description = question.Description,
             DiscriminatesVisaCodes = question.DiscriminatesVisaCodes,
             SelectionWeight = question.SelectionWeight,
+            PageConfig = question.PageConfig,
             CreatedAt = question.CreatedAt,
             UpdatedAt = question.UpdatedAt,
             CreatedByUserEmail = question.CreatedByUser?.Email,
@@ -435,6 +438,7 @@ public record InterviewQuestionResponse
     public string? Description { get; init; }
     public string? DiscriminatesVisaCodes { get; init; }
     public int SelectionWeight { get; init; }
+    public string? PageConfig { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
     public string? CreatedByUserEmail { get; init; }
@@ -465,6 +469,7 @@ public record CreateQuestionRequest
     public string? Description { get; init; }
     public string? DiscriminatesVisaCodes { get; init; }
     public int SelectionWeight { get; init; } = 50;
+    public string? PageConfig { get; init; }
     public Guid? ParentId { get; init; }
     public CreateOptionRequest[]? Options { get; init; }
 }
@@ -491,6 +496,7 @@ public record UpdateQuestionRequest
     public string? Description { get; init; }
     public string? DiscriminatesVisaCodes { get; init; }
     public int SelectionWeight { get; init; }
+    public string? PageConfig { get; init; }
     public Guid? ParentId { get; init; }
     public UpdateOptionRequest[]? Options { get; init; }
 }

@@ -80,3 +80,21 @@ startGemini.ps1
 /web/l4h/dist/
 
 dist/
+
+# Test Artifacts and Screenshots
+test-results/
+test-screenshots/
+*.png
+!src/**/*.png
+!web/**/*.png
+!public/**/*.png
+!assets/**/*.png
+!ops/**/*.png
+!docs/**/*.png
+
+# Temporary Scripts
+take-screenshots.js
+check-*.js
+debug-*.js
+test-*.js
+test-*.sh

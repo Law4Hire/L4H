@@ -57,7 +57,7 @@ describe('SchedulePage', () => {
 
     render(<SchedulePage />)
 
-    expect(screen.getByText('Upcoming Appointments')).toBeInTheDocument()
+    expect(await screen.findByText('Upcoming Appointments')).toBeInTheDocument()
     expect(screen.getByText('Client')).toBeInTheDocument()
     expect(screen.getByText('Time')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()

@@ -57,7 +57,7 @@ describe('CasesPage', () => {
 
     render(<CasesPage />)
 
-    expect(screen.getByText('Assigned Cases')).toBeInTheDocument()
+    expect(await screen.findByText('Assigned Cases')).toBeInTheDocument()
     expect(screen.getByText('Case #')).toBeInTheDocument()
     expect(screen.getByText('Client')).toBeInTheDocument()
     expect(screen.getByText('Status')).toBeInTheDocument()

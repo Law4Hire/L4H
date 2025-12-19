@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api
+  namespace: l4h
+  annotations:
+    # Use Traefik for k3d (k3d comes with Traefik by default)
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+  - host: api.localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 8080
+---
+# TCP routing for direct access (alternative using Traefik IngressRouteTCP)
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-external
+  namespace: l4h
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 8765
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: api
