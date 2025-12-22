@@ -15,7 +15,7 @@ const AttorneysPage: React.FC = () => {
       isManagingAttorney: true,
       bio: 'Denise S. Cann is the founder and managing attorney for Cann Legal Group. She has been practicing immigration law since 1998. Ms. Cann received her Juris Doctor degree from the University of Baltimore School of Law. She is a member of the American Immigration Lawyers Association (AILA).',
       email: 'dcann@cannlaw.com',
-      phone: '(410) 783-1888',
+      phone: '(410) 988-0123',
       photoUrl: 'https://cannlaw.com/images/denise.jpg',
       practiceAreas: JSON.stringify(['Employment Immigration', 'Family Immigration', 'Deportation Defense']),
       languages: JSON.stringify(['English', 'Spanish']),
@@ -29,7 +29,7 @@ const AttorneysPage: React.FC = () => {
       isManagingAttorney: false,
       bio: 'Angela Taylor represents clients in all aspects of immigration law, including family-based petitions, naturalization, and removal defense. She is dedicated to providing compassionate and effective legal representation.',
       email: 'ataylor@cannlaw.com',
-      phone: '(410) 783-1888',
+      phone: '(410) 988-0123',
       photoUrl: '',
       practiceAreas: JSON.stringify(['Family Immigration', 'Removal Defense']),
       languages: JSON.stringify(['English']),
@@ -43,7 +43,7 @@ const AttorneysPage: React.FC = () => {
       isManagingAttorney: false,
       bio: 'John Charles serves as the Director of Marketing and Business Development. He plays a key role in the firm\'s outreach and client relations strategies.',
       email: 'jcharles@cannlaw.com',
-      phone: '(410) 783-1888',
+      phone: '(410) 988-0123',
       photoUrl: '',
       practiceAreas: JSON.stringify(['Business Development', 'Marketing']),
       languages: JSON.stringify(['English']),
@@ -57,7 +57,7 @@ const AttorneysPage: React.FC = () => {
       isManagingAttorney: false,
       bio: 'Alex Shu is an experienced attorney handling various immigration matters. He is committed to helping clients achieve their immigration goals.',
       email: 'ashu@cannlaw.com',
-      phone: '(410) 783-1888',
+      phone: '(410) 988-0123',
       photoUrl: '',
       practiceAreas: JSON.stringify(['Immigration Law']),
       languages: JSON.stringify(['English']),
@@ -71,7 +71,7 @@ const AttorneysPage: React.FC = () => {
       isManagingAttorney: false,
       bio: 'Janice Lin focuses her practice on employment-based and family-based immigration. She works closely with clients to navigate the complex immigration system.',
       email: 'jlin@cannlaw.com',
-      phone: '(410) 783-1888',
+      phone: '(410) 988-0123',
       photoUrl: '',
       practiceAreas: JSON.stringify(['Employment Immigration', 'Family Immigration']),
       languages: JSON.stringify(['English', 'Mandarin']),
@@ -85,7 +85,7 @@ const AttorneysPage: React.FC = () => {
       isManagingAttorney: false,
       bio: 'Chika Okala provides legal counsel in immigration law, assisting clients with visa applications and compliance issues.',
       email: 'cokala@cannlaw.com',
-      phone: '(410) 783-1888',
+      phone: '(410) 988-0123',
       photoUrl: '',
       practiceAreas: JSON.stringify(['Immigration Law']),
       languages: JSON.stringify(['English']),
@@ -99,7 +99,7 @@ const AttorneysPage: React.FC = () => {
       isManagingAttorney: false,
       bio: 'Wen Lee specializes in business immigration, helping companies and individuals with work visas and green cards.',
       email: 'wlee@cannlaw.com',
-      phone: '(410) 783-1888',
+      phone: '(410) 988-0123',
       photoUrl: '',
       practiceAreas: JSON.stringify(['Business Immigration']),
       languages: JSON.stringify(['English', 'Mandarin']),
@@ -113,7 +113,7 @@ const AttorneysPage: React.FC = () => {
       isManagingAttorney: false,
       bio: 'Katherine J. Wong handles a wide range of immigration cases. She is dedicated to providing personalized legal services to her clients.',
       email: 'kwong@cannlaw.com',
-      phone: '(410) 783-1888',
+      phone: '(410) 988-0123',
       photoUrl: '',
       practiceAreas: JSON.stringify(['Immigration Law']),
       languages: JSON.stringify(['English']),
@@ -177,12 +177,15 @@ const AttorneysPage: React.FC = () => {
                         className="w-40 h-40 rounded-full mx-auto object-cover shadow-md border-4 border-white"
                         onError={(e) => {
                           e.currentTarget.onerror = null; 
-                          e.currentTarget.src = 'https://ui-avatars.com/api/?name=' + attorney.name.replace(' ', '+') + '&background=102a43&color=c5a059';
+                          const initials = attorney.name.split(' ').map((n: string) => n[0]).join('');
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${initials}&background=102a43&color=c5a059&size=256&font-size=0.35`;
                         }}
                       />
                     ) : (
                       <div className="w-40 h-40 rounded-full mx-auto bg-navy-800 flex items-center justify-center shadow-md border-4 border-white text-gold-500">
-                        <span className="text-3xl font-serif font-bold">{attorney.name.charAt(0)}</span>
+                        <span className="text-4xl font-serif font-bold tracking-tighter">
+                          {attorney.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2)}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -275,10 +278,10 @@ const AttorneysPage: React.FC = () => {
               Schedule Consultation
             </a>
             <a 
-              href="tel:(410) 783-1888"
+              href="tel:(410) 988-0123"
               className="inline-flex items-center px-8 py-3 border border-white text-base font-medium rounded-sm text-white hover:bg-white hover:text-navy-900 transition-colors"
             >
-              Call (410) 783-1888
+              Call (410) 988-0123
             </a>
           </div>
         </div>

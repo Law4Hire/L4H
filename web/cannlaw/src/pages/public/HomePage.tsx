@@ -59,14 +59,14 @@ const HomePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 variant="primary" 
-                className="bg-gold-500 text-navy-900 hover:bg-gold-400 px-8 py-4 text-lg font-bold uppercase tracking-wider shadow-xl border-none"
+                className="bg-gold-500 !text-navy-900 hover:bg-gold-400 px-8 py-4 text-lg font-bold uppercase tracking-wider shadow-xl border-none"
                 onClick={() => window.location.href = '/contact'}
               >
                 Free Consultation
               </Button>
               <Button 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-navy-900 px-8 py-4 text-lg font-medium tracking-wide bg-transparent"
+                className="border-white !text-white hover:bg-white hover:!text-navy-900 px-8 py-4 text-lg font-medium tracking-wide bg-transparent"
                 onClick={() => window.location.href = '/services'}
               >
                 Our Services
@@ -259,13 +259,13 @@ const HomePage: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
-              <Button variant="primary" className="bg-gold-500 text-navy-900 hover:bg-gold-400 px-10 py-4 text-lg font-bold uppercase tracking-wider shadow-xl border-none">
+              <Button variant="primary" className="bg-gold-500 !text-navy-900 hover:bg-gold-400 px-10 py-4 text-lg font-bold uppercase tracking-wider shadow-xl border-none">
                 Get Free Consultation
               </Button>
             </Link>
-            <a href={`tel:${siteConfig?.primaryPhone || '(410) 783-1888'}`}>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-navy-900 px-10 py-4 text-lg">
-                Call {siteConfig?.primaryPhone || '(410) 783-1888'}
+            <a href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`}>
+              <Button variant="outline" className="border-white !text-white hover:bg-white hover:!text-navy-900 px-10 py-4 text-lg">
+                Call {siteConfig?.primaryPhone || '(410) 988-0123'}
               </Button>
             </a>
           </div>

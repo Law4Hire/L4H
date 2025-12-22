@@ -12,66 +12,62 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/pricing")]
+[Route("api/v1/pricing")]
 [Tags("Pricing")]
 public class PricingController : ControllerBase
 {
     private readonly L4HDbContext _context;
     private readonly IStringLocalizer<Shared> _localizer;
+    private readonly ILogger<PricingController> _logger;
 
-    public PricingController(L4HDbContext context, IStringLocalizer<Shared> localizer)
+    public PricingController(L4HDbContext context, IStringLocalizer<Shared> localizer, ILogger<PricingController> logger)
     {
         _context = context;
         _localizer = localizer;
+        _logger = logger;
     }
 
     /// <summary>
     /// Get available packages and pricing for a visa type and country
     /// </summary>
-    /// <param name="visaType">Visa type code (e.g., H1B, B2)</param>
-    /// <param name="country">Country code (ISO-2, e.g., US, IN)</param>
-    /// <returns>Available packages with pricing</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(PricingResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PricingResponse>> GetPricing(
         [FromQuery] string? visaType,
         [FromQuery] string? country)
     {
+        _logger.LogInformation("GetPricing called for Visa: {VisaType}, Country: {Country}", visaType, country);
+
         // If no parameters provided, return default packages for general display
         if (string.IsNullOrEmpty(visaType) && string.IsNullOrEmpty(country))
         {
             return await GetDefaultPricing().ConfigureAwait(false);
         }
 
-        if (string.IsNullOrEmpty(country))
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "Missing Country",
-                Detail = _localizer["Pricing.MissingCountry"]
-            });
-        }
+        var countryCode = country ?? "US"; // Default to US if not provided
 
         // Find the visa type
         var visaTypeEntity = await _context.VisaTypes
             .FirstOrDefaultAsync(v => v.Code == visaType && v.IsActive).ConfigureAwait(false);
 
+        // If visa type not found, try to find a "GENERAL" fallback or similar
         if (visaTypeEntity == null)
         {
-            return NotFound(new ProblemDetails
-            {
-                Title = "Visa Type Not Found",
-                Detail = _localizer["Pricing.MissingVisaType"]
-            });
+            _logger.LogWarning("Visa type {VisaType} not found, trying GENERAL fallback", visaType);
+            visaTypeEntity = await _context.VisaTypes
+                .FirstOrDefaultAsync(v => v.Code == "GENERAL" && v.IsActive).ConfigureAwait(false);
         }
 
-        // Get all active pricing rules for this visa type and country
+        if (visaTypeEntity == null)
+        {
+            // Still nothing? return defaults
+            return await GetDefaultPricing().ConfigureAwait(false);
+        }
+
+        // Get all active pricing rules
         var pricingRules = await _context.PricingRules
             .Include(pr => pr.Package)
             .Where(pr => pr.VisaTypeId == visaTypeEntity.Id
-                        && EF.Functions.Collate(pr.CountryCode, "SQL_Latin1_General_CP1_CI_AS") == EF.Functions.Collate(country, "SQL_Latin1_General_CP1_CI_AS")
+                        && pr.CountryCode == countryCode
                         && pr.IsActive
                         && pr.Package.IsActive)
             .OrderBy(pr => pr.Package.SortOrder)
@@ -79,11 +75,8 @@ public class PricingController : ControllerBase
 
         if (!pricingRules.Any())
         {
-            return NotFound(new ProblemDetails
-            {
-                Title = "No Pricing Available",
-                Detail = _localizer["Pricing.NoActiveRule"]
-            });
+            _logger.LogWarning("No pricing rules found for Visa: {VisaType}, Country: {Country}", visaType, countryCode);
+            return await GetDefaultPricing().ConfigureAwait(false);
         }
 
         var packages = pricingRules.Select(pr => new PricingPackageResponse

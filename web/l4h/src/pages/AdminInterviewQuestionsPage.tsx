@@ -86,7 +86,7 @@ export default function AdminInterviewQuestionsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [categories, setCategories] = useState(CATEGORIES.map(c => ({ ...c })));
+  const [categories, setCategories] = useState<{id?: string, value: string, label: string, displayOrder: number, isActive: boolean}[]>([]);
 
   const [formData, setFormData] = useState<QuestionFormData>({
     key: '',
@@ -106,36 +106,40 @@ export default function AdminInterviewQuestionsPage() {
 
   useEffect(() => {
     loadQuestions();
+    loadCategories();
   }, []);
+
+  const loadCategories = async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch('/api/v1/admin/interview-categories', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.length > 0) {
+          setCategories(data);
+        } else {
+          // Fallback to defaults if none in DB yet
+          setCategories(CATEGORIES.map((c, i) => ({ ...c, displayOrder: i, isActive: true })));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load categories', err);
+    }
+  };
 
   // Sync formData when editing a question - use id as dependency to ensure it triggers
   // Also clear formData AND editingQuestion when modal closes to prevent stale data
   useEffect(() => {
-    console.log('[useEffect] Triggered - editingQuestion:', editingQuestion?.key, 'inputType:', editingQuestion?.inputType, 'showModal:', showModal);
-    if (editingQuestion && showModal) {
-      console.log('[useEffect] Setting formData from editingQuestion with inputType:', editingQuestion.inputType);
-      setFormData({
-        key: editingQuestion.key,
-        text: editingQuestion.text,
-        category: editingQuestion.category,
-        inputType: editingQuestion.inputType,
-        displayOrder: editingQuestion.displayOrder,
-        isRequired: editingQuestion.isRequired,
-        isActive: editingQuestion.isActive,
-        description: editingQuestion.description || '',
-        discriminatesVisaCodes: editingQuestion.discriminatesVisaCodes || '',
-        selectionWeight: editingQuestion.selectionWeight,
-        parentId: editingQuestion.parentId || null,
-        pageConfig: editingQuestion.pageConfig || '',
-        options: editingQuestion.options.map(o => ({ ...o }))
-      });
-    } else if (!showModal) {
+    console.log('[useEffect] Triggered - showModal:', showModal);
+    if (!showModal) {
       // Clear both formData AND editingQuestion when modal closes
       console.log('[useEffect] Modal closed - clearing formData and editingQuestion');
       setFormData({
         key: '',
         text: '',
-        category: '',
+        category: 'critical', // Default to critical instead of empty to avoid validation errors
         inputType: 'select',
         displayOrder: 1,
         isRequired: false,
@@ -149,7 +153,7 @@ export default function AdminInterviewQuestionsPage() {
       });
       setEditingQuestion(null);
     }
-  }, [editingQuestion?.id, showModal]);
+  }, [showModal]);
 
   const loadQuestions = async () => {
     try {
@@ -184,6 +188,7 @@ export default function AdminInterviewQuestionsPage() {
   };
 
   const openCreateModal = () => {
+    setModalKey(prev => prev + 1);
     setEditingQuestion(null);
     setFormData({
       key: '',
@@ -205,8 +210,8 @@ export default function AdminInterviewQuestionsPage() {
 
   const openEditModal = (question: InterviewQuestion) => {
     console.log('[openEditModal] Called with question:', question.key, 'inputType:', question.inputType);
+    // Set question data first
     setEditingQuestion(question);
-    // Set formData synchronously to avoid any rendering delay
     setFormData({
       key: question.key,
       text: question.text,
@@ -222,7 +227,11 @@ export default function AdminInterviewQuestionsPage() {
       pageConfig: question.pageConfig || '',
       options: question.options.map(o => ({ ...o }))
     });
-    setShowModal(true);
+
+    // Small delay to ensure state updates have propagated before showing modal
+    setTimeout(() => {
+      setShowModal(true);
+    }, 50);
   };
 
   const openCreateChildModal = (parentQuestion: InterviewQuestion) => {
@@ -463,10 +472,10 @@ export default function AdminInterviewQuestionsPage() {
 
   const addCategory = () => {
     const newValue = `category_${categories.length + 1}`;
-    setCategories([...categories, { value: newValue, label: 'New Category' }]);
+    setCategories([...categories, { value: newValue, label: 'New Category', displayOrder: categories.length, isActive: true }]);
   };
 
-  const updateCategory = (index: number, field: 'value' | 'label', value: string) => {
+  const updateCategory = (index: number, field: string, value: string | number | boolean) => {
     const newCategories = [...categories];
     newCategories[index] = { ...newCategories[index], [field]: value };
     setCategories(newCategories);
@@ -477,12 +486,31 @@ export default function AdminInterviewQuestionsPage() {
     setCategories(newCategories);
   };
 
-  const saveCategoryChanges = () => {
-    // In a real implementation, you'd save these to the backend
-    // For now, we'll just close the modal
-    // TODO: Persist category changes to backend/config
-    success('Category changes saved locally. Note: These changes are session-only until backend support is added.');
-    setShowCategoryModal(false);
+  const saveCategoryChanges = async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      
+      // For each category, create or update
+      for (const cat of categories) {
+        const method = cat.id ? 'PUT' : 'POST';
+        const url = cat.id ? `/api/v1/admin/interview-categories/${cat.id}` : '/api/v1/admin/interview-categories';
+        
+        await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(cat)
+        });
+      }
+      
+      success('Category changes saved successfully');
+      setShowCategoryModal(false);
+      loadCategories();
+    } catch (err) {
+      error('Failed to save categories');
+    }
   };
 
   const filteredQuestions = questions.filter(question => {

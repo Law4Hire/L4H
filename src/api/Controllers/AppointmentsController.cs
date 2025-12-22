@@ -14,9 +14,9 @@ using System.Security.Claims;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/meetings")]
+[Route("api/v1/appointments")]
 [Authorize]
-[Tags("Meetings")]
+[Tags("Appointments")]
 public class AppointmentsController : ControllerBase
 {
     private readonly L4H.Api.Services.Providers.IMeetingsProvider _meetingsProvider;
@@ -37,6 +37,36 @@ public class AppointmentsController : ControllerBase
         _logger = logger;
         _meetingsOptions = meetingsOptions.Value;
         _context = context;
+    }
+
+    /// <summary>
+    /// List all appointments for the current user
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<List<Appointment>>> GetAppointments()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new { message = "User not authenticated" });
+        }
+
+        var userIdTyped = new UserId(userId);
+
+        // Get cases first to filter appointments
+        var caseIds = await _context.Cases
+            .Where(c => c.UserId == userIdTyped)
+            .Select(c => c.Id)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var appointments = await _context.Set<Appointment>()
+            .Where(a => caseIds.Contains(a.CaseId))
+            .OrderByDescending(a => a.ScheduledStart)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return Ok(appointments);
     }
 
     /// <summary>

@@ -10,38 +10,43 @@ const test = base.extend<{}, { workerStorageState: string }>({
   storageState: ({ workerStorageState }, use) => use(workerStorageState),
 
   workerStorageState: [async ({ browser }, use) => {
-    // Authenticate once per worker
+    // Authenticate once per worker using API-based approach
     const page = await browser.newPage({ storageState: undefined });
 
     try {
-      console.log('Performing one-time authentication...');
-      await page.goto('http://localhost:5174/login', { waitUntil: 'networkidle', timeout: 30000 });
+      console.log('Performing one-time authentication via API...');
 
-      // Fill in credentials
-      await page.locator('input[type="email"]').fill('testadmin@cannlaw.com');
-      await page.locator('input[type="password"]').fill('Admin123!');
+      // Navigate to any page to set up the browser context
+      await page.goto('http://localhost:5174/', { waitUntil: 'load', timeout: 10000 });
+      console.log('Page context initialized');
 
-      // Click submit and wait for response
-      const submitButton = page.locator('button[type="submit"]');
-      await Promise.all([
-        page.waitForResponse(response => response.url().includes('/v1/auth/login'), { timeout: 15000 }),
-        submitButton.click()
-      ]);
+      // Authenticate via direct API call using page.request (bypasses browser UI issues)
+      const response = await page.request.post('http://localhost:8765/api/v1/auth/login', {
+        data: {
+          email: 'dcann@cannlaw.com',
+          password: 'SecureTest123!',
+          rememberMe: false
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-      // Wait a moment for any post-login processing
-      await page.waitForTimeout(2000);
-
-      // Check for JWT token in localStorage
-      const hasToken = await page.evaluate(() => localStorage.getItem('jwt_token') !== null);
-
-      if (!hasToken) {
-        // Try to find error message
-        const errorMsg = await page.locator('[role="alert"], .text-error-600, .text-red-600').textContent().catch(() => 'No error message');
-        throw new Error(`Login failed - no JWT token found. Error: ${errorMsg}`);
+      if (!response.ok()) {
+        const body = await response.text();
+        throw new Error(`API login failed: ${response.status()} ${response.statusText()} - ${body}`);
       }
 
-      console.log('✅ Authentication successful, JWT token acquired');
-      console.log('Current URL after login:', page.url());
+      const authData = await response.json();
+      console.log('✅ API authentication successful, token received');
+
+      // Set the JWT token in localStorage
+      await page.evaluate((token) => {
+        localStorage.setItem('jwt_token', token);
+        window.dispatchEvent(new Event('jwt-token-changed'));
+      }, authData.token);
+
+      console.log('✅ JWT token injected into localStorage');
 
       // Save storage state
       const dir = path.dirname(AUTH_FILE);
@@ -50,6 +55,8 @@ const test = base.extend<{}, { workerStorageState: string }>({
       }
       await page.context().storageState({ path: AUTH_FILE });
       await page.close();
+
+      console.log('✅ Authentication complete, storage state saved');
 
       // Use the auth file for all tests
       await use(AUTH_FILE);
@@ -441,13 +448,13 @@ test.describe('Document Upload & Attorney Question Page - Complete E2E Test', ()
 
         // CRITICAL: Wait for Input Type SELECT to show "document_upload" as selected
         // This ensures React state has fully synchronized before we expect the config panel
-        const inputTypeSelect = await page.locator('[role="dialog"] select').nth(2);
         await page.waitForFunction(
-          (select) => {
+          () => {
+            const select = document.querySelectorAll('[role="dialog"] select')[2];
+            if (!select) return false;
             const selectedOption = select.options[select.selectedIndex];
             return selectedOption && selectedOption.value === 'document_upload';
           },
-          inputTypeSelect,
           { timeout: 10000 }
         );
 
@@ -767,13 +774,13 @@ test.describe('Document Upload & Attorney Question Page - Complete E2E Test', ()
 
       // CRITICAL: Wait for Input Type SELECT to show "document_upload" as selected
       // This ensures React state has fully synchronized before we expect the config panel
-      const inputTypeSelectForJson = await page.locator('[role="dialog"] select').nth(2);
       await page.waitForFunction(
-        (select) => {
+        () => {
+          const select = document.querySelectorAll('[role="dialog"] select')[2];
+          if (!select) return false;
           const selectedOption = select.options[select.selectedIndex];
           return selectedOption && selectedOption.value === 'document_upload';
         },
-        inputTypeSelectForJson,
         { timeout: 10000 }
       );
 

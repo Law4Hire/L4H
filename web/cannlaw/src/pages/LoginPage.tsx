@@ -32,11 +32,11 @@ const LoginPage: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('title')}
+          <h2 className="mt-6 text-center text-3xl font-serif font-bold text-navy-900">
+            Associate Sign In
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {t('subtitle')}
+            Please enter your credentials to access the internal system.
           </p>
         </div>
         
@@ -44,7 +44,7 @@ const LoginPage: React.FC = () => {
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">
-                {t('email')}
+                Email Address
               </label>
               <input
                 id="email"
@@ -53,14 +53,14 @@ const LoginPage: React.FC = () => {
                 autoComplete="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t('email')}
+                placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                {t('password')}
+                Password
               </label>
               <input
                 id="password"
@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
                 autoComplete="current-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t('password')}
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -82,12 +82,12 @@ const LoginPage: React.FC = () => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-navy-600 focus:ring-navy-500 border-gray-300 rounded"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                {t('remember')}
+                Remember me
               </label>
             </div>
           </div>
@@ -101,11 +101,11 @@ const LoginPage: React.FC = () => {
           <div>
             <Button
               type="submit"
-              className="group relative w-full flex justify-center"
+              className="group relative w-full flex justify-center bg-navy-900 hover:bg-navy-800"
               loading={loading}
               disabled={loading}
             >
-              {t('login')}
+              Sign In
             </Button>
           </div>
         </form>

@@ -50,9 +50,9 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
             Providing Comprehensive Immigration Law Services Since 1998
          </div>
          <div className="flex items-center space-x-6 ml-auto">
-            <a href={`tel:${siteConfig?.primaryPhone || '(410) 783-1888'}`} className="hover:text-gold-400 transition-colors flex items-center">
+            <a href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`} className="hover:text-gold-400 transition-colors flex items-center">
                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M20 22.621l-3.521-6.795c-.008.004-1.974.97-2.064 1.011-2.24 1.086-6.799-7.82-4.609-8.994l2.083-1.026-3.493-6.817-2.106 1.039C5.438 1.487 3.235 2.573 2.147 4.604c-1.09 2.031-1.049 4.453.072 6.641 1.637 3.193 4.887 6.443 8.08 8.08 2.188 1.121 4.61 1.162 6.641.072 2.031-1.088 3.117-3.291 3.564-6.148l1.039-2.106-6.817-3.493-1.026 2.083c-1.174 2.19-10.08 6.749-8.994 4.609.041-.09 1.007-2.056 1.011-2.064L22.621 20z"/></svg>
-               {siteConfig?.primaryPhone || '(410) 783-1888'}
+               {siteConfig?.primaryPhone || '(410) 988-0123'}
             </a>
             <span className="text-gray-700">|</span>
             <Link to="/login" className="font-medium text-gray-500 hover:text-white uppercase transition-colors">
@@ -136,8 +136,8 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
             {/* Firm Info */}
             <div className="col-span-1 lg:col-span-1">
               <div className="flex items-center mb-4">
-                 <div className="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center text-white mr-2">
-                    <span className="font-serif font-bold text-sm">CL</span>
+                 <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center text-white mr-3 border-2 border-gold-500 shadow-md">
+                    <span className="font-serif font-bold text-sm tracking-tighter">CLG</span>
                  </div>
                  <h3 className="text-lg font-serif font-bold text-white">
                    {siteConfig?.firmName || 'Cann Legal Group'}
@@ -158,7 +158,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
                  </li>
                  <li className="flex items-center">
                    <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                   <a href={`tel:${siteConfig?.primaryPhone || '(410) 783-1888'}`} className="hover:text-white transition-colors">{siteConfig?.primaryPhone || '(410) 783-1888'}</a>
+                   <a href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`} className="hover:text-white transition-colors">{siteConfig?.primaryPhone || '(410) 988-0123'}</a>
                  </li>
                  <li className="flex items-center">
                    <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
@@ -198,7 +198,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
                 ))}
               </div>
               <Link to="/contact">
-                  <Button variant="primary" size="sm" className="w-full">
+                  <Button variant="primary" size="sm" className="w-full bg-blue-800 hover:bg-blue-700">
                     Schedule Now
                   </Button>
               </Link>

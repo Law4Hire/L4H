@@ -389,11 +389,11 @@ export const appointments = {
 // Messages API methods
 export const messages = {
   async threads() {
-    return fetchJson('/v1/messages/threads')
+    return fetchJson('/v1/messaging/threads')
   },
   
   async thread(threadId: string) {
-    return fetchJson(`/v1/messages/threads/${threadId}`)
+    return fetchJson(`/v1/messaging/threads/${threadId}`)
   },
   
   async post(data: {
@@ -403,14 +403,22 @@ export const messages = {
     content: string
     priority?: 'low' | 'medium' | 'high'
   }) {
-    return fetchJson('/v1/messages', {
+    // If we have a threadId, use the thread-specific endpoint
+    if (data.threadId) {
+      return fetchJson(`/v1/messaging/threads/${data.threadId}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ content: data.content })
+      })
+    }
+    // Otherwise use the general messaging endpoint (if it exists, or create a thread first)
+    return fetchJson('/v1/messaging/threads', {
       method: 'POST',
       body: JSON.stringify(data)
     })
   },
   
   async markRead(messageId: string) {
-    return fetchJson(`/v1/messages/${messageId}/read`, {
+    return fetchJson(`/v1/messaging/messages/${messageId}/read`, {
       method: 'POST'
     })
   }

@@ -39,7 +39,9 @@ public class L4HDbContext : DbContext
     public DbSet<AdminPath> AdminPaths { get; set; }
     public DbSet<InterviewQuestionEntity> InterviewQuestions { get; set; }
     public DbSet<QuestionOptionEntity> QuestionOptions { get; set; }
+    public DbSet<InterviewQuestionCategory> InterviewQuestionCategories { get; set; }
     public DbSet<InterviewDocumentUpload> InterviewDocumentUploads { get; set; }
+    public DbSet<SiteContent> SiteContents { get; set; }
 
     // USCIS Forms management entities
     public DbSet<USCISFormEntity> USCISForms { get; set; }
@@ -894,6 +896,29 @@ public class L4HDbContext : DbContext
             entity.HasIndex(e => e.QuestionId);
             entity.HasIndex(e => e.DisplayOrder);
             entity.HasIndex(e => e.IsActive);
+        });
+
+        modelBuilder.Entity<InterviewQuestionCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Value).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Label).HasMaxLength(100).IsRequired();
+            entity.HasIndex(e => e.Value).IsUnique();
+            entity.HasIndex(e => e.DisplayOrder);
+            entity.HasIndex(e => e.IsActive);
+        });
+
+        modelBuilder.Entity<SiteContent>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ContentType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Title).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Summary).HasMaxLength(500);
+            entity.Property(e => e.Author).HasMaxLength(200);
+            entity.Property(e => e.Tags).HasMaxLength(500);
+            entity.HasIndex(e => e.ContentType);
+            entity.HasIndex(e => e.IsPublished);
+            entity.HasIndex(e => e.PublishedAt);
         });
 
         modelBuilder.Entity<InterviewDocumentUpload>(entity =>

@@ -7,8 +7,9 @@ import { format } from 'date-fns'
 interface Appointment {
   id: string
   caseId: string
-  scheduledAt: string
-  duration: number
+  scheduledStart: string
+  scheduledEnd: string
+  durationMinutes: number
   notes?: string
   status: 'scheduled' | 'confirmed' | 'cancelled'
 }
@@ -99,14 +100,14 @@ export default function AppointmentsPage() {
                   <div className="flex items-center space-x-4 mb-2">
                     <Calendar className="h-5 w-5 text-gray-400" />
                     <span className="font-medium">
-                      {format(new Date(appointment.scheduledAt), 'PPP p')}
+                      {format(new Date(appointment.scheduledStart), 'PPP p')}
                     </span>
                   </div>
                   
                   <div className="flex items-center space-x-4 mb-2">
                     <Clock className="h-4 w-4 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      {appointment.duration} {'minutes'}
+                      {appointment.durationMinutes} {'minutes'}
                     </span>
                   </div>
 

@@ -121,7 +121,7 @@ public class ServicesController : ControllerBase
         var familyCategory = new ServiceCategory
         {
             Name = "Family-Based Immigration",
-            Description = "Comprehensive family immigration services to reunite families",
+            Description = "Comprehensive family immigration services to reunite families, including I-130 petitions, K visas, and Adjustment of Status.",
             DisplayOrder = 1,
             IsActive = true,
             CreatedAt = DateTime.UtcNow,
@@ -131,8 +131,18 @@ public class ServicesController : ControllerBase
         var employmentCategory = new ServiceCategory
         {
             Name = "Employment & Investment",
-            Description = "Professional immigration services for workers and investors",
+            Description = "Professional immigration services for workers, executives, and investors (H-1B, L-1, E-2, EB-1, EB-2 NIW, PERM).",
             DisplayOrder = 2,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var humanitarianCategory = new ServiceCategory
+        {
+            Name = "Humanitarian & Asylum",
+            Description = "Specialized legal support for Asylum, U-Visas, T-Visas, and VAWA applications.",
+            DisplayOrder = 3,
             IsActive = true,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -140,42 +150,76 @@ public class ServicesController : ControllerBase
 
         var waiversCategory = new ServiceCategory
         {
-            Name = "Waivers & Criminal Issues",
-            Description = "Specialized services for complex immigration cases",
-            DisplayOrder = 3,
+            Name = "Waivers & Court Defense",
+            Description = "Defense for removal proceedings, I-601/I-601A waivers, and criminal-immigration issues.",
+            DisplayOrder = 4,
             IsActive = true,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
 
-        _context.ServiceCategories.AddRange(familyCategory, employmentCategory, waiversCategory);
+        var citizenshipCategory = new ServiceCategory
+        {
+            Name = "Naturalization & Citizenship",
+            Description = "Assistance with N-400 applications, citizenship claims, and complex naturalization cases.",
+            DisplayOrder = 5,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.ServiceCategories.AddRange(familyCategory, employmentCategory, humanitarianCategory, waiversCategory, citizenshipCategory);
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         // Add default services
         var familyServices = new[]
         {
-            new LegalService { Name = "K-1 Fiancé/Fiancée Visa", ServiceCategoryId = familyCategory.Id, DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new LegalService { Name = "K-3 Spousal Visa", ServiceCategoryId = familyCategory.Id, DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new LegalService { Name = "Family Petitions", ServiceCategoryId = familyCategory.Id, DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+            new LegalService { Name = "I-130 Family Petitions", ServiceCategoryId = familyCategory.Id, DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "Adjustment of Status (Green Card)", ServiceCategoryId = familyCategory.Id, DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "Consular Processing", ServiceCategoryId = familyCategory.Id, DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "K-1 Fiancé / K-3 Spouse Visas", ServiceCategoryId = familyCategory.Id, DisplayOrder = 4, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "Removal of Conditions (I-751)", ServiceCategoryId = familyCategory.Id, DisplayOrder = 5, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
         };
 
         var employmentServices = new[]
         {
-            new LegalService { Name = "H-1B Visa", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new LegalService { Name = "E1/E2 Investment Visas", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new LegalService { Name = "PERM Labor Certification", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new LegalService { Name = "Multi-national Transfers", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 4, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+            new LegalService { Name = "H-1B Specialty Occupation", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "L-1 Intracompany Transferee", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "E-1/E-2 Treaty Trader/Investor", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "EB-1 Extraordinary Ability", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 4, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "EB-2 National Interest Waiver (NIW)", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 5, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "PERM Labor Certification", ServiceCategoryId = employmentCategory.Id, DisplayOrder = 6, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        };
+
+        var humanitarianServices = new[]
+        {
+            new LegalService { Name = "Asylum & Withholding of Removal", ServiceCategoryId = humanitarianCategory.Id, DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "U-Visa (Victims of Crime)", ServiceCategoryId = humanitarianCategory.Id, DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "T-Visa (Trafficking Victims)", ServiceCategoryId = humanitarianCategory.Id, DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "VAWA (Abused Spouses/Children)", ServiceCategoryId = humanitarianCategory.Id, DisplayOrder = 4, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "TPS (Temporary Protected Status)", ServiceCategoryId = humanitarianCategory.Id, DisplayOrder = 5, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
         };
 
         var waiverServices = new[]
         {
-            new LegalService { Name = "212 Waiver", ServiceCategoryId = waiversCategory.Id, DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new LegalService { Name = "Criminal Issues Affecting Naturalization", ServiceCategoryId = waiversCategory.Id, DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+            new LegalService { Name = "I-601A Provisional Waivers", ServiceCategoryId = waiversCategory.Id, DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "Deportation / Removal Defense", ServiceCategoryId = waiversCategory.Id, DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "Bond Hearings", ServiceCategoryId = waiversCategory.Id, DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "BIA Appeals", ServiceCategoryId = waiversCategory.Id, DisplayOrder = 4, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        };
+
+        var citizenshipServices = new[]
+        {
+            new LegalService { Name = "N-400 Naturalization", ServiceCategoryId = citizenshipCategory.Id, DisplayOrder = 1, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "N-600 Certificate of Citizenship", ServiceCategoryId = citizenshipCategory.Id, DisplayOrder = 2, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new LegalService { Name = "Disability Waivers (N-648)", ServiceCategoryId = citizenshipCategory.Id, DisplayOrder = 3, IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
         };
 
         _context.LegalServices.AddRange(familyServices);
         _context.LegalServices.AddRange(employmentServices);
+        _context.LegalServices.AddRange(humanitarianServices);
         _context.LegalServices.AddRange(waiverServices);
+        _context.LegalServices.AddRange(citizenshipServices);
         await _context.SaveChangesAsync().ConfigureAwait(false);
     }
 }

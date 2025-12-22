@@ -194,8 +194,10 @@ const DashboardPage: React.FC = () => {
       {/* Case Status */}
       <Card title={'Case Status'}>
         {error ? (
-          <div className="text-red-600 text-center py-4">
-            {'Error'}
+          <div className="text-red-600 text-center py-4 bg-red-50 rounded-lg">
+            <p className="font-bold">Error loading cases</p>
+            <p className="text-sm">{(error as any)?.detail || (error as any)?.message || 'Please check your connection and try again.'}</p>
+            <Button size="sm" variant="outline" className="mt-2" onClick={() => (queryClient as any).invalidateQueries({ queryKey: ['cases'] })}>Retry</Button>
           </div>
         ) : casesList.length === 0 ? (
           <div className="text-gray-500 dark:text-gray-400 text-center py-4">

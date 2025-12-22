@@ -84,10 +84,10 @@ const ServicesPage: React.FC = () => {
                 Schedule Consultation
               </a>
               <a 
-                href={`tel:${siteConfig?.primaryPhone || '(410) 783-1888'}`}
+                href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`}
                 className="inline-flex items-center px-6 py-3 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50"
               >
-                Call {siteConfig?.primaryPhone || '(410) 783-1888'}
+                Call {siteConfig?.primaryPhone || '(410) 988-0123'}
               </a>
             </div>
           </div>

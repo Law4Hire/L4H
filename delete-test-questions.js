@@ -14,8 +14,8 @@ async function deleteTestQuestions() {
     console.log('No stored token, getting new one...');
     // Login to get token
     const loginData = JSON.stringify({
-      email: 'testadmin@cannlaw.com',
-      password: 'Admin123!',
+      email: 'dcann@cannlaw.com',
+      password: 'SecureTest123!',
       rememberMe: false
     });
 

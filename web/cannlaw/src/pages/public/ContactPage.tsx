@@ -240,8 +240,8 @@ const ContactPage: React.FC = () => {
                     </svg>
                     <div>
                       <p className="font-medium text-gray-900">Phone</p>
-                      <a href={`tel:${siteConfig?.primaryPhone || '(410) 783-1888'}`} className="text-blue-600 hover:text-blue-800">
-                        {siteConfig?.primaryPhone || '(410) 783-1888'}
+                      <a href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`} className="text-blue-600 hover:text-blue-800">
+                        {siteConfig?.primaryPhone || '(410) 988-0123'}
                       </a>
                     </div>
                   </div>
@@ -309,7 +309,7 @@ const ContactPage: React.FC = () => {
                   We provide round-the-clock support for urgent immigration matters.
                 </p>
                 <a 
-                  href={`tel:${siteConfig?.primaryPhone || '(410) 783-1888'}`}
+                  href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`}
                   className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
