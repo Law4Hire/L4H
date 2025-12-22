@@ -399,16 +399,60 @@ public class TimeTrackingController : ControllerBase
 
         return Ok();
     }
+    /// <summary>
+    /// Get time tracking statistics
+    /// </summary>
+    [HttpGet("stats")]
+    [ProducesResponseType(typeof(TimeTrackingStats), StatusCodes.Status200OK)]
+    public async Task<ActionResult<TimeTrackingStats>> GetStats()
+    {
+        var userIdClaim = User.FindFirst("sub")?.Value;
+        if (!int.TryParse(userIdClaim, out var attorneyId))
+        {
+            return BadRequest("Invalid user ID");
+        }
+
+        var now = DateTime.UtcNow;
+        var today = now.Date;
+        var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+
+        var query = _context.TimeEntries.Where(te => te.AttorneyId == attorneyId);
+
+        var hoursToday = await query
+            .Where(te => te.StartTime >= today)
+            .SumAsync(te => te.Duration);
+
+        var hoursThisWeek = await query
+            .Where(te => te.StartTime >= startOfWeek)
+            .SumAsync(te => te.Duration);
+
+        var unbilledAmount = await query
+            .Where(te => !te.IsBilled)
+            .SumAsync(te => te.BillableAmount);
+
+        return Ok(new TimeTrackingStats
+        {
+            HoursToday = hoursToday,
+            HoursThisWeek = hoursThisWeek,
+            UnbilledAmount = unbilledAmount
+        });
+    }
 }
 
-// Request/Response Models
-public class StartTimeTrackingRequest
+public class TimeTrackingStats
 {
-    public int ClientId { get; set; }
-    public string? Description { get; set; }
-    public string? Notes { get; set; }
-}
-
+            public decimal HoursToday { get; set; }
+            public decimal HoursThisWeek { get; set; }
+            public decimal UnbilledAmount { get; set; }
+        }
+    
+        // Request/Response Models
+        public class StartTimeTrackingRequest
+        {
+            public int ClientId { get; set; }
+            public string? Description { get; set; }
+            public string? Notes { get; set; }
+        }
 public class StopTimeTrackingRequest
 {
     public string? Description { get; set; }
