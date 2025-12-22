@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { Card, Button, pricing, cases, useToast } from '@l4h/shared-ui'
 import { useAuth } from '../hooks/useAuth'
 
@@ -23,7 +22,6 @@ interface Case {
 
 const PricingPage: React.FC = () => {
   const navigate = useNavigate()
-  const { t } = useTranslation()
   const { success, error: showError } = useToast()
   const queryClient = useQueryClient()
   const { user } = useAuth()
@@ -55,7 +53,7 @@ const PricingPage: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pricing'] })
-      success(t('pricing.packageSelected', 'Package selected successfully!'))
+      success('Package selected successfully!')
       navigate('/scheduling')
     },
     onError: (err) => {

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Card, apiClient, type Appointment } from '@l4h/shared-ui'
 
 const SchedulePage: React.FC = () => {
-  const { t } = useTranslation()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -22,7 +20,7 @@ const SchedulePage: React.FC = () => {
     }
 
     loadAppointments()
-  }, [t])
+  }, [])
 
   const getStatusBadge = (status: string) => {
     const statusClasses = {
@@ -49,14 +47,14 @@ const SchedulePage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card title={t('schedule.upcoming')}>
+      <Card title={'Upcoming Appointments'}>
         {error ? (
           <div className="text-red-600 text-center py-4">
             {error}
           </div>
         ) : appointments.length === 0 ? (
           <div className="text-gray-500 text-center py-4">
-            {t('schedule.noAppointments')}
+            No upcoming appointments
           </div>
         ) : (
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -64,16 +62,16 @@ const SchedulePage: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('schedule.client')}
+                    Client
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('schedule.time')}
+                    Time
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('schedule.type')}
+                    Type
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('schedule.status')}
+                    Status
                   </th>
                   <th className="relative px-6 py-3">
                     <span className="sr-only">{'View'}</span>

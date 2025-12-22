@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { Button, Input, auth, setJwtToken, useToast, cases, interview } from '@l4h/shared-ui'
 
@@ -15,7 +14,6 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
-  const { t, i18n } = useTranslation(['auth', 'common'])
   const navigate = useNavigate()
   const { success, error: showError } = useToast()
   const [loading, setLoading] = useState(false)
@@ -71,7 +69,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         setJwtToken(result.token)
         // Dispatch custom event to notify auth state change
         window.dispatchEvent(new Event('jwt-token-changed'))
-        success(t('login', { ns: 'auth' }) + ' ' + t('success', { ns: 'common' }))
+        success('Login' + ' ' + 'Success')
         if (onSuccess) {
           onSuccess()
         } else {
@@ -91,13 +89,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
           }
         }
       } else {
-        setError(t('loginFailed', { ns: 'auth' }))
-        showError(t('loginFailed', { ns: 'auth' }))
+        setError('Login Failed')
+        showError('Login Failed')
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : t('loginFailed', { ns: 'auth' })
+      const errorMessage = err instanceof Error ? err.message : 'Login Failed'
       setError(errorMessage)
-      showError(t('loginFailed', { ns: 'auth' }), errorMessage)
+      showError('Login Failed', errorMessage)
     } finally {
       setLoading(false)
     }
@@ -108,7 +106,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-            {t('loginPage.title', { ns: 'auth' })}
+            Login
           </h2>
         </div>
         
@@ -120,31 +118,31 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         >
           <div className="space-y-4">
             <Input
-              label={t('email', { ns: 'auth' })}
+              label='Email'
               type="email"
               autoComplete="email"
-              placeholder={t('email', { ns: 'auth' })}
+              placeholder='Email'
               error={errors.email?.message}
               {...register('email', {
-                required: t('emailRequired', { ns: 'auth' }) || 'Email is required',
+                required: 'Email is required',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: t('emailInvalid', { ns: 'auth' }) || 'Invalid email format',
+                  message: 'Invalid email format',
                 },
               })}
             />
             
             <Input
-              label={t('password', { ns: 'auth' })}
+              label='Password'
               type="password"
               autoComplete="current-password"
-              placeholder={t('password', { ns: 'auth' })}
+              placeholder='Password'
               error={errors.password?.message}
               {...register('password', {
-                required: t('passwordRequired', { ns: 'auth' }) || 'Password is required',
+                required: 'Password is required',
                 minLength: {
                   value: 6,
-                  message: t('passwordMinLength', { ns: 'auth' }) || 'Password must be at least 6 characters',
+                  message: 'Password must be at least 6 characters',
                 },
               })}
             />
@@ -158,7 +156,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
               {...register('remember')}
             />
             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
-              {t('remember', { ns: 'auth' })}
+              Remember me
             </label>
           </div>
 
@@ -175,19 +173,19 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
               disabled={loading}
               className="w-full"
             >
-              {t('loginPage.submit', { ns: 'auth' })}
+              Login
             </Button>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {t('dontHaveAccount', { ns: 'auth' })} {' '}
+              Don't have an account? {' '}
               <button
                 type="button"
                 onClick={() => navigate('/register')}
                 className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                {t('signUpNow', { ns: 'auth' })}
+                Sign up now
               </button>
             </p>
           </div>

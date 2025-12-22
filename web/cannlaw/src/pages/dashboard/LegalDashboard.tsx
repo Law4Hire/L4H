@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, useRTL, RTLNumber } from '@l4h/shared-ui'
+import { Card } from '@l4h/shared-ui'
 import { useAuth } from '../../hooks/useAuth'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -22,7 +22,6 @@ interface ActivityItem {
 
 const LegalDashboard: React.FC = () => {
   const { user } = useAuth()
-  const { getClassName, textAlign } = useRTL()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activity, setActivity] = useState<ActivityItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -72,14 +71,13 @@ const LegalDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className={getClassName(
-        "bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white",
-        "bg-gradient-to-l from-blue-600 to-blue-800 rounded-lg p-6 text-white"
-      )}>
-        <h1 className="text-2xl font-bold mb-2" style={{ textAlign: textAlign() as any }}>
+      <div className={
+        "bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white"
+      }>
+        <h1 className="text-2xl font-bold mb-2">
           Welcome back, {user?.name || 'Legal Professional'}!
         </h1>
-        <p className="text-blue-100" style={{ textAlign: textAlign() as any }}>
+        <p className="text-blue-100">
           Here's an overview of your practice and recent activity.
         </p>
       </div>
@@ -87,33 +85,32 @@ const LegalDashboard: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="p-6 stat-card">
-          <div className={getClassName("flex items-center justify-between", "flex items-center justify-between rtl:flex-row-reverse")}>
-            <div style={{ textAlign: textAlign() as any }}>
+          <div className={"flex items-center justify-between"}>
+            <div>
               <p className="text-sm font-medium text-gray-600">Active Cases</p>
               <p className="text-3xl font-bold text-gray-900">
-                <RTLNumber value={stats?.activeCases || 0} />
+                {stats?.activeCases || 0}
               </p>
             </div>
-            <div className={getClassName(
-              "w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center",
-              "w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center stat-icon"
-            )}>
+            <div className={
+              "w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center"
+            }>
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
           </div>
-          <div className="mt-4" style={{ textAlign: textAlign() as any }}>
+          <div className="mt-4">
             <span className="text-sm text-gray-500">Currently active files</span>
           </div>
         </Card>
 
         <Card className="p-6 stat-card">
-          <div className={getClassName("flex items-center justify-between", "flex items-center justify-between rtl:flex-row-reverse")}>
-            <div style={{ textAlign: textAlign() as any }}>
+          <div className={"flex items-center justify-between"}>
+            <div>
               <p className="text-sm font-medium text-gray-600">Pending Tasks</p>
               <p className="text-3xl font-bold text-gray-900">
-                <RTLNumber value={stats?.pendingTasks || 0} />
+                {stats?.pendingTasks || 0}
               </p>
             </div>
             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center stat-icon">
@@ -122,17 +119,17 @@ const LegalDashboard: React.FC = () => {
               </svg>
             </div>
           </div>
-          <div className="mt-4" style={{ textAlign: textAlign() as any }}>
+          <div className="mt-4">
             <span className="text-sm text-orange-600">Cases in progress</span>
           </div>
         </Card>
 
         <Card className="p-6 stat-card">
-          <div className={getClassName("flex items-center justify-between", "flex items-center justify-between rtl:flex-row-reverse")}>
-            <div style={{ textAlign: textAlign() as any }}>
+          <div className={"flex items-center justify-between"}>
+            <div>
               <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
               <p className="text-3xl font-bold text-gray-900">
-                <RTLNumber value={stats?.monthlyRevenue || 0} format="currency" currency="USD" />
+                {stats?.monthlyRevenue || 0}
               </p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center stat-icon">
@@ -141,7 +138,7 @@ const LegalDashboard: React.FC = () => {
               </svg>
             </div>
           </div>
-          <div className="mt-4" style={{ textAlign: textAlign() as any }}>
+          <div className="mt-4">
             <span className={`text-sm ${revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {revenueGrowth >= 0 ? '↗' : '↘'} {Math.abs(revenueGrowth).toFixed(1)}% from last month
             </span>

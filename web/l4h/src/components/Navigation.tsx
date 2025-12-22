@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { useAuth, getUserDisplayName } from '../hooks/useAuth'
 import { useIdleTimeout } from '../hooks/useIdleTimeout'
 import { performLogout } from '../utils/auth'
@@ -8,7 +7,6 @@ import { performLogout } from '../utils/auth'
 export const Navigation: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { t } = useTranslation(['common', 'auth'])
   const { isAuthenticated, user, isLoading } = useAuth()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
@@ -57,8 +55,8 @@ export const Navigation: React.FC = () => {
             <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.2rem' }}>🇺🇸</span>
           </div>
           <div style={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>{t('brand.title', 'US Immigration Help')}</h1>
-            <p style={{ fontSize: '0.875rem', color: '#666', margin: 0 }}>{t('brand.subtitle', 'Powered by Law4Hire')}</p>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>US Immigration Help</h1>
+            <p style={{ fontSize: '0.875rem', color: '#666', margin: 0 }}>Powered by Law4Hire</p>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -77,7 +75,7 @@ export const Navigation: React.FC = () => {
               fontWeight: location.pathname === '/visa-library' ? 'bold' : 'normal'
             }}
           >
-            {t('nav.visaLibrary', 'Visa Library')}
+            Visa Library
           </button>
           
           {isLoading ? (
@@ -95,7 +93,7 @@ export const Navigation: React.FC = () => {
                   color: '#374151'
                 }}
               >
-                {t('nav.hello', 'Hello')} {getUserDisplayName(user)}
+                Hello {getUserDisplayName(user)}
               </button>
               {showUserMenu && (
                 <div style={{
@@ -122,7 +120,7 @@ export const Navigation: React.FC = () => {
                       borderBottom: '1px solid #e5e7eb'
                     }}
                   >
-                    {t('dashboard', { ns: 'nav' })}
+                    Dashboard
                   </button>
                   <button
                     onClick={() => { setShowUserMenu(false); handleLogout() }}
@@ -136,7 +134,7 @@ export const Navigation: React.FC = () => {
                       color: '#dc2626'
                     }}
                   >
-                    {t('auth.logout', 'Logout')}
+                    Logout
                   </button>
                 </div>
               )}
@@ -147,13 +145,13 @@ export const Navigation: React.FC = () => {
                 onClick={() => navigate('/login')}
                 style={{ background: 'none', border: '1px solid #d1d5db', borderRadius: '6px', padding: '0.5rem 1rem', cursor: 'pointer' }}
               >
-                {t('auth.login', 'Login')}
+                Login
               </button>
               <button
                 onClick={() => navigate('/login')}
                 style={{ background: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', cursor: 'pointer' }}
               >
-                {t('common.getStarted', 'Get Started')}
+                Get Started
               </button>
             </>
           )}

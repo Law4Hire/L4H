@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Card, apiClient, type Case } from '@l4h/shared-ui'
 
 const CasesPage: React.FC = () => {
-  const { t } = useTranslation()
   const [cases, setCases] = useState<Case[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -24,7 +22,7 @@ const CasesPage: React.FC = () => {
     }
 
     loadCases()
-  }, [t])
+  }, [])
 
   const getStatusBadge = (status: string) => {
     const statusClasses = {
@@ -51,14 +49,14 @@ const CasesPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card title={t('cases.assigned')}>
+      <Card title={'Assigned Cases'}>
         {error ? (
           <div className="text-red-600 text-center py-4">
             {error}
           </div>
         ) : cases.length === 0 ? (
           <div className="text-gray-500 text-center py-4">
-            {t('cases.noCases')}
+            No assigned cases
           </div>
         ) : (
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -66,19 +64,19 @@ const CasesPage: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('cases.caseNumber')}
+                    Case Number
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('cases.client')}
+                    Client
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('cases.status')}
+                    Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('cases.lastActivity')}
+                    Last Activity
                   </th>
                   <th className="relative px-6 py-3">
-                    <span className="sr-only">{t('cases.actions')}</span>
+                    <span className="sr-only">Actions</span>
                   </th>
                 </tr>
               </thead>

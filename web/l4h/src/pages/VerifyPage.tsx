@@ -1,6 +1,5 @@
 import React, { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { Container, Card, Button, EmptyState } from '@l4h/shared-ui'
 import { auth, useToast } from '@l4h/shared-ui'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
@@ -9,7 +8,6 @@ function VerifyPageContent() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { success, error } = useToast()
-  const { t } = useTranslation(['auth', 'common', 'nav'])
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -18,7 +16,7 @@ function VerifyPageContent() {
   useEffect(() => {
     if (!token) {
       setStatus('error')
-      setMessage(t('error', { ns: 'common', defaultValue: 'Error' }))
+      setMessage('Error')
       return
     }
 
@@ -26,8 +24,8 @@ function VerifyPageContent() {
       try {
         await auth.verify(token)
         setStatus('success')
-        setMessage(t('emailVerified', { ns: 'auth', defaultValue: 'Email verified' }))
-        success(t('emailVerified', { ns: 'auth', defaultValue: 'Email verified' }))
+        setMessage('Email verified')
+        success('Email verified')
 
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
@@ -35,13 +33,13 @@ function VerifyPageContent() {
         }, 2000)
       } catch (err) {
         setStatus('error')
-        setMessage(t('error', { ns: 'common', defaultValue: 'Error' }))
-        error(t('error', { ns: 'common', defaultValue: 'Error' }), err instanceof Error ? err.message : '')
+        setMessage('Error')
+        error('Error', err instanceof Error ? err.message : '')
       }
     }
 
     verifyEmail()
-  }, [token, success, error, navigate, t])
+  }, [token, success, error, navigate])
 
   const handleGoToDashboard = () => {
     navigate('/dashboard')
@@ -57,8 +55,8 @@ function VerifyPageContent() {
         <Card className="max-w-md mx-auto">
           <EmptyState
             icon={Loader2}
-            title={t('loading', { ns: 'common', defaultValue: 'Loading...' })}
-            description={t('verifyEmail', { ns: 'auth', defaultValue: 'Verify email' })}
+            title='Loading...'
+            description='Verify email'
           />
         </Card>
       </Container>
@@ -73,19 +71,19 @@ function VerifyPageContent() {
           title={message}
           description={
             status === 'success'
-              ? t('emailVerified', { ns: 'auth', defaultValue: 'Email verified' })
-              : t('error', { ns: 'common', defaultValue: 'Error' })
+              ? 'Email verified'
+              : 'Error'
           }
           action={
             <div className="flex flex-col space-y-2">
               {status === 'success' && (
                 <Button onClick={handleGoToDashboard}>
-                  {t('dashboard', { ns: 'common', defaultValue: 'Dashboard' })}
+                  Dashboard
                 </Button>
               )}
               {status === 'error' && (
                 <Button onClick={handleGoToLogin}>
-                  {t('login', { ns: 'auth', defaultValue: 'Login' })}
+                  Login
                 </Button>
               )}
             </div>

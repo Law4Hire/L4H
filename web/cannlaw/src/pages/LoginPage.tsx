@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, authClient, useToast } from '@l4h/shared-ui'
-import { useTranslation } from 'react-i18next'
 
 const LoginPage: React.FC = () => {
-  const { t } = useTranslation(['auth', 'login', 'common'])
   const navigate = useNavigate()
   const { showToast } = useToast()
   const [email, setEmail] = useState('')

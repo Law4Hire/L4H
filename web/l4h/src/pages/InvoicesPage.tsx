@@ -1,5 +1,4 @@
 import React from 'react'
-import { useTranslation } from 'react-i18next'
 import { Container, Card, Button, EmptyState, useToast, useQuery } from '@l4h/shared-ui'
 import { invoices } from '@l4h/shared-ui'
 import { FileText, Download, Eye, Calendar, DollarSign } from 'lucide-react'
@@ -18,7 +17,6 @@ interface Invoice {
 }
 
 export default function InvoicesPage() {
-  const { t } = useTranslation(['common', 'invoices'])
   const { success, error } = useToast()
 
   // Fetch invoices
@@ -139,7 +137,7 @@ export default function InvoicesPage() {
 
                 <div className="flex items-center space-x-3">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(invoice.status)}`}>
-                    {t(`status.${invoice.status}`)}
+                    {invoice.status}
                   </span>
 
                   <div className="flex items-center space-x-2">
@@ -170,4 +168,3 @@ export default function InvoicesPage() {
     </Container>
   )
 }
-

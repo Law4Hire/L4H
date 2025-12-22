@@ -2,46 +2,45 @@ import React from 'react';
 import { useNotificationPreferences, NotificationType, NotificationPriority } from '../../hooks/useNotifications';
 
 const NotificationPreferences: React.FC = () => {
-  const { t } = useTranslation(['cannlaw', 'shared', 'common']);
   const { preferences, loading, error, updatePreference } = useNotificationPreferences();
 
   const getNotificationTypeLabel = (type: NotificationType): string => {
     switch (type) {
       case NotificationType.ClientAssignment:
-        return t('cannlaw:notifications.types.clientAssignment');
+        return 'Client Assignment';
       case NotificationType.CaseStatusChange:
-        return t('cannlaw:notifications.types.caseStatusChange');
+        return 'Case Status Change';
       case NotificationType.BillingThreshold:
-        return t('cannlaw:notifications.types.billingThreshold');
+        return 'Billing Threshold';
       case NotificationType.DeadlineReminder:
-        return t('cannlaw:notifications.types.deadlineReminder');
+        return 'Deadline Reminder';
       case NotificationType.DocumentUpload:
-        return t('cannlaw:notifications.types.documentUpload');
+        return 'Document Upload';
       case NotificationType.TimeEntryReminder:
-        return t('cannlaw:notifications.types.timeEntryReminder');
+        return 'Time Entry Reminder';
       case NotificationType.SystemAlert:
-        return t('cannlaw:notifications.types.systemAlert');
+        return 'System Alert';
       default:
-        return t('cannlaw:notifications.types.unknown');
+        return 'Unknown';
     }
   };
 
   const getNotificationTypeDescription = (type: NotificationType): string => {
     switch (type) {
       case NotificationType.ClientAssignment:
-        return t('cannlaw:notifications.descriptions.clientAssignment');
+        return 'Notifications about new client assignments.';
       case NotificationType.CaseStatusChange:
-        return t('cannlaw:notifications.descriptions.caseStatusChange');
+        return 'Notifications about changes in case status.';
       case NotificationType.BillingThreshold:
-        return t('cannlaw:notifications.descriptions.billingThreshold');
+        return 'Notifications about billing thresholds.';
       case NotificationType.DeadlineReminder:
-        return t('cannlaw:notifications.descriptions.deadlineReminder');
+        return 'Notifications about upcoming deadlines.';
       case NotificationType.DocumentUpload:
-        return t('cannlaw:notifications.descriptions.documentUpload');
+        return 'Notifications about new document uploads.';
       case NotificationType.TimeEntryReminder:
-        return t('cannlaw:notifications.descriptions.timeEntryReminder');
+        return 'Reminders to enter time.';
       case NotificationType.SystemAlert:
-        return t('cannlaw:notifications.descriptions.systemAlert');
+        return 'System-wide alerts.';
       default:
         return '';
     }
@@ -50,15 +49,15 @@ const NotificationPreferences: React.FC = () => {
   const getPriorityLabel = (priority: NotificationPriority): string => {
     switch (priority) {
       case NotificationPriority.Low:
-        return t('cannlaw:notifications.priorities.low');
+        return 'Low';
       case NotificationPriority.Normal:
-        return t('cannlaw:notifications.priorities.normal');
+        return 'Normal';
       case NotificationPriority.High:
-        return t('cannlaw:notifications.priorities.high');
+        return 'High';
       case NotificationPriority.Critical:
-        return t('cannlaw:notifications.priorities.critical');
+        return 'Critical';
       default:
-        return t('cannlaw:notifications.priorities.normal');
+        return 'Normal';
     }
   };
 
@@ -88,7 +87,7 @@ const NotificationPreferences: React.FC = () => {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{t('cannlaw:notifications.errors.loadingPreferences')}</h3>
+              <h3 className="text-sm font-medium text-red-800">Error loading preferences</h3>
               <p className="mt-1 text-sm text-red-700">{error}</p>
             </div>
           </div>

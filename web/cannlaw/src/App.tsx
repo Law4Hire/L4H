@@ -1,6 +1,5 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { Layout, RouteGuard, ToastProvider } from '@l4h/shared-ui'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ClientProtectedRoute } from './components/ClientProtectedRoute'
@@ -49,8 +48,6 @@ const LoadingFallback = () => (
 )
 
 function App() {
-  const { t } = useTranslation()
-
   return (
     <ToastProvider>
       <Suspense fallback={<LoadingFallback />}>
@@ -143,7 +140,7 @@ function App() {
           path="/admin" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={t('admin.title')}>
+              <Layout title={'Admin'}>
                 <AdminPage />
               </Layout>
             </ProtectedRoute>
@@ -193,7 +190,7 @@ function App() {
           path="/admin/pricing" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={t('admin.pricing')}>
+              <Layout title={'Pricing'}>
                 <AdminPricingPage />
               </Layout>
             </ProtectedRoute>
@@ -203,7 +200,7 @@ function App() {
           path="/admin/workflows" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={t('admin.workflows')}>
+              <Layout title={'Workflows'}>
                 <AdminWorkflowsPage />
               </Layout>
             </ProtectedRoute>
@@ -213,7 +210,7 @@ function App() {
           path="/admin/time-entries" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={t('admin.timeEntries')}>
+              <Layout title={'Time Entries'}>
                 <AdminTimeEntriesPage />
               </Layout>
             </ProtectedRoute>
@@ -223,7 +220,7 @@ function App() {
           path="/admin/reports" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={t('admin.reports')}>
+              <Layout title={'Reports'}>
                 <AdminReportsPage />
               </Layout>
             </ProtectedRoute>

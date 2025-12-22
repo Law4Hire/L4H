@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { messages } from '@l4h/shared-ui'
 import { MessageCircle, Plus, Send, Mail, Clock } from 'lucide-react'
@@ -28,7 +27,6 @@ interface Message {
 }
 
 export default function MessagesPage() {
-  const { t } = useTranslation(['common', 'messages'])
   const { success, error } = useToast()
   const queryClient = useQueryClient()
   const [selectedThread, setSelectedThread] = useState<string | null>(null)
@@ -69,7 +67,7 @@ export default function MessagesPage() {
 
   const handleSendMessage = () => {
     if (!newMessage.subject || !newMessage.content) {
-      error('Error', t('validation.requiredFields', { defaultValue: 'Please fill in all required fields' }))
+      error('Error', 'Please fill in all required fields')
       return
     }
 
@@ -111,7 +109,7 @@ export default function MessagesPage() {
               <EmptyState
                 icon={MessageCircle}
                 title={'No messages found'}
-                description={t('messages.startConversation', { defaultValue: 'Start a conversation' })}
+                description={'Start a conversation'}
                 action={
                   <Button onClick={() => setShowComposeModal(true)}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -196,8 +194,8 @@ export default function MessagesPage() {
             <Card>
               <EmptyState
                 icon={MessageCircle}
-                title={t('messages.selectConversation', { defaultValue: 'Select a conversation' })}
-                description={t('messages.chooseThread', { defaultValue: 'Choose a message thread to view the conversation' })}
+                title={'Select a conversation'}
+                description={'Choose a message thread to view the conversation'}
               />
             </Card>
           )}
@@ -223,7 +221,7 @@ export default function MessagesPage() {
             label={'Recipient'}
             value={newMessage.recipientId}
             onChange={(e) => setNewMessage(prev => ({ ...prev, recipientId: e.target.value }))}
-            placeholder={t('messages.recipientPlaceholder', { defaultValue: 'Enter recipient email or ID' })}
+            placeholder={'Enter recipient email or ID'}
             required
           />
 
@@ -256,4 +254,3 @@ export default function MessagesPage() {
     </Container>
   )
 }
-

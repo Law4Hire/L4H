@@ -1,6 +1,5 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { Layout, RouteGuard, ToastProvider } from '@l4h/shared-ui'
 import { InterviewProvider } from './InterviewContext';
 import { useAuth } from './hooks/useAuth'
@@ -39,7 +38,6 @@ const LoadingFallback = () => (
 )
 
 function App() {
-  const { t } = useTranslation()
   const { isAuthenticated, user } = useAuth()
 
   return (
@@ -230,7 +228,7 @@ function App() {
           path="/results"
           element={
             <Layout
-              title={t('nav.results', 'Results')}
+              title={'Results'}
               showUserMenu={true}
               user={user}
               isAuthenticated={isAuthenticated}

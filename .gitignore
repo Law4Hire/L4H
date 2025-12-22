@@ -78,6 +78,8 @@ startGemini.ps1
 # Build output
 
 /web/l4h/dist/
+/web/cannlaw/dist/
+/web/shared-ui/dist/
 
 dist/
 

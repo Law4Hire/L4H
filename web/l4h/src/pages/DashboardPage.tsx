@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { Card, Button, Modal, cases, interview, useToast, useQuery } from '@l4h/shared-ui'
 
 import NextSteps from '../components/NextSteps';
@@ -24,7 +23,6 @@ interface VisaRecommendation {
 }
 
 const DashboardPage: React.FC = () => {
-  const { t } = useTranslation(['common', 'dashboard', 'interview'])
   const navigate = useNavigate()
   const { error: showError } = useToast()
   const { user } = useAuth();
@@ -123,7 +121,7 @@ const DashboardPage: React.FC = () => {
 
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClasses[status as keyof typeof statusClasses] || statusClasses.pending}`}>
-        {t(`case.status.${status}`)}
+        {status}
       </span>
     )
   }
@@ -243,22 +241,22 @@ const DashboardPage: React.FC = () => {
       <Modal
         isOpen={showRecommendationModal}
         onClose={() => setShowRecommendationModal(false)}
-        title={t('dashboard.visaRecommendation', 'Your Visa Recommendation')}
+        title={'Your Visa Recommendation'}
       >
         {selectedRecommendation && (
           <div className="space-y-6">
             <div className="text-center">
               <div className="text-lg font-semibold text-green-600 mb-2">
-                {t('interview.complete.congratulations', 'Congratulations!')}
+                Congratulations!
               </div>
               <p className="text-gray-600 dark:text-gray-400">
-                {t('interview.complete.description', 'Based on your interview answers, we have a visa recommendation for you.')}
+                Based on your interview answers, we have a visa recommendation for you.
               </p>
             </div>
 
             <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
               <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-2">
-                {t('interview.recommended.visa', 'Recommended Visa Type')}
+                Recommended Visa Type
               </h3>
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">
                 {selectedRecommendation.visaType}
@@ -288,7 +286,7 @@ const DashboardPage: React.FC = () => {
                 variant="primary"
                 onClick={() => navigate('/pricing')}
               >
-                {t('interview.viewPackages', 'View Service Packages')}
+                View Service Packages
               </Button>
             </div>
           </div>

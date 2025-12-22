@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useQuery } from '@l4h/shared-ui';
 
 interface NextStepsProps {
@@ -15,7 +14,6 @@ interface WorkflowStep {
 }
 
 const NextSteps: React.FC<NextStepsProps> = ({ visaTypeCode, countryCode }) => {
-    const { t } = useTranslation(['dashboard']);
     const { data: steps = [], isLoading, error } = useQuery<WorkflowStep[]>({
     queryKey: ['workflow', visaTypeCode, countryCode],
     queryFn: async () => {
@@ -38,7 +36,7 @@ const NextSteps: React.FC<NextStepsProps> = ({ visaTypeCode, countryCode }) => {
 
   return (
     <div className="mt-4">
-      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('dashboard.nextSteps')}</h3>
+      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Next Steps</h3>
       <ul className="mt-2 space-y-2">
         {steps.map((step) => (
           <li key={step.stepNumber} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
