@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
+
 using L4H.Api.Configuration;
 using L4H.Api.Services.Providers;
 
@@ -16,20 +16,17 @@ public class ProvidersController : ControllerBase
     private readonly PaymentsOptions _paymentsOptions;
     private readonly GraphOptions _graphOptions;
     private readonly MeetingsOptions _meetingsOptions;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<ProvidersController> _logger;
 
     public ProvidersController(
         IOptions<PaymentsOptions> paymentsOptions,
         IOptions<GraphOptions> graphOptions,
         IOptions<MeetingsOptions> meetingsOptions,
-        IStringLocalizer<Shared> localizer,
         ILogger<ProvidersController> logger)
     {
         _paymentsOptions = paymentsOptions.Value;
         _graphOptions = graphOptions.Value;
         _meetingsOptions = meetingsOptions.Value;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -69,9 +66,9 @@ public class ProvidersController : ControllerBase
     {
         return mode.ToLowerInvariant() switch
         {
-            "live" => _localizer["Providers.Live"],
-            "teams" => _localizer["Providers.Teams"],
-            "fake" => _localizer["Providers.Fake"],
+            "live" => "Live",
+            "teams" => "Microsoft Teams",
+            "fake" => "Fake/Simulated",
             _ => mode
         };
     }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+
 using Microsoft.Extensions.Options;
 using L4H.Api.Services.Providers;
 using L4H.Api.Configuration;
@@ -14,18 +14,15 @@ namespace L4H.Api.Controllers;
 public class PaymentsController : ControllerBase
 {
     private readonly L4H.Api.Services.Providers.IPaymentProvider _paymentProvider;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<PaymentsController> _logger;
     private readonly PaymentsOptions _paymentsOptions;
 
     public PaymentsController(
         L4H.Api.Services.Providers.IPaymentProvider paymentProvider,
-        IStringLocalizer<Shared> localizer,
         ILogger<PaymentsController> logger,
         IOptions<PaymentsOptions> paymentsOptions)
     {
         _paymentProvider = paymentProvider;
-        _localizer = localizer;
         _logger = logger;
         _paymentsOptions = paymentsOptions.Value;
     }
@@ -53,18 +50,18 @@ public class PaymentsController : ControllerBase
                     successUrl = request.SuccessUrl,
                     cancelUrl = request.CancelUrl,
                     sessionId = result.SessionId,
-                    message = _localizer["Payments.CheckoutCreated"]
+                    message = "Checkout session created successfully."
                 });
             }
             else
             {
-                return BadRequest(new { message = result.ErrorMessage ?? _localizer["Payments.CheckoutFailed"] });
+                return BadRequest(new { message = result.ErrorMessage ?? "Failed to create checkout session." });
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating checkout session");
-            return StatusCode(500, new { message = _localizer["Payments.CheckoutError"] });
+            return StatusCode(500, new { message = "Error creating checkout session." });
         }
     }
 }

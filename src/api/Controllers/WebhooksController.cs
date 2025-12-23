@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using L4H.Api.Configuration;
@@ -17,20 +17,17 @@ namespace L4H.Api.Controllers;
 public class WebhooksController : ControllerBase
 {
     private readonly L4H.Api.Services.Providers.IPaymentProvider _paymentProvider;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<WebhooksController> _logger;
     private readonly L4HDbContext _context;
     private readonly PaymentsOptions _paymentsOptions;
 
     public WebhooksController(
         L4H.Api.Services.Providers.IPaymentProvider paymentProvider,
-        IStringLocalizer<Shared> localizer,
         ILogger<WebhooksController> logger,
         L4HDbContext context,
         IOptions<PaymentsOptions> paymentsOptions)
     {
         _paymentProvider = paymentProvider;
-        _localizer = localizer;
         _logger = logger;
         _context = context;
         _paymentsOptions = paymentsOptions.Value;
@@ -55,7 +52,7 @@ public class WebhooksController : ControllerBase
                 if (!isValid)
                 {
                     _logger.LogWarning("Invalid Stripe webhook signature");
-                    return BadRequest(new { message = _localizer["Payments.WebhookRejected"] });
+                    return BadRequest(new { message = "Webhook rejected." });
                 }
             }
 
@@ -71,7 +68,7 @@ public class WebhooksController : ControllerBase
             if (existingEvent != null)
             {
                 _logger.LogInformation("Duplicate webhook event {EventId} ignored", eventId);
-                return Ok(new { message = _localizer["Payments.WebhookIgnored"] });
+                return Ok(new { message = "Webhook ignored." });
             }
 
             // Store the webhook event
@@ -90,13 +87,13 @@ public class WebhooksController : ControllerBase
             switch (eventType)
             {
                 case "checkout.session.completed":
-                    message = _localizer["Payments.CheckoutCompleted"];
+                    message = "Checkout completed.";
                     break;
                 case "charge.refunded":
-                    message = _localizer["Payments.RefundProcessed"];
+                    message = "Refund processed.";
                     break;
                 default:
-                    message = _localizer["Payments.WebhookProcessed"];
+                    message = "Webhook processed.";
                     break;
             }
 
@@ -112,12 +109,12 @@ public class WebhooksController : ControllerBase
         catch (JsonException ex)
         {
             _logger.LogError(ex, "Invalid JSON in Stripe webhook");
-            return BadRequest(new { message = _localizer["Payments.WebhookRejected"] });
+            return BadRequest(new { message = "Webhook rejected." });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing Stripe webhook");
-            return StatusCode(500, new { message = _localizer["Payments.WebhookError"] });
+            return StatusCode(500, new { message = "Webhook processing error." });
         }
     }
 }

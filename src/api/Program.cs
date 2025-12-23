@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using L4H.Shared.Models;
 using L4H.Shared.Json;
@@ -16,7 +15,6 @@ using L4H.Infrastructure.Services.Teams;
 using L4H.Infrastructure.Services.Payments;
 using L4H.Api.Services;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
 using L4H.Api.Json;
 using L4H.Api.Configuration;
 using FluentValidation;
@@ -189,23 +187,6 @@ builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "X-CSRF-TOKEN";
     options.SuppressXFrameOptionsHeader = false;
-});
-
-// Add localization - using .NET 10 FrozenSet/FrozenDictionary for optimal performance
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-
-var locOpts = new RequestLocalizationOptions()
-    .SetDefaultCulture(LocalizationConfiguration.DefaultCultureCode)
-    .AddSupportedCultures(LocalizationConfiguration.SupportedCultureCodes.ToArray())
-    .AddSupportedUICultures(LocalizationConfiguration.SupportedCultureCodes.ToArray());
-
-// Cookie provider (highest), then header, then query (?ui-culture=xx-YY)
-locOpts.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider {
-    CookieName = "l4h_culture"
-});
-// Header provider already included; add query provider with low precedence:
-locOpts.RequestCultureProviders.Add(new QueryStringRequestCultureProvider {
-    QueryStringKey = "ui-culture", UIQueryStringKey = "ui-culture"
 });
 
 // Register application services
@@ -402,9 +383,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 Console.WriteLine("[STARTUP] Configuring middleware pipeline...");
 app.UseSerilogRequestLogging();
 Console.WriteLine("[STARTUP] Serilog request logging configured");
-
-app.UseRequestLocalization(locOpts);
-Console.WriteLine("[STARTUP] Request localization configured");
 
 app.UseAuthentication();
 Console.WriteLine("[STARTUP] Authentication configured");

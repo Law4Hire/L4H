@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+
 using L4H.Infrastructure.Services.Graph;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
@@ -17,18 +17,15 @@ namespace L4H.Api.Controllers;
 public class GraphMailController : ControllerBase
 {
     private readonly IMailProvider _mailProvider;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<GraphMailController> _logger;
     private readonly L4HDbContext _context;
 
     public GraphMailController(
         IMailProvider mailProvider,
-        IStringLocalizer<Shared> localizer,
         ILogger<GraphMailController> logger,
         L4HDbContext context)
     {
         _mailProvider = mailProvider;
-        _localizer = localizer;
         _logger = logger;
         _context = context;
     }
@@ -50,7 +47,7 @@ public class GraphMailController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["GraphMail.AdminOnly"]
+                Detail = "Access restricted to administrators."
             });
         }
 
@@ -59,7 +56,7 @@ public class GraphMailController : ControllerBase
             return BadRequest(new ProblemDetails
             {
                 Title = "Bad Request",
-                Detail = _localizer["GraphMail.InvalidRequest"]
+                Detail = "Invalid request."
             });
         }
 
@@ -75,7 +72,7 @@ public class GraphMailController : ControllerBase
                 return Ok(new L4H.Shared.Models.SendTestMailResponse
                 {
                     Success = result.Success,
-                    Message = _localizer["GraphMail.TestEmailSent"],
+                    Message = "Test email sent successfully.",
                     Provider = "FakeGraphProvider"
                 });
             }
@@ -84,7 +81,7 @@ public class GraphMailController : ControllerBase
                 return StatusCode(500, new L4H.Shared.Models.SendTestMailResponse
                 {
                     Success = result.Success,
-                    Message = result.ErrorMessage ?? "Error desconocido",
+                    Message = result.ErrorMessage ?? "Unknown error",
                     Provider = "FakeGraphProvider"
                 });
             }
@@ -95,7 +92,7 @@ public class GraphMailController : ControllerBase
             return StatusCode(500, new ProblemDetails
             {
                 Title = "Internal Server Error",
-                Detail = _localizer["GraphMail.SendFailed"]
+                Detail = "Failed to send email."
             });
         }
     }

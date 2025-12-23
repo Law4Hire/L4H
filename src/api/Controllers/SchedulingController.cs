@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Infrastructure.Services.Teams;
@@ -18,18 +17,15 @@ namespace L4H.Api.Controllers;
 public class SchedulingController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<SchedulingController> _logger;
     private readonly IMeetingsProvider _meetingsProvider;
 
     public SchedulingController(
         L4HDbContext context,
-        IStringLocalizer<Shared> localizer,
         ILogger<SchedulingController> logger,
         IMeetingsProvider meetingsProvider)
     {
         _context = context;
-        _localizer = localizer;
         _logger = logger;
         _meetingsProvider = meetingsProvider;
     }
@@ -57,7 +53,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Case Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -66,7 +62,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.AccessDenied"]
+                Detail = "Access denied to this appointment."
             });
         }
 
@@ -154,7 +150,7 @@ public class SchedulingController : ControllerBase
             Warnings = warnings
         };
 
-        return Created($"/v1/appointments/{appointment.Id}", response);
+        return Created($"/api/v1/appointments/{appointment.Id}", response);
     }
 
     /// <summary>
@@ -209,7 +205,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Appointment Not Found",
-                Detail = _localizer["Appointments.NotFound"]
+                Detail = "Appointment not found."
             });
         }
 
@@ -222,7 +218,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.AccessDenied"]
+                Detail = "Access denied to this appointment."
             });
         }
 
@@ -277,7 +273,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Appointment Not Found",
-                Detail = _localizer["Appointments.NotFound"]
+                Detail = "Appointment not found."
             });
         }
 
@@ -290,7 +286,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.AccessDenied"]
+                Detail = "Access denied to this appointment."
             });
         }
 
@@ -330,7 +326,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Appointment Not Found",
-                Detail = _localizer["Appointments.NotFound"]
+                Detail = "Appointment not found."
             });
         }
 
@@ -343,7 +339,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.AccessDenied"]
+                Detail = "Access denied to this appointment."
             });
         }
 
@@ -453,7 +449,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Case Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -462,7 +458,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.AccessDenied"]
+                Detail = "Access denied to this appointment."
             });
         }
 
@@ -476,7 +472,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Appointment Exists",
-                Detail = _localizer["Appointments.ExistingActive"]
+                Detail = "An active appointment already exists for this case."
             });
         }
 
@@ -488,7 +484,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "No Staff Available",
-                Detail = _localizer["Appointments.NoStaffAvailable"]
+                Detail = "No staff members are available for the selected time."
             });
         }
 
@@ -507,7 +503,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Scheduling Conflict",
-                Detail = _localizer["Appointments.SchedulingConflict"]
+                Detail = "The selected time conflicts with another appointment."
             });
         }
 
@@ -581,7 +577,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Appointment Not Found",
-                Detail = _localizer["Appointments.NotFound"]
+                Detail = "Appointment not found."
             });
         }
 
@@ -591,7 +587,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.AccessDenied"]
+                Detail = "Access denied to this appointment."
             });
         }
 
@@ -600,7 +596,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.StaffMismatch"]
+                Detail = "Staff member mismatch."
             });
         }
 
@@ -610,7 +606,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Invalid Status",
-                Detail = _localizer["Appointments.CannotReschedule"]
+                Detail = "Appointment cannot be rescheduled in its current status."
             });
         }
 
@@ -624,7 +620,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Reschedule Limit Reached",
-                Detail = _localizer["Appointments.RescheduleLimit"]
+                Detail = "Maximum number of reschedule attempts reached."
             });
         }
 
@@ -637,7 +633,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Pending Reschedule Exists",
-                Detail = _localizer["Appointments.PendingReschedule"]
+                Detail = "A pending reschedule proposal already exists."
             });
         }
 
@@ -668,7 +664,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "All Options Conflict",
-                Detail = _localizer["Appointments.AllOptionsConflict"]
+                Detail = "All provided time options conflict with other appointments."
             });
         }
 
@@ -743,7 +739,7 @@ public class SchedulingController : ControllerBase
             return BadRequest(new ProblemDetails
             {
                 Title = "Invalid Option",
-                Detail = _localizer["Appointments.InvalidOption"]
+                Detail = "Invalid option selected."
             });
         }
 
@@ -758,7 +754,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Proposal Not Found",
-                Detail = _localizer["Appointments.ProposalNotFound"]
+                Detail = "Proposal not found."
             });
         }
 
@@ -769,7 +765,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Staff Response Required",
-                Detail = _localizer["Appointments.StaffResponseRequired"]
+                Detail = "Staff response required."
             });
         }
 
@@ -778,7 +774,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Client Response Required",
-                Detail = _localizer["Appointments.ClientResponseRequired"]
+                Detail = "Client response required."
             });
         }
 
@@ -788,7 +784,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Proposal Not Pending",
-                Detail = _localizer["Appointments.ProposalNotPending"]
+                Detail = "Proposal is not pending review."
             });
         }
 
@@ -801,7 +797,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Proposal Expired",
-                Detail = _localizer["Appointments.ProposalExpired"]
+                Detail = "Proposal has expired."
             });
         }
 
@@ -827,7 +823,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Chosen Option Conflicts",
-                Detail = _localizer["Appointments.ChosenOptionConflicts"]
+                Detail = "Chosen option conflicts with another appointment."
             });
         }
 
@@ -890,7 +886,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Proposal Not Found",
-                Detail = _localizer["Appointments.ProposalNotFound"]
+                Detail = "Proposal not found."
             });
         }
 
@@ -901,7 +897,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Staff Response Required",
-                Detail = _localizer["Appointments.StaffResponseRequired"]
+                Detail = "Staff response required."
             });
         }
 
@@ -910,7 +906,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Client Response Required",
-                Detail = _localizer["Appointments.ClientResponseRequired"]
+                Detail = "Client response required."
             });
         }
 
@@ -920,7 +916,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Proposal Not Pending",
-                Detail = _localizer["Appointments.ProposalNotPending"]
+                Detail = "Proposal is not pending review."
             });
         }
 
@@ -969,7 +965,7 @@ public class SchedulingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Appointment Not Found",
-                Detail = _localizer["Appointments.NotFound"]
+                Detail = "Appointment not found."
             });
         }
 
@@ -979,7 +975,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.AccessDenied"]
+                Detail = "Access denied to this appointment."
             });
         }
 
@@ -988,7 +984,7 @@ public class SchedulingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Appointments.StaffMismatch"]
+                Detail = "Staff member mismatch."
             });
         }
 
@@ -998,7 +994,7 @@ public class SchedulingController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Cannot Cancel",
-                Detail = _localizer["Appointments.CannotCancel"]
+                Detail = "Appointment cannot be cancelled in its current status."
             });
         }
 

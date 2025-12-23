@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Infrastructure.Services;
@@ -19,14 +19,12 @@ namespace L4H.Api.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IEmailVerificationService _emailVerificationService;
 
-    public AdminController(L4HDbContext context, IStringLocalizer<Shared> localizer, IPasswordHasher passwordHasher, IEmailVerificationService emailVerificationService)
+    public AdminController(L4HDbContext context, IPasswordHasher passwordHasher, IEmailVerificationService emailVerificationService)
     {
         _context = context;
-        _localizer = localizer;
         _passwordHasher = passwordHasher;
         _emailVerificationService = emailVerificationService;
     }
@@ -110,7 +108,7 @@ public class AdminController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Visa Type Not Found",
-                Detail = _localizer["Admin.VisaTypeNotFound"]
+                Detail = "Visa type not found."
             });
         }
 
@@ -176,7 +174,7 @@ public class AdminController : ControllerBase
 
         return Ok(new MessageResponse
         {
-            Message = _localizer["Admin.PricingUpdated"]
+            Message = "Pricing updated successfully."
         });
     }
 
@@ -341,7 +339,7 @@ public class AdminController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "User Not Found",
-                Detail = _localizer["Admin.UserNotFound"]
+                Detail = "User not found."
             });
         }
 
@@ -370,7 +368,7 @@ public class AdminController : ControllerBase
 
         return Ok(new MessageResponse
         {
-            Message = _localizer["Admin.UserRolesUpdated"]
+            Message = "User roles updated successfully."
         });
     }
 
@@ -411,7 +409,7 @@ public class AdminController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "User Not Found",
-                Detail = _localizer["Admin.UserNotFound"]
+                Detail = "User not found."
             });
         }
 
@@ -476,7 +474,7 @@ public class AdminController : ControllerBase
 
             return Ok(new MessageResponse
             {
-                Message = _localizer["Admin.UserDeleted"]
+                Message = "User deleted successfully."
             });
         }
         catch (Exception ex)
@@ -522,7 +520,7 @@ public class AdminController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "User Not Found",
-                Detail = _localizer["Admin.UserNotFound"]
+                Detail = "User not found."
             });
         }
 
@@ -540,7 +538,7 @@ public class AdminController : ControllerBase
 
         return Ok(new MessageResponse
         {
-            Message = _localizer["Admin.PasswordChanged"]
+            Message = "Password changed successfully."
         });
     }
 
@@ -576,7 +574,7 @@ public class AdminController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "User Not Found",
-                Detail = _localizer["Admin.UserNotFound"]
+                Detail = "User not found."
             });
         }
 
@@ -592,8 +590,8 @@ public class AdminController : ControllerBase
         return Ok(new MessageResponse
         {
             Message = request.IsActive
-                ? _localizer["Admin.UserActivated"]
-                : _localizer["Admin.UserDeactivated"]
+                ? "User activated successfully."
+                : "User deactivated successfully."
         });
     }
 
@@ -991,7 +989,7 @@ public class AdminController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Case Not Found",
-                Detail = _localizer["Admin.CaseNotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -1012,7 +1010,7 @@ public class AdminController : ControllerBase
 
         return Ok(new MessageResponse
         {
-            Message = _localizer["Admin.CaseStatusUpdated"]
+            Message = "Case status updated successfully."
         });
     }
 
@@ -1045,7 +1043,7 @@ public class AdminController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "User Not Found",
-                Detail = _localizer["Admin.UserNotFound"]
+                Detail = "User not found."
             });
         }
 

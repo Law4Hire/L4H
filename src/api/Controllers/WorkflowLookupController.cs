@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -24,16 +24,13 @@ namespace L4H.Api.Controllers;
 public class WorkflowLookupController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<WorkflowLookupController> _logger;
 
     public WorkflowLookupController(
         L4HDbContext context,
-        IStringLocalizer<Shared> localizer,
         ILogger<WorkflowLookupController> logger)
     {
         _context = context;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -47,7 +44,7 @@ public class WorkflowLookupController : ControllerBase
         {
             return BadRequest(new ErrorResponse
             {
-                Message = _localizer["Workflow.MissingParameters"]
+                Message = "Missing required parameters."
             });
         }
 
@@ -59,7 +56,7 @@ public class WorkflowLookupController : ControllerBase
         {
             return NotFound(new ErrorResponse
             {
-                Message = _localizer["Workflow.VisaTypeNotFound", visaType]
+                Message = $"Visa type '{visaType}' not found."
             });
         }
 
@@ -77,7 +74,7 @@ public class WorkflowLookupController : ControllerBase
         {
             return NotFound(new ErrorResponse
             {
-                Message = _localizer["Workflow.LookupNotFound"]
+                Message = "No approved workflow found for this visa type and country."
             });
         }
 
@@ -118,7 +115,7 @@ public class WorkflowLookupController : ControllerBase
             }).ToList()
         };
 
-        _logger.LogInformation(_localizer["Workflow.LookupOk"], visaType, country, workflow.Version);
+        _logger.LogInformation("Workflow lookup successful for {VisaType}/{Country} (v{Version})", visaType, country, workflow.Version);
 
         return Ok(response);
     }
@@ -167,7 +164,7 @@ public class WorkflowLookupController : ControllerBase
         {
             return BadRequest(new ErrorResponse
             {
-                Message = _localizer["Workflow.MissingParameters"]
+                Message = "Missing required parameters."
             });
         }
 
@@ -179,7 +176,7 @@ public class WorkflowLookupController : ControllerBase
         {
             return NotFound(new ErrorResponse
             {
-                Message = _localizer["Workflow.VisaTypeNotFound", request.VisaType]
+                Message = $"Visa type '{request.VisaType}' not found."
             });
         }
 
@@ -189,7 +186,7 @@ public class WorkflowLookupController : ControllerBase
         {
             return Unauthorized(new ErrorResponse
             {
-                Message = _localizer["Auth.Unauthorized"]
+                Message = "Unauthorized access."
             });
         }
 

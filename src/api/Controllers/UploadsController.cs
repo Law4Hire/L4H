@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
@@ -22,7 +22,7 @@ public class UploadsController : ControllerBase
     private readonly L4HDbContext _context;
     private readonly UploadTokenService _tokenService;
     private readonly UploadOptions _uploadOptions;
-    private readonly IStringLocalizer<Shared> _localizer;
+    
     private readonly ILogger<UploadsController> _logger;
 
     // Upload constraints
@@ -34,13 +34,11 @@ public class UploadsController : ControllerBase
         L4HDbContext context,
         UploadTokenService tokenService,
         IOptions<UploadOptions> uploadOptions,
-        IStringLocalizer<Shared> localizer,
         ILogger<UploadsController> logger)
     {
         _context = context;
         _tokenService = tokenService;
         _uploadOptions = uploadOptions.Value;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -68,7 +66,7 @@ public class UploadsController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Case Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -78,7 +76,7 @@ public class UploadsController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Uploads.Forbidden"]
+                Detail = "Access denied to this file."
             });
         }
 
@@ -88,7 +86,7 @@ public class UploadsController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Case Not Paid",
-                Detail = _localizer["Uploads.CaseNotPaid"]
+                Detail = "Case must be paid before uploading documents."
             });
         }
 
@@ -99,7 +97,7 @@ public class UploadsController : ControllerBase
             return BadRequest(new ProblemDetails
             {
                 Title = "File Too Large",
-                Detail = _localizer["Uploads.TooLarge"].Value.Replace("{maxSize}", _uploadOptions.MaxSizeMB.ToString(CultureInfo.InvariantCulture))
+                Detail = $"File size exceeds the limit of {_uploadOptions.MaxSizeMB}MB."
             });
         }
 
@@ -110,7 +108,7 @@ public class UploadsController : ControllerBase
             return BadRequest(new ProblemDetails
             {
                 Title = "File Type Not Allowed",
-                Detail = _localizer["Uploads.TypeNotAllowed"]
+                Detail = "File type not allowed."
             });
         }
 
@@ -191,7 +189,7 @@ public class UploadsController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Upload Not Found",
-                Detail = _localizer["Uploads.NotFound"]
+                Detail = "File not found."
             });
         }
 
@@ -201,7 +199,7 @@ public class UploadsController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Uploads.Forbidden"]
+                Detail = "Access denied to this file."
             });
         }
 
@@ -211,12 +209,9 @@ public class UploadsController : ControllerBase
             return BadRequest(new ProblemDetails
             {
                 Title = "Invalid Status",
-                Detail = _localizer["Uploads.StatusPending"]
+                Detail = "Upload is not in pending status."
             });
         }
-
-        // File existence will be verified by the scan worker
-        // For now, just acknowledge the confirmation
 
         // File is now queued for scanning (background service will pick it up)
         upload.Case.LastActivityAt = DateTimeOffset.UtcNow;
@@ -258,7 +253,7 @@ public class UploadsController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Case Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -268,7 +263,7 @@ public class UploadsController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Uploads.Forbidden"]
+                Detail = "Access denied to this file."
             });
         }
 
@@ -287,9 +282,8 @@ public class UploadsController : ControllerBase
             Status = upload.Status,
             CreatedAt = upload.CreatedAt,
             VerdictAt = upload.VerdictAt,
-            // For clean files, provide a relative path that can be used later for download
             DownloadUrl = upload.Status == "clean" && !string.IsNullOrEmpty(upload.StorageUrl) 
-                ? $"/v1/uploads/download/{upload.Id}" 
+                ? $"/api/v1/uploads/download/{upload.Id}" 
                 : null
         }).ToList();
 
@@ -348,6 +342,5 @@ public class UploadsController : ControllerBase
         };
 
         _context.AuditLogs.Add(auditLog);
-        // Note: SaveChangesAsync will be called by the calling method
     }
 }

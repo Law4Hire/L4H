@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Infrastructure.Services.Graph;
@@ -17,18 +17,15 @@ namespace L4H.Api.Controllers;
 public class StaffAvailabilityController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<StaffAvailabilityController> _logger;
     private readonly ICalendarProvider _calendarProvider;
 
     public StaffAvailabilityController(
         L4HDbContext context,
-        IStringLocalizer<Shared> localizer,
         ILogger<StaffAvailabilityController> logger,
         ICalendarProvider calendarProvider)
     {
         _context = context;
-        _localizer = localizer;
         _logger = logger;
         _calendarProvider = calendarProvider;
     }
@@ -58,7 +55,7 @@ public class StaffAvailabilityController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["StaffAvailability.StaffOnly"]
+                Detail = "Access restricted to staff members."
             });
         }
 
@@ -67,7 +64,7 @@ public class StaffAvailabilityController : ControllerBase
             return BadRequest(new ProblemDetails
             {
                 Title = "Bad Request",
-                Detail = _localizer["StaffAvailability.InvalidTimeRange"]
+                Detail = "Invalid time range."
             });
         }
 
@@ -82,7 +79,7 @@ public class StaffAvailabilityController : ControllerBase
                 return NotFound(new ProblemDetails
                 {
                     Title = "Not Found",
-                    Detail = _localizer["StaffAvailability.StaffNotFound"]
+                    Detail = "Staff member not found."
                 });
             }
 
@@ -151,7 +148,7 @@ public class StaffAvailabilityController : ControllerBase
             return StatusCode(500, new ProblemDetails
             {
                 Title = "Internal Server Error",
-                Detail = _localizer["StaffAvailability.RetrievalFailed"]
+                Detail = "Failed to retrieve availability."
             });
         }
     }
@@ -163,5 +160,3 @@ public class StaffAvailabilityController : ControllerBase
                User.HasClaim("IsAdmin", "true") || User.HasClaim("IsStaff", "true");
     }
 }
-
-

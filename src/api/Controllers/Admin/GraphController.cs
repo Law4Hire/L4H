@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+
 using L4H.Api.Services.Providers;
 using L4H.Infrastructure.Services.Graph;
 
@@ -13,16 +13,13 @@ namespace L4H.Api.Controllers.Admin;
 public class GraphController : ControllerBase
 {
     private readonly IMailProvider _mailProvider;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<GraphController> _logger;
 
     public GraphController(
         IMailProvider mailProvider,
-        IStringLocalizer<Shared> localizer,
         ILogger<GraphController> logger)
     {
         _mailProvider = mailProvider;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -36,15 +33,15 @@ public class GraphController : ControllerBase
             var testRequest = new SendMailRequest
             {
                 To = request.To ?? "test@example.com",
-                Subject = _localizer["Graph.TestMailSubject"],
-                TextBody = _localizer["Graph.TestMailBody"]
+                Subject = "L4H Graph API Test",
+                TextBody = "This is a test email from Law4Hire Graph API."
             };
 
             var result = await _mailProvider.SendMailAsync(testRequest).ConfigureAwait(false);
             
             if (result.Success)
             {
-                return Ok(new { message = _localizer["Graph.TestMailSent"] });
+                return Ok(new { message = "Test email sent successfully." });
             }
             else
             {
@@ -54,7 +51,7 @@ public class GraphController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error testing Graph mail");
-            return StatusCode(500, new { message = _localizer["Graph.TestMailError"] });
+            return StatusCode(500, new { message = "Failed to send test email." });
         }
     }
 }

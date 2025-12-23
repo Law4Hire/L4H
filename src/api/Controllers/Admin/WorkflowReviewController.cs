@@ -4,7 +4,7 @@ using L4H.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -17,16 +17,13 @@ namespace L4H.Api.Controllers.Admin;
 public class WorkflowReviewController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<WorkflowReviewController> _logger;
 
     public WorkflowReviewController(
         L4HDbContext context,
-        IStringLocalizer<Shared> localizer,
         ILogger<WorkflowReviewController> logger)
     {
         _context = context;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -71,7 +68,7 @@ public class WorkflowReviewController : ControllerBase
                 CountryCode = w.CountryCode,
                 Version = w.Version,
                 Status = w.Status,
-                StatusDisplayName = _localizer["Workflow.PendingStatus"],
+                StatusDisplayName = "Pending Review",
                 Source = w.Source,
                 ScrapedAt = w.ScrapedAt,
                 StepCount = w.Steps.Count,
@@ -96,7 +93,7 @@ public class WorkflowReviewController : ControllerBase
         {
             return NotFound(new ErrorResponse 
             {
-                Message = _localizer["Workflow.NotFound"]
+                Message = "Workflow not found."
             });
         }
 
@@ -146,7 +143,7 @@ public class WorkflowReviewController : ControllerBase
         {
             return NotFound(new ErrorResponse 
             {
-                Message = _localizer["Workflow.NotFound"]
+                Message = "Workflow not found."
             });
         }
 
@@ -178,7 +175,7 @@ public class WorkflowReviewController : ControllerBase
         {
             return NotFound(new ErrorResponse 
             {
-                Message = _localizer["Workflow.NotFound"]
+                Message = "Workflow not found."
             });
         }
 
@@ -186,7 +183,7 @@ public class WorkflowReviewController : ControllerBase
         {
             return BadRequest(new ErrorResponse
             {
-                Message = _localizer["Workflow.NotPending"]
+                Message = "Workflow is not pending review."
             });
         }
 
@@ -230,12 +227,12 @@ public class WorkflowReviewController : ControllerBase
         await CreateAuditLogAsync("workflow", "approve", workflow.Id.ToString(), 
             userId.Value, cancellationToken).ConfigureAwait(false);
 
-        _logger.LogInformation(_localizer["Workflow.Approved"], id, userId);
+        _logger.LogInformation("Workflow {WorkflowId} approved by user {UserId}", id, userId);
 
         return Ok(new ApproveWorkflowResponse
         {
             Success = true,
-            Message = _localizer["Workflow.ApprovedSuccess"],
+            Message = "Workflow approved successfully.",
             NewVersion = workflow.Version
         });
     }
@@ -253,7 +250,7 @@ public class WorkflowReviewController : ControllerBase
         {
             return NotFound(new ErrorResponse 
             {
-                Message = _localizer["Workflow.NotFound"]
+                Message = "Workflow not found."
             });
         }
 
@@ -261,7 +258,7 @@ public class WorkflowReviewController : ControllerBase
         {
             return BadRequest(new ErrorResponse
             {
-                Message = _localizer["Workflow.NotPending"]
+                Message = "Workflow is not pending review."
             });
         }
 
@@ -287,7 +284,7 @@ public class WorkflowReviewController : ControllerBase
         return Ok(new ApproveWorkflowResponse
         {
             Success = true,
-            Message = _localizer["Workflow.RejectedSuccess"],
+            Message = "Workflow rejected successfully.",
             NewVersion = workflow.Version
         });
     }

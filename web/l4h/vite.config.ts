@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       preserveSymlinks: true,
-      dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'react-i18next', 'i18next', 'use-sync-external-store'],
+      dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'use-sync-external-store'],
     },
     base: '/',
     build: {

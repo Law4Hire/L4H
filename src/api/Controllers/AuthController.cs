@@ -3,7 +3,7 @@ using L4H.Infrastructure.Services;
 using L4H.Shared.Models;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+
 using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,7 +21,6 @@ public class AuthController : ControllerBase
     private readonly ICsrfService _csrfService;
     private readonly IRateLimitingService _rateLimitingService;
     private readonly IAccountLockoutService _accountLockoutService;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly AuthConfig _authConfig;
     private readonly ILogger<AuthController> _logger;
     private readonly IMailService _mailService;
@@ -34,7 +33,6 @@ public class AuthController : ControllerBase
         ICsrfService csrfService,
         IRateLimitingService rateLimitingService,
         IAccountLockoutService accountLockoutService,
-        IStringLocalizer<Shared> localizer,
         IOptions<AuthConfig> authConfig,
         ILogger<AuthController> logger,
         IMailService mailService)
@@ -46,7 +44,6 @@ public class AuthController : ControllerBase
         _csrfService = csrfService;
         _rateLimitingService = rateLimitingService;
         _accountLockoutService = accountLockoutService;
-        _localizer = localizer;
         _authConfig = authConfig.Value;
         _logger = logger;
         _mailService = mailService;
@@ -174,7 +171,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new ProblemDetails
             {
                 Title = "Authentication Failed",
-                Detail = _localizer["Auth.LoginFailed"]
+                Detail = "Invalid email or password."
             });
         }
 
@@ -204,7 +201,7 @@ public class AuthController : ControllerBase
                 return Unauthorized(new ProblemDetails
                 {
                     Title = "Email Verification Required",
-                    Detail = _localizer["Auth.EmailVerificationRequired"]
+                    Detail = "Please verify your email address before logging in."
                 });
             }
         }
@@ -255,7 +252,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new ProblemDetails
             {
                 Title = "Authentication Failed",
-                Detail = _localizer["Auth.LoginFailed"]
+                Detail = "Invalid email or password."
             });
         }
 
@@ -381,7 +378,7 @@ public class AuthController : ControllerBase
     {
         if (string.IsNullOrEmpty(token))
         {
-            return BadRequest(new { error = _localizer["Auth.InvalidToken"] });
+            return BadRequest(new { error = "Invalid verification token." });
         }
 
         var result = await _emailVerificationService.VerifyTokenAsync(token).ConfigureAwait(false);
@@ -391,7 +388,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { error = result.Error });
         }
 
-        return Ok(new { message = _localizer["Auth.EmailVerified"] });
+        return Ok(new { message = "Email verified successfully." });
     }
 
     /// <summary>
@@ -466,7 +463,7 @@ public class AuthController : ControllerBase
         };
         Response.Cookies.Delete("l4h_remember", cookieOptions);
 
-        return Ok(new { message = _localizer["Auth.LoggedOutAllDevices"] });
+        return Ok(new { message = "Successfully logged out from all devices." });
     }
 
     /// <summary>

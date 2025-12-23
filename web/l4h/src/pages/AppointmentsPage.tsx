@@ -3,7 +3,6 @@ import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, 
 import { appointments } from '@l4h/shared-ui'
 import { Calendar, Plus, Clock } from 'lucide-react'
 import { format } from 'date-fns'
-import { useTranslation } from 'react-i18next'
 
 interface Appointment {
   id: string
@@ -15,9 +14,11 @@ interface Appointment {
   status: 'scheduled' | 'confirmed' | 'cancelled'
 }
 
+// Simple t function to replace i18n
+const t = (key: string, options?: any) => options?.defaultValue || key;
+
 export default function AppointmentsPage() {
   const { success, error } = useToast()
-  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newAppointment, setNewAppointment] = useState({

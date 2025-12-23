@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
@@ -17,13 +17,11 @@ namespace L4H.Api.Controllers;
 public class PricingController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<PricingController> _logger;
 
-    public PricingController(L4HDbContext context, IStringLocalizer<Shared> localizer, ILogger<PricingController> logger)
+    public PricingController(L4HDbContext context, ILogger<PricingController> logger)
     {
         _context = context;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -256,7 +254,7 @@ public class PricingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Case Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -266,7 +264,7 @@ public class PricingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Cases.Forbidden"]
+                Detail = "Access denied."
             });
         }
 
@@ -282,7 +280,7 @@ public class PricingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Visa Type Not Found",
-                Detail = _localizer["Pricing.MissingVisaType"]
+                Detail = "The specified visa type was not found."
             });
         }
 
@@ -307,7 +305,7 @@ public class PricingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Pricing Rule Not Found",
-                Detail = _localizer["Pricing.NoActiveRule"]
+                Detail = "No active pricing rule found for this combination."
             });
         }
 

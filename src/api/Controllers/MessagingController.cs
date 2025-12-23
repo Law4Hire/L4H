@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
@@ -17,16 +17,13 @@ namespace L4H.Api.Controllers;
 public class MessagingController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<MessagingController> _logger;
 
     public MessagingController(
         L4HDbContext context,
-        IStringLocalizer<Shared> localizer,
         ILogger<MessagingController> logger)
     {
         _context = context;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -79,7 +76,7 @@ public class MessagingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Messages.Forbidden"]
+                Detail = "Access denied to this message thread."
             });
         }
 
@@ -157,7 +154,7 @@ public class MessagingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Case Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -167,7 +164,7 @@ public class MessagingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Messages.Forbidden"]
+                Detail = "Access denied to this message thread."
             });
         }
 
@@ -199,7 +196,7 @@ public class MessagingController : ControllerBase
                 return StatusCode(403, new ProblemDetails
                 {
                     Title = "Forbidden",
-                    Detail = _localizer["Messages.Forbidden"]
+                    Detail = "Access denied to this message thread."
                 });
             }
         }
@@ -256,7 +253,7 @@ public class MessagingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Thread Not Found",
-                Detail = _localizer["Messages.ThreadNotFound"]
+                Detail = "Message thread not found."
             });
         }
 
@@ -266,7 +263,7 @@ public class MessagingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Messages.Forbidden"]
+                Detail = "Access denied to this message thread."
             });
         }
 
@@ -337,7 +334,7 @@ public class MessagingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Thread Not Found",
-                Detail = _localizer["Messages.ThreadNotFound"]
+                Detail = "Message thread not found."
             });
         }
 
@@ -347,7 +344,7 @@ public class MessagingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Messages.Forbidden"]
+                Detail = "Access denied to this message thread."
             });
         }
 
@@ -418,7 +415,7 @@ public class MessagingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Thread Not Found",
-                Detail = _localizer["Messages.ThreadNotFound"]
+                Detail = "Message thread not found."
             });
         }
 
@@ -428,7 +425,7 @@ public class MessagingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Messages.Forbidden"]
+                Detail = "Access denied to this message thread."
             });
         }
 
@@ -650,7 +647,7 @@ public class MessagingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Messages Not Found",
-                Detail = _localizer["Messages.NotFound"]
+                Detail = "Message not found."
             });
         }
 
@@ -663,7 +660,7 @@ public class MessagingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Messages.Forbidden"]
+                Detail = "Access denied to this message thread."
             });
         }
 
@@ -737,7 +734,7 @@ public class MessagingController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Thread Not Found",
-                Detail = _localizer["Messages.ThreadNotFound"]
+                Detail = "Message thread not found."
             });
         }
 
@@ -748,7 +745,7 @@ public class MessagingController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Messages.Forbidden"]
+                Detail = "Access denied to this message thread."
             });
         }
 

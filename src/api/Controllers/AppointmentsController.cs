@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using Microsoft.Extensions.Options;
 using L4H.Infrastructure.Services.Teams;
 using L4H.Infrastructure.Entities;
@@ -20,20 +20,17 @@ namespace L4H.Api.Controllers;
 public class AppointmentsController : ControllerBase
 {
     private readonly L4H.Api.Services.Providers.IMeetingsProvider _meetingsProvider;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<AppointmentsController> _logger;
     private readonly L4H.Api.Configuration.MeetingsOptions _meetingsOptions;
     private readonly L4HDbContext _context;
 
     public AppointmentsController(
         L4H.Api.Services.Providers.IMeetingsProvider meetingsProvider,
-        IStringLocalizer<Shared> localizer,
         ILogger<AppointmentsController> logger,
         IOptions<L4H.Api.Configuration.MeetingsOptions> meetingsOptions,
         L4HDbContext context)
     {
         _meetingsProvider = meetingsProvider;
-        _localizer = localizer;
         _logger = logger;
         _meetingsOptions = meetingsOptions.Value;
         _context = context;
@@ -242,7 +239,7 @@ public class AppointmentsController : ControllerBase
         _logger.LogInformation("Appointment {AppointmentId} booked for case {CaseId} with attorney {AttorneyId}",
             appointment.Id, userCase.Id, attorney.Id);
 
-        return Created($"/v1/appointments/{appointment.Id}", new BookAppointmentResponse
+        return Created($"/api/v1/appointments/{appointment.Id}", new BookAppointmentResponse
         {
             AppointmentId = appointment.Id,
             AttorneyName = attorney.Name,
@@ -277,18 +274,18 @@ public class AppointmentsController : ControllerBase
                 {
                     meetingId = result.MeetingId,
                     joinUrl = result.JoinUrl,
-                    message = result.Message ?? _localizer["Appointments.CreatedSuccessfully"]
+                    message = result.Message ?? "Appointment created successfully."
                 });
             }
             else
             {
-                return StatusCode(500, new { message = result.ErrorMessage ?? _localizer["Appointments.CreationFailed"] });
+                return StatusCode(500, new { message = result.ErrorMessage ?? "Failed to create appointment." });
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating appointment");
-            return StatusCode(500, new { message = _localizer["Appointments.CreationError"] });
+            return StatusCode(500, new { message = "Error creating appointment." });
         }
     }
 }

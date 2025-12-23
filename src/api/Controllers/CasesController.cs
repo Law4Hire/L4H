@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
@@ -18,12 +18,10 @@ namespace L4H.Api.Controllers;
 public class CasesController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
 
-    public CasesController(L4HDbContext context, IStringLocalizer<Shared> localizer)
+    public CasesController(L4HDbContext context)
     {
         _context = context;
-        _localizer = localizer;
     }
 
     /// <summary>
@@ -98,7 +96,7 @@ public class CasesController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -108,7 +106,7 @@ public class CasesController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Cases.Forbidden"]
+                Detail = "Access denied."
             });
         }
 
@@ -165,7 +163,7 @@ public class CasesController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -175,7 +173,7 @@ public class CasesController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["Cases.Forbidden"]
+                Detail = "Access denied."
             });
         }
 
@@ -185,7 +183,7 @@ public class CasesController : ControllerBase
             return StatusCode(409, new ProblemDetails
             {
                 Title = "Invalid Transition",
-                Detail = _localizer["Cases.InvalidTransition"]
+                Detail = "Invalid status transition."
             });
         }
 
@@ -201,7 +199,7 @@ public class CasesController : ControllerBase
 
         return Ok(new MessageResponse
         {
-            Message = _localizer["Cases.TransitionApplied"]
+            Message = "Status updated successfully."
         });
     }
 
@@ -335,4 +333,3 @@ public class UpdateCaseStatusRequest
 {
     public string Status { get; set; } = string.Empty;
 }
-

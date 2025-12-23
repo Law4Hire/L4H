@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
@@ -18,16 +18,13 @@ namespace L4H.Api.Controllers;
 public class VisaChangeController : ControllerBase
 {
     private readonly L4HDbContext _context;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<VisaChangeController> _logger;
 
     public VisaChangeController(
         L4HDbContext context,
-        IStringLocalizer<Shared> localizer,
         ILogger<VisaChangeController> logger)
     {
         _context = context;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -52,7 +49,7 @@ public class VisaChangeController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["VisaChange.StaffOnly"]
+                Detail = "Only staff can initiate visa changes."
             });
         }
 
@@ -68,7 +65,7 @@ public class VisaChangeController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Case Not Found",
-                Detail = _localizer["Cases.NotFound"]
+                Detail = "Case not found."
             });
         }
 
@@ -77,7 +74,7 @@ public class VisaChangeController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Case Locked",
-                Detail = _localizer["VisaChange.CaseLocked"]
+                Detail = "Case is locked."
             });
         }
 
@@ -90,7 +87,7 @@ public class VisaChangeController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Pending Request Exists",
-                Detail = _localizer["VisaChange.PendingExists"]
+                Detail = "A pending visa change request already exists."
             });
         }
 
@@ -103,7 +100,7 @@ public class VisaChangeController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Visa Type Not Found",
-                Detail = _localizer["VisaChange.VisaTypeNotFound"]
+                Detail = "Visa type not found."
             });
         }
 
@@ -113,7 +110,7 @@ public class VisaChangeController : ControllerBase
             return BadRequest(new ProblemDetails
             {
                 Title = "Same Visa Type",
-                Detail = _localizer["VisaChange.SameVisaType"]
+                Detail = "New visa type must be different from current."
             });
         }
 
@@ -125,7 +122,7 @@ public class VisaChangeController : ControllerBase
             return BadRequest(new ProblemDetails
             {
                 Title = "Price Calculation Failed",
-                Detail = _localizer["VisaChange.PriceCalculationFailed"]
+                Detail = "Failed to calculate price difference."
             });
         }
 
@@ -200,7 +197,7 @@ public class VisaChangeController : ControllerBase
             return NotFound(new ProblemDetails
             {
                 Title = "Request Not Found",
-                Detail = _localizer["VisaChange.RequestNotFound"]
+                Detail = "Visa change request not found."
             });
         }
 
@@ -210,7 +207,7 @@ public class VisaChangeController : ControllerBase
             return StatusCode(403, new ProblemDetails
             {
                 Title = "Forbidden",
-                Detail = _localizer["VisaChange.ClientOnly"]
+                Detail = "Only clients can respond to visa change requests."
             });
         }
 
@@ -220,7 +217,7 @@ public class VisaChangeController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Request Not Pending",
-                Detail = _localizer["VisaChange.NotPending"]
+                Detail = "Request is not in pending status."
             });
         }
 
@@ -233,7 +230,7 @@ public class VisaChangeController : ControllerBase
             return Conflict(new ProblemDetails
             {
                 Title = "Request Expired",
-                Detail = _localizer["VisaChange.Expired"]
+                Detail = "Request has expired."
             });
         }
 
@@ -267,7 +264,7 @@ public class VisaChangeController : ControllerBase
                 _context.PriceDeltaLedgers.Add(ledgerEntry);
             }
 
-            message = _localizer["VisaChange.Approved"];
+            message = "Visa change request approved.";
 
             // Log audit event
             LogAudit("visa_change", "approved", "VisaChangeRequest", visaChangeRequest.Id.ToString(),
@@ -279,7 +276,7 @@ public class VisaChangeController : ControllerBase
             visaChangeRequest.Status = "rejected";
             visaChangeRequest.RejectedByClientAt = processedAt;
 
-            message = _localizer["VisaChange.Rejected"];
+            message = "Visa change request rejected.";
 
             // Log audit event
             LogAudit("visa_change", "rejected", "VisaChangeRequest", visaChangeRequest.Id.ToString(),
@@ -441,6 +438,5 @@ public class VisaChangeController : ControllerBase
         };
 
         _context.AuditLogs.Add(auditLog);
-        // Note: SaveChangesAsync will be called by the calling method
     }
 }
