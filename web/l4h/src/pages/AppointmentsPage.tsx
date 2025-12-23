@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
 import { appointments } from '@l4h/shared-ui'
-import { Calendar, Plus, Clock, MapPin, Users } from 'lucide-react'
+import { Calendar, Plus, Clock } from 'lucide-react'
 import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 
 interface Appointment {
   id: string
@@ -16,6 +17,7 @@ interface Appointment {
 
 export default function AppointmentsPage() {
   const { success, error } = useToast()
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newAppointment, setNewAppointment] = useState({
@@ -70,7 +72,7 @@ export default function AppointmentsPage() {
   return (
     <Container>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{'My Appointments'}</h1>
+        <h1 className="text-2xl font-bold dark:text-white">{'My Appointments'}</h1>
         <Button onClick={() => setShowCreateModal(true)}>
           <Plus className="h-4 w-4 mr-2" />
           {'Create Appointment'}
@@ -78,7 +80,7 @@ export default function AppointmentsPage() {
       </div>
 
       {appointmentsList.length === 0 ? (
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <EmptyState
             icon={Calendar}
             title={'No appointments found'}
@@ -94,25 +96,25 @@ export default function AppointmentsPage() {
       ) : (
         <div className="grid gap-4">
           {appointmentsList.map((appointment: Appointment) => (
-            <Card key={appointment.id} className="p-6">
+            <Card key={appointment.id} className="p-6 dark:bg-gray-800 dark:border-gray-700">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center space-x-4 mb-2">
                     <Calendar className="h-5 w-5 text-gray-400" />
-                    <span className="font-medium">
+                    <span className="font-medium dark:text-white">
                       {format(new Date(appointment.scheduledStart), 'PPP p')}
                     </span>
                   </div>
                   
                   <div className="flex items-center space-x-4 mb-2">
                     <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       {appointment.durationMinutes} {'minutes'}
                     </span>
                   </div>
 
                   {appointment.notes && (
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                       {appointment.notes}
                     </p>
                   )}
@@ -121,12 +123,12 @@ export default function AppointmentsPage() {
                 <div className="flex items-center space-x-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     appointment.status === 'confirmed' 
-                      ? 'bg-green-100 text-green-800'
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                       : appointment.status === 'cancelled'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
                   }`}>
-                    {t(`status.${appointment.status}`)}
+                    {t(`status.${appointment.status}`, { defaultValue: appointment.status })}
                   </span>
                 </div>
               </div>
@@ -193,4 +195,3 @@ export default function AppointmentsPage() {
     </Container>
   )
 }
-

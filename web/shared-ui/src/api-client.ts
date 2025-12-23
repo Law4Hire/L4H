@@ -483,7 +483,7 @@ export const interview = {
         isRequired: boolean
         order: number
       }
-    }>('/interview/anonymous/start', {
+    }>('/v1/interview/anonymous/start', {
       method: 'POST',
       body: JSON.stringify({ languageCode })
     })
@@ -501,7 +501,7 @@ export const interview = {
       nextQuestion: any | null
       isComplete: boolean
       evaluations: any[] | null
-    }>('/interview/anonymous/resume', {
+    }>('/v1/interview/anonymous/resume', {
       method: 'POST',
       body: JSON.stringify({ sessionToken })
     })
@@ -514,7 +514,7 @@ export const interview = {
       nextQuestion: any | null
       totalAnswers: number
       remainingVisasCount: number
-    }>('/interview/anonymous/answer', {
+    }>('/v1/interview/anonymous/answer', {
       method: 'POST',
       body: JSON.stringify({ sessionToken, questionKey, answer })
     })
@@ -540,7 +540,7 @@ export const interview = {
         lockReason?: string
       }>
       totalQuestionsAnswered: number
-    }>('/interview/anonymous/complete', {
+    }>('/v1/interview/anonymous/complete', {
       method: 'POST',
       body: JSON.stringify({ sessionToken })
     })
@@ -548,12 +548,12 @@ export const interview = {
 
   // Get visa evaluations for a session
   async getEvaluations(sessionToken: string) {
-    return fetchJson(`/interview/anonymous/evaluations/${sessionToken}`)
+    return fetchJson(`/v1/interview/anonymous/evaluations/${sessionToken}`)
   },
 
   // User selects their preferred visa
   async selectVisa(sessionToken: string, visaTypeId: number) {
-    return fetchJson('/interview/anonymous/select-visa', {
+    return fetchJson('/v1/interview/anonymous/select-visa', {
       method: 'POST',
       body: JSON.stringify({ sessionToken, visaTypeId })
     })
@@ -573,7 +573,7 @@ export const interview = {
       email: string
       success: boolean
       errorMessage?: string
-    }>('/interview/anonymous/register', {
+    }>('/v1/interview/anonymous/register', {
       method: 'POST',
       body: JSON.stringify(data)
     })
@@ -587,7 +587,7 @@ export const professional = {
     visaTypeId: number
     reason?: string
   }) {
-    return fetchJson('/interview/professional/lock-visa', {
+    return fetchJson('/v1/interview/professional/lock-visa', {
       method: 'POST',
       body: JSON.stringify(data)
     })
@@ -598,7 +598,7 @@ export const professional = {
     visaTypeId: number
     reason?: string
   }) {
-    return fetchJson('/interview/professional/unlock-visa', {
+    return fetchJson('/v1/interview/professional/unlock-visa', {
       method: 'POST',
       body: JSON.stringify(data)
     })
@@ -619,7 +619,7 @@ export const professional = {
       isUserSelected: boolean
       isAttorneyLocked: boolean
       lockReason?: string
-    }>>(`/interview/professional/session/${sessionId}/evaluations`)
+    }>>(`/v1/interview/professional/session/${sessionId}/evaluations`)
   },
 
   async getSessionLockStatus(sessionId: string) {
@@ -630,7 +630,7 @@ export const professional = {
       lockedReason?: string
       lockedBy?: string
       lockedAt?: string
-    }>(`/interview/professional/session/${sessionId}/lock-status`)
+    }>(`/v1/interview/professional/session/${sessionId}/lock-status`)
   }
 }
 

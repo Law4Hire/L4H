@@ -158,6 +158,34 @@ public class SchedulingController : ControllerBase
     }
 
     /// <summary>
+    /// Get appointments for the current user
+    /// </summary>
+    /// <returns>List of appointments</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<Appointment>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAppointments()
+    {
+        var userId = GetCurrentUserId();
+        
+        // If staff, they might want all appointments or filtered by their ID
+        // For regular users, only show their own appointments
+        var query = _context.Appointments.AsQueryable();
+        
+        if (!IsStaff())
+        {
+            query = query.Where(a => a.Case.UserId == userId);
+        }
+        
+        var appointments = await query
+            .Include(a => a.Case)
+            .OrderByDescending(a => a.ScheduledStart)
+            .ToListAsync()
+            .ConfigureAwait(false);
+            
+        return Ok(appointments);
+    }
+
+    /// <summary>
     /// Get appointment details by ID
     /// </summary>
     /// <param name="id">Appointment ID</param>
