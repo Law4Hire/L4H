@@ -45,7 +45,7 @@ public class AppointmentsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Appointment>>> GetAppointments()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized(new { message = "User not authenticated" });
@@ -77,7 +77,7 @@ public class AppointmentsController : ControllerBase
         [FromQuery] DateTime? startDate = null,
         [FromQuery] int daysAhead = 14)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized(new { message = "User not authenticated" });
@@ -172,7 +172,7 @@ public class AppointmentsController : ControllerBase
     [HttpPost("book")]
     public async Task<ActionResult<BookAppointmentResponse>> BookAppointment([FromBody] BookAppointmentRequest request)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized(new { message = "User not authenticated" });

@@ -9,9 +9,9 @@ using L4H.Api.Authorization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/clients")]
+[Route("api/v1/clients")]
+[Authorize(Policy = "IsLegalProfessional")]
 [Tags("Clients")]
-[Authorize]
 public class ClientsController : ControllerBase
 {
     private readonly L4HDbContext _context;

@@ -127,7 +127,7 @@ var jwtConfig = new JwtConfig
     SigningKey = builder.Configuration["Auth:Jwt:SigningKey"] ?? builder.Configuration["Auth__Jwt__SigningKey"] ?? "CHANGE_ME_DEV_ONLY_256_BIT_KEY_REQUIRED_FOR_HS256_SECURITY_ALGORITHM",
     Issuer = builder.Configuration["Auth:Jwt:Issuer"] ?? builder.Configuration["Auth__Jwt__Issuer"] ?? "L4H",
     Audience = builder.Configuration["Auth:Jwt:Audience"] ?? builder.Configuration["Auth__Jwt__Audience"] ?? "L4H",
-    AccessTokenLifetimeMinutes = builder.Configuration.GetValue<int?>("Auth:Jwt:LifetimeMinutes") ?? 5
+    AccessTokenLifetimeMinutes = builder.Configuration.GetValue<int?>("Auth:Jwt:LifetimeMinutes") ?? 60 // Changed from 5 to 60 minutes
 };
 
 // Add JWT Authentication - bypass in Testing environment

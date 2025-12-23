@@ -2712,6 +2712,9 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<DateTime>("LastMessageAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("RecipientUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Subject")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -2719,6 +2722,8 @@ namespace L4H.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CaseId");
+
+                    b.HasIndex("RecipientUserId");
 
                     b.ToTable("MessageThreads");
                 });
@@ -5047,7 +5052,14 @@ namespace L4H.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("L4H.Infrastructure.Entities.User", "RecipientUser")
+                        .WithMany()
+                        .HasForeignKey("RecipientUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Case");
+
+                    b.Navigation("RecipientUser");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Notification", b =>

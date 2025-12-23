@@ -965,6 +965,10 @@ public class L4HDbContext : DbContext
                 .HasConversion(
                     v => v.Value,
                     v => new CaseId(v));
+            entity.Property(e => e.RecipientUserId)
+                .HasConversion(
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new UserId(v.Value) : null);
             entity.Property(e => e.Subject).HasMaxLength(200);
 
             entity.HasOne(e => e.Case)
@@ -972,7 +976,13 @@ public class L4HDbContext : DbContext
                 .HasForeignKey(e => e.CaseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.HasOne(e => e.RecipientUser)
+                .WithMany()
+                .HasForeignKey(e => e.RecipientUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasIndex(e => e.CaseId);
+            entity.HasIndex(e => e.RecipientUserId);
         });
 
         modelBuilder.Entity<Message>(entity =>

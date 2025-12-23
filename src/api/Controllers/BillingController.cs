@@ -8,9 +8,9 @@ using System.Text;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/billing")]
+[Route("api/v1/billing")]
+[Authorize]
 [Tags("Billing")]
-[Authorize(Policy = "IsAdmin")]
 public class BillingController : ControllerBase
 {
     private readonly L4HDbContext _context;

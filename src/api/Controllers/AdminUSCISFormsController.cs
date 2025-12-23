@@ -8,9 +8,9 @@ using L4H.Shared.Models;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/admin/uscis-forms")]
+[Route("api/v1/admin/uscis-forms")]
 [Authorize(Policy = "IsAdmin")]
-[Tags("Admin")]
+[Tags("Admin - USCIS Forms")]
 public class AdminUSCISFormsController : ControllerBase
 {
     private readonly L4HDbContext _context;

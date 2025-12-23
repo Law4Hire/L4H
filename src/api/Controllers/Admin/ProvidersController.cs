@@ -8,9 +8,9 @@ using L4H.Api.Services.Providers;
 namespace L4H.Api.Controllers.Admin;
 
 [ApiController]
-[Route("v1/admin/providers")]
+[Route("api/v1/admin/providers")]
 [Authorize(Policy = "IsAdmin")]
-[Tags("Admin")]
+[Tags("Admin - Providers")]
 public class ProvidersController : ControllerBase
 {
     private readonly PaymentsOptions _paymentsOptions;

@@ -11,8 +11,9 @@ using System.Text.Json;
 namespace L4H.Api.Controllers.Admin;
 
 [ApiController]
-[Route("v1/admin/workflows")]
+[Route("api/v1/admin/workflows")]
 [Authorize(Policy = "IsAdmin")]
+[Tags("Admin - Workflow Review")]
 public class WorkflowReviewController : ControllerBase
 {
     private readonly L4HDbContext _context;
@@ -376,7 +377,7 @@ public class WorkflowReviewController : ControllerBase
 
     private UserId? GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (Guid.TryParse(userIdClaim, out var userId))
         {
             return new UserId(userId);

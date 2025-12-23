@@ -14,7 +14,7 @@ using System.Globalization;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/uploads")]
+[Route("api/v1/uploads")]
 [Authorize]
 [Tags("Uploads")]
 public class UploadsController : ControllerBase
@@ -320,7 +320,7 @@ public class UploadsController : ControllerBase
 
     private UserId GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             throw new UnauthorizedAccessException("Invalid user ID in token");

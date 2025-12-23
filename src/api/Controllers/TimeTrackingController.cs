@@ -8,9 +8,9 @@ using System.Security.Claims;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/time-tracking")]
-[Tags("Time Tracking")]
+[Route("api/v1/time-tracking")]
 [Authorize]
+[Tags("Time Tracking")]
 public class TimeTrackingController : ControllerBase
 {
     private readonly L4HDbContext _context;

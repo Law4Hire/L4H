@@ -49,6 +49,17 @@ public class MessagingController : ControllerBase
         var title = request.GetProperty("title").GetString() ?? "";
         var initialMessage = request.TryGetProperty("initialMessage", out var initialMsgProp) ? initialMsgProp.GetString() : null;
 
+        // Parse optional recipientUserId - null means "General" (all admins)
+        UserId? recipientUserId = null;
+        if (request.TryGetProperty("recipientUserId", out var recipientProp) && recipientProp.ValueKind == JsonValueKind.String)
+        {
+            var recipientStr = recipientProp.GetString();
+            if (!string.IsNullOrEmpty(recipientStr) && Guid.TryParse(recipientStr, out var recipientGuid))
+            {
+                recipientUserId = new UserId(recipientGuid);
+            }
+        }
+
         // Verify case exists and user has access
         var caseEntity = await _context.Cases
             .FirstOrDefaultAsync(c => c.Id == caseId).ConfigureAwait(false);
@@ -76,6 +87,7 @@ public class MessagingController : ControllerBase
         {
             CaseId = caseId,
             Subject = title,
+            RecipientUserId = recipientUserId,
             CreatedAt = DateTime.UtcNow,
             LastMessageAt = DateTime.UtcNow
         };
@@ -159,9 +171,41 @@ public class MessagingController : ControllerBase
             });
         }
 
-        // Get threads with message counts
-        var threads = await _context.MessageThreads
-            .Where(t => t.CaseId == caseIdTyped)
+        // Filter threads based on visibility:
+        // - Case owner sees all threads for their case
+        // - Admins see "General" threads (RecipientUserId IS NULL) for all cases
+        // - Specific staff see threads directed to them (RecipientUserId matches their ID)
+        var isAdmin = User.IsInRole("Admin") || User.FindFirst("IsAdmin")?.Value == "true";
+
+        var threadsQuery = _context.MessageThreads
+            .Where(t => t.CaseId == caseIdTyped);
+
+        // If not the case owner and not staff, only see your own threads
+        if (caseEntity.UserId != userId)
+        {
+            if (isAdmin)
+            {
+                // Admins see "General" threads (no specific recipient) or threads directed to them
+                threadsQuery = threadsQuery.Where(t => t.RecipientUserId == null || t.RecipientUserId == userId);
+            }
+            else if (IsStaff())
+            {
+                // Staff sees threads directed specifically to them
+                threadsQuery = threadsQuery.Where(t => t.RecipientUserId == userId);
+            }
+            else
+            {
+                // Not authorized to see any threads for this case
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = _localizer["Messages.Forbidden"]
+                });
+            }
+        }
+        // Case owner sees all threads for their case (no filter needed)
+
+        var threads = await threadsQuery
             .Select(t => new MessageThreadResponse
             {
                 Id = t.Id,
@@ -670,6 +714,187 @@ public class MessagingController : ControllerBase
     }
 
     /// <summary>
+    /// Delete a message thread
+    /// </summary>
+    /// <param name="threadId">Thread ID to delete</param>
+    /// <returns>Delete confirmation</returns>
+    [HttpDelete("threads/{threadId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteThread(Guid threadId)
+    {
+        var userId = GetCurrentUserId();
+
+        // Get thread with case for access checking
+        var thread = await _context.MessageThreads
+            .Include(t => t.Case)
+            .Include(t => t.Messages)
+            .FirstOrDefaultAsync(t => t.Id == threadId).ConfigureAwait(false);
+
+        if (thread == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Thread Not Found",
+                Detail = _localizer["Messages.ThreadNotFound"]
+            });
+        }
+
+        // Only case owner or admin can delete threads
+        var isAdmin = User.IsInRole("Admin") || User.FindFirst("IsAdmin")?.Value == "true";
+        if (thread.Case.UserId != userId && !isAdmin)
+        {
+            return StatusCode(403, new ProblemDetails
+            {
+                Title = "Forbidden",
+                Detail = _localizer["Messages.Forbidden"]
+            });
+        }
+
+        var messageCount = thread.Messages.Count;
+
+        // Delete all messages in the thread first
+        _context.Messages.RemoveRange(thread.Messages);
+
+        // Delete the thread
+        _context.MessageThreads.Remove(thread);
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Log audit event
+        LogAudit("messages", "delete_thread", "MessageThread", threadId.ToString(),
+            new { caseId = thread.CaseId.Value, messageCount });
+
+        return Ok(new { success = true, deletedMessageCount = messageCount });
+    }
+
+    /// <summary>
+    /// Forward a message to create a new thread
+    /// </summary>
+    /// <param name="messageId">Message ID to forward</param>
+    /// <param name="request">Forward request with new thread details</param>
+    /// <returns>New thread details</returns>
+    [HttpPost("messages/{messageId}/forward")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ForwardMessage(Guid messageId, [FromBody] JsonElement request)
+    {
+        var userId = GetCurrentUserId();
+
+        // Get original message
+        var originalMessage = await _context.Messages
+            .Include(m => m.Thread)
+            .ThenInclude(t => t.Case)
+            .Include(m => m.Sender)
+            .FirstOrDefaultAsync(m => m.Id == messageId).ConfigureAwait(false);
+
+        if (originalMessage == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Message Not Found",
+                Detail = "Message not found"
+            });
+        }
+
+        // Verify user has access to the message
+        if (originalMessage.Thread.Case.UserId != userId && !IsStaff())
+        {
+            return StatusCode(403, new ProblemDetails
+            {
+                Title = "Forbidden",
+                Detail = "Access denied"
+            });
+        }
+
+        // Parse request
+        var title = request.GetProperty("title").GetString() ?? "Forwarded: " + originalMessage.Thread.Subject;
+        var caseId = new CaseId(request.GetProperty("caseId").GetGuid());
+
+        // Parse optional recipientUserId
+        UserId? recipientUserId = null;
+        if (request.TryGetProperty("recipientUserId", out var recipientProp) && recipientProp.ValueKind == JsonValueKind.String)
+        {
+            var recipientStr = recipientProp.GetString();
+            if (!string.IsNullOrEmpty(recipientStr) && Guid.TryParse(recipientStr, out var recipientGuid))
+            {
+                recipientUserId = new UserId(recipientGuid);
+            }
+        }
+
+        // Verify target case exists and user has access
+        var targetCase = await _context.Cases
+            .FirstOrDefaultAsync(c => c.Id == caseId).ConfigureAwait(false);
+
+        if (targetCase == null)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Case Not Found",
+                Detail = "Target case not found"
+            });
+        }
+
+        if (targetCase.UserId != userId && !IsStaff())
+        {
+            return StatusCode(403, new ProblemDetails
+            {
+                Title = "Forbidden",
+                Detail = "Cannot forward to this case"
+            });
+        }
+
+        // Create new thread
+        var newThread = new MessageThread
+        {
+            CaseId = caseId,
+            Subject = title,
+            RecipientUserId = recipientUserId,
+            CreatedAt = DateTime.UtcNow,
+            LastMessageAt = DateTime.UtcNow
+        };
+
+        _context.MessageThreads.Add(newThread);
+
+        // Create forwarded message with original content
+        var senderName = originalMessage.Sender?.Email ?? "Unknown";
+        var forwardedBody = $"[Forwarded from {originalMessage.Thread.Subject} - Originally sent by {senderName}]\n\n{originalMessage.Body}";
+        var forwardedMessage = new Message
+        {
+            ThreadId = newThread.Id,
+            SenderUserId = userId,
+            Body = forwardedBody,
+            Channel = "in_app",
+            SentAt = DateTime.UtcNow,
+            ReadByJson = JsonSerializer.Serialize(new Dictionary<string, DateTime>
+            {
+                [userId.Value.ToString()] = DateTime.UtcNow
+            })
+        };
+
+        _context.Messages.Add(forwardedMessage);
+
+        // Update case activity
+        targetCase.LastActivityAt = DateTimeOffset.UtcNow;
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Log audit event
+        LogAudit("messages", "forward", "MessageThread", newThread.Id.ToString(),
+            new { originalMessageId = messageId, targetCaseId = caseId.Value, newThreadId = newThread.Id });
+
+        return Ok(new
+        {
+            threadId = newThread.Id.ToString(),
+            title = newThread.Subject,
+            messageCount = 1
+        });
+    }
+
+    /// <summary>
     /// Preview daily digest for current user
     /// </summary>
     /// <returns>Daily digest preview</returns>
@@ -754,7 +979,7 @@ public class MessagingController : ControllerBase
 
     private UserId GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             throw new UnauthorizedAccessException("Invalid user ID in token");

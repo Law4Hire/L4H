@@ -78,26 +78,26 @@ const HomePage: React.FC = () => {
 
       {/* Unique Selling Points */}
       {uniqueSellingPoints.length > 0 && (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-white dark:bg-navy-950 transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <span className="text-gold-600 font-bold tracking-widest uppercase text-sm">Why Choose Us</span>
-              <h2 className="text-4xl font-serif font-bold text-navy-900 mt-2">Excellence in Immigration Law</h2>
+              <span className="text-gold-600 dark:text-gold-500 font-bold tracking-widest uppercase text-sm">Why Choose Us</span>
+              <h2 className="text-4xl font-serif font-bold text-navy-900 dark:text-white mt-2">Excellence in Immigration Law</h2>
               <div className="w-24 h-1 bg-gold-500 mx-auto mt-6"></div>
             </div>
             <div className="grid md:grid-cols-2 gap-10">
               {uniqueSellingPoints.map((point: string, index: number) => (
-                <div key={index} className="flex p-6 bg-navy-50 rounded-lg border border-navy-100 hover:shadow-lg transition-all duration-300">
+                <div key={index} className="flex p-6 bg-navy-50 dark:bg-navy-900 rounded-lg border border-navy-100 dark:border-navy-800 hover:shadow-lg transition-all duration-300">
                   <div className="flex-shrink-0 mr-4">
-                    <div className="w-12 h-12 bg-navy-900 rounded-full flex items-center justify-center text-gold-500">
+                    <div className="w-12 h-12 bg-navy-900 dark:bg-gold-500 rounded-full flex items-center justify-center text-gold-500 dark:text-navy-900">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-navy-900 mb-2">{point}</h3>
-                    <p className="text-gray-600">Dedicated to providing the highest quality legal representation for our clients.</p>
+                    <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">{point}</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Dedicated to providing the highest quality legal representation for our clients.</p>
                   </div>
                 </div>
               ))}
@@ -107,11 +107,11 @@ const HomePage: React.FC = () => {
       )}
 
       {/* Services Overview */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50 dark:bg-navy-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-serif font-bold text-navy-900 mb-4">Our Immigration Services</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-4">Our Immigration Services</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Comprehensive immigration law services with offices in the United States and Taiwan
             </p>
           </div>
@@ -119,12 +119,12 @@ const HomePage: React.FC = () => {
           {!servicesLoading && serviceCategories && (
             <div className="grid md:grid-cols-3 gap-8">
               {serviceCategories.slice(0, 3).map((category) => (
-                <div key={category.id} className="bg-white p-8 rounded-lg shadow-md hover:shadow-xl transition-shadow border-t-4 border-gold-500">
-                  <h3 className="text-2xl font-serif font-bold text-navy-900 mb-4">{category.name}</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">{category.description}</p>
+                <div key={category.id} className="bg-white dark:bg-navy-800 p-8 rounded-lg shadow-md hover:shadow-xl transition-all border-t-4 border-gold-500">
+                  <h3 className="text-2xl font-serif font-bold text-navy-900 dark:text-white mb-4">{category.name}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{category.description}</p>
                   <ul className="space-y-3 mb-8">
                     {category.services?.slice(0, 3).map((service) => (
-                      <li key={service.id} className="text-sm text-gray-700 flex items-center">
+                      <li key={service.id} className="text-sm text-gray-700 dark:text-gray-200 flex items-center">
                         <svg className="w-4 h-4 text-gold-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
@@ -132,7 +132,7 @@ const HomePage: React.FC = () => {
                       </li>
                     ))}
                   </ul>
-                  <Link to="/services" className="text-navy-600 hover:text-navy-900 font-bold uppercase text-sm tracking-wide flex items-center">
+                  <Link to="/services" className="text-navy-600 dark:text-gold-500 hover:text-navy-900 dark:hover:text-gold-400 font-bold uppercase text-sm tracking-wide flex items-center transition-colors">
                     Learn More <span className="ml-2">→</span>
                   </Link>
                 </div>
@@ -142,7 +142,7 @@ const HomePage: React.FC = () => {
           
           <div className="text-center mt-12">
             <Link to="/services">
-              <Button variant="outline" className="px-10 py-3 border-navy-900 text-navy-900 hover:bg-navy-900 hover:text-white transition-colors">
+              <Button variant="outline" className="px-10 py-3 border-navy-900 dark:border-white text-navy-900 dark:text-white hover:bg-navy-900 dark:hover:bg-white hover:text-white dark:hover:text-navy-900 transition-colors">
                 View All Services
               </Button>
             </Link>
@@ -151,9 +151,9 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Law Library Highlight */}
-      <section className="py-20 bg-navy-900 text-white relative overflow-hidden">
+      <section className="py-20 bg-navy-900 dark:bg-navy-950 text-white relative overflow-hidden transition-colors duration-300">
          {/* Decorative circle */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-navy-800 rounded-full opacity-50"></div>
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-navy-800 dark:bg-navy-900 rounded-full opacity-50"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -165,25 +165,25 @@ const HomePage: React.FC = () => {
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
                 <div className="flex items-center text-gray-200">
-                  <div className="w-10 h-10 bg-navy-800 rounded flex items-center justify-center mr-4 text-gold-500">
+                  <div className="w-10 h-10 bg-navy-800 dark:bg-navy-900 rounded flex items-center justify-center mr-4 text-gold-500">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                   </div>
                   Visa Bulletin
                 </div>
                 <div className="flex items-center text-gray-200">
-                  <div className="w-10 h-10 bg-navy-800 rounded flex items-center justify-center mr-4 text-gold-500">
+                  <div className="w-10 h-10 bg-navy-800 dark:bg-navy-900 rounded flex items-center justify-center mr-4 text-gold-500">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                   </div>
                   Checklists
                 </div>
                  <div className="flex items-center text-gray-200">
-                  <div className="w-10 h-10 bg-navy-800 rounded flex items-center justify-center mr-4 text-gold-500">
+                  <div className="w-10 h-10 bg-navy-800 dark:bg-navy-900 rounded flex items-center justify-center mr-4 text-gold-500">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 21v-8a2 2 0 012-2h14a2 2 0 012 2v8M3 21h18M3 21l8-8m10 8l-8-8" /></svg>
                   </div>
                   Civil Surgeons
                 </div>
                  <div className="flex items-center text-gray-200">
-                  <div className="w-10 h-10 bg-navy-800 rounded flex items-center justify-center mr-4 text-gold-500">
+                  <div className="w-10 h-10 bg-navy-800 dark:bg-navy-900 rounded flex items-center justify-center mr-4 text-gold-500">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                   </div>
                   Case Decisions
@@ -196,13 +196,13 @@ const HomePage: React.FC = () => {
               </Link>
             </div>
             <div className="relative hidden md:block">
-               <div className="bg-white p-2 transform rotate-2 rounded shadow-2xl">
-                  <div className="bg-gray-100 border-4 border-double border-gray-300 p-8 text-center">
-                    <svg className="w-24 h-24 text-navy-900 mx-auto opacity-20 mb-4" fill="currentColor" viewBox="0 0 24 24">
+               <div className="bg-white dark:bg-navy-800 p-2 transform rotate-2 rounded shadow-2xl transition-colors">
+                  <div className="bg-gray-100 dark:bg-navy-900 border-4 border-double border-gray-300 dark:border-navy-700 p-8 text-center transition-colors">
+                    <svg className="w-24 h-24 text-navy-900 dark:text-gold-500 mx-auto opacity-20 mb-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2L1 21h22L12 2zm0 3.8L19.4 19H4.6L12 5.8z"/>
                     </svg>
-                    <h3 className="text-2xl font-serif font-bold text-navy-900">Legal Knowledge Base</h3>
-                    <p className="mt-2 text-gray-500 font-serif italic">Empowering our clients with information.</p>
+                    <h3 className="text-2xl font-serif font-bold text-navy-900 dark:text-white">Legal Knowledge Base</h3>
+                    <p className="mt-2 text-gray-500 dark:text-gray-400 font-serif italic">Empowering our clients with information.</p>
                   </div>
                </div>
             </div>
@@ -212,19 +212,19 @@ const HomePage: React.FC = () => {
 
       {/* Managing Attorney Highlight */}
       {managingAttorney && (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-white dark:bg-navy-950 transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div>
-                <span className="text-gold-600 font-bold tracking-widest uppercase text-sm mb-2 block">Leadership</span>
-                <h2 className="text-3xl font-serif font-bold text-navy-900 mb-6">Meet Our Managing Attorney</h2>
-                <h3 className="text-2xl font-medium text-navy-800 mb-2">{managingAttorney.name}</h3>
-                <p className="text-gold-600 font-medium mb-6 uppercase tracking-wide text-sm">{managingAttorney.title}</p>
-                <p className="text-gray-700 mb-8 leading-relaxed text-lg font-light">
+                <span className="text-gold-600 dark:text-gold-500 font-bold tracking-widest uppercase text-sm mb-2 block">Leadership</span>
+                <h2 className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-6">Meet Our Managing Attorney</h2>
+                <h3 className="text-2xl font-medium text-navy-800 dark:text-gray-100 mb-2">{managingAttorney.name}</h3>
+                <p className="text-gold-600 dark:text-gold-500 font-medium mb-6 uppercase tracking-wide text-sm">{managingAttorney.title}</p>
+                <p className="text-gray-700 dark:text-gray-300 mb-8 leading-relaxed text-lg font-light">
                   {managingAttorney.bio || 'Experienced immigration attorney providing comprehensive legal services. Dedicated to navigating complex immigration laws to help families and businesses succeed.'}
                 </p>
                 <Link to="/attorneys">
-                  <Button variant="outline" className="px-8 py-3 border-navy-900 text-navy-900 hover:bg-navy-900 hover:text-white">
+                  <Button variant="outline" className="px-8 py-3 border-navy-900 dark:border-white text-navy-900 dark:text-white hover:bg-navy-900 dark:hover:bg-white hover:text-white dark:hover:text-navy-900 transition-colors">
                     Meet Our Team
                   </Button>
                 </Link>
@@ -238,8 +238,8 @@ const HomePage: React.FC = () => {
                     className="w-full h-auto rounded-lg shadow-xl relative z-10 grayscale hover:grayscale-0 transition-all duration-500"
                   />
                 ) : (
-                  <div className="w-full aspect-square bg-navy-100 rounded-lg flex items-center justify-center shadow-xl relative z-10">
-                    <svg className="w-32 h-32 text-navy-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-full aspect-square bg-navy-100 dark:bg-navy-800 rounded-lg flex items-center justify-center shadow-xl relative z-10">
+                    <svg className="w-32 h-32 text-navy-300 dark:text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>

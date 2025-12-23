@@ -8,7 +8,8 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/site-config")]
+[Route("api/v1/site-config")]
+[Authorize]
 [Tags("Site Configuration")]
 public class SiteConfigurationController : ControllerBase
 {

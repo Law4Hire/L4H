@@ -11,7 +11,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/graph/mail")]
+[Route("api/v1/graph/mail")]
 [Authorize]
 [Tags("Graph Mail")]
 public class GraphMailController : ControllerBase
@@ -107,7 +107,7 @@ public class GraphMailController : ControllerBase
 
     private UserId GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             throw new UnauthorizedAccessException("Invalid user ID in token");

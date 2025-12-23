@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Button } from '@l4h/shared-ui'
 import { useSiteConfig } from '../hooks/useSiteConfig'
 import { useAuth } from '../hooks/useAuth'
+import { ThemeToggle } from './ThemeToggle'
 
 interface PublicLayoutProps {
   children: React.ReactNode
@@ -43,7 +44,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const locations = safeJsonParse(siteConfig?.locations, [])
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-navy-950 font-sans flex flex-col transition-colors duration-300">
       {/* Top Bar for Associate Login */}
       <div className="bg-navy-900 text-gray-300 py-2 px-4 sm:px-6 lg:px-8 flex justify-between items-center text-xs tracking-wide z-50 relative">
          <div className="hidden sm:block font-light">
@@ -62,7 +63,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Header */}
-      <header className="bg-white shadow-lg sticky top-0 z-40">
+      <header className="bg-white dark:bg-navy-900 shadow-lg sticky top-0 z-40 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
             {/* Logo Area */}
@@ -71,11 +72,11 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
                 <img 
                   src="https://cannlaw.com/images/logo.gif" 
                   alt="Cann Legal Group Logo"
-                  className="h-12 md:h-16 w-auto object-contain"
+                  className="h-12 md:h-16 w-auto object-contain dark:brightness-110"
                 />
               </div>
-              <div className="flex flex-col justify-center border-l border-gray-200 pl-4 md:pl-6 h-12">
-                <h1 className="text-xl md:text-3xl font-serif font-bold text-navy-900 leading-none tracking-tight group-hover:text-gold-600 transition-colors whitespace-nowrap">
+              <div className="flex flex-col justify-center border-l border-gray-200 dark:border-navy-700 pl-4 md:pl-6 h-12">
+                <h1 className="text-xl md:text-3xl font-serif font-bold text-navy-900 dark:text-white leading-none tracking-tight group-hover:text-gold-600 transition-colors whitespace-nowrap">
                   {siteConfig?.firmName || 'Cann Legal Group'}
                 </h1>
                 <p className="text-[10px] md:text-xs text-gold-600 font-bold tracking-[0.2em] uppercase mt-1 whitespace-nowrap">Immigration Law Specialists</p>
@@ -83,31 +84,33 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-6 lg:space-x-8">
+            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
                   className={`text-sm font-medium transition-colors border-b-2 py-1 ${
                     location.pathname === item.href
-                      ? 'text-blue-900 border-blue-900'
-                      : 'text-gray-600 border-transparent hover:text-blue-900 hover:border-blue-200'
+                      ? 'text-blue-900 dark:text-gold-500 border-blue-900 dark:border-gold-500'
+                      : 'text-gray-600 dark:text-gray-300 border-transparent hover:text-blue-900 dark:hover:text-white hover:border-blue-200'
                   }`}
                 >
                   {item.name}
                 </Link>
               ))}
+              <div className="border-l border-gray-200 dark:border-navy-700 h-6 mx-2"></div>
+              <ThemeToggle />
             </nav>
 
             {/* Client Portal Button */}
             <div className="hidden md:flex items-center pl-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">
-                  <Button variant="outline" size="sm">Dashboard</Button>
+                  <Button variant="outline" size="sm" className="dark:text-white dark:border-navy-600 dark:hover:bg-navy-800">Dashboard</Button>
                 </Link>
               ) : (
                 <Link to="/login?type=client">
-                  <Button variant="primary" size="sm" className="bg-blue-900 hover:bg-blue-800 shadow-md">
+                  <Button variant="primary" size="sm" className="bg-blue-900 dark:bg-gold-600 dark:hover:bg-gold-500 hover:bg-blue-800 shadow-md border-none dark:text-navy-900 font-bold">
                     Client Portal
                   </Button>
                 </Link>
@@ -115,8 +118,9 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
             </div>
             
             {/* Mobile Menu Button (Hamburger) - Simplified for this layout */}
-            <div className="md:hidden flex items-center">
-               <button className="text-gray-500 hover:text-gray-900 focus:outline-none p-2">
+            <div className="md:hidden flex items-center space-x-2">
+               <ThemeToggle />
+               <button className="text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none p-2">
                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                  </svg>
@@ -127,7 +131,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow bg-gray-50">{children}</main>
+      <main className="flex-grow bg-gray-50 dark:bg-navy-950 transition-colors duration-300">{children}</main>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white border-t-8 border-blue-900">

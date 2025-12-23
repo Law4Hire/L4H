@@ -7,8 +7,8 @@ using FluentValidation;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/public")]
-[Tags("Public Information")]
+[Route("api/v1/public")]
+[Tags("Public")]
 public class PublicController : ControllerBase
 {
     private readonly L4HDbContext _context;

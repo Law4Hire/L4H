@@ -10,7 +10,7 @@ using System.Text.Json;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("v1/admin/interview-questions")]
+[Route("api/v1/admin/interview-questions")]
 [Authorize(Policy = "IsAdmin")]
 [Tags("Admin")]
 public class AdminInterviewQuestionsController : ControllerBase
@@ -397,7 +397,7 @@ public class AdminInterviewQuestionsController : ControllerBase
 
     private UserId? GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst("sub")?.Value;
         if (userIdClaim != null && Guid.TryParse(userIdClaim, out var guid))
         {
             return new UserId(guid);

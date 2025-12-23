@@ -11,10 +11,19 @@ public class MessageThread
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastMessageAt { get; set; } = DateTime.UtcNow;
 
+    /// <summary>
+    /// Recipient user ID. Null = "General" message visible to all admins.
+    /// Non-null = Message directed to specific staff member (attorney).
+    /// </summary>
+    public UserId? RecipientUserId { get; set; }
+
     // Navigation properties
     [JsonIgnore]
 
     public Case Case { get; set; } = null!;
+    [JsonIgnore]
+
+    public User? RecipientUser { get; set; }
     [JsonIgnore]
 
     public ICollection<Message> Messages { get; set; } = new List<Message>();

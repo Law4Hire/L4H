@@ -51,11 +51,36 @@ export const Layout: React.FC<LayoutProps> = ({
     return window.location.pathname
   }
 
-  const handleLogout = () => {
-    // Clear tokens and redirect
+  const handleLogout = async () => {
+    // Clear all auth state properly
     localStorage.removeItem('jwt-token')
+    localStorage.removeItem('jwt_token')
+    sessionStorage.clear()
+
+    // Clear tokens from shared-ui module (if available)
+    try {
+      const { setJwtToken, clearTokens } = await import('../api-client')
+      setJwtToken(null)
+      clearTokens()
+    } catch (e) {
+      console.warn('Could not import clearTokens:', e)
+    }
+
+    // Dispatch event to notify auth state change
     window.dispatchEvent(new Event('jwt-token-changed'))
-    window.location.href = '/login'
+
+    // Try to call backend logout API to clear HttpOnly cookies
+    try {
+      await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      })
+    } catch (e) {
+      console.warn('Backend logout failed:', e)
+    }
+
+    // Redirect to home page with cache bust
+    window.location.href = '/?t=' + Date.now()
   }
 
   // Close user menu when clicking outside
