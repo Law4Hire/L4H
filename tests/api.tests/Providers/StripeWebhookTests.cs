@@ -234,7 +234,7 @@ public sealed class StripeWebhookTests : IClassFixture<WebApplicationFactory<Pro
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("rechazado"); // Spanish for "rejected"
+        content.Should().Contain("rejected"); // Was "rechazado"
     }
 
     private static string CreateCheckoutSessionCompletedPayload()

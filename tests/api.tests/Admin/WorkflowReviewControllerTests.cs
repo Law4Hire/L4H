@@ -70,9 +70,9 @@ public class WorkflowReviewControllerTests : BaseIntegrationTest
         var content = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<WorkflowPendingListResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         
-        // Should contain localized status messages
+        // Should contain status messages (English only now)
         result!.Workflows.Should().AllSatisfy(w => 
-            w.StatusDisplayName.Should().Contain("Pendiente") // Spanish for pending (capitalized)
+            w.StatusDisplayName.Should().Contain("Pending")
         );
     }
 

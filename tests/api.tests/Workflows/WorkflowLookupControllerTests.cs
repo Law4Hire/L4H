@@ -86,7 +86,7 @@ public class WorkflowLookupControllerTests : BaseIntegrationTest
         var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         
         errorResponse.Should().NotBeNull();
-        errorResponse!.Message.Should().Contain("encontró"); // Spanish for "not found"
+        errorResponse!.Message.Should().Contain("found"); // English only now
     }
 
     [Fact]

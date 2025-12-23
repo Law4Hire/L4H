@@ -158,7 +158,7 @@ public sealed class GraphRetryPolicyTests : IClassFixture<WebApplicationFactory<
         
         // Verify error response contains expected message
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Error al enviar correo de prueba");
+        content.Should().Contain("Failed to send test email");
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public sealed class GraphRetryPolicyTests : IClassFixture<WebApplicationFactory<
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Error al enviar correo de prueba"); // Spanish for "Error retrieving calendar availability"
+        content.Should().Contain("Failed to send test email"); // Was "Error al enviar correo de prueba"
     }
 
     private static async Task<string> GetAdminTokenAsync()

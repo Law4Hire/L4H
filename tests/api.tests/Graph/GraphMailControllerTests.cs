@@ -61,7 +61,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
 
         result.Should().NotBeNull();
         result!.Success.Should().BeTrue();
-        result.Message.Should().Contain("Email sent successfully via Fake provider");
+        result.Message.Should().Contain("Test email sent successfully.");
         result.Provider.Should().Be("FakeGraphProvider");
 
         // Verify mail was recorded in fake provider's outbox
@@ -104,7 +104,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         var content = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<SendTestMailResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-        result!.Message.Should().Contain("Correo enviado exitosamente");
+        result!.Message.Should().Contain("Test email sent successfully.");
     }
 
     [Fact]
@@ -206,7 +206,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         
         result.Should().NotBeNull();
         result!.Success.Should().BeTrue();
-        result.Message.Should().Contain("Email sent successfully via Fake provider");
+        result.Message.Should().Contain("Test email sent successfully.");
     }
 
     private async Task SetupTestData()

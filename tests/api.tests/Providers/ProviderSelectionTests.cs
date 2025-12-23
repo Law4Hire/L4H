@@ -50,9 +50,9 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
         });
 
         providers.Should().NotBeNull();
-        providers!.Payments.Should().Be("Fake");
-        providers.Graph.Should().Be("Fake");
-        providers.Meetings.Should().Be("Fake");
+        providers!.Payments.Should().Be("Fake/Simulated");
+        providers.Graph.Should().Be("Fake/Simulated");
+        providers.Meetings.Should().Be("Fake/Simulated");
     }
 
     [Fact]
@@ -88,8 +88,8 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
 
         providers.Should().NotBeNull();
         providers!.Payments.Should().Be("Live");
-        providers.Graph.Should().Be("Fake");
-        providers.Meetings.Should().Be("Fake");
+        providers.Graph.Should().Be("Fake/Simulated");
+        providers.Meetings.Should().Be("Fake/Simulated");
     }
 
     [Fact]
@@ -126,9 +126,9 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
         });
 
         providers.Should().NotBeNull();
-        providers!.Payments.Should().Be("Fake");
+        providers!.Payments.Should().Be("Fake/Simulated");
         providers.Graph.Should().Be("Live");
-        providers.Meetings.Should().Be("Fake");
+        providers.Meetings.Should().Be("Fake/Simulated");
     }
 
     [Fact]
@@ -162,9 +162,9 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
         });
 
         providers.Should().NotBeNull();
-        providers!.Payments.Should().Be("Fake");
-        providers.Graph.Should().Be("Fake");
-        providers.Meetings.Should().Be("Teams");
+        providers!.Payments.Should().Be("Fake/Simulated");
+        providers.Graph.Should().Be("Fake/Simulated");
+        providers.Meetings.Should().Be("Microsoft Teams");
     }
 
     [Fact]

@@ -229,7 +229,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("creada"); // Spanish for "created"
+        content.Should().Contain("created"); // Was "creada"
     }
 
     [Fact]
