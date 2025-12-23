@@ -87,6 +87,7 @@ export default function AdminInterviewQuestionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categories, setCategories] = useState<{id?: string, value: string, label: string, displayOrder: number, isActive: boolean}[]>([]);
+  const [modalKey, setModalKey] = useState(0);
 
   const [formData, setFormData] = useState<QuestionFormData>({
     key: '',
