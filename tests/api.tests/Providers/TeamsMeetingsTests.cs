@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using L4H.Infrastructure.Data;
 using Xunit;
 using FluentAssertions;
 using L4H.Api.Configuration;
@@ -19,18 +21,49 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
 {
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
+    private readonly string _databaseName;
 
     public TeamsMeetingsTests(WebApplicationFactory<Program> factory)
     {
+        _databaseName = GetType().Name + "_" + Guid.NewGuid().ToString("N")[..8];
         _factory = factory.WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("RunMigrationsOnStartup", "false");
             builder.ConfigureServices(services =>
             {
+                // Replace the database connection with our test database
+                var optionsDescriptors = services.Where(d => d.ServiceType == typeof(DbContextOptions<L4HDbContext>)).ToList();
+                foreach (var d in optionsDescriptors)
+                {
+                    services.Remove(d);
+                }
+
+                var contextDescriptors = services.Where(d => d.ServiceType == typeof(L4HDbContext)).ToList();
+                foreach (var d in contextDescriptors)
+                {
+                    services.Remove(d);
+                }
+
+                var connectionString = $"Server=localhost,14333;Database={_databaseName};User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;";
+                services.AddDbContext<L4HDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString);
+                });
+
                 TestServiceRegistration.RegisterTestServices(services);
             });
         });
         _client = _factory.CreateClient();
+        
+        EnsureDatabaseCreated();
+    }
+
+    private void EnsureDatabaseCreated()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+        context.Database.Migrate();
     }
 
     [Fact]
@@ -64,7 +97,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/meetings", 
+        var response = await client.PostAsync("/api/v1/meetings", 
             new StringContent(JsonSerializer.Serialize(appointmentRequest), System.Text.Encoding.UTF8, "application/json"));
 
         // Assert
@@ -105,7 +138,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/meetings", 
+        var response = await client.PostAsync("/api/v1/meetings", 
             new StringContent(JsonSerializer.Serialize(appointmentRequest), System.Text.Encoding.UTF8, "application/json"));
 
         // Assert
@@ -147,7 +180,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/meetings", 
+        var response = await client.PostAsync("/api/v1/meetings", 
             new StringContent(JsonSerializer.Serialize(appointmentRequest), System.Text.Encoding.UTF8, "application/json"));
 
         // Assert
@@ -189,7 +222,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/meetings", 
+        var response = await client.PostAsync("/api/v1/meetings", 
             new StringContent(JsonSerializer.Serialize(appointmentRequest), System.Text.Encoding.UTF8, "application/json"));
 
         // Assert
@@ -230,7 +263,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/meetings", 
+        var response = await client.PostAsync("/api/v1/meetings", 
             new StringContent(JsonSerializer.Serialize(appointmentRequest), System.Text.Encoding.UTF8, "application/json"));
 
         // Assert
@@ -258,6 +291,18 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
     {
         if (disposing)
         {
+            // Clean up the test database
+            try
+            {
+                using var scope = _factory.Services.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
+                context.Database.EnsureDeleted();
+            }
+            catch
+            {
+                // Ignore cleanup errors
+            }
+
             _client?.Dispose();
         }
     }

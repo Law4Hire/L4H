@@ -326,7 +326,8 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 
 // Ensure database is created and migrated for Development, Testing, and Production
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") || app.Environment.IsProduction())
+var runMigrations = app.Configuration.GetValue<bool>("RunMigrationsOnStartup", true);
+if (runMigrations && (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") || app.Environment.IsProduction()))
 {
     Console.WriteLine(Program.StartupLogs.StartingMigration);
     using (var scope = app.Services.CreateScope())

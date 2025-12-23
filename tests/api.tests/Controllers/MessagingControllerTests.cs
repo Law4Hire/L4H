@@ -13,46 +13,10 @@ using Xunit;
 
 namespace L4H.Api.Tests.Controllers;
 
-public sealed class MessagingControllerTests : IDisposable
+public sealed class MessagingControllerTests : BaseIntegrationTest
 {
-    private readonly WebApplicationFactory<Program> _factory;
-    private readonly HttpClient _client;
-    private readonly string _databaseName;
-
-    public MessagingControllerTests()
+    public MessagingControllerTests(WebApplicationFactory<Program> factory) : base(factory)
     {
-        // Generate unique database name for each test instance
-        _databaseName = GetType().Name + "_" + Guid.NewGuid().ToString("N")[..8];
-        
-        _factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder =>
-            {
-                builder.UseEnvironment("Testing");
-                builder.ConfigureServices(services =>
-                {
-                    // Replace the database connection with our test database
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<L4HDbContext>));
-                    if (descriptor != null)
-                    {
-                        services.Remove(descriptor);
-                    }
-
-                    var connectionString = $"Server=localhost,14333;Database={_databaseName};User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;";
-                    services.AddDbContext<L4HDbContext>(options =>
-                    {
-                        options.UseSqlServer(connectionString);
-                        options.EnableSensitiveDataLogging();
-                    });
-
-                    // Register test services (but keep SQL Server database)
-                    TestServiceRegistration.RegisterTestServices(services);
-                });
-            });
-
-        _client = _factory.CreateClient();
-        
-        // Ensure database is created and seeded
-        EnsureDatabaseCreated();
     }
 
     [Fact]
@@ -61,7 +25,7 @@ public sealed class MessagingControllerTests : IDisposable
         // Arrange
         await SetupTestData();
         var token = await GetAuthTokenAsync();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var request = new
         {
@@ -71,7 +35,7 @@ public sealed class MessagingControllerTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync("/v1/messaging/threads", 
+        var response = await Client.PostAsync("/api/v1/messaging/threads", 
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -85,7 +49,7 @@ public sealed class MessagingControllerTests : IDisposable
         result.GetProperty("status").GetString().Should().Be("open");
 
         // Verify thread was created in database
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
         var threads = await context.MessageThreads
             .Where(t => t.CaseId == TestData.TestCaseId)
@@ -109,7 +73,7 @@ public sealed class MessagingControllerTests : IDisposable
         // Arrange
         await SetupTestData();
         var token = await GetAuthTokenAsync();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var invalidCaseId = Guid.NewGuid();
         var request = new
@@ -120,7 +84,7 @@ public sealed class MessagingControllerTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync("/v1/messaging/threads", 
+        var response = await Client.PostAsync("/api/v1/messaging/threads", 
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -135,7 +99,7 @@ public sealed class MessagingControllerTests : IDisposable
         // Arrange
         await SetupTestDataWithThread();
         var token = await GetAuthTokenAsync();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var request = new
         {
@@ -143,7 +107,7 @@ public sealed class MessagingControllerTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync($"/v1/messaging/threads/{TestData.TestThreadId}/messages", 
+        var response = await Client.PostAsync($"/api/v1/messaging/threads/{TestData.TestThreadId}/messages", 
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -157,7 +121,7 @@ public sealed class MessagingControllerTests : IDisposable
         result.GetProperty("timestamp").GetString().Should().NotBeNullOrEmpty();
 
         // Verify message was created in database
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
         var messages = await context.Messages
             .Where(m => m.ThreadId == TestData.TestThreadId)
@@ -176,13 +140,13 @@ public sealed class MessagingControllerTests : IDisposable
         // Arrange
         await SetupTestData();
         var token = await GetAuthTokenAsync();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var invalidThreadId = Guid.NewGuid();
         var request = new { content = "Test message" };
 
         // Act
-        var response = await _client.PostAsync($"/v1/messaging/threads/{invalidThreadId}/messages", 
+        var response = await Client.PostAsync($"/api/v1/messaging/threads/{invalidThreadId}/messages", 
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -195,10 +159,10 @@ public sealed class MessagingControllerTests : IDisposable
         // Arrange
         await SetupTestDataWithMessages();
         var token = await GetAuthTokenAsync();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await _client.GetAsync($"/v1/messaging/threads/{TestData.TestThreadId}/messages");
+        var response = await Client.GetAsync($"/api/v1/messaging/threads/{TestData.TestThreadId}/messages");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -220,10 +184,10 @@ public sealed class MessagingControllerTests : IDisposable
         // Arrange
         await SetupTestDataWithThread();
         var token = await GetAuthTokenAsync();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await _client.GetAsync($"/v1/messaging/cases/{TestData.TestCaseId.Value}/threads");
+        var response = await Client.GetAsync($"/api/v1/messaging/cases/{TestData.TestCaseId.Value}/threads");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -245,16 +209,16 @@ public sealed class MessagingControllerTests : IDisposable
         // Arrange
         await SetupTestDataWithMessages();
         var token = await GetAuthTokenAsync();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Get a message ID first
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
         var message = await context.Messages
             .FirstAsync(m => m.ThreadId == TestData.TestThreadId);
 
         // Act
-        var response = await _client.PostAsync($"/v1/messaging/messages/{message.Id}/read", 
+        var response = await Client.PostAsync($"/api/v1/messaging/messages/{message.Id}/read", 
             new StringContent("", Encoding.UTF8, "application/json"));
 
         // Assert
@@ -271,10 +235,10 @@ public sealed class MessagingControllerTests : IDisposable
         // Arrange
         await SetupTestDataWithMessages();
         var token = await GetAuthTokenAsync();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await _client.GetAsync($"/v1/messaging/cases/{TestData.TestCaseId.Value}/unread");
+        var response = await Client.GetAsync($"/api/v1/messaging/cases/{TestData.TestCaseId.Value}/unread");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -289,7 +253,7 @@ public sealed class MessagingControllerTests : IDisposable
     private async Task<string> GetAuthTokenAsync()
     {
         // Create a test user and get auth token
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
         
         var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Id == TestData.TestUserId);
@@ -313,7 +277,7 @@ public sealed class MessagingControllerTests : IDisposable
 
     private async Task CleanupTestData()
     {
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
 
         // Clean up Messages
@@ -356,7 +320,7 @@ public sealed class MessagingControllerTests : IDisposable
     {
         await CleanupTestData();
         
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
 
         // Check if user already exists
@@ -413,7 +377,7 @@ public sealed class MessagingControllerTests : IDisposable
     {
         await SetupTestData();
         
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
 
         // Check if thread already exists
@@ -448,7 +412,7 @@ public sealed class MessagingControllerTests : IDisposable
     {
         await SetupTestDataWithThread();
         
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
 
         var additionalMessages = new[]
@@ -473,115 +437,6 @@ public sealed class MessagingControllerTests : IDisposable
 
         context.Messages.AddRange(additionalMessages);
         await context.SaveChangesAsync();
-    }
-
-    private void EnsureDatabaseCreated()
-    {
-        using var scope = _factory.Services.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
-        
-        // Apply migrations to create the database with the latest schema
-        context.Database.Migrate();
-        
-        // Seed essential reference data
-        SeedEssentialData(context);
-    }
-
-    private static void SeedEssentialData(L4HDbContext context)
-    {
-        try
-        {
-            // Seed VisaTypes using raw SQL with IDENTITY_INSERT
-            context.Database.ExecuteSqlRaw(@"
-                SET IDENTITY_INSERT VisaTypes ON;
-                
-                IF NOT EXISTS (SELECT 1 FROM VisaTypes WHERE Id = 1)
-                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt) 
-                    VALUES (1, 'H1B', 'H-1B Specialty Occupation', 1, GETUTCDATE(), GETUTCDATE());
-                
-                IF NOT EXISTS (SELECT 1 FROM VisaTypes WHERE Id = 2)
-                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt) 
-                    VALUES (2, 'B2', 'B-2 Tourist Visa', 1, GETUTCDATE(), GETUTCDATE());
-                
-                IF NOT EXISTS (SELECT 1 FROM VisaTypes WHERE Id = 3)
-                    INSERT INTO VisaTypes (Id, Code, Name, IsActive, CreatedAt, UpdatedAt) 
-                    VALUES (3, 'F1', 'F-1 Student Visa', 1, GETUTCDATE(), GETUTCDATE());
-                
-                SET IDENTITY_INSERT VisaTypes OFF;
-            ");
-
-            // Seed Countries using raw SQL with IDENTITY_INSERT
-            context.Database.ExecuteSqlRaw(@"
-                SET IDENTITY_INSERT Countries ON;
-
-                IF NOT EXISTS (SELECT 1 FROM Countries WHERE Id = 1)
-                    INSERT INTO Countries (Id, Iso2, Iso3, Name, IsActive)
-                    VALUES (1, 'US', 'USA', 'United States', 1);
-
-                IF NOT EXISTS (SELECT 1 FROM Countries WHERE Id = 2)
-                    INSERT INTO Countries (Id, Iso2, Iso3, Name, IsActive)
-                    VALUES (2, 'ES', 'ESP', 'Spain', 1);
-
-                IF NOT EXISTS (SELECT 1 FROM Countries WHERE Id = 3)
-                    INSERT INTO Countries (Id, Iso2, Iso3, Name, IsActive)
-                    VALUES (3, 'AD', 'AND', 'Andorra', 1);
-
-                SET IDENTITY_INSERT Countries OFF;
-            ");
-
-            // Seed VisaClasses using raw SQL with IDENTITY_INSERT
-            context.Database.ExecuteSqlRaw(@"
-                SET IDENTITY_INSERT VisaClasses ON;
-
-                IF NOT EXISTS (SELECT 1 FROM VisaClasses WHERE Id = 1)
-                    INSERT INTO VisaClasses (Id, Code, Name, GeneralCategory, IsActive)
-                    VALUES (1, 'H1B', 'H-1B', 'Employment', 1);
-
-                IF NOT EXISTS (SELECT 1 FROM VisaClasses WHERE Id = 2)
-                    INSERT INTO VisaClasses (Id, Code, Name, GeneralCategory, IsActive)
-                    VALUES (2, 'B2', 'B-2', 'Tourist', 1);
-
-                IF NOT EXISTS (SELECT 1 FROM VisaClasses WHERE Id = 3)
-                    INSERT INTO VisaClasses (Id, Code, Name, GeneralCategory, IsActive)
-                    VALUES (3, 'F1', 'F-1', 'Student', 1);
-
-                SET IDENTITY_INSERT VisaClasses OFF;
-            ");
-        }
-        catch (Exception ex)
-        {
-            // Log the error but don't fail the test setup
-            Console.WriteLine($"ERROR: Failed to seed essential data: {ex.Message}");
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
-            throw; // Re-throw to see what's happening
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            // Clean up the test database
-            try
-            {
-                using var scope = _factory.Services.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
-                context.Database.EnsureDeleted();
-            }
-            catch
-            {
-                // Ignore cleanup errors
-            }
-
-            _client?.Dispose();
-            _factory?.Dispose();
-        }
     }
 
     private static class TestData

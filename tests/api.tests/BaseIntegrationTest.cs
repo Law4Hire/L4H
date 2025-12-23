@@ -28,13 +28,20 @@ public class BaseIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
         Factory = factory.WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("RunMigrationsOnStartup", "false");
             builder.ConfigureServices(services =>
             {
                 // Replace the database connection with our test database
-                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<L4HDbContext>));
-                if (descriptor != null)
+                var optionsDescriptors = services.Where(d => d.ServiceType == typeof(DbContextOptions<L4HDbContext>)).ToList();
+                foreach (var d in optionsDescriptors)
                 {
-                    services.Remove(descriptor);
+                    services.Remove(d);
+                }
+
+                var contextDescriptors = services.Where(d => d.ServiceType == typeof(L4HDbContext)).ToList();
+                foreach (var d in contextDescriptors)
+                {
+                    services.Remove(d);
                 }
 
                 var connectionString = $"Server=localhost,14333;Database={DatabaseName};User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;";

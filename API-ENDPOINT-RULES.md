@@ -100,9 +100,9 @@
 ### 🟡 STUB/INCOMPLETE ENDPOINTS (Exist but need implementation)
 | Method | Endpoint | Auth | Purpose | Status |
 |--------|----------|------|---------|--------|
-| Appointments | `/api/v1/appointments/*` | Bearer | Appointment management | 🚧 Stub |
+| Meetings | `/api/v1/meetings/*` | Bearer | Meeting management | ✅ Implemented |
 | GraphMail | `/api/v1/graphmail/*` | Bearer | Email integration | 🚧 Stub |
-| Messaging | `/api/v1/messaging/*` | Bearer | Internal messaging | 🚧 Stub |
+| Messaging | `/api/v1/messaging/*` | Bearer | Internal messaging | ✅ Implemented |
 | Payments | `/api/v1/payments/*` | Bearer | Payment processing | 🚧 Stub |
 | Scheduling | `/api/v1/scheduling/*` | Bearer | Staff scheduling | 🚧 Stub |
 | StaffAvailability | `/api/v1/staff/*` | Bearer | Staff availability | 🚧 Stub |
