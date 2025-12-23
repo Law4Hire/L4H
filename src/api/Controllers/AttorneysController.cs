@@ -435,32 +435,30 @@ public class AttorneysController : ControllerBase
     {
         var credentials = JsonSerializer.Serialize(new[]
         {
-            "Licensed to practice law in Maryland",
-            "Licensed to practice law in West Virginia",
+            "J.D. University of Maryland School of Law",
             "Member of American Immigration Lawyers Association (AILA)"
         });
 
         var practiceAreas = JsonSerializer.Serialize(new[]
         {
-            "Family-Based Immigration",
-            "Employment & Investment Immigration",
-            "Waivers & Criminal Issues"
+            "Employment Immigration",
+            "Family Immigration",
+            "EB-5 Investment"
         });
 
         var languages = JsonSerializer.Serialize(new[]
         {
-            "English",
-            "Mandarin Chinese"
+            "English"
         });
 
         var attorney = new Attorney
         {
             Name = "Denise S. Cann",
-            Title = "Managing Attorney",
-            Bio = "Denise S. Cann is the managing attorney at Cann Legal Group, specializing in comprehensive immigration law with offices in the United States and Taiwan. With extensive experience in family-based immigration, employment visas, and complex waiver cases, she provides fast, efficient, and convenient legal representation from stateside through consular processing.",
+            Title = "Founder and Managing Attorney",
+            Bio = "The founder and managing attorney for Cann Legal Group. Ms. Cann earned her baccalaureate of arts degree in political science from the University of North Carolina at Chapel Hill in 1994. After earning her degree, she traveled to Taiwan where she became a teacher of English as a second language from 1994 through 1996. Returning to the United States in 1996, Ms. Cann attended law school at the University of Maryland. She earned her Juris Doctor in 1999 and is admitted the bars of Maryland and the District of Columbia.",
             Email = "dcann@cannlaw.com",
             Phone = "(410) 783-1888",
-            PhotoUrl = new Uri("https://example.com/default_attorney_photo.jpg"), // Provide a default URI
+            PhotoUrl = new Uri("/images/attorneys/denise.jpg", UriKind.RelativeOrAbsolute),
             Credentials = credentials,
             PracticeAreas = practiceAreas,
             Languages = languages,
