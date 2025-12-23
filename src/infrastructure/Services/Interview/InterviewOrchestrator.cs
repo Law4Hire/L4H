@@ -52,6 +52,27 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         };
     }
 
+    public async Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId, string? languageCode = null)
+    {
+        // Create new authenticated session linked to the case
+        var session = await _sessionManager.CreateAuthenticatedSessionAsync(caseId, userId, languageCode);
+
+        // Get first question
+        var firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());
+
+        if (firstQuestion == null)
+        {
+            throw new InvalidOperationException("No questions available to start interview");
+        }
+
+        return new InterviewStartResult
+        {
+            SessionToken = session.Id, // For authenticated sessions, we use the ID as token since they are already secure
+            SessionId = session.Id,
+            FirstQuestion = firstQuestion
+        };
+    }
+
     public async Task<InterviewResumeResult> ResumeInterviewAsync(Guid anonymousToken)
     {
         var session = await _sessionManager.GetSessionByTokenAsync(anonymousToken);

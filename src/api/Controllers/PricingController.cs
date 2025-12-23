@@ -235,7 +235,7 @@ public class PricingController : ControllerBase
     /// <param name="id">Case ID</param>
     /// <param name="request">Package selection request</param>
     /// <returns>Price snapshot</returns>
-    [HttpPost("/v1/cases/{id}/package")]
+    [HttpPost("/api/v1/cases/{id}/package")]
     [Authorize]
     [ProducesResponseType(typeof(PriceSnapshotResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

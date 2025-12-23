@@ -33,6 +33,23 @@ public class SessionManager : ISessionManager
         return session;
     }
 
+    public async Task<InterviewSession> CreateAuthenticatedSessionAsync(CaseId caseId, UserId userId, string? languageCode = null)
+    {
+        var session = new InterviewSession
+        {
+            Id = Guid.NewGuid(),
+            CaseId = caseId,
+            UserId = userId,
+            Status = "active",
+            StartedAt = DateTime.UtcNow
+        };
+
+        _context.InterviewSessions.Add(session);
+        await _context.SaveChangesAsync();
+
+        return session;
+    }
+
     public async Task<InterviewSession?> GetSessionByTokenAsync(Guid anonymousToken)
     {
         return await _context.InterviewSessions

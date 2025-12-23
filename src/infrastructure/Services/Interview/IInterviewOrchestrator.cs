@@ -15,6 +15,11 @@ public interface IInterviewOrchestrator
     Task<InterviewStartResult> StartAnonymousInterviewAsync(string? languageCode = null);
 
     /// <summary>
+    /// Starts a new authenticated interview session linked to a case
+    /// </summary>
+    Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId, string? languageCode = null);
+
+    /// <summary>
     /// Resumes an existing interview session
     /// </summary>
     Task<InterviewResumeResult> ResumeInterviewAsync(Guid anonymousToken);
