@@ -111,7 +111,7 @@ public sealed class MeetingsIntegrationTests : IDisposable
         jsonOptions.Converters.Add(new UserIdConverter());
         jsonOptions.Converters.Add(new CaseIdConverter());
         
-        var response = await _client.PostAsync("/v1/appointments",
+        var response = await _client.PostAsync("/api/v1/appointments",
             new StringContent(JsonSerializer.Serialize(request, jsonOptions), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -177,7 +177,7 @@ public sealed class MeetingsIntegrationTests : IDisposable
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             Converters = { new UserIdConverter(), new CaseIdConverter() }
         };
-        var response = await _client.PostAsync("/v1/appointments",
+        var response = await _client.PostAsync("/api/v1/appointments",
             new StringContent(JsonSerializer.Serialize(request, jsonOptions), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -226,7 +226,7 @@ public sealed class MeetingsIntegrationTests : IDisposable
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             Converters = { new UserIdConverter(), new CaseIdConverter() }
         };
-        var response = await _client.PutAsync($"/v1/appointments/{TestData.PendingAppointmentId}",
+        var response = await _client.PutAsync($"/api/v1/appointments/{TestData.PendingAppointmentId}",
             new StringContent(JsonSerializer.Serialize(request, jsonOptions), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -271,7 +271,7 @@ public sealed class MeetingsIntegrationTests : IDisposable
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             Converters = { new UserIdConverter(), new CaseIdConverter() }
         };
-        var response = await _client.PostAsync("/v1/appointments",
+        var response = await _client.PostAsync("/api/v1/appointments",
             new StringContent(JsonSerializer.Serialize(request, jsonOptions), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -307,7 +307,7 @@ public sealed class MeetingsIntegrationTests : IDisposable
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await _client.GetAsync($"/v1/appointments/{TestData.ConfirmedAppointmentId}");
+        var response = await _client.GetAsync($"/api/v1/appointments/{TestData.ConfirmedAppointmentId}");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -340,7 +340,7 @@ public sealed class MeetingsIntegrationTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync($"/v1/appointments/{TestData.ConfirmedAppointmentId}/recording-consent",
+        var response = await _client.PostAsync($"/api/v1/appointments/{TestData.ConfirmedAppointmentId}/recording-consent",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -382,7 +382,7 @@ public sealed class MeetingsIntegrationTests : IDisposable
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             Converters = { new UserIdConverter(), new CaseIdConverter() }
         };
-        var response = await _client.PostAsync("/v1/appointments",
+        var response = await _client.PostAsync("/api/v1/appointments",
             new StringContent(JsonSerializer.Serialize(request, jsonOptions), Encoding.UTF8, "application/json"));
 
         // Assert - For stub responses, we don't create audit logs to avoid foreign key issues

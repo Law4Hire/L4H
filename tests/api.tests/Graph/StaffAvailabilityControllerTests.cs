@@ -58,7 +58,7 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
         var to = from.AddDays(1);
 
         // Act
-        var response = await _client.GetAsync($"/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
+        var response = await _client.GetAsync($"/api/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -101,7 +101,7 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
         var to = from.AddDays(1);
 
         // Act
-        var response = await _client.GetAsync($"/v1/staff/{invalidStaffId}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
+        var response = await _client.GetAsync($"/api/v1/staff/{invalidStaffId}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
 
         // Assert
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
@@ -119,7 +119,7 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
         var to = from.AddDays(-1); // Invalid: to before from
 
         // Act
-        var response = await _client.GetAsync($"/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
+        var response = await _client.GetAsync($"/api/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
 
         // Assert
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
@@ -143,7 +143,7 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
 
 
         // Act
-        var response = await _client.GetAsync($"/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
+        var response = await _client.GetAsync($"/api/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -187,7 +187,7 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
         var to = from.AddDays(1);
 
         // Act
-        var response = await _client.GetAsync($"/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}&bufferMinutes=30");
+        var response = await _client.GetAsync($"/api/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}&bufferMinutes=30");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -222,7 +222,7 @@ public sealed class StaffAvailabilityControllerTests : IDisposable
         var to = from.AddDays(1);
 
         // Act
-        var response = await _client.GetAsync($"/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
+        var response = await _client.GetAsync($"/api/v1/staff/{TestData.StaffUserId.Value}/availability?from={from:yyyy-MM-ddTHH:mm:ssZ}&to={to:yyyy-MM-ddTHH:mm:ssZ}");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();

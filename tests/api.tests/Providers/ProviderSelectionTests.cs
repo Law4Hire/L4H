@@ -39,7 +39,7 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
 
         // Act
         _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await _client.GetAsync("/v1/admin/providers");
+        var response = await _client.GetAsync("/api/v1/admin/providers");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -76,7 +76,7 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.GetAsync("/v1/admin/providers");
+        var response = await client.GetAsync("/api/v1/admin/providers");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -115,7 +115,7 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.GetAsync("/v1/admin/providers");
+        var response = await client.GetAsync("/api/v1/admin/providers");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -151,7 +151,7 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.GetAsync("/v1/admin/providers");
+        var response = await client.GetAsync("/api/v1/admin/providers");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -171,7 +171,7 @@ public sealed class ProviderSelectionTests : IClassFixture<WebApplicationFactory
     public async Task ProviderProbe_WithoutAdminToken_ShouldReturnUnauthorized()
     {
         // Act
-        var response = await _client.GetAsync("/v1/admin/providers");
+        var response = await _client.GetAsync("/api/v1/admin/providers");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

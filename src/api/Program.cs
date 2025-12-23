@@ -423,7 +423,7 @@ Console.WriteLine("[STARTUP] /api group controllers mapped");
 // Health endpoint is handled by HealthController
 
 // Versioned API endpoints
-var v1 = app.MapGroup("/v1")
+var v1 = app.MapGroup("/api/v1")
     .WithTags("V1");
 
 v1.MapGet("/ping", () => Results.Ok(new { message = "pong", timestamp = DateTime.UtcNow }))

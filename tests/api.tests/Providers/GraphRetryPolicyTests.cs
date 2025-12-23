@@ -66,7 +66,7 @@ public sealed class GraphRetryPolicyTests : IClassFixture<WebApplicationFactory<
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/admin/graph/test-mail", 
+        var response = await client.PostAsync("/api/v1/admin/graph/test-mail", 
             new StringContent("{}", Encoding.UTF8, "application/json"));
 
         // Assert
@@ -108,7 +108,7 @@ public sealed class GraphRetryPolicyTests : IClassFixture<WebApplicationFactory<
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/admin/graph/test-mail", 
+        var response = await client.PostAsync("/api/v1/admin/graph/test-mail", 
             new StringContent("{}", Encoding.UTF8, "application/json"));
 
         // Assert
@@ -150,7 +150,7 @@ public sealed class GraphRetryPolicyTests : IClassFixture<WebApplicationFactory<
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/admin/graph/test-mail", 
+        var response = await client.PostAsync("/api/v1/admin/graph/test-mail", 
             new StringContent(JsonSerializer.Serialize(new { to = "test@example.com" }), System.Text.Encoding.UTF8, "application/json"));
 
         // Assert
@@ -193,7 +193,7 @@ public sealed class GraphRetryPolicyTests : IClassFixture<WebApplicationFactory<
 
         // Act
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        var response = await client.PostAsync("/v1/admin/graph/test-mail", 
+        var response = await client.PostAsync("/api/v1/admin/graph/test-mail", 
             new StringContent(JsonSerializer.Serialize(new { to = "test@example.com" }), System.Text.Encoding.UTF8, "application/json"));
 
         // Assert

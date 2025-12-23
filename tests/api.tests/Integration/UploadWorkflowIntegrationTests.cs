@@ -92,7 +92,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
             sizeBytes = 1024
         };
 
-        var presignResponse = await _client.PostAsync("/v1/uploads/presign", 
+        var presignResponse = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(presignRequest), Encoding.UTF8, "application/json"));
 
         if (!presignResponse.IsSuccessStatusCode)
@@ -118,7 +118,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
             key = uploadToken
         };
 
-        var confirmResponse = await _client.PostAsync("/v1/uploads/confirm", 
+        var confirmResponse = await _client.PostAsync("/api/v1/uploads/confirm", 
             new StringContent(JsonSerializer.Serialize(confirmRequest), Encoding.UTF8, "application/json"));
 
         confirmResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.Accepted);
@@ -148,7 +148,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
         upload.SizeBytes.Should().Be(1024);
 
         // Step 7: Verify upload can be listed
-        var listResponse = await _client.GetAsync($"/v1/uploads/list?caseId={TestData.TestCaseId.Value}");
+        var listResponse = await _client.GetAsync($"/api/v1/uploads/list?caseId={TestData.TestCaseId.Value}");
         listResponse.IsSuccessStatusCode.Should().BeTrue();
         var listContent = await listResponse.Content.ReadAsStringAsync();
         var listResult = JsonSerializer.Deserialize<JsonElement>(listContent);
@@ -179,7 +179,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
             sizeBytes = 100
         };
 
-        var presignResponse = await _client.PostAsync("/v1/uploads/presign", 
+        var presignResponse = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(presignRequest), Encoding.UTF8, "application/json"));
 
         var presignContent = await presignResponse.Content.ReadAsStringAsync();
@@ -197,7 +197,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
             key = uploadToken
         };
 
-        await _client.PostAsync("/v1/uploads/confirm", 
+        await _client.PostAsync("/api/v1/uploads/confirm", 
             new StringContent(JsonSerializer.Serialize(confirmRequest), Encoding.UTF8, "application/json"));
 
         // Step 4: Skip antivirus processing for now - focus on API contract testing
@@ -214,7 +214,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
         upload.SizeBytes.Should().Be(100);
 
         // Step 6: Verify upload appears in list
-        var listResponse = await _client.GetAsync($"/v1/uploads/list?caseId={TestData.TestCaseId.Value}");
+        var listResponse = await _client.GetAsync($"/api/v1/uploads/list?caseId={TestData.TestCaseId.Value}");
         var listContent = await listResponse.Content.ReadAsStringAsync();
         var listResult = JsonSerializer.Deserialize<JsonElement>(listContent);
         
@@ -242,7 +242,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
             sizeBytes = 1024
         };
 
-        var presignResponse = await _client.PostAsync("/v1/uploads/presign", 
+        var presignResponse = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(presignRequest), Encoding.UTF8, "application/json"));
 
         var presignContent = await presignResponse.Content.ReadAsStringAsync();
@@ -256,7 +256,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
             key = uploadToken
         };
 
-        await _client.PostAsync("/v1/uploads/confirm", 
+        await _client.PostAsync("/api/v1/uploads/confirm", 
             new StringContent(JsonSerializer.Serialize(confirmRequest), Encoding.UTF8, "application/json"));
 
         // Step 3: Process with antivirus scanner
@@ -289,7 +289,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
             sizeBytes = 2 * 1024 * 1024 // 2MB
         };
 
-        var presignResponse = await _client.PostAsync("/v1/uploads/presign", 
+        var presignResponse = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(presignRequest), Encoding.UTF8, "application/json"));
 
         // Should be rejected at presign stage
@@ -315,7 +315,7 @@ public sealed class UploadWorkflowIntegrationTests : IDisposable
             sizeBytes = 1024
         };
 
-        var presignResponse = await _client.PostAsync("/v1/uploads/presign", 
+        var presignResponse = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(presignRequest), Encoding.UTF8, "application/json"));
 
         // Should be rejected at presign stage

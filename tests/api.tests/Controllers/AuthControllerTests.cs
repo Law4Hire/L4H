@@ -36,7 +36,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/signup", request);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/signup", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -65,7 +65,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/signup", request);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/signup", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -85,10 +85,10 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // First signup
-        await Client.PostAsJsonAsync("/v1/auth/signup", request);
+        await Client.PostAsJsonAsync("/api/v1/auth/signup", request);
 
         // Act - Second signup with same email
-        var response = await Client.PostAsJsonAsync("/v1/auth/signup", request);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/signup", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -106,7 +106,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
             FirstName = "Test",
             LastName = "User"
         };
-        await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
+        await Client.PostAsJsonAsync("/api/v1/auth/signup", signupRequest);
 
         var loginRequest = new LoginRequest
         {
@@ -116,7 +116,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/login", loginRequest);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -146,7 +146,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/login", loginRequest);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -164,7 +164,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
             FirstName = "Test",
             LastName = "User"
         };
-        await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
+        await Client.PostAsJsonAsync("/api/v1/auth/signup", signupRequest);
 
         var loginRequest = new LoginRequest
         {
@@ -174,7 +174,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/login", loginRequest);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -197,7 +197,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
             FirstName = "Test",
             LastName = "User"
         };
-        await Client.PostAsJsonAsync("/v1/auth/signup", signupRequest);
+        await Client.PostAsJsonAsync("/api/v1/auth/signup", signupRequest);
 
         var forgotRequest = new ForgotPasswordRequest
         {
@@ -205,7 +205,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/forgot", forgotRequest);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/forgot", forgotRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -230,7 +230,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/forgot", forgotRequest);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/forgot", forgotRequest);
 
         // Assert - Should still return success to prevent email enumeration
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -240,7 +240,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
     public async Task Remember_WithoutCookie_ReturnsUnauthorized()
     {
         // Act
-        var response = await Client.PostAsync("/v1/auth/remember", null);
+        var response = await Client.PostAsync("/api/v1/auth/remember", null);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -262,7 +262,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/signup", request);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/signup", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -279,7 +279,7 @@ public sealed class AuthControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/v1/auth/reset", resetRequest);
+        var response = await Client.PostAsJsonAsync("/api/v1/auth/reset", resetRequest);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

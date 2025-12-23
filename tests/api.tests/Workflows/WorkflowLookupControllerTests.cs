@@ -28,7 +28,7 @@ public class WorkflowLookupControllerTests : BaseIntegrationTest
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await Client.GetAsync("/v1/workflows?visaType=B2&country=ES");
+        var response = await Client.GetAsync("/api/v1/workflows?visaType=B2&country=ES");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -54,7 +54,7 @@ public class WorkflowLookupControllerTests : BaseIntegrationTest
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await Client.GetAsync("/v1/workflows?visaType=B2&country=ES");
+        var response = await Client.GetAsync("/api/v1/workflows?visaType=B2&country=ES");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -77,7 +77,7 @@ public class WorkflowLookupControllerTests : BaseIntegrationTest
         Client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("es-ES"));
 
         // Act
-        var response = await Client.GetAsync("/v1/workflows?visaType=B2&country=ES");
+        var response = await Client.GetAsync("/api/v1/workflows?visaType=B2&country=ES");
 
         // Assert
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
@@ -98,7 +98,7 @@ public class WorkflowLookupControllerTests : BaseIntegrationTest
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        await Client.GetAsync("/v1/workflows?visaType=B2&country=ES");
+        await Client.GetAsync("/api/v1/workflows?visaType=B2&country=ES");
 
         // Assert - Verify audit log was created
         using var scope = Factory.Services.CreateScope();

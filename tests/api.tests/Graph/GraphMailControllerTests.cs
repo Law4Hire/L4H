@@ -49,7 +49,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsync("/v1/graph/mail/test",
+        var response = await Client.PostAsync("/api/v1/graph/mail/test",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -95,7 +95,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsync("/v1/graph/mail/test",
+        var response = await Client.PostAsync("/api/v1/graph/mail/test",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -120,7 +120,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsync("/v1/graph/mail/test",
+        var response = await Client.PostAsync("/api/v1/graph/mail/test",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -142,7 +142,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsync("/v1/graph/mail/test",
+        var response = await Client.PostAsync("/api/v1/graph/mail/test",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -169,7 +169,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsync("/v1/graph/mail/test",
+        var response = await Client.PostAsync("/api/v1/graph/mail/test",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -194,7 +194,7 @@ public class GraphMailControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsync("/v1/graph/mail/test",
+        var response = await Client.PostAsync("/api/v1/graph/mail/test",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert - For stub responses, we don't create audit logs to avoid foreign key issues

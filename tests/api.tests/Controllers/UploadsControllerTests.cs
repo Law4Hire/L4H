@@ -102,7 +102,7 @@ public sealed class UploadsControllerTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync("/v1/uploads/presign", 
+        var response = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -140,7 +140,7 @@ public sealed class UploadsControllerTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync("/v1/uploads/presign", 
+        var response = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -166,7 +166,7 @@ public sealed class UploadsControllerTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync("/v1/uploads/presign", 
+        var response = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -193,7 +193,7 @@ public sealed class UploadsControllerTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync("/v1/uploads/presign", 
+        var response = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -220,7 +220,7 @@ public sealed class UploadsControllerTests : IDisposable
             sizeBytes = 1024
         };
 
-        var presignResponse = await _client.PostAsync("/v1/uploads/presign", 
+        var presignResponse = await _client.PostAsync("/api/v1/uploads/presign", 
             new StringContent(JsonSerializer.Serialize(presignRequest), Encoding.UTF8, "application/json"));
         var presignContent = await presignResponse.Content.ReadAsStringAsync();
         
@@ -249,7 +249,7 @@ public sealed class UploadsControllerTests : IDisposable
         };
 
         // Act
-        var response = await _client.PostAsync("/v1/uploads/confirm", 
+        var response = await _client.PostAsync("/api/v1/uploads/confirm", 
             new StringContent(JsonSerializer.Serialize(confirmRequest), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -274,7 +274,7 @@ public sealed class UploadsControllerTests : IDisposable
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await _client.GetAsync($"/v1/uploads/list?caseId={_testCaseId}");
+        var response = await _client.GetAsync($"/api/v1/uploads/list?caseId={_testCaseId}");
 
         // Assert
         if (!response.IsSuccessStatusCode)
@@ -303,7 +303,7 @@ public sealed class UploadsControllerTests : IDisposable
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await _client.GetAsync("/v1/uploads/limits");
+        var response = await _client.GetAsync("/api/v1/uploads/limits");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();

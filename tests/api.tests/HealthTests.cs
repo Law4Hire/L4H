@@ -67,7 +67,7 @@ public sealed class HealthTests : IClassFixture<WebApplicationFactory<Program>>,
     public async Task PingEndpoint_ReturnsOkWithPong()
     {
         // Act
-        var response = await _client.GetAsync("/v1/ping");
+        var response = await _client.GetAsync("/api/v1/ping");
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert

@@ -32,7 +32,7 @@ public class WorkflowReviewControllerTests : BaseIntegrationTest
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await Client.GetAsync("/v1/admin/workflows/pending?visaType=B2&country=ES");
+        var response = await Client.GetAsync("/api/v1/admin/workflows/pending?visaType=B2&country=ES");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -62,7 +62,7 @@ public class WorkflowReviewControllerTests : BaseIntegrationTest
         Client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("es-ES"));
 
         // Act
-        var response = await Client.GetAsync("/v1/admin/workflows/pending");
+        var response = await Client.GetAsync("/api/v1/admin/workflows/pending");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -85,7 +85,7 @@ public class WorkflowReviewControllerTests : BaseIntegrationTest
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await Client.GetAsync($"/v1/admin/workflows/{_workflowId}/diff");
+        var response = await Client.GetAsync($"/api/v1/admin/workflows/{_workflowId}/diff");
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -114,7 +114,7 @@ public class WorkflowReviewControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsync($"/v1/admin/workflows/{_workflowId}/approve",
+        var response = await Client.PostAsync($"/api/v1/admin/workflows/{_workflowId}/approve",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -162,7 +162,7 @@ public class WorkflowReviewControllerTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsync($"/v1/admin/workflows/{_workflowId}/approve",
+        var response = await Client.PostAsync($"/api/v1/admin/workflows/{_workflowId}/approve",
             new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
