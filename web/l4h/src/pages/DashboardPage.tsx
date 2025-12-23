@@ -54,18 +54,16 @@ const DashboardPage: React.FC = () => {
           return;
       }
 
-      // Check if case already has a visa type assigned
-      if (activeCase.visaTypeCode || activeCase.visaTypeName) {
-        setExistingVisaType(activeCase.visaTypeCode || activeCase.visaTypeName || 'Unknown')
-        setShowResetWarning(true)
-        return
-      }
-
       // Start the interview
-      const response = await interview.start(activeCase.id)
-
-      // Navigate to interview page with session ID
-      navigate(`/interview?sessionId=${response.sessionId}`)
+      try {
+        const response = await interview.start(activeCase.id)
+        // Navigate to interview page with session ID
+        navigate(`/interview?sessionId=${response.sessionId}`)
+      } catch (authError) {
+        console.warn('Authenticated interview start failed, falling back to anonymous:', authError)
+        const response = await interview.startAnonymous()
+        navigate(`/interview?sessionId=${response.sessionId}&token=${response.sessionToken}`)
+      }
 
     } catch (error: any) {
       console.error('Failed to start interview:', error)

@@ -413,12 +413,9 @@ app.UseAuthorization();
 Console.WriteLine("[STARTUP] Authorization configured");
 
 Console.WriteLine("[STARTUP] Mapping controllers...");
-// Map controllers under /api prefix
+// Map controllers based on their [Route] attributes
 app.MapControllers().RequireHost("*:*"); // Allow all hosts in development
-Console.WriteLine("[STARTUP] Root controllers mapped");
-
-app.MapGroup("/api").MapControllers();
-Console.WriteLine("[STARTUP] /api group controllers mapped");
+Console.WriteLine("[STARTUP] Controllers mapped");
 
 // Health endpoint is handled by HealthController
 
