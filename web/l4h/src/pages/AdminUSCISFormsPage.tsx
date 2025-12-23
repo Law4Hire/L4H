@@ -587,7 +587,7 @@ const AdminUSCISFormsPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-600">Loading USCIS forms...</div>
+        <div className="text-lg text-gray-600 dark:text-gray-400">Loading USCIS forms...</div>
       </div>
     )
   }
@@ -595,12 +595,12 @@ const AdminUSCISFormsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             USCIS Forms Management
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Manage USCIS immigration forms, pricing tiers, visa type mappings, and form dependencies.
           </p>
         </div>
@@ -619,7 +619,7 @@ const AdminUSCISFormsPage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="all">All Status</option>
               <option value="active">Active Only</option>
@@ -635,71 +635,71 @@ const AdminUSCISFormsPage: React.FC = () => {
       {/* Forms Table */}
       <Card>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Form
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Time (min)
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Pricing
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Mappings
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredForms.map(form => (
-                <tr key={form.id} className={!form.isActive ? 'bg-gray-50' : ''}>
+                <tr key={form.id} className={!form.isActive ? 'bg-gray-50 dark:bg-gray-900' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {form.formNumber}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {form.formName}
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900 max-w-md truncate">
+                    <div className="text-sm text-gray-900 dark:text-white max-w-md truncate">
                       {form.description || '-'}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">
                     {form.estimatedTimeMinutes || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     {form.pricing ? (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         <div>P: ${form.pricing.paralegalPriceUSD || 'N/A'}</div>
                         <div>L: ${form.pricing.lawyerPriceUSD || 'N/A'}</div>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">No pricing</span>
+                      <span className="text-sm text-gray-400 dark:text-gray-500">No pricing</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">
                     {form.visaTypeMappingCount}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                       form.isActive
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                     }`}>
                       {form.isActive ? 'Active' : 'Inactive'}
                     </span>
@@ -707,25 +707,25 @@ const AdminUSCISFormsPage: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button
                       onClick={() => handleEditForm(form)}
-                      className="text-indigo-600 hover:text-indigo-900"
+                      className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleManagePricing(form)}
-                      className="text-green-600 hover:text-green-900"
+                      className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
                     >
                       Pricing
                     </button>
                     <button
                       onClick={() => handleManageMappings(form)}
-                      className="text-blue-600 hover:text-blue-900"
+                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                     >
                       Mappings
                     </button>
                     <button
                       onClick={() => handleManageDependencies(form)}
-                      className="text-purple-600 hover:text-purple-900"
+                      className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
                     >
                       Dependencies
                     </button>
@@ -734,7 +734,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                         setFormToDelete(form)
                         setShowDeleteConfirm(true)
                       }}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                     >
                       Delete
                     </button>
@@ -744,7 +744,7 @@ const AdminUSCISFormsPage: React.FC = () => {
             </tbody>
           </table>
           {filteredForms.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               No forms found. {searchTerm && "Try adjusting your search."}
             </div>
           )}
@@ -754,13 +754,13 @@ const AdminUSCISFormsPage: React.FC = () => {
       {/* Form Create/Edit Modal */}
       {showFormModal && (
         <Modal
-          isOpen={showFormModal}
+          open={showFormModal}
           onClose={() => setShowFormModal(false)}
           title={editingForm ? 'Edit USCIS Form' : 'Create USCIS Form'}
         >
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Form Number *
               </label>
               <Input
@@ -770,7 +770,7 @@ const AdminUSCISFormsPage: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Form Name *
               </label>
               <Input
@@ -780,19 +780,19 @@ const AdminUSCISFormsPage: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Description
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 rows={3}
                 placeholder="Brief description of the form and its purpose"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Form URL
               </label>
               <Input
@@ -802,7 +802,7 @@ const AdminUSCISFormsPage: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Estimated Time (minutes)
               </label>
               <Input
@@ -819,7 +819,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
               />
-              <label className="ml-2 block text-sm text-gray-900">
+              <label className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
                 Active
               </label>
             </div>
@@ -838,14 +838,14 @@ const AdminUSCISFormsPage: React.FC = () => {
       {/* Pricing Modal */}
       {showPricingModal && pricingForm && (
         <Modal
-          isOpen={showPricingModal}
+          open={showPricingModal}
           onClose={() => setShowPricingModal(false)}
           title={`Pricing: ${pricingForm.formNumber}`}
           size="lg"
         >
           <div className="space-y-4">
-            <div className="bg-blue-50 p-4 rounded-md">
-              <p className="text-sm text-blue-700">
+            <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-md">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
                 Configure 3-tier pricing model: Self-File, Paralegal-assisted, and Lawyer-assisted.
                 LLC fee represents the platform commission.
               </p>
@@ -853,7 +853,7 @@ const AdminUSCISFormsPage: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Self-File Price (USD)
                 </label>
                 <Input
@@ -865,7 +865,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Paralegal Price (USD)
                 </label>
                 <Input
@@ -877,7 +877,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Lawyer Price (USD)
                 </label>
                 <Input
@@ -889,7 +889,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   LLC Fee (USD) *
                 </label>
                 <Input
@@ -901,7 +901,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                 />
               </div>
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   LLC Fee Percentage (optional)
                 </label>
                 <Input
@@ -913,7 +913,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                 />
               </div>
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Description
                 </label>
                 <Input
@@ -926,10 +926,10 @@ const AdminUSCISFormsPage: React.FC = () => {
 
             {pricingHistory.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Pricing History</h3>
-                <div className="bg-gray-50 rounded-md p-3 max-h-40 overflow-y-auto">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pricing History</h3>
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-md p-3 max-h-40 overflow-y-auto">
                   {pricingHistory.map((pricing, idx) => (
-                    <div key={pricing.id} className="text-xs text-gray-600 py-1 border-b border-gray-200 last:border-0">
+                    <div key={pricing.id} className="text-xs text-gray-600 dark:text-gray-300 py-1 border-b border-gray-200 dark:border-gray-600 last:border-0">
                       <div className="font-medium">
                         Effective: {new Date(pricing.effectiveDate).toLocaleDateString()}
                       </div>
@@ -963,30 +963,30 @@ const AdminUSCISFormsPage: React.FC = () => {
       {/* Visa Mappings Modal */}
       {showMappingsModal && mappingsForm && (
         <Modal
-          isOpen={showMappingsModal}
+          open={showMappingsModal}
           onClose={() => setShowMappingsModal(false)}
           title={`Visa Type Mappings: ${mappingsForm.formNumber}`}
           size="lg"
         >
           <div className="space-y-4">
-            <div className="bg-blue-50 p-4 rounded-md">
-              <p className="text-sm text-blue-700">
+            <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-md">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
                 Assign this form to specific visa types. This determines which forms are recommended or required for each visa category.
               </p>
             </div>
 
             {/* Add Mapping */}
-            <div className="border-2 border-dashed border-gray-300 rounded-md p-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Add Visa Type Mapping</h3>
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md p-4">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Add Visa Type Mapping</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Visa Type *
                   </label>
                   <select
                     value={selectedVisaType || ''}
                     onChange={(e) => setSelectedVisaType(parseInt(e.target.value) || null)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   >
                     <option value="">Select a visa type...</option>
                     {visaTypes
@@ -999,7 +999,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Notes
                   </label>
                   <Input
@@ -1015,7 +1015,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                     onChange={(e) => setMappingRequired(e.target.checked)}
                     className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
                     Required (vs. recommended)
                   </label>
                 </div>
@@ -1029,33 +1029,33 @@ const AdminUSCISFormsPage: React.FC = () => {
 
             {/* Existing Mappings */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Existing Mappings</h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Existing Mappings</h3>
               {mappings.length === 0 ? (
-                <div className="text-center py-4 text-gray-500 text-sm">
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400 text-sm">
                   No visa type mappings yet. Add one above.
                 </div>
               ) : (
                 <div className="space-y-2">
                   {mappings.map(mapping => (
-                    <div key={mapping.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-md">
+                    <div key={mapping.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {mapping.visaTypeCode} - {mapping.visaTypeName}
                         </div>
                         {mapping.notes && (
-                          <div className="text-xs text-gray-500">{mapping.notes}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{mapping.notes}</div>
                         )}
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {mapping.isRequired ? (
-                            <span className="text-red-600 font-medium">Required</span>
+                            <span className="text-red-600 dark:text-red-400 font-medium">Required</span>
                           ) : (
-                            <span className="text-blue-600">Recommended</span>
+                            <span className="text-blue-600 dark:text-blue-400">Recommended</span>
                           )}
                         </div>
                       </div>
                       <button
                         onClick={() => handleDeleteMapping(mapping.id)}
-                        className="text-red-600 hover:text-red-900 text-sm"
+                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm"
                       >
                         Remove
                       </button>
@@ -1077,31 +1077,31 @@ const AdminUSCISFormsPage: React.FC = () => {
       {/* Dependencies Modal */}
       {showDependenciesModal && dependenciesForm && (
         <Modal
-          isOpen={showDependenciesModal}
+          open={showDependenciesModal}
           onClose={() => setShowDependenciesModal(false)}
           title={`Form Dependencies: ${dependenciesForm.formNumber}`}
           size="lg"
         >
           <div className="space-y-4">
-            <div className="bg-blue-50 p-4 rounded-md">
-              <p className="text-sm text-blue-700">
+            <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-md">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
                 Define which other forms are required or recommended alongside this form for specific visa types.
                 Dependencies are visa-specific.
               </p>
             </div>
 
             {/* Add Dependency */}
-            <div className="border-2 border-dashed border-gray-300 rounded-md p-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Add Form Dependency</h3>
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md p-4">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Add Form Dependency</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Dependent Form *
                   </label>
                   <select
                     value={selectedDependentForm || ''}
                     onChange={(e) => setSelectedDependentForm(e.target.value || null)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   >
                     <option value="">Select a form...</option>
                     {forms
@@ -1114,13 +1114,13 @@ const AdminUSCISFormsPage: React.FC = () => {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     For Visa Type *
                   </label>
                   <select
                     value={selectedDependencyVisaType || ''}
                     onChange={(e) => setSelectedDependencyVisaType(parseInt(e.target.value) || null)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   >
                     <option value="">Select a visa type...</option>
                     {visaTypes.map(vt => (
@@ -1131,13 +1131,13 @@ const AdminUSCISFormsPage: React.FC = () => {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Reason for Dependency
                   </label>
                   <textarea
                     value={dependencyReason}
                     onChange={(e) => setDependencyReason(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={2}
                     placeholder="Explain why this form is required/recommended"
                   />
@@ -1149,7 +1149,7 @@ const AdminUSCISFormsPage: React.FC = () => {
                     onChange={(e) => setDependencyRequired(e.target.checked)}
                     className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
                     Required (vs. recommended)
                   </label>
                 </div>
@@ -1163,37 +1163,37 @@ const AdminUSCISFormsPage: React.FC = () => {
 
             {/* Existing Dependencies */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Existing Dependencies</h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Existing Dependencies</h3>
               {dependencies.length === 0 ? (
-                <div className="text-center py-4 text-gray-500 text-sm">
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400 text-sm">
                   No form dependencies yet. Add one above.
                 </div>
               ) : (
                 <div className="space-y-2">
                   {dependencies.map(dep => (
-                    <div key={dep.id} className="bg-gray-50 p-3 rounded-md">
+                    <div key={dep.id} className="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {dep.dependentFormNumber} - {dep.dependentFormName}
                           </div>
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             For visa type: {dep.visaTypeCode} - {dep.visaTypeName}
                           </div>
                           {dep.dependencyReason && (
-                            <div className="text-xs text-gray-600 mt-1">{dep.dependencyReason}</div>
+                            <div className="text-xs text-gray-600 dark:text-gray-300 mt-1">{dep.dependencyReason}</div>
                           )}
                           <div className="text-xs mt-1">
                             {dep.isRequired ? (
-                              <span className="text-red-600 font-medium">Required</span>
+                              <span className="text-red-600 dark:text-red-400 font-medium">Required</span>
                             ) : (
-                              <span className="text-blue-600">Recommended</span>
+                              <span className="text-blue-600 dark:text-blue-400">Recommended</span>
                             )}
                           </div>
                         </div>
                         <button
                           onClick={() => handleDeleteDependency(dep.id)}
-                          className="text-red-600 hover:text-red-900 text-sm ml-4"
+                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm ml-4"
                         >
                           Remove
                         </button>
@@ -1216,15 +1216,15 @@ const AdminUSCISFormsPage: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && formToDelete && (
         <Modal
-          isOpen={showDeleteConfirm}
+          open={showDeleteConfirm}
           onClose={() => setShowDeleteConfirm(false)}
           title="Confirm Delete"
         >
           <div className="space-y-4">
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               Are you sure you want to delete form <strong>{formToDelete.formNumber} - {formToDelete.formName}</strong>?
             </p>
-            <p className="text-sm text-red-600">
+            <p className="text-sm text-red-600 dark:text-red-400">
               This will also delete all associated pricing history, visa type mappings, and form dependencies.
               This action cannot be undone.
             </p>

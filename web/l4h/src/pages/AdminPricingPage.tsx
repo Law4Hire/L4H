@@ -229,7 +229,7 @@ const AdminPricingPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-600">Loading pricing data...</div>
+        <div className="text-lg text-gray-600 dark:text-gray-400">Loading pricing data...</div>
       </div>
     )
   }
@@ -237,12 +237,12 @@ const AdminPricingPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Pricing Management
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Manage visa types and pricing packages. Click on any visa type card to edit its pricing.
           </p>
         </div>
@@ -257,7 +257,7 @@ const AdminPricingPage: React.FC = () => {
             onChange={(e) => setShowDisabled(e.target.checked)}
             className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
           />
-          <span className="text-sm text-gray-700">Show disabled visa types</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300">Show disabled visa types</span>
         </label>
       </Card>
 
@@ -267,25 +267,27 @@ const AdminPricingPage: React.FC = () => {
           <div
             key={visaType.id}
             onClick={() => openVisaTypeModal(visaType)}
-            className={`bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer border ${
-              !visaType.isActive ? 'bg-gray-50 border-gray-300' : 'border-gray-200 hover:border-blue-300'
+            className={`bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer border ${
+              !visaType.isActive 
+                ? 'bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700' 
+                : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500'
             }`}
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${!visaType.isActive ? 'text-gray-500' : 'text-gray-900'}`}>
+                <h3 className={`text-lg font-semibold ${!visaType.isActive ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}>
                   {visaType.code}
                 </h3>
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
                   visaType.isActive
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                 }`}>
                   {visaType.isActive ? 'Active' : 'Disabled'}
                 </span>
               </div>
 
-              <p className={`text-sm mb-4 ${!visaType.isActive ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-sm mb-4 ${!visaType.isActive ? 'text-gray-400 dark:text-gray-600' : 'text-gray-600 dark:text-gray-300'}`}>
                 {visaType.name}
               </p>
 
@@ -294,13 +296,13 @@ const AdminPricingPage: React.FC = () => {
                   const rule = visaType.packages[pkg.code]
                   return (
                     <div key={pkg.code} className="flex justify-between items-center">
-                      <span className={`text-sm ${!visaType.isActive ? 'text-gray-400' : 'text-gray-700'}`}>
+                      <span className={`text-sm ${!visaType.isActive ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-300'}`}>
                         {pkg.displayName}:
                       </span>
                       <span className={`text-sm font-medium ${
                         !rule || !rule.isActive
-                          ? 'text-gray-400'
-                          : !visaType.isActive ? 'text-gray-500' : 'text-gray-900'
+                          ? 'text-gray-400 dark:text-gray-600'
+                          : !visaType.isActive ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'
                       }`}>
                         {rule ? `$${rule.basePrice.toFixed(2)}` : 'Not set'}
                       </span>
@@ -317,34 +319,34 @@ const AdminPricingPage: React.FC = () => {
       <Card title="Summary">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-blue-600">{visaTypes.length}</div>
-            <div className="text-sm text-gray-600">Total Visa Types</div>
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{visaTypes.length}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Total Visa Types</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-green-600">{visaTypes.filter(vt => vt.isActive).length}</div>
-            <div className="text-sm text-gray-600">Active Visa Types</div>
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{visaTypes.filter(vt => vt.isActive).length}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Active Visa Types</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-red-600">{visaTypes.filter(vt => !vt.isActive).length}</div>
-            <div className="text-sm text-gray-600">Disabled Visa Types</div>
+            <div className="text-2xl font-bold text-red-600 dark:text-red-400">{visaTypes.filter(vt => !vt.isActive).length}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Disabled Visa Types</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-purple-600">{packages.length}</div>
-            <div className="text-sm text-gray-600">Service Packages</div>
+            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{packages.length}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Service Packages</div>
           </div>
         </div>
       </Card>
 
       {/* Edit Modal */}
-      <Modal isOpen={modalOpen} onClose={closeModal} title={selectedVisaType ? `Edit ${selectedVisaType.code} Pricing` : ''}>
+      <Modal open={modalOpen} onClose={closeModal} title={selectedVisaType ? `Edit ${selectedVisaType.code} Pricing` : ''}>
         {selectedVisaType && (
           <div className="space-y-6">
             {/* Visa Type Status */}
-            <div className="border-b pb-4">
+            <div className="border-b dark:border-gray-700 pb-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">{selectedVisaType.name}</h3>
-                  <p className="text-sm text-gray-600">Visa Type: {selectedVisaType.code}</p>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">{selectedVisaType.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Visa Type: {selectedVisaType.code}</p>
                 </div>
                 <label className="flex items-center">
                   <input
@@ -359,31 +361,31 @@ const AdminPricingPage: React.FC = () => {
                     }}
                     className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
                   />
-                  <span className="text-sm text-gray-700">Enable visa type</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Enable visa type</span>
                 </label>
               </div>
             </div>
 
             {/* Package Pricing */}
             <div className="space-y-4">
-              <h4 className="text-md font-medium text-gray-900">Package Pricing</h4>
+              <h4 className="text-md font-medium text-gray-900 dark:text-white">Package Pricing</h4>
               {packages.map(pkg => {
                 const rule = selectedVisaType.packages[pkg.code]
                 const isEditing = editingPackage?.packageCode === pkg.code
 
                 return (
-                  <div key={pkg.code} className="border rounded-lg p-4">
+                  <div key={pkg.code} className="border dark:border-gray-700 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <h5 className="font-medium text-gray-900">{pkg.displayName}</h5>
-                        <p className="text-sm text-gray-600">{pkg.description}</p>
+                        <h5 className="font-medium text-gray-900 dark:text-white">{pkg.displayName}</h5>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{pkg.description}</p>
                       </div>
                       {!isEditing && (
                         <Button
                           onClick={() => startEditPackage(pkg.code, rule)}
                           size="sm"
                           variant="outline"
-                          className="!bg-blue-600 !text-white hover:!bg-blue-700"
+                          className="!bg-blue-600 !text-white hover:!bg-blue-700 dark:!bg-blue-500 dark:hover:!bg-blue-600"
                           style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
                         >
                           Edit
@@ -395,7 +397,7 @@ const AdminPricingPage: React.FC = () => {
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Base Price ($)</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Base Price ($)</label>
                             <Input
                               type="number"
                               step="0.01"
@@ -407,7 +409,7 @@ const AdminPricingPage: React.FC = () => {
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Tax Rate (%)</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tax Rate (%)</label>
                             <Input
                               type="number"
                               step="0.01"
@@ -429,7 +431,7 @@ const AdminPricingPage: React.FC = () => {
                             })}
                             className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
                           />
-                          <span className="text-sm text-gray-700">Enable package</span>
+                          <span className="text-sm text-gray-700 dark:text-gray-300">Enable package</span>
                         </label>
                         <div className="flex space-x-2">
                           <Button
@@ -452,16 +454,18 @@ const AdminPricingPage: React.FC = () => {
                     ) : (
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
-                          <span className="text-gray-600">Price: </span>
-                          <span className="font-medium">{rule ? `$${rule.basePrice.toFixed(2)}` : 'Not set'}</span>
+                          <span className="text-gray-600 dark:text-gray-400">Price: </span>
+                          <span className="font-medium dark:text-gray-200">{rule ? `$${rule.basePrice.toFixed(2)}` : 'Not set'}</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">Tax: </span>
-                          <span className="font-medium">{rule ? `${(rule.taxRate * 100).toFixed(2)}%` : 'Not set'}</span>
+                          <span className="text-gray-600 dark:text-gray-400">Tax: </span>
+                          <span className="font-medium dark:text-gray-200">{rule ? `${(rule.taxRate * 100).toFixed(2)}%` : 'Not set'}</span>
                         </div>
                         <div>
                           <span className={`px-2 py-1 rounded text-xs ${
-                            rule?.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            rule?.isActive 
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                           }`}>
                             {rule?.isActive ? 'Active' : 'Disabled'}
                           </span>

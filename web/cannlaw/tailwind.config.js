@@ -20,6 +20,7 @@ export default {
           700: '#334e68',
           800: '#243b53',
           900: '#102a43',
+          950: '#0a1c2e', // Added for dark mode background
         },
         // Legal Gold
         gold: {
@@ -33,6 +34,7 @@ export default {
           700: '#8a6c37',
           800: '#6e542a',
           900: '#533f1f',
+          950: '#3b2d15', // Added for consistency
         },
         primary: {
           50: '#eff6ff',
@@ -45,6 +47,7 @@ export default {
           700: '#1d4ed8',
           800: '#1e40af',
           900: '#1e3a8a',
+          950: '#172554',
         },
         secondary: {
           50: '#f8fafc',
@@ -57,6 +60,7 @@ export default {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
+          950: '#020617',
         }
       },
       fontFamily: {

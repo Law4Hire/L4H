@@ -280,7 +280,7 @@ export default function AdminPathsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-600">Loading paths...</div>
+        <div className="text-gray-600 dark:text-gray-400">Loading paths...</div>
       </div>
     );
   }
@@ -288,12 +288,12 @@ export default function AdminPathsPage() {
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Header */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Paths Management</h1>
-              <p className="text-gray-600">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Admin Paths Management</h1>
+              <p className="text-gray-600 dark:text-gray-300">
                 Manage navigation paths for the admin panel. Configure display order, active status, and hierarchy.
               </p>
             </div>
@@ -306,30 +306,30 @@ export default function AdminPathsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Total Paths</div>
-            <div className="mt-1 text-3xl font-semibold text-gray-900">{paths.length}</div>
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Paths</div>
+            <div className="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{paths.length}</div>
           </div>
         </Card>
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Active Paths</div>
-            <div className="mt-1 text-3xl font-semibold text-green-600">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Paths</div>
+            <div className="mt-1 text-3xl font-semibold text-green-600 dark:text-green-400">
               {paths.filter(p => p.isActive).length}
             </div>
           </div>
         </Card>
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Inactive Paths</div>
-            <div className="mt-1 text-3xl font-semibold text-gray-400">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Inactive Paths</div>
+            <div className="mt-1 text-3xl font-semibold text-gray-400 dark:text-gray-500">
               {paths.filter(p => !p.isActive).length}
             </div>
           </div>
         </Card>
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Top Level</div>
-            <div className="mt-1 text-3xl font-semibold text-blue-600">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Top Level</div>
+            <div className="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">
               {topLevelPaths.length}
             </div>
           </div>
@@ -341,13 +341,13 @@ export default function AdminPathsPage() {
         <div className="px-4 py-5 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Filter Paths
               </label>
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="all">All Paths</option>
                 <option value="active">Active Only</option>
@@ -357,7 +357,7 @@ export default function AdminPathsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Search
               </label>
               <Input
@@ -375,50 +375,50 @@ export default function AdminPathsPage() {
       <Card>
         <div className="px-4 py-5 sm:p-6">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Order
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Path
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Parent
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Children
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredPaths.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                       No paths found
                     </td>
                   </tr>
                 ) : (
                   filteredPaths.map((path, index) => (
-                    <tr key={path.id} className="hover:bg-gray-50">
+                    <tr key={path.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-1">
-                          <span className="text-sm font-medium text-gray-900">{path.displayOrder}</span>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">{path.displayOrder}</span>
                           <div className="flex flex-col">
                             <button
                               onClick={() => movePathUp(path)}
                               disabled={index === 0}
-                              className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30"
                               title="Move up"
                             >
                               ▲
@@ -426,7 +426,7 @@ export default function AdminPathsPage() {
                             <button
                               onClick={() => movePathDown(path)}
                               disabled={index === filteredPaths.length - 1}
-                              className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30"
                               title="Move down"
                             >
                               ▼
@@ -436,25 +436,25 @@ export default function AdminPathsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          {path.icon && <span className="mr-2">{path.icon}</span>}
+                          {path.icon && <span className="mr-2 dark:text-gray-300">{path.icon}</span>}
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{path.name}</div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">{path.name}</div>
                             {path.description && (
-                              <div className="text-sm text-gray-500">{path.description}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">{path.description}</div>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <code className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                        <code className="text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
                           {path.path}
                         </code>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {path.parentPathName ? (
-                          <span className="text-sm text-gray-600">{path.parentPathName}</span>
+                          <span className="text-sm text-gray-600 dark:text-gray-300">{path.parentPathName}</span>
                         ) : (
-                          <span className="text-sm text-gray-400">-</span>
+                          <span className="text-sm text-gray-400 dark:text-gray-500">-</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -462,20 +462,20 @@ export default function AdminPathsPage() {
                           onClick={() => toggleActive(path)}
                           className={`px-2 py-1 text-xs font-semibold rounded-full ${
                             path.isActive
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
+                              ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                           }`}
                         >
                           {path.isActive ? 'Active' : 'Inactive'}
                         </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">{path.childPathCount}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{path.childPathCount}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                         <button
                           onClick={() => openEditModal(path)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                         >
                           Edit
                         </button>
@@ -484,7 +484,7 @@ export default function AdminPathsPage() {
                             setPathToDelete(path);
                             setShowDeleteConfirm(true);
                           }}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                           disabled={path.childPathCount > 0}
                         >
                           Delete
@@ -508,7 +508,7 @@ export default function AdminPathsPage() {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Name *
             </label>
             <Input
@@ -521,7 +521,7 @@ export default function AdminPathsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Path *
             </label>
             <Input
@@ -534,13 +534,13 @@ export default function AdminPathsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               rows={3}
               placeholder="Optional description of this path's purpose"
             />
@@ -548,7 +548,7 @@ export default function AdminPathsPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Icon (emoji or text)
               </label>
               <Input
@@ -560,7 +560,7 @@ export default function AdminPathsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Display Order
               </label>
               <Input
@@ -573,13 +573,13 @@ export default function AdminPathsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Parent Path
             </label>
             <select
               value={formData.parentPathId}
               onChange={(e) => setFormData({ ...formData, parentPathId: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">None (Top Level)</option>
               {topLevelPaths
@@ -593,7 +593,7 @@ export default function AdminPathsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Required Role
             </label>
             <Input
@@ -612,7 +612,7 @@ export default function AdminPathsPage() {
               onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">
+            <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
               Active (visible in navigation)
             </label>
           </div>
@@ -636,7 +636,7 @@ export default function AdminPathsPage() {
         size="md"
       >
         <div className="space-y-4">
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Are you sure you want to delete the path <strong>{pathToDelete?.name}</strong>?
             This action cannot be undone.
           </p>

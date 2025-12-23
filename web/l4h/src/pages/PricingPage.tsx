@@ -38,8 +38,7 @@ const PricingPage: React.FC = () => {
   // Fetch pricing data
   const { data: pricingData, isLoading, error } = useQuery({
     queryKey: ['pricing', activeCase?.visaTypeCode, user?.country],
-    queryFn: () => pricing.get(activeCase?.visaTypeCode, user?.country),
-    enabled: !!activeCase && !!user?.country
+    queryFn: () => pricing.get(activeCase?.visaTypeCode, user?.country)
   })
 
   // Select package mutation

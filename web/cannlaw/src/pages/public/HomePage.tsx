@@ -66,7 +66,7 @@ const HomePage: React.FC = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className="border-white !text-white hover:bg-white hover:!text-navy-900 px-8 py-4 text-lg font-medium tracking-wide bg-navy-900"
+                className="border-white !text-white !bg-transparent hover:!bg-white hover:!text-navy-900 px-8 py-4 text-lg font-medium tracking-wide"
                 onClick={() => window.location.href = '/services'}
               >
                 Our Services

@@ -300,6 +300,7 @@ public class MessagingController : ControllerBase
         {
             messages = messages.Select(m => new
             {
+                id = m.Id.ToString(), // Added ID here
                 content = m.Body,
                 sender = m.SenderName,
                 timestamp = m.SentAt.ToString("O")

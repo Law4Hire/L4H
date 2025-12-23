@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Card } from '@l4h/shared-ui'
 import { useServices } from '../../hooks/useServices'
 import { useSiteConfig } from '../../hooks/useSiteConfig'
@@ -7,6 +7,57 @@ import PublicLayout from '../../components/PublicLayout'
 const ServicesPage: React.FC = () => {
   const { serviceCategories, isLoading } = useServices()
   const { siteConfig } = useSiteConfig()
+
+  // Static fallback data for services if API returns empty
+  const displayCategories = useMemo(() => {
+    if (serviceCategories && serviceCategories.length > 0) {
+      return serviceCategories;
+    }
+
+    return [
+      {
+        id: 'family',
+        name: 'Family Immigration',
+        description: 'Keeping families together is our priority. We assist with all aspects of family-based immigration.',
+        services: [
+          { id: 'marriage', name: 'Marriage Visas (CR-1/IR-1)', description: 'For spouses of U.S. citizens and permanent residents.' },
+          { id: 'fiance', name: 'Fiancé(e) Visas (K-1)', description: 'Bring your fiancé(e) to the U.S. to get married.' },
+          { id: 'relatives', name: 'Immediate Relative Petitions', description: 'Sponsoring parents, children, and siblings.' },
+          { id: 'consular', name: 'Consular Processing', description: 'Guidance through the visa interview process abroad.' }
+        ]
+      },
+      {
+        id: 'employment',
+        name: 'Employment Immigration',
+        description: 'Helping businesses and professionals navigate the complex U.S. work visa system.',
+        services: [
+          { id: 'h1b', name: 'H-1B Specialty Occupations', description: 'For professionals in specialty occupations.' },
+          { id: 'l1', name: 'L-1 Intracompany Transferees', description: 'Transferring executives and specialized knowledge employees.' },
+          { id: 'eb', name: 'Employment-Based Green Cards', description: 'Permanent residence through employment (EB-1, EB-2, EB-3).' },
+          { id: 'investor', name: 'Investor Visas (E-2, EB-5)', description: 'For investors and treaty traders.' }
+        ]
+      },
+      {
+        id: 'citizenship',
+        name: 'Citizenship & Naturalization',
+        description: 'The final step in your immigration journey. We help you become a U.S. citizen.',
+        services: [
+          { id: 'naturalization', name: 'Naturalization Applications (N-400)', description: 'Guiding permanent residents to citizenship.' },
+          { id: 'certs', name: 'Citizenship Certificates', description: 'For those who acquired citizenship through parents.' }
+        ]
+      },
+      {
+        id: 'other',
+        name: 'Other Services',
+        description: 'Additional immigration legal services to meet your needs.',
+        services: [
+          { id: 'asylum', name: 'Asylum & Refugee Status', description: 'Protection for those fearing persecution.' },
+          { id: 'waivers', name: 'Waivers of Inadmissibility', description: 'Overcoming barriers to entry.' },
+          { id: 'daca', name: 'DACA Renewals', description: 'Deferred Action for Childhood Arrivals.' }
+        ]
+      }
+    ];
+  }, [serviceCategories]);
 
   if (isLoading) {
     return (
@@ -35,7 +86,7 @@ const ServicesPage: React.FC = () => {
       {/* Services Content */}
       <section className="py-16 bg-white dark:bg-navy-950 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {serviceCategories.map((category, categoryIndex) => (
+          {displayCategories.map((category: any, categoryIndex: number) => (
             <div key={category.id} className={`${categoryIndex > 0 ? 'mt-16' : ''}`}>
               {/* Category Header */}
               <div className="text-center mb-12">
@@ -45,7 +96,7 @@ const ServicesPage: React.FC = () => {
 
               {/* Services Grid */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {category.services?.map((service) => (
+                {category.services?.map((service: any) => (
                   <Card key={service.id} className="p-6 hover:shadow-lg transition-all dark:bg-navy-900 dark:border-navy-800 border-t-4 border-t-gold-500">
                     <div className="flex items-start space-x-3">
                       <div className="flex-shrink-0">

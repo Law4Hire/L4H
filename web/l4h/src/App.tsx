@@ -25,6 +25,7 @@ const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
 const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
 const AdminPathsPage = lazy(() => import('./pages/AdminPathsPage'))
 const AdminInterviewQuestionsPage = lazy(() => import('./pages/AdminInterviewQuestionsPage'))
+const AdminPackagesPage = lazy(() => import('./pages/AdminPackagesPage'))
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
 const AdminUSCISFormsPage = lazy(() => import('./pages/AdminUSCISFormsPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
@@ -293,6 +294,21 @@ function App() {
                 isAuthenticated={isAuthenticated}
               >
                 <AdminPricingPage />
+              </Layout>
+            </RouteGuard>
+          }
+        />
+        <Route
+          path="/admin/packages"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Package Management'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminPackagesPage />
               </Layout>
             </RouteGuard>
           }

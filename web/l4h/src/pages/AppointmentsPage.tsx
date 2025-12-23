@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
+import React, { useState, useEffect } from 'react'
+import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient, cases } from '@l4h/shared-ui'
 import { appointments } from '@l4h/shared-ui'
 import { Calendar, Plus, Clock } from 'lucide-react'
 import { format } from 'date-fns'
@@ -33,6 +33,19 @@ export default function AppointmentsPage() {
     queryKey: ['appointments'],
     queryFn: appointments.list
   })
+
+  // Fetch user's cases
+  const { data: casesList = [] } = useQuery({
+    queryKey: ['cases'],
+    queryFn: cases.mine
+  })
+
+  // Pre-select case ID when modal opens
+  useEffect(() => {
+    if (showCreateModal && casesList.length > 0 && !newAppointment.caseId) {
+      setNewAppointment(prev => ({ ...prev, caseId: casesList[0].id }))
+    }
+  }, [showCreateModal, casesList])
 
   // Create appointment mutation
   const createAppointmentMutation = useMutation({
@@ -146,12 +159,27 @@ export default function AppointmentsPage() {
         size="md"
       >
         <div className="space-y-4">
-          <Input
-            label={'Case ID'}
-            value={newAppointment.caseId}
-            onChange={(e) => setNewAppointment(prev => ({ ...prev, caseId: e.target.value }))}
-            required
-          />
+          {/* Case ID hidden input (auto-populated) or selection if multiple */}
+          {casesList.length > 1 ? (
+             <div>
+               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Case</label>
+               <select
+                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                 value={newAppointment.caseId}
+                 onChange={(e) => setNewAppointment(prev => ({ ...prev, caseId: e.target.value }))}
+               >
+                 {casesList.map((c: any) => (
+                   <option key={c.id} value={c.id}>
+                     {c.visaTypeName || 'General Case'} ({c.status})
+                   </option>
+                 ))}
+               </select>
+             </div>
+          ) : (
+             <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md text-sm text-gray-600 dark:text-gray-400">
+               Scheduling for your active case
+             </div>
+          )}
 
           <Input
             label={'Date & Time'}

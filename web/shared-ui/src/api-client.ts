@@ -469,6 +469,18 @@ export const invoices = {
 // Interview API methods
 // New unified interview API
 export const interview = {
+  // Start authenticated interview
+  async start(caseId: string) {
+    return fetchJson<{
+      sessionId: string
+      sessionToken: string
+      firstQuestion: any
+    }>('/v1/interview/start', {
+      method: 'POST',
+      body: JSON.stringify({ caseId })
+    })
+  },
+
   // Start a new anonymous interview
   async startAnonymous(languageCode?: string) {
     return fetchJson<{

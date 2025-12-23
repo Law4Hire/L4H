@@ -38,12 +38,12 @@ interface VisaEvaluation {
 }
 
 const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  paid: 'bg-blue-100 text-blue-800',
-  active: 'bg-green-100 text-green-800',
-  inactive: 'bg-gray-100 text-gray-800',
-  closed: 'bg-gray-100 text-gray-800',
-  denied: 'bg-red-100 text-red-800'
+  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+  paid: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+  active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  inactive: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+  closed: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+  denied: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
 }
 
 const statusOptions = [
@@ -183,7 +183,7 @@ const AdminCaseManagementPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-600">Loading cases...</div>
+        <div className="text-lg text-gray-600 dark:text-gray-400">Loading cases...</div>
       </div>
     )
   }
@@ -191,12 +191,12 @@ const AdminCaseManagementPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Case Management
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Manage all immigration cases and their statuses
           </p>
         </div>
@@ -212,7 +212,7 @@ const AdminCaseManagementPage: React.FC = () => {
                 <div className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[status.value as keyof typeof statusColors]}`}>
                   {status.label}
                 </div>
-                <div className="mt-1 text-2xl font-bold text-gray-900">{count}</div>
+                <div className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{count}</div>
               </div>
             )
           })}
@@ -222,84 +222,84 @@ const AdminCaseManagementPage: React.FC = () => {
       {/* Cases List */}
       <Card title={`All Cases (${cases.length})`}>
         {cases.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             No cases found in the system.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Case ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Visa Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Package
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Price
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Last Activity
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {cases.map((caseItem) => (
-                  <tr key={caseItem.id} className="hover:bg-gray-50">
+                  <tr key={caseItem.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-mono text-gray-900">
+                      <div className="text-sm font-mono text-gray-900 dark:text-white">
                         {caseItem.id.substring(0, 8)}...
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{caseItem.userName || 'Unknown'}</div>
-                      <div className="text-sm text-gray-500">{caseItem.userEmail}</div>
+                      <div className="text-sm text-gray-900 dark:text-white">{caseItem.userName || 'Unknown'}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{caseItem.userEmail}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {caseItem.isVisaLockedByAttorney && <Lock className="w-4 h-4 inline-block mr-1 text-blue-600" />}
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {caseItem.isVisaLockedByAttorney && <Lock className="w-4 h-4 inline-block mr-1 text-blue-600 dark:text-blue-400" />}
                         {caseItem.visaTypeCode || 'N/A'}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {caseItem.visaTypeName || 'Not specified'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-gray-900 dark:text-white">
                         {caseItem.packageDisplayName || 'N/A'}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {caseItem.packageCode || ''}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[caseItem.status.toLowerCase() as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}`}>
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[caseItem.status.toLowerCase() as keyof typeof statusColors] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}`}>
                         {caseItem.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {caseItem.latestPriceSnapshot ? (
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {caseItem.latestPriceSnapshot.currency} {caseItem.latestPriceSnapshot.total.toFixed(2)}
                         </div>
                       ) : (
-                        <div className="text-sm text-gray-500">No pricing</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">No pricing</div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {formatDate(caseItem.lastActivityAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
@@ -311,7 +311,7 @@ const AdminCaseManagementPage: React.FC = () => {
                           }
                         }}
                         disabled={updatingCaseId === caseItem.id}
-                        className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                        className="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       >
                         {statusOptions.map(option => (
                           <option key={option.value} value={option.value}>
@@ -329,7 +329,7 @@ const AdminCaseManagementPage: React.FC = () => {
                         </Button>
                       )}
                       {updatingCaseId === caseItem.id && (
-                        <div className="mt-1 text-xs text-gray-500">Updating...</div>
+                        <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">Updating...</div>
                       )}
                     </td>
                   </tr>
@@ -342,15 +342,15 @@ const AdminCaseManagementPage: React.FC = () => {
       
       <Modal open={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} title={`Review Interview: ${selectedCase?.userName}`}>
         {isEvaluationsLoading ? (
-            <p>Loading evaluations...</p>
+            <p className="dark:text-gray-300">Loading evaluations...</p>
         ) : (
             <div className="space-y-4">
                 {evaluations.map(e => (
-                    <div key={e.visaTypeId} className="p-4 border rounded-lg">
+                    <div key={e.visaTypeId} className="p-4 border dark:border-gray-700 rounded-lg">
                         <div className="flex justify-between items-center">
                             <div>
-                                <h3 className="text-lg font-semibold">{e.visaName} ({e.status})</h3>
-                                <p className="text-sm text-gray-600">{e.explanation}</p>
+                                <h3 className="text-lg font-semibold dark:text-white">{e.visaName} ({e.status})</h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">{e.explanation}</p>
                             </div>
                             <Button
                                 size="sm"
@@ -360,8 +360,8 @@ const AdminCaseManagementPage: React.FC = () => {
                                 Lock
                             </Button>
                         </div>
-                        <div className="text-right mt-2 font-bold">
-                            Score: <span className="text-green-500">{Math.round(e.matchScore)}%</span>
+                        <div className="text-right mt-2 font-bold dark:text-white">
+                            Score: <span className="text-green-500 dark:text-green-400">{Math.round(e.matchScore)}%</span>
                         </div>
                     </div>
                 ))}

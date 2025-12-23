@@ -592,7 +592,7 @@ export default function AdminInterviewQuestionsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-600">Loading questions...</div>
+        <div className="text-gray-600 dark:text-gray-400">Loading questions...</div>
       </div>
     );
   }
@@ -600,12 +600,12 @@ export default function AdminInterviewQuestionsPage() {
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Header */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Interview Questions Management</h1>
-              <p className="text-gray-600">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Interview Questions Management</h1>
+              <p className="text-gray-600 dark:text-gray-300">
                 Manage interview questions shown to customers. Changes take effect immediately.
               </p>
             </div>
@@ -618,38 +618,38 @@ export default function AdminInterviewQuestionsPage() {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Total Questions</div>
-            <div className="mt-1 text-3xl font-semibold text-gray-900">{questions.length}</div>
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Questions</div>
+            <div className="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{questions.length}</div>
           </div>
         </Card>
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Active</div>
-            <div className="mt-1 text-3xl font-semibold text-green-600">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Active</div>
+            <div className="mt-1 text-3xl font-semibold text-green-600 dark:text-green-400">
               {questions.filter(q => q.isActive).length}
             </div>
           </div>
         </Card>
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Inactive</div>
-            <div className="mt-1 text-3xl font-semibold text-gray-400">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Inactive</div>
+            <div className="mt-1 text-3xl font-semibold text-gray-400 dark:text-gray-500">
               {questions.filter(q => !q.isActive).length}
             </div>
           </div>
         </Card>
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Critical</div>
-            <div className="mt-1 text-3xl font-semibold text-red-600">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Critical</div>
+            <div className="mt-1 text-3xl font-semibold text-red-600 dark:text-red-400">
               {categoryStats.critical || 0}
             </div>
           </div>
         </Card>
         <Card>
           <div className="px-4 py-5">
-            <div className="text-sm font-medium text-gray-500">Total Options</div>
-            <div className="mt-1 text-3xl font-semibold text-blue-600">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Options</div>
+            <div className="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">
               {questions.reduce((sum, q) => sum + q.options.length, 0)}
             </div>
           </div>
@@ -662,12 +662,12 @@ export default function AdminInterviewQuestionsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Filter by Category
                 </label>
                 <button
                   onClick={() => setShowCategoryModal(true)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                  className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
                 >
                   Edit Categories
                 </button>
@@ -675,7 +675,7 @@ export default function AdminInterviewQuestionsPage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="all">All Categories</option>
                 {categories.map(cat => (
@@ -686,13 +686,13 @@ export default function AdminInterviewQuestionsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Filter by Status
               </label>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active Only</option>
@@ -700,7 +700,7 @@ export default function AdminInterviewQuestionsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Search
               </label>
               <Input
@@ -719,40 +719,40 @@ export default function AdminInterviewQuestionsPage() {
         <div className="px-4 py-5 sm:p-6">
           <div className="space-y-4">
             {hierarchicalQuestions.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">
+              <div className="text-center text-gray-500 dark:text-gray-400 py-8">
                 No questions found
               </div>
             ) : (
               hierarchicalQuestions.map((question, index) => (
                 <div
                   key={question.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   style={{ marginLeft: `${question.level * 40}px` }}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
                         {question.level > 0 && (
-                          <div className="text-gray-400 text-sm">
+                          <div className="text-gray-400 dark:text-gray-500 text-sm">
                             └─
                           </div>
                         )}
                         <div className="flex flex-col items-center">
-                          <span className="text-sm font-medium text-gray-500">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                             #{question.displayOrder}
                           </span>
                           <div className="flex flex-col mt-1">
                             <button
                               onClick={() => moveQuestionUp(question)}
                               disabled={index === 0}
-                              className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs"
+                              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs"
                             >
                               ▲
                             </button>
                             <button
                               onClick={() => moveQuestionDown(question)}
                               disabled={index === hierarchicalQuestions.length - 1}
-                              className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs"
+                              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs"
                             >
                               ▼
                             </button>
@@ -761,26 +761,26 @@ export default function AdminInterviewQuestionsPage() {
 
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
-                            <code className="text-sm font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                            <code className="text-sm font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
                               {question.key}
                             </code>
-                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
                               {question.category}
                             </span>
-                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200">
                               {question.inputType}
                             </span>
                             {question.isRequired && (
-                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
                                 Required
                               </span>
                             )}
                           </div>
-                          <p className="mt-2 text-gray-900 font-medium">{question.text}</p>
+                          <p className="mt-2 text-gray-900 dark:text-white font-medium">{question.text}</p>
                           {question.description && (
-                            <p className="mt-1 text-sm text-gray-500">{question.description}</p>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{question.description}</p>
                           )}
-                          <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
+                          <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
                             <span>{question.options.length} options</span>
                             {question.discriminatesVisaCodes && (
                               <span>Visas: {question.discriminatesVisaCodes}</span>
@@ -795,7 +795,7 @@ export default function AdminInterviewQuestionsPage() {
                         <div className="mt-3 ml-12">
                           <button
                             onClick={() => toggleExpanded(question.id)}
-                            className="text-sm text-blue-600 hover:text-blue-800"
+                            className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                           >
                             {expandedQuestions.has(question.id) ? '▼ Hide' : '▶ Show'} {question.options.length} Options
                           </button>
@@ -804,14 +804,14 @@ export default function AdminInterviewQuestionsPage() {
                               {question.options.map((option, idx) => (
                                 <div
                                   key={option.id || idx}
-                                  className="flex items-center space-x-2 text-sm bg-gray-50 px-3 py-2 rounded"
+                                  className="flex items-center space-x-2 text-sm bg-gray-50 dark:bg-gray-900/50 px-3 py-2 rounded"
                                 >
-                                  <span className="text-gray-500">#{option.displayOrder}</span>
-                                  <code className="text-blue-600">{option.value}</code>
-                                  <span className="text-gray-400">→</span>
-                                  <span className="text-gray-900">{option.label}</span>
+                                  <span className="text-gray-500 dark:text-gray-400">#{option.displayOrder}</span>
+                                  <code className="text-blue-600 dark:text-blue-400">{option.value}</code>
+                                  <span className="text-gray-400 dark:text-gray-600">→</span>
+                                  <span className="text-gray-900 dark:text-white">{option.label}</span>
                                   {!option.isActive && (
-                                    <span className="text-xs text-red-500">(inactive)</span>
+                                    <span className="text-xs text-red-500 dark:text-red-400">(inactive)</span>
                                   )}
                                 </div>
                               ))}
@@ -826,8 +826,8 @@ export default function AdminInterviewQuestionsPage() {
                         onClick={() => toggleActive(question)}
                         className={`px-3 py-1 text-xs font-semibold rounded-full ${
                           question.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                         }`}
                       >
                         {question.isActive ? 'Active' : 'Inactive'}
@@ -836,7 +836,7 @@ export default function AdminInterviewQuestionsPage() {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => openEditModal(question)}
-                            className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
                           >
                             Edit
                           </button>
@@ -845,14 +845,14 @@ export default function AdminInterviewQuestionsPage() {
                               setQuestionToDelete(question);
                               setShowDeleteConfirm(true);
                             }}
-                            className="text-red-600 hover:text-red-900 text-sm font-medium"
+                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium"
                           >
                             Delete
                           </button>
                         </div>
                         <button
                           onClick={() => openCreateChildModal(question)}
-                          className="text-green-600 hover:text-green-900 text-xs font-medium text-left"
+                          className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 text-xs font-medium text-left"
                         >
                           + Add Child
                         </button>
@@ -875,7 +875,7 @@ export default function AdminInterviewQuestionsPage() {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Question Text *
             </label>
             <textarea
@@ -889,27 +889,27 @@ export default function AdminInterviewQuestionsPage() {
                   key: editingQuestion ? formData.key : generateKeyFromText(newText)
                 });
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               rows={3}
               required
               placeholder="Enter the question text shown to users"
             />
             {formData.key && (
-              <p className="mt-1 text-xs text-gray-500">
-                Generated key: <code className="bg-gray-100 px-1 py-0.5 rounded">{formData.key}</code>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Generated key: <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">{formData.key}</code>
               </p>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Category *
               </label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
               >
                 {categories.map(cat => (
@@ -919,7 +919,7 @@ export default function AdminInterviewQuestionsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Parent Question (optional)
               </label>
               <select
@@ -935,7 +935,7 @@ export default function AdminInterviewQuestionsPage() {
                     discriminatesVisaCodes: parentQuestion?.discriminatesVisaCodes || ''
                   });
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">None (Top-level question)</option>
                 {questions
@@ -946,20 +946,20 @@ export default function AdminInterviewQuestionsPage() {
                     </option>
                   ))}
               </select>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 Child questions automatically inherit discrimination codes from parent
               </p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description (for admins)
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               rows={2}
               placeholder="Optional description for admin reference"
             />
@@ -967,13 +967,13 @@ export default function AdminInterviewQuestionsPage() {
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Input Type *
               </label>
               <select
                 value={formData.inputType}
                 onChange={(e) => setFormData({ ...formData, inputType: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
               >
                 {INPUT_TYPES.map(type => (
@@ -983,7 +983,7 @@ export default function AdminInterviewQuestionsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Display Order
               </label>
               <Input
@@ -995,7 +995,7 @@ export default function AdminInterviewQuestionsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Selection Weight (0-100)
               </label>
               <Input
@@ -1009,19 +1009,19 @@ export default function AdminInterviewQuestionsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Discriminates Visa Codes
-              {!editingQuestion && <span className="text-xs text-gray-500 ml-2">(Top-level questions only)</span>}
+              {!editingQuestion && <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">(Top-level questions only)</span>}
             </label>
 
             {/* Show as deletable tags for top-level questions or when editing top-level questions */}
             {(!formData.parentId || (editingQuestion && !editingQuestion.parentId)) ? (
               <div className="space-y-2">
-                <div className="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-md min-h-[42px] bg-white">
+                <div className="flex flex-wrap gap-2 p-3 border border-gray-300 dark:border-gray-600 rounded-md min-h-[42px] bg-white dark:bg-gray-700">
                   {formData.discriminatesVisaCodes?.split(',').filter(code => code.trim()).map((code, index) => (
                     <span
                       key={index}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
                     >
                       {code.trim()}
                       <button
@@ -1031,7 +1031,7 @@ export default function AdminInterviewQuestionsPage() {
                           codes.splice(index, 1);
                           setFormData({ ...formData, discriminatesVisaCodes: codes.join(',') });
                         }}
-                        className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-blue-600 hover:bg-blue-200 hover:text-blue-900 rounded-full"
+                        className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-blue-600 hover:bg-blue-200 hover:text-blue-900 dark:text-blue-400 dark:hover:bg-blue-800 dark:hover:text-blue-200 rounded-full"
                       >
                         ×
                       </button>
@@ -1060,22 +1060,22 @@ export default function AdminInterviewQuestionsPage() {
               </div>
             ) : (
               <div className="space-y-2">
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <p className="text-sm font-medium text-blue-900 mb-2">
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2">
                     Inherited from Parent Question:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {formData.discriminatesVisaCodes?.split(',').filter(code => code.trim()).map((code, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
                       >
                         {code.trim()}
                       </span>
-                    )) || <span className="text-gray-500 text-sm">No codes inherited (parent has no codes)</span>}
+                    )) || <span className="text-gray-500 dark:text-gray-400 text-sm">No codes inherited (parent has no codes)</span>}
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 italic">
+                <p className="text-xs text-gray-500 dark:text-gray-400 italic">
                   Child questions automatically use the same discrimination codes as their parent.
                   To change these codes, edit the parent question.
                 </p>
@@ -1085,12 +1085,12 @@ export default function AdminInterviewQuestionsPage() {
 
           {/* Document Upload Configuration */}
           {formData.inputType === 'document_upload' && (
-            <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
-              <h3 className="font-semibold text-blue-900 mb-3">Document Upload Settings</h3>
+            <div className="border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4 bg-blue-50 dark:bg-blue-900/20">
+              <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-3">Document Upload Settings</h3>
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Upload Instructions
                   </label>
                   <textarea
@@ -1107,18 +1107,18 @@ export default function AdminInterviewQuestionsPage() {
                       setFormData({ ...formData, pageConfig: JSON.stringify(config) });
                     }}
                     placeholder="e.g., Please upload your passport and supporting documents"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={3}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Allowed File Types
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {['pdf', 'doc', 'docx', 'jpg', 'png', 'heic', 'xls', 'xlsx', 'csv'].map(type => (
-                      <label key={type} className="flex items-center text-sm">
+                      <label key={type} className="flex items-center text-sm dark:text-gray-300">
                         <input
                           type="checkbox"
                           checked={(() => {
@@ -1154,7 +1154,7 @@ export default function AdminInterviewQuestionsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Min Files</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Min Files</label>
                     <Input
                       type="number"
                       min={0}
@@ -1176,7 +1176,7 @@ export default function AdminInterviewQuestionsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Files</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max Files</label>
                     <Input
                       type="number"
                       min={1}
@@ -1205,16 +1205,16 @@ export default function AdminInterviewQuestionsPage() {
 
           {/* Attorney Question Configuration */}
           {formData.inputType === 'attorney_question' && (
-            <div className="border-2 border-purple-200 rounded-lg p-4 bg-purple-50">
-              <h3 className="font-semibold text-purple-900 mb-3">Attorney Question Page Settings</h3>
-              <p className="text-sm text-gray-600 mb-3">
+            <div className="border-2 border-purple-200 dark:border-purple-800 rounded-lg p-4 bg-purple-50 dark:bg-purple-900/20">
+              <h3 className="font-semibold text-purple-900 dark:text-purple-300 mb-3">Attorney Question Page Settings</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 This page displays visa results with action buttons.
                 Should be the final question in your interview.
               </p>
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Results Summary Text
                   </label>
                   <textarea
@@ -1231,13 +1231,13 @@ export default function AdminInterviewQuestionsPage() {
                       setFormData({ ...formData, pageConfig: JSON.stringify(config) });
                     }}
                     placeholder="e.g., Based on your responses, here are your visa options:"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={3}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Call-to-Action Text
                   </label>
                   <input
@@ -1255,7 +1255,7 @@ export default function AdminInterviewQuestionsPage() {
                       setFormData({ ...formData, pageConfig: JSON.stringify(config) });
                     }}
                     placeholder="e.g., Ready to get started? Register or schedule a consultation."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
@@ -1270,7 +1270,7 @@ export default function AdminInterviewQuestionsPage() {
                 onChange={(e) => setFormData({ ...formData, isRequired: e.target.checked })}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <span className="ml-2 text-sm text-gray-900">Required Question</span>
+              <span className="ml-2 text-sm text-gray-900 dark:text-gray-200">Required Question</span>
             </label>
             <label className="flex items-center">
               <input
@@ -1279,14 +1279,14 @@ export default function AdminInterviewQuestionsPage() {
                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <span className="ml-2 text-sm text-gray-900">Active (visible to users)</span>
+              <span className="ml-2 text-sm text-gray-900 dark:text-gray-200">Active (visible to users)</span>
             </label>
           </div>
 
           {/* Options Management */}
-          <div className="border-t pt-4">
+          <div className="border-t dark:border-gray-700 pt-4">
             <div className="flex justify-between items-center mb-3">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Answer Options ({formData.options.length})
               </label>
               <Button type="button" variant="outline" size="sm" onClick={addOption}>
@@ -1296,7 +1296,7 @@ export default function AdminInterviewQuestionsPage() {
 
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {formData.options.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2 bg-gray-50 p-2 rounded">
+                <div key={index} className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700/50 p-2 rounded">
                   <Input
                     type="text"
                     value={option.value}
@@ -1329,7 +1329,7 @@ export default function AdminInterviewQuestionsPage() {
                   <button
                     type="button"
                     onClick={() => removeOption(index)}
-                    className="text-red-600 hover:text-red-800"
+                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                   >
                     ✕
                   </button>
@@ -1338,7 +1338,7 @@ export default function AdminInterviewQuestionsPage() {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t">
+          <div className="flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
             <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
               Cancel
             </Button>
@@ -1357,7 +1357,7 @@ export default function AdminInterviewQuestionsPage() {
         size="md"
       >
         <div className="space-y-4">
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Are you sure you want to delete the question <strong>{questionToDelete?.key}</strong>?
             This action cannot be undone and will affect the customer interview immediately.
           </p>
@@ -1380,15 +1380,15 @@ export default function AdminInterviewQuestionsPage() {
         size="lg"
       >
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Manage the categories used to organize interview questions. Changes will apply to future questions.
           </p>
 
           <div className="space-y-2">
             {categories.map((cat, index) => (
-              <div key={index} className="flex items-center space-x-2 bg-gray-50 p-3 rounded">
+              <div key={index} className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700/50 p-3 rounded">
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-500 mb-1">Value (key)</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Value (key)</label>
                   <Input
                     type="text"
                     value={cat.value}
@@ -1396,7 +1396,7 @@ export default function AdminInterviewQuestionsPage() {
                     placeholder="category_key"
                     className="mb-2"
                   />
-                  <label className="block text-xs text-gray-500 mb-1">Label (display name)</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Label (display name)</label>
                   <Input
                     type="text"
                     value={cat.label}
@@ -1406,7 +1406,7 @@ export default function AdminInterviewQuestionsPage() {
                 </div>
                 <button
                   onClick={() => removeCategory(index)}
-                  className="mt-6 text-red-600 hover:text-red-800 p-2"
+                  className="mt-6 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-2"
                   title="Remove category"
                 >
                   ✕
@@ -1419,7 +1419,7 @@ export default function AdminInterviewQuestionsPage() {
             + Add Category
           </Button>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t">
+          <div className="flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
             <Button variant="outline" onClick={() => setShowCategoryModal(false)}>
               Cancel
             </Button>
