@@ -1,9 +1,6 @@
 using L4H.Shared.Models;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-using System.Net;
 
 namespace L4H.Infrastructure.Services;
 
@@ -17,16 +14,13 @@ public interface IRateLimitingService
 public class RateLimitingService : IRateLimitingService
 {
     private readonly IMemoryCache _cache;
-    private readonly IStringLocalizer<L4H.Infrastructure.Resources.Shared> _localizer;
     private readonly ILogger<RateLimitingService> _logger;
 
     public RateLimitingService(
         IMemoryCache cache,
-        IStringLocalizer<L4H.Infrastructure.Resources.Shared> localizer,
         ILogger<RateLimitingService> logger)
     {
         _cache = cache;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -57,7 +51,7 @@ public class RateLimitingService : IRateLimitingService
                 _logger.LogWarning("Rate limit exceeded for key {Key}. Current count: {Count}, Max: {Max}",
                     key, requests.Count, maxRequests);
 
-                return Task.FromResult(Result<bool>.Failure(_localizer["Auth.RateLimitExceeded"]));
+                return Task.FromResult(Result<bool>.Failure("Rate limit exceeded. Please try again later."));
             }
 
             // Add current request

@@ -2,7 +2,6 @@ using L4H.Infrastructure.Entities;
 using L4H.Infrastructure.Data;
 using L4H.Shared.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 
@@ -20,20 +19,17 @@ public class AccountLockoutService : IAccountLockoutService
 {
     private readonly L4HDbContext _context;
     private readonly AuthConfig _authConfig;
-    private readonly IStringLocalizer<L4H.Infrastructure.Resources.Shared> _localizer;
     private readonly ILogger<AccountLockoutService> _logger;
 
     public AccountLockoutService(
         L4HDbContext context,
         IOptions<AuthConfig> authConfig,
-        IStringLocalizer<L4H.Infrastructure.Resources.Shared> localizer,
         ILogger<AccountLockoutService> logger)
     {
         ArgumentNullException.ThrowIfNull(authConfig);
         
         _context = context;
         _authConfig = authConfig.Value;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -47,7 +43,7 @@ public class AccountLockoutService : IAccountLockoutService
 
             if (user == null)
             {
-                return Result<bool>.Failure(_localizer["Auth.UserNotFound"]);
+                return Result<bool>.Failure("User not found.");
             }
 
             // Check if account is locked
@@ -57,7 +53,7 @@ public class AccountLockoutService : IAccountLockoutService
                 _logger.LogWarning("Account {UserId} is locked until {LockedUntil}. Remaining time: {RemainingTime}", 
                     userId.Value, user.LockoutUntil.Value, remainingTime);
                 
-                return Result<bool>.Failure(_localizer["Auth.AccountLocked", remainingTime.Minutes]);
+                return Result<bool>.Failure($"Account locked. Try again in {remainingTime.Minutes} minutes.");
             }
 
             return Result<bool>.Success(true);
@@ -65,7 +61,7 @@ public class AccountLockoutService : IAccountLockoutService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error checking account lockout for user {UserId}", userId.Value);
-            return Result<bool>.Failure(_localizer["Auth.LockoutCheckFailed"]);
+            return Result<bool>.Failure("Failed to check account lockout status.");
         }
     }
 
@@ -79,7 +75,7 @@ public class AccountLockoutService : IAccountLockoutService
 
             if (user == null)
             {
-                return Result<bool>.Failure(_localizer["Auth.UserNotFound"]);
+                return Result<bool>.Failure("User not found.");
             }
 
             // Increment failed login count
@@ -99,7 +95,7 @@ public class AccountLockoutService : IAccountLockoutService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error recording failed login for user {UserId}", userId.Value);
-            return Result<bool>.Failure(_localizer["Auth.FailedLoginRecordFailed"]);
+            return Result<bool>.Failure("Failed to record failed login.");
         }
     }
 
@@ -113,7 +109,7 @@ public class AccountLockoutService : IAccountLockoutService
 
             if (user == null)
             {
-                return Result<bool>.Failure(_localizer["Auth.UserNotFound"]);
+                return Result<bool>.Failure("User not found.");
             }
 
             // Clear lockout
@@ -128,7 +124,7 @@ public class AccountLockoutService : IAccountLockoutService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error clearing lockout for user {UserId}", userId.Value);
-            return Result<bool>.Failure(_localizer["Auth.LockoutClearFailed"]);
+            return Result<bool>.Failure("Failed to clear account lockout.");
         }
     }
 
@@ -142,7 +138,7 @@ public class AccountLockoutService : IAccountLockoutService
 
             if (user == null)
             {
-                return Result<bool>.Failure(_localizer["Auth.UserNotFound"]);
+                return Result<bool>.Failure("User not found.");
             }
 
             var isLocked = user.LockoutUntil.HasValue && user.LockoutUntil > DateTimeOffset.UtcNow;
@@ -151,7 +147,7 @@ public class AccountLockoutService : IAccountLockoutService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error checking if account is locked for user {UserId}", userId.Value);
-            return Result<bool>.Failure(_localizer["Auth.LockoutCheckFailed"]);
+            return Result<bool>.Failure("Failed to check lockout status.");
         }
     }
 }

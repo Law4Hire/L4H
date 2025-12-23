@@ -1,9 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using System.Text.Json;
-using System.Globalization;
 
 namespace L4H.Api.Services;
 
@@ -42,7 +40,6 @@ public class CaseAutoAgingService : BackgroundService
     {
         using var scope = _serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
-        var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<Shared>>();
 
         // TODO: Make configurable via AdminSettings (default 30 days)
         var cutoffDate = DateTimeOffset.UtcNow.AddDays(-30);

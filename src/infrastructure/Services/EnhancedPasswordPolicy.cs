@@ -1,6 +1,5 @@
 using L4H.Shared.Models;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
 
 namespace L4H.Infrastructure.Services;
 
@@ -12,25 +11,23 @@ public interface IEnhancedPasswordPolicy
 public class EnhancedPasswordPolicy : IEnhancedPasswordPolicy
 {
     private readonly PasswordPolicyConfig _config;
-    private readonly IStringLocalizer<L4H.Infrastructure.Resources.Shared> _localizer;
 
-    public EnhancedPasswordPolicy(IOptions<AuthConfig> authConfig, IStringLocalizer<L4H.Infrastructure.Resources.Shared> localizer)
+    public EnhancedPasswordPolicy(IOptions<AuthConfig> authConfig)
     {
         _config = authConfig.Value.PasswordPolicy;
-        _localizer = localizer;
     }
 
     public Result<bool> ValidatePassword(string password, string? cultureCode = null)
     {
         if (string.IsNullOrEmpty(password))
         {
-            return Result<bool>.Failure(_localizer["Auth.PasswordRequired"]);
+            return Result<bool>.Failure("Password is required.");
         }
 
         // Check minimum length
         if (password.Length < _config.MinLength)
         {
-            return Result<bool>.Failure(_localizer["Auth.PasswordTooShort", _config.MinLength]);
+            return Result<bool>.Failure($"Password must be at least {_config.MinLength} characters long.");
         }
 
         // Count character classes
@@ -48,13 +45,13 @@ public class EnhancedPasswordPolicy : IEnhancedPasswordPolicy
         // If special characters are required but not present
         if (_config.RequireSpecial && !hasSpecial)
         {
-            return Result<bool>.Failure(_localizer["Auth.PasswordNeedsSpecialChar"]);
+            return Result<bool>.Failure("Password must contain at least one special character.");
         }
 
         // Check if we meet the required number of classes
         if (classes < _config.RequireClasses)
         {
-            return Result<bool>.Failure(_localizer["Auth.PasswordNeedsMoreClasses", _config.RequireClasses]);
+            return Result<bool>.Failure($"Password must contain at least {_config.RequireClasses} types of characters (upper, lower, digit, special).");
         }
 
         return Result<bool>.Success(true);

@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
 using L4H.Api.Configuration;
 using L4H.Api.Services.Providers;
 
@@ -11,16 +10,13 @@ namespace L4H.Api.Services.Providers;
 public class StripeProvider : IPaymentProvider
 {
     private readonly PaymentsOptions _options;
-    private readonly IStringLocalizer<Shared> _localizer;
     private readonly ILogger<StripeProvider> _logger;
 
     public StripeProvider(
         IOptions<PaymentsOptions> options,
-        IStringLocalizer<Shared> localizer,
         ILogger<StripeProvider> logger)
     {
         _options = options.Value;
-        _localizer = localizer;
         _logger = logger;
     }
 
@@ -50,7 +46,7 @@ public class StripeProvider : IPaymentProvider
             return Task.FromResult(new CheckoutResult
             {
                 Success = false,
-                ErrorMessage = _localizer["Payments.CheckoutFailed"]
+                ErrorMessage = "Checkout failed. Please try again."
             });
         }
     }
@@ -81,7 +77,7 @@ public class StripeProvider : IPaymentProvider
             return Task.FromResult(new RefundResult
             {
                 Success = false,
-                ErrorMessage = _localizer["Payments.RefundFailed"]
+                ErrorMessage = "Refund failed. Please contact support."
             });
         }
 #pragma warning restore CA1031 // Do not catch general exception types
@@ -104,7 +100,7 @@ public class StripeProvider : IPaymentProvider
                     return new WebhookResult
                     {
                         Success = false,
-                        ErrorMessage = _localizer["Payments.WebhookRejected"]
+                        ErrorMessage = "Webhook signature verification failed."
                     };
                 }
             }
@@ -117,7 +113,7 @@ public class StripeProvider : IPaymentProvider
                 return new WebhookResult
                 {
                     Success = false,
-                    ErrorMessage = _localizer["Payments.WebhookRejected"]
+                    ErrorMessage = "Invalid webhook payload."
                 };
             }
 
@@ -143,7 +139,7 @@ public class StripeProvider : IPaymentProvider
             return new WebhookResult
             {
                 Success = false,
-                ErrorMessage = _localizer["Payments.WebhookRejected"]
+                ErrorMessage = "Error processing webhook."
             };
         }
 #pragma warning restore CA1031 // Do not catch general exception types

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
 using L4H.Api.Configuration;
 using L4H.Api.Services.Providers;
 using L4H.Infrastructure.Entities;
@@ -12,16 +11,13 @@ namespace L4H.Api.Services.Providers;
 public class GraphCalendarProvider : IGraphCalendarProvider
 {
     private readonly GraphOptions _options;
-    private readonly IStringLocalizer<L4H.Api.Resources.Shared> _localizer;
     private readonly ILogger<GraphCalendarProvider> _logger;
 
     public GraphCalendarProvider(
         IOptions<GraphOptions> options,
-        IStringLocalizer<L4H.Api.Resources.Shared> _localizer,
         ILogger<GraphCalendarProvider> logger)
     {
         _options = options.Value;
-        this._localizer = _localizer;
         _logger = logger;
     }
 

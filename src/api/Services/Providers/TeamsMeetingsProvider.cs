@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
 using L4H.Api.Configuration;
 using L4H.Api.Services.Providers;
 
@@ -8,16 +7,13 @@ namespace L4H.Api.Services.Providers;
 public class TeamsMeetingsProvider : IMeetingsProvider
 {
     private readonly MeetingsOptions _options;
-    private readonly IStringLocalizer<L4H.Api.Resources.Shared> _localizer;
     private readonly ILogger<TeamsMeetingsProvider> _logger;
 
     public TeamsMeetingsProvider(
         IOptions<MeetingsOptions> options,
-        IStringLocalizer<L4H.Api.Resources.Shared> _localizer,
         ILogger<TeamsMeetingsProvider> logger)
     {
         _options = options.Value;
-        this._localizer = _localizer;
         _logger = logger;
     }
 
@@ -41,7 +37,7 @@ public class TeamsMeetingsProvider : IMeetingsProvider
                 Success = true,
                 MeetingId = meetingId,
                 JoinUrl = joinUrl,
-                Message = _localizer["Meetings.Created"]
+                Message = "Teams meeting created successfully."
             };
         }
         catch (Exception ex)
@@ -50,7 +46,7 @@ public class TeamsMeetingsProvider : IMeetingsProvider
             return new MeetingResult
             {
                 Success = false,
-                ErrorMessage = _localizer["Meetings.ProviderError"]
+                ErrorMessage = "Failed to create Teams meeting."
             };
         }
     }

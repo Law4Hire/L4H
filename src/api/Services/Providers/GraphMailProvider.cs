@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
 using L4H.Api.Configuration;
 using L4H.Api.Services.Providers;
 using L4H.Infrastructure.Services.Graph;
@@ -9,16 +8,13 @@ namespace L4H.Api.Services.Providers;
 public class GraphMailProvider : IGraphMailProvider
 {
     private readonly GraphOptions _options;
-    private readonly IStringLocalizer<L4H.Api.Resources.Shared> _localizer;
     private readonly ILogger<GraphMailProvider> _logger;
 
     public GraphMailProvider(
         IOptions<GraphOptions> options,
-        IStringLocalizer<L4H.Api.Resources.Shared> _localizer,
         ILogger<GraphMailProvider> logger)
     {
         _options = options.Value;
-        this._localizer = _localizer;
         _logger = logger;
     }
 
