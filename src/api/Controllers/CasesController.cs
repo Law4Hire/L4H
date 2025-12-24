@@ -141,6 +141,60 @@ public class CasesController : ControllerBase
     }
 
     /// <summary>
+    /// Set the package for a case
+    /// </summary>
+    /// <param name="id">Case ID</param>
+    /// <param name="request">Package selection</param>
+    /// <returns>Success message</returns>
+    [HttpPost("{id}/package")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> SetPackage(Guid id, [FromBody] SetPackageRequest request)
+    {
+        var caseId = new CaseId(id);
+        var userId = GetCurrentUserId();
+
+        var caseEntity = await _context.Cases
+            .FirstOrDefaultAsync(c => c.Id == caseId).ConfigureAwait(false);
+
+        if (caseEntity == null)
+        {
+            return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Case not found." });
+        }
+
+        if (caseEntity.UserId != userId && !IsAdmin())
+        {
+            return StatusCode(403, new ProblemDetails { Title = "Forbidden", Detail = "Access denied." });
+        }
+
+        // Try to parse ID, otherwise treat as code
+        int? packageIdInt = null;
+        if (int.TryParse(request.PackageId, out var pid)) packageIdInt = pid;
+
+        var package = await _context.Packages
+            .FirstOrDefaultAsync(p => (packageIdInt.HasValue && p.Id == packageIdInt.Value) || p.Code == request.PackageId)
+            .ConfigureAwait(false);
+
+        if (package == null)
+        {
+             return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Package not found." });
+        }
+
+        caseEntity.PackageId = package.Id;
+        caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+        
+        // Update status if needed (e.g. from Inactive to Pending)
+        if (caseEntity.Status == "inactive") caseEntity.Status = "pending";
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+        
+        await LogAuditAsync("case", "set_package", "Case", id.ToString(), new { packageId = package.Id }).ConfigureAwait(false);
+
+        return Ok(new { message = "Package updated successfully." });
+    }
+
+    /// <summary>
     /// Update case status with guarded transitions
     /// </summary>
     /// <param name="id">Case ID</param>
@@ -332,4 +386,9 @@ public class PriceSnapshotResponse
 public class UpdateCaseStatusRequest
 {
     public string Status { get; set; } = string.Empty;
+}
+
+public class SetPackageRequest
+{
+    public string PackageId { get; set; } = string.Empty;
 }

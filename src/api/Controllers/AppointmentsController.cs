@@ -108,6 +108,25 @@ public class AppointmentsController : ControllerBase
 
         var availableAttorneys = await query.ToListAsync().ConfigureAwait(false);
 
+        // Filter by assigned staff if present
+        bool isPool = true;
+        if (userCase.AssignedStaffId.HasValue)
+        {
+            var assignedUser = await _context.Users.FindAsync(new UserId(userCase.AssignedStaffId.Value));
+            if (assignedUser != null)
+            {
+                // Find matching attorney profile by email
+                var assignedAttorney = availableAttorneys
+                    .FirstOrDefault(a => a.Email.Equals(assignedUser.Email, StringComparison.OrdinalIgnoreCase));
+                
+                if (assignedAttorney != null)
+                {
+                    availableAttorneys = new List<Attorney> { assignedAttorney };
+                    isPool = false; // Assigned specific professional
+                }
+            }
+        }
+
         if (availableAttorneys.Count == 0)
         {
             return NotFound(new { message = "No available professionals found for your package type." });
@@ -135,8 +154,6 @@ public class AppointmentsController : ControllerBase
                     var slotEnd = slotStart.AddHours(1);
 
                     // Check if slot is already booked
-                    // Note: Attorney.Id is an int, but Appointment.StaffUserId is a UserId (Guid)
-                    // For now, we skip the attorney check in the query since we don't have a mapping table
                     var isBooked = await _context.Set<Appointment>()
                         .AnyAsync(a => a.ScheduledStart < slotEnd
                             && a.ScheduledEnd > slotStart
@@ -148,8 +165,8 @@ public class AppointmentsController : ControllerBase
                         slots.Add(new TimeSlotResponse
                         {
                             AttorneyId = attorney.Id,
-                            AttorneyName = attorney.Name,
-                            AttorneyTitle = attorney.Title,
+                            AttorneyName = isPool ? "Legal Professional" : attorney.Name,
+                            AttorneyTitle = isPool ? (attorney.ProfessionalType == ProfessionalType.Lawyer ? "Attorney" : "Legal Professional") : attorney.Title,
                             ProfessionalType = attorney.ProfessionalType.ToString(),
                             StartTime = slotStart,
                             EndTime = slotEnd,
@@ -219,11 +236,15 @@ public class AppointmentsController : ControllerBase
         // Create appointment
         // Note: Attorney.Id is an int, but Appointment.StaffUserId is a UserId (Guid)
         // TODO: Create a mapping table or add a UserId field to Attorney entity
+        // Temporary: Try to find staff user by email, otherwise generate one
+        var staffUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == attorney.Email);
+        var staffUserId = staffUser?.Id ?? new UserId(Guid.NewGuid());
+
         var appointment = new Appointment
         {
             Id = Guid.NewGuid(),
             CaseId = userCase.Id,
-            StaffUserId = new UserId(Guid.NewGuid()), // Temporary: Map attorney to a staff user
+            StaffUserId = staffUserId,
             ScheduledStart = request.StartTime,
             ScheduledEnd = request.EndTime,
             Type = "consultation",

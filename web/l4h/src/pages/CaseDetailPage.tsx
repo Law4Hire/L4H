@@ -29,6 +29,9 @@ interface VisaRecommendation {
   isLocked: boolean
 }
 
+// Simple t function to replace i18n
+const t = (key: string, options?: any) => options?.defaultValue || key;
+
 const CaseDetailPage: React.FC = () => {
   const navigate = useNavigate()
   const { id: caseId } = useParams<{ id: string }>()
