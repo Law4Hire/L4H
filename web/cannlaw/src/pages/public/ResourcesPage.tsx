@@ -120,12 +120,12 @@ const ResourcesPage: React.FC = () => {
 
   return (
     <PublicLayout>
-      <div className="bg-gray-50 min-h-screen py-20">
+      <div className="bg-gray-50 dark:bg-navy-950 min-h-screen py-20 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="text-gold-600 font-bold tracking-widest uppercase text-sm mb-2 block">Knowledge Base</span>
-            <h1 className="text-4xl font-serif font-bold text-navy-900 mb-6">Immigration Law Library</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
+            <h1 className="text-4xl font-serif font-bold text-navy-900 dark:text-white mb-6">Immigration Law Library</h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
               Explore our comprehensive guides to understanding various visa types and immigration processes.
             </p>
           </div>
@@ -134,20 +134,20 @@ const ResourcesPage: React.FC = () => {
             {visaTypes.map((visa) => (
               <div 
                 key={visa.id} 
-                className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-t-4 border-navy-900 flex flex-col h-full group cursor-pointer"
+                className="bg-white dark:bg-navy-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-t-4 border-navy-900 dark:border-gold-500 flex flex-col h-full group cursor-pointer"
                 onClick={() => setSelectedVisa(visa)}
               >
                 <div className="p-8 flex-grow">
-                  <div className="w-12 h-12 bg-navy-50 rounded-lg flex items-center justify-center mb-6 text-gold-500 group-hover:bg-navy-900 transition-colors">
+                  <div className="w-12 h-12 bg-navy-50 dark:bg-navy-700 rounded-lg flex items-center justify-center mb-6 text-gold-500 group-hover:bg-navy-900 dark:group-hover:bg-gold-500 dark:group-hover:text-navy-900 transition-colors">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-serif font-bold text-navy-900 mb-3 group-hover:text-gold-600 transition-colors">{visa.title}</h3>
-                  <p className="text-gray-600 mb-6 text-sm leading-relaxed">{visa.shortDesc}</p>
+                  <h3 className="text-xl font-serif font-bold text-navy-900 dark:text-white mb-3 group-hover:text-gold-600 dark:group-hover:text-gold-400 transition-colors">{visa.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">{visa.shortDesc}</p>
                 </div>
-                <div className="px-8 pb-8 bg-gray-50 border-t border-gray-100 mt-auto pt-4">
-                  <span className="text-navy-600 font-bold uppercase text-xs tracking-wider group-hover:text-gold-600 transition-colors flex items-center">
+                <div className="px-8 pb-8 bg-gray-50 dark:bg-navy-700 border-t border-gray-100 dark:border-navy-600 mt-auto pt-4">
+                  <span className="text-navy-600 dark:text-gold-500 font-bold uppercase text-xs tracking-wider group-hover:text-gold-600 dark:group-hover:text-white transition-colors flex items-center">
                     Read Details
                     <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -172,29 +172,29 @@ const ResourcesPage: React.FC = () => {
             ></div>
 
             {/* Modal panel */}
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="inline-block align-bottom bg-white dark:bg-navy-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+              <div className="bg-white dark:bg-navy-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                    <h3 className="text-2xl leading-6 font-serif font-bold text-navy-900 mb-6" id="modal-title">
+                    <h3 className="text-2xl leading-6 font-serif font-bold text-navy-900 dark:text-white mb-6" id="modal-title">
                       {selectedVisa.title}
                     </h3>
-                    <div className="mt-2 text-gray-600 prose max-w-none text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: selectedVisa.fullContent }}>
+                    <div className="mt-2 text-gray-600 dark:text-gray-300 prose dark:prose-invert max-w-none text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: selectedVisa.fullContent }}>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <div className="bg-gray-50 dark:bg-navy-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <Button 
                   variant="primary" 
-                  className="w-full sm:w-auto sm:ml-3 bg-navy-900 hover:bg-navy-800 text-white"
+                  className="w-full sm:w-auto sm:ml-3 bg-navy-900 hover:bg-navy-800 dark:bg-gold-600 dark:hover:bg-gold-500 dark:text-navy-900 font-bold"
                   onClick={() => window.location.href = '/contact'}
                 >
                   Schedule Consultation
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="mt-3 w-full sm:w-auto sm:mt-0"
+                  className="mt-3 w-full sm:w-auto sm:mt-0 dark:bg-transparent dark:text-gray-300 dark:border-gray-600 dark:hover:bg-navy-600"
                   onClick={() => setSelectedVisa(null)}
                 >
                   Close

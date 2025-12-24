@@ -81,11 +81,11 @@ const ContactPage: React.FC = () => {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16">
+      <section className="bg-gradient-to-r from-blue-900 to-blue-700 dark:from-navy-900 dark:to-navy-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
-            <p className="text-xl max-w-3xl mx-auto">
+            <p className="text-xl max-w-3xl mx-auto text-blue-100 dark:text-gray-300">
               Ready to start your immigration journey? Get in touch for a consultation.
             </p>
           </div>
@@ -93,25 +93,25 @@ const ContactPage: React.FC = () => {
       </section>
 
       {/* Contact Form and Info */}
-      <section className="py-16">
+      <section className="py-16 bg-gray-50 dark:bg-navy-950 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div>
-              <Card className="p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Schedule a Consultation</h2>
+              <Card className="p-8 bg-white dark:bg-navy-800 border dark:border-navy-700">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Schedule a Consultation</h2>
                 
                 {submitStatus === 'success' && (
-                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-green-800">
+                  <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-green-800 dark:text-green-400">
                       Thank you for your message! We'll get back to you within 24 hours.
                     </p>
                   </div>
                 )}
 
                 {submitStatus === 'error' && (
-                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-800">
+                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-red-800 dark:text-red-400">
                       There was an error sending your message. Please try again or call us directly.
                     </p>
                   </div>
@@ -120,7 +120,7 @@ const ContactPage: React.FC = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Full Name *
                       </label>
                       <Input
@@ -131,10 +131,11 @@ const ContactPage: React.FC = () => {
                         value={formData.name}
                         onChange={handleInputChange}
                         placeholder="Your full name"
+                        className="dark:bg-navy-900 dark:border-navy-600 dark:text-white dark:placeholder-gray-500"
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Email Address *
                       </label>
                       <Input
@@ -145,12 +146,13 @@ const ContactPage: React.FC = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="your.email@example.com"
+                        className="dark:bg-navy-900 dark:border-navy-600 dark:text-white dark:placeholder-gray-500"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Phone Number
                     </label>
                     <Input
@@ -160,11 +162,12 @@ const ContactPage: React.FC = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="(555) 123-4567"
+                      className="dark:bg-navy-900 dark:border-navy-600 dark:text-white dark:placeholder-gray-500"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="consultationType" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="consultationType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Consultation Type
                     </label>
                     <select
@@ -172,7 +175,7 @@ const ContactPage: React.FC = () => {
                       name="consultationType"
                       value={formData.consultationType}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 text-gray-900 dark:text-white"
                     >
                       <option value="general">General Consultation</option>
                       <option value="family">Family-Based Immigration</option>
@@ -183,7 +186,7 @@ const ContactPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Subject
                     </label>
                     <Input
@@ -193,11 +196,12 @@ const ContactPage: React.FC = () => {
                       value={formData.subject}
                       onChange={handleInputChange}
                       placeholder="Brief description of your case"
+                      className="dark:bg-navy-900 dark:border-navy-600 dark:text-white dark:placeholder-gray-500"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Message *
                     </label>
                     <textarea
@@ -208,7 +212,7 @@ const ContactPage: React.FC = () => {
                       value={formData.message}
                       onChange={handleInputChange}
                       placeholder="Please describe your immigration needs and any specific questions you have..."
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 text-gray-900 dark:text-white dark:placeholder-gray-500"
                     />
                   </div>
 
@@ -216,12 +220,12 @@ const ContactPage: React.FC = () => {
                     type="submit"
                     variant="primary"
                     loading={isSubmitting}
-                    className="w-full py-3 text-lg"
+                    className="w-full py-3 text-lg bg-blue-600 hover:bg-blue-700 dark:bg-gold-600 dark:hover:bg-gold-500 dark:text-navy-900 font-bold"
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
 
-                  <p className="text-sm text-gray-600 text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                     * Required fields. We'll respond within 24 hours.
                   </p>
                 </form>
@@ -231,55 +235,55 @@ const ContactPage: React.FC = () => {
             {/* Contact Information */}
             <div className="space-y-8">
               {/* Primary Contact */}
-              <Card className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Get in Touch</h3>
+              <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Get in Touch</h3>
                 <div className="space-y-4">
                   <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-gold-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     <div>
-                      <p className="font-medium text-gray-900">Phone</p>
-                      <a href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`} className="text-blue-600 hover:text-blue-800">
+                      <p className="font-medium text-gray-900 dark:text-white">Phone</p>
+                      <a href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                         {siteConfig?.primaryPhone || '(410) 988-0123'}
                       </a>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-gold-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                     <div>
-                      <p className="font-medium text-gray-900">Email</p>
-                      <a href={`mailto:${siteConfig?.email || 'information@cannlaw.com'}`} className="text-blue-600 hover:text-blue-800">
+                      <p className="font-medium text-gray-900 dark:text-white">Email</p>
+                      <a href={`mailto:${siteConfig?.email || 'information@cannlaw.com'}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                         {siteConfig?.email || 'information@cannlaw.com'}
                       </a>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-gold-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div>
-                      <p className="font-medium text-gray-900">Response Time</p>
-                      <p className="text-gray-600">Within 24 hours</p>
+                      <p className="font-medium text-gray-900 dark:text-white">Response Time</p>
+                      <p className="text-gray-600 dark:text-gray-400">Within 24 hours</p>
                     </div>
                   </div>
                 </div>
               </Card>
 
               {/* Office Locations */}
-              <Card className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Office Locations</h3>
+              <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Office Locations</h3>
                 <div className="space-y-4">
                   {locations.map((location: any, index: number) => (
-                    <div key={index} className="border-l-4 border-blue-600 pl-4">
-                      <h4 className="font-medium text-gray-900">{location.type}</h4>
-                      <p className="text-gray-600">{location.city}</p>
-                      {location.address && <p className="text-gray-600">{location.address}</p>}
-                      {location.zip && <p className="text-gray-600">{location.zip}</p>}
+                    <div key={index} className="border-l-4 border-blue-600 dark:border-gold-500 pl-4">
+                      <h4 className="font-medium text-gray-900 dark:text-white">{location.type}</h4>
+                      <p className="text-gray-600 dark:text-gray-400">{location.city}</p>
+                      {location.address && <p className="text-gray-600 dark:text-gray-400">{location.address}</p>}
+                      {location.zip && <p className="text-gray-600 dark:text-gray-400">{location.zip}</p>}
                     </div>
                   ))}
                 </div>
@@ -287,15 +291,15 @@ const ContactPage: React.FC = () => {
 
               {/* Social Media & Communication */}
               {socialMediaPlatforms.length > 0 && (
-                <Card className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Connect With Us</h3>
+                <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Connect With Us</h3>
                   <div className="space-y-2">
                     {socialMediaPlatforms.map((platform: string, index: number) => (
                       <div key={index} className="flex items-center space-x-2">
-                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-blue-600 dark:text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
                         </svg>
-                        <span className="text-gray-700">{platform}</span>
+                        <span className="text-gray-700 dark:text-gray-300">{platform}</span>
                       </div>
                     ))}
                   </div>
@@ -303,14 +307,14 @@ const ContactPage: React.FC = () => {
               )}
 
               {/* Emergency Contact */}
-              <Card className="p-6 bg-blue-50 border-blue-200">
-                <h3 className="text-xl font-semibold text-blue-900 mb-2">24/7 Support</h3>
-                <p className="text-blue-800 mb-4">
+              <Card className="p-6 bg-blue-50 dark:bg-navy-800 border-blue-200 dark:border-navy-700">
+                <h3 className="text-xl font-semibold text-blue-900 dark:text-white mb-2">24/7 Support</h3>
+                <p className="text-blue-800 dark:text-gray-300 mb-4">
                   We provide round-the-clock support for urgent immigration matters.
                 </p>
                 <a 
                   href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`}
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-gold-600 text-white dark:text-navy-900 font-bold rounded-lg hover:bg-blue-700 dark:hover:bg-gold-500 transition-colors"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
