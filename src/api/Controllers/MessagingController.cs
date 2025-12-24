@@ -172,7 +172,8 @@ public class MessagingController : ControllerBase
         // - Case owner sees all threads for their case
         // - Admins see "General" threads (RecipientUserId IS NULL) for all cases
         // - Specific staff see threads directed to them (RecipientUserId matches their ID)
-        var isAdmin = User.IsInRole("Admin") || User.FindFirst("IsAdmin")?.Value == "true";
+        var isAdminClaim = User.FindFirst("is_admin")?.Value;
+        var isAdmin = User.IsInRole("Admin") || (!string.IsNullOrEmpty(isAdminClaim) && bool.TryParse(isAdminClaim, out var isAdminBool) && isAdminBool);
 
         var threadsQuery = _context.MessageThreads
             .Where(t => t.CaseId == caseIdTyped);
@@ -740,7 +741,8 @@ public class MessagingController : ControllerBase
         }
 
         // Only case owner or admin can delete threads
-        var isAdmin = User.IsInRole("Admin") || User.FindFirst("IsAdmin")?.Value == "true";
+        var isAdminClaim = User.FindFirst("is_admin")?.Value;
+        var isAdmin = User.IsInRole("Admin") || (!string.IsNullOrEmpty(isAdminClaim) && bool.TryParse(isAdminClaim, out var isAdminBool) && isAdminBool);
         if (thread.Case.UserId != userId && !isAdmin)
         {
             return StatusCode(403, new ProblemDetails

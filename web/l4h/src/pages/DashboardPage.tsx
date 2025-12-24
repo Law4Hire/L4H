@@ -57,8 +57,8 @@ const DashboardPage: React.FC = () => {
       // Start the interview
       try {
         const response = await interview.start(activeCase.id)
-        // Navigate to interview page with session ID
-        navigate(`/interview?sessionId=${response.sessionId}`)
+        // Navigate to interview page with session ID and token
+        navigate(`/interview?sessionId=${response.sessionId}&token=${response.sessionToken}`)
       } catch (authError) {
         console.warn('Authenticated interview start failed, falling back to anonymous:', authError)
         const response = await interview.startAnonymous()

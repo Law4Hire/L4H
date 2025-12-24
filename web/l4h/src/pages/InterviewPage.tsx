@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, useToast } from '@l4h/shared-ui';
 import { interview } from '@l4h/shared-ui';
 import { ChevronLeft } from 'lucide-react';
@@ -27,6 +27,7 @@ interface VisaEvaluation {
 
 const InterviewPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { error: showError } = useToast();
 
   // API-driven state
@@ -43,10 +44,42 @@ const InterviewPage: React.FC = () => {
     }
   }, [isComplete, sessionToken, navigate]);
 
-  // Start interview on load
+  // Start or resume interview on load
   useEffect(() => {
-    startInterview();
+    const token = searchParams.get('token');
+    if (token) {
+      resumeInterview(token);
+    } else {
+      startInterview();
+    }
   }, []);
+
+  const resumeInterview = async (token: string) => {
+    try {
+      setIsLoading(true);
+      const response = await interview.resumeAnonymous(token);
+      setSessionToken(token);
+      
+      if (response.isComplete) {
+        // Fetch visa evaluations
+        try {
+          const evaluations = await interview.getEvaluations(token);
+          setVisaEvaluations(evaluations);
+        } catch (evalError) {
+          console.error('Failed to fetch visa evaluations:', evalError);
+        }
+        setIsComplete(true);
+      } else {
+        setCurrentQuestion(response.nextQuestion);
+      }
+    } catch (error: any) {
+      console.error('Failed to resume interview:', error);
+      // Fallback to starting a new interview if resume fails
+      startInterview();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const startInterview = async () => {
     try {

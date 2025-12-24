@@ -14,7 +14,7 @@ namespace L4H.Api.Controllers;
 /// Handles professional/attorney actions on interview sessions
 /// </summary>
 [ApiController]
-[Route("api/interview/professional")]
+[Route("api/v1/interview/professional")]
 [Authorize(Roles = "Attorney,LegalProfessional,Admin")]
 public class ProfessionalInterviewController : ControllerBase
 {
