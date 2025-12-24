@@ -17,6 +17,9 @@ const ResourcesPage = lazy(() => import('./pages/public/ResourcesPage'))
 // Auth pages
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 
+// Public Layout
+import PublicLayout from './components/PublicLayout'
+
 // Legal Professional Dashboard
 const LegalDashboard = lazy(() => import('./pages/dashboard/LegalDashboard'))
 const ClientManagement = lazy(() => import('./pages/dashboard/ClientManagement'))
@@ -85,9 +88,9 @@ function App() {
         <Route 
           path="/login" 
           element={
-            <Layout>
+            <PublicLayout>
               <LoginPage />
-            </Layout>
+            </PublicLayout>
           } 
         />
         
