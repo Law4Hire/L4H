@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { loginAsProfessional } = useAuth()
   const { error: showError } = useToast()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
     setError('')
 
     try {
-      const result = await login(email, password)
+      const result = await loginAsProfessional(email, password)
       
       if (result.success) {
         navigate('/dashboard')
@@ -116,6 +116,13 @@ const LoginPage: React.FC = () => {
             </Button>
           </div>
         </form>
+        
+        <p className="text-[10px] text-gray-400 dark:text-navy-500 text-center mt-4 uppercase tracking-tighter">
+          System Version: {
+            // @ts-ignore
+            typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'Local-Dev'
+          }
+        </p>
       </div>
     </div>
   )

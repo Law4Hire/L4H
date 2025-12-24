@@ -15,6 +15,7 @@ interface AuthContextType {
   isLoading: boolean
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  loginAsProfessional: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   hasRole: (role: string) => boolean
   isAdmin: boolean
@@ -92,6 +93,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const loginAsProfessional = async (email: string, password: string) => {
+    try {
+      const response = await fetch('/api/v1/auth/attorneylogin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
+
+      if (response.ok) {
+        const { token, user: userData } = await response.json()
+        localStorage.setItem('jwt_token', token)
+        setUser(userData)
+        return { success: true }
+      } else {
+        const error = await response.text()
+        // Try to parse JSON error if possible
+        try {
+            const jsonError = JSON.parse(error)
+            return { success: false, error: jsonError.detail || jsonError.title || 'Login failed' }
+        } catch {
+            return { success: false, error: error || 'Login failed' }
+        }
+      }
+    } catch (error) {
+      return { success: false, error: 'Network error' }
+    }
+  }
+
   const logout = () => {
     localStorage.removeItem('jwt_token')
     setUser(null)
@@ -114,6 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     isAuthenticated: !!user,
     login,
+    loginAsProfessional,
     logout,
     hasRole,
     isAdmin: user?.isAdmin || false,

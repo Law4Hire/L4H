@@ -2,7 +2,7 @@ import React from 'react'
 import { Card } from '@l4h/shared-ui'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import PublicLayout from '../../components/PublicLayout'
-import { Mail, Phone, MapPin, Briefcase, Globe, Info } from 'lucide-react'
+import { Mail, Phone, MapPin, Briefcase, Globe, Info, AlertCircle } from 'lucide-react'
 
 const AttorneysPage: React.FC = () => {
   const { attorneys, isLoading, error } = useAttorneys()
@@ -21,14 +21,20 @@ const AttorneysPage: React.FC = () => {
     return (
       <PublicLayout>
         <div className="flex flex-col justify-center items-center min-h-[60vh] bg-white dark:bg-navy-950 p-4 text-center">
-          <h2 className="text-2xl font-serif font-bold text-navy-900 dark:text-white mb-4">Unable to Load Team</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">We're having trouble retrieving our legal team information. Please try again later.</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-navy-900 dark:bg-gold-500 text-white dark:text-navy-950 rounded hover:bg-navy-800 dark:hover:bg-gold-400 transition-colors"
-          >
-            Retry
-          </button>
+          <div className="bg-red-50 dark:bg-red-950/20 p-8 rounded-lg max-w-2xl border border-red-100 dark:border-red-900">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-serif font-bold text-navy-900 dark:text-white mb-2">Unable to Load Team</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">We're having trouble retrieving our legal team information. This usually happens when the API is unavailable or returning an invalid response.</p>
+            <div className="bg-white dark:bg-navy-900 p-3 rounded border border-red-200 dark:border-red-800 mb-6 text-left overflow-auto max-h-40">
+              <code className="text-xs text-red-600 dark:text-red-400 break-all">{error}</code>
+            </div>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-8 py-3 bg-navy-900 dark:bg-gold-500 text-white dark:text-navy-950 rounded font-bold hover:bg-navy-800 dark:hover:bg-gold-400 transition-colors uppercase tracking-wider text-sm"
+            >
+              Retry Connection
+            </button>
+          </div>
         </div>
       </PublicLayout>
     )

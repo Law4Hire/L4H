@@ -34,12 +34,22 @@ export function useAttorneys() {
   const fetchAttorneys = async () => {
     try {
       setIsLoading(true)
+      console.log('Fetching attorneys from /api/v1/attorneys...')
       const response = await fetch('/api/v1/attorneys')
       
       if (!response.ok) {
-        throw new Error('Failed to fetch attorneys')
+        const errorText = await response.text()
+        console.error('Attorney fetch failed:', response.status, errorText)
+        throw new Error(`Failed to fetch attorneys: ${response.status} ${errorText.substring(0, 100)}`)
       }
       
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text()
+        console.error('Expected JSON but got:', contentType, text.substring(0, 200))
+        throw new Error(`Invalid response format: ${contentType}`)
+      }
+
       const attorneyList = await response.json()
       setAttorneys(attorneyList)
       setError(null)
@@ -54,11 +64,7 @@ export function useAttorneys() {
   const getAttorney = async (id: number) => {
     try {
       const response = await fetch(`/api/v1/attorneys/${id}`)
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch attorney')
-      }
-      
+      if (!response.ok) throw new Error('Failed to fetch attorney')
       return await response.json()
     } catch (err) {
       console.error('Error fetching attorney:', err)
@@ -78,15 +84,11 @@ export function useAttorneys() {
         body: JSON.stringify(attorney)
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to create attorney')
-      }
-
+      if (!response.ok) throw new Error('Failed to create attorney')
       const newAttorney = await response.json()
-      await fetchAttorneys() // Refresh data
+      await fetchAttorneys()
       return { success: true, data: newAttorney }
     } catch (err) {
-      console.error('Error creating attorney:', err)
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
   }
@@ -103,14 +105,10 @@ export function useAttorneys() {
         body: JSON.stringify(attorney)
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to update attorney')
-      }
-
-      await fetchAttorneys() // Refresh data
+      if (!response.ok) throw new Error('Failed to update attorney')
+      await fetchAttorneys()
       return { success: true }
     } catch (err) {
-      console.error('Error updating attorney:', err)
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
   }

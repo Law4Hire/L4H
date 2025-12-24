@@ -1641,7 +1641,7 @@ public class L4HDbContext : DbContext
             entity.Property(e => e.PhotoUrl)
                 .HasConversion(
                     v => v == null ? null : v.ToString(),
-                    v => string.IsNullOrWhiteSpace(v) ? null : new Uri(v));
+                    v => string.IsNullOrWhiteSpace(v) ? null : new Uri(v, UriKind.RelativeOrAbsolute));
         });
 
         // USCIS Forms management entities

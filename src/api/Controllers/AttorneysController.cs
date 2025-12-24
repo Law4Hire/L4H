@@ -100,9 +100,13 @@ public class AttorneysController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting attorneys");
+            _logger.LogError(ex, "Error getting attorneys: {Message}", ex.Message);
             // Return detailed error in development/debugging
-            return StatusCode(500, new { message = "Database error retrieving attorneys", detail = ex.Message });
+            return StatusCode(500, new { 
+                message = "Database error retrieving attorneys", 
+                error = ex.Message,
+                stackTrace = ex.StackTrace 
+            });
         }
     }
 
