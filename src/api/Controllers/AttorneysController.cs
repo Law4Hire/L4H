@@ -16,11 +16,13 @@ public class AttorneysController : ControllerBase
 {
     private readonly L4HDbContext _context;
     private readonly IFileUploadService _fileUploadService;
+    private readonly ILogger<AttorneysController> _logger;
 
-    public AttorneysController(L4HDbContext context, IFileUploadService fileUploadService)
+    public AttorneysController(L4HDbContext context, IFileUploadService fileUploadService, ILogger<AttorneysController> logger)
     {
         _context = context;
         _fileUploadService = fileUploadService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -31,15 +33,37 @@ public class AttorneysController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> ForceSeedAttorneys()
     {
-        // 1. Clear existing attorneys
-        var existingAttorneys = await _context.Attorneys.ToListAsync();
-        _context.Attorneys.RemoveRange(existingAttorneys);
-        await _context.SaveChangesAsync();
+        try
+        {
+            // 1. Clear existing attorneys if they don't have dependencies
+            var attorneys = await _context.Attorneys
+                .Include(a => a.AssignedClients)
+                .Include(a => a.TimeEntries)
+                .ToListAsync();
 
-        // 2. Add Real Attorneys
-        await InitializeDefaultAttorney();
+            foreach (var attorney in attorneys)
+            {
+                if (!attorney.AssignedClients.Any() && !attorney.TimeEntries.Any())
+                {
+                    _context.Attorneys.Remove(attorney);
+                }
+                else
+                {
+                    attorney.IsActive = false;
+                }
+            }
+            await _context.SaveChangesAsync();
 
-        return Ok(new { message = "Attorneys successfully re-seeded" });
+            // 2. Add Real Attorneys
+            await InitializeDefaultAttorney();
+
+            return Ok(new { message = "Attorneys successfully re-seeded" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error force seeding attorneys");
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     /// <summary>
@@ -49,37 +73,35 @@ public class AttorneysController : ControllerBase
     [ProducesResponseType(typeof(Attorney[]), StatusCodes.Status200OK)]
     public async Task<ActionResult<Attorney[]>> GetAttorneys()
     {
-        // Cleanup fake data if present
-        var fakeAttorneys = await _context.Attorneys
-            .Where(a => a.Name == "Sarah Johnson" || a.Name == "Michael Chen" || a.Name == "Maria Rodriguez")
-            .ToListAsync();
-            
-        if (fakeAttorneys.Any())
+        try
         {
-            _context.Attorneys.RemoveRange(fakeAttorneys);
-            await _context.SaveChangesAsync();
-        }
-
-        var attorneys = await _context.Attorneys
-            .Where(a => a.IsActive)
-            .OrderBy(a => a.DisplayOrder)
-            .ThenBy(a => a.Name)
-            .ToArrayAsync()
-            .ConfigureAwait(false);
-
-        if (!attorneys.Any())
-        {
-            // Initialize with default attorneys if none exists
-            await InitializeDefaultAttorney();
-            attorneys = await _context.Attorneys
+            var attorneys = await _context.Attorneys
                 .Where(a => a.IsActive)
                 .OrderBy(a => a.DisplayOrder)
                 .ThenBy(a => a.Name)
                 .ToArrayAsync()
                 .ConfigureAwait(false);
-        }
 
-        return Ok(attorneys);
+            if (!attorneys.Any())
+            {
+                // Initialize with default attorneys if none exists
+                await InitializeDefaultAttorney();
+                attorneys = await _context.Attorneys
+                    .Where(a => a.IsActive)
+                    .OrderBy(a => a.DisplayOrder)
+                    .ThenBy(a => a.Name)
+                    .ToArrayAsync()
+                    .ConfigureAwait(false);
+            }
+
+            return Ok(attorneys);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting attorneys");
+            // Return detailed error in development/debugging
+            return StatusCode(500, new { message = "Database error retrieving attorneys", detail = ex.Message });
+        }
     }
 
     /// <summary>
@@ -125,9 +147,12 @@ public class AttorneysController : ControllerBase
         attorney.DirectEmail = request.DirectEmail ?? attorney.DirectEmail;
         attorney.OfficeLocation = request.OfficeLocation ?? attorney.OfficeLocation;
         
-        if (request.PhotoUrl != null)
+        if (!string.IsNullOrWhiteSpace(request.PhotoUrl))
         {
-            attorney.PhotoUrl = new Uri(request.PhotoUrl, UriKind.RelativeOrAbsolute);
+            if (Uri.TryCreate(request.PhotoUrl, UriKind.RelativeOrAbsolute, out var uri))
+            {
+                attorney.PhotoUrl = uri;
+            }
         }
 
         attorney.UpdatedAt = DateTime.UtcNow;
@@ -162,7 +187,6 @@ public class AttorneysController : ControllerBase
     [HttpPost]
     [Authorize(Policy = "IsAdmin")]
     [ProducesResponseType(typeof(Attorney), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<Attorney>> CreateAttorney([FromBody] Attorney attorney)
     {
         attorney.CreatedAt = DateTime.UtcNow;
@@ -179,9 +203,6 @@ public class AttorneysController : ControllerBase
     /// </summary>
     [HttpPut("{id}")]
     [Authorize(Policy = "IsAdmin")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> UpdateAttorney(int id, [FromBody] Attorney attorney)
     {
         var existingAttorney = await _context.Attorneys
@@ -220,10 +241,6 @@ public class AttorneysController : ControllerBase
     /// </summary>
     [HttpPost("{id}/photo")]
     [Authorize]
-    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> UploadAttorneyPhoto(int id, IFormFile photo)
     {
         var attorney = await _context.Attorneys
@@ -284,9 +301,6 @@ public class AttorneysController : ControllerBase
     /// </summary>
     [HttpDelete("{id}/photo")]
     [Authorize(Policy = "IsAdmin")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> DeleteAttorneyPhoto(int id)
     {
         var attorney = await _context.Attorneys
@@ -315,10 +329,6 @@ public class AttorneysController : ControllerBase
     /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Policy = "IsAdmin")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> DeleteAttorney(int id)
     {
         var attorney = await _context.Attorneys
@@ -349,8 +359,32 @@ public class AttorneysController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Deactivate an attorney profile (Admin only)
+    /// </summary>
+    [HttpPost("{id}/deactivate")]
+    [Authorize(Policy = "IsAdmin")]
+    public async Task<ActionResult> DeactivateAttorney(int id)
+    {
+        var attorney = await _context.Attorneys.FindAsync(id);
+        if (attorney == null)
+        {
+            return NotFound();
+        }
+
+        attorney.IsActive = false;
+        attorney.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Ok();
+    }
+
     private async Task InitializeDefaultAttorney()
     {
+        // Check for Denise first to avoid duplicates
+        var exists = await _context.Attorneys.AnyAsync(a => a.Email == "dcann@cannlaw.com");
+        if (exists) return;
+
         var attorneys = new[]
         {
             new Attorney

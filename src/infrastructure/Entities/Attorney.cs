@@ -60,8 +60,13 @@ public class Attorney
     public int DisplayOrder { get; set; }
     
     // Navigation properties for client billing system
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<Client> AssignedClients { get; } = new List<Client>();
+    
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<TimeEntry> TimeEntries { get; } = new List<TimeEntry>();
+    
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<BillingRate> BillingRates { get; } = new List<BillingRate>();
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

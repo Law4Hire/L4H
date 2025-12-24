@@ -29,8 +29,7 @@ public class AttorneysControllerTests : BaseIntegrationTest
         }
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var contentString = await response.Content.ReadAsStringAsync();
-        var attorneys = System.Text.Json.JsonSerializer.Deserialize<List<Attorney>>(contentString, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var attorneys = await response.Content.ReadFromJsonAsync<List<Attorney>>();
         attorneys.Should().NotBeNull();
         attorneys.Should().NotBeEmpty();
     }

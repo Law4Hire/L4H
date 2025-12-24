@@ -1637,6 +1637,11 @@ public class L4HDbContext : DbContext
             entity.Property(e => e.DirectEmail).HasMaxLength(255);
             entity.Property(e => e.OfficeLocation).HasMaxLength(255);
             entity.Property(e => e.DefaultHourlyRate).HasColumnType("decimal(10,2)");
+            
+            entity.Property(e => e.PhotoUrl)
+                .HasConversion(
+                    v => v == null ? null : v.ToString(),
+                    v => string.IsNullOrWhiteSpace(v) ? null : new Uri(v));
         });
 
         // USCIS Forms management entities

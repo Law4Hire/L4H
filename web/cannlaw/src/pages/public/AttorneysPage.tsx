@@ -2,6 +2,7 @@ import React from 'react'
 import { Card } from '@l4h/shared-ui'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import PublicLayout from '../../components/PublicLayout'
+import { Mail, Phone, MapPin, Briefcase, Globe, Info } from 'lucide-react'
 
 const AttorneysPage: React.FC = () => {
   const { attorneys, isLoading, error } = useAttorneys()
@@ -9,7 +10,7 @@ const AttorneysPage: React.FC = () => {
   if (isLoading) {
     return (
       <PublicLayout>
-        <div className="flex justify-center items-center min-h-[60vh] dark:bg-navy-950">
+        <div className="flex justify-center items-center min-h-[60vh] bg-white dark:bg-navy-950">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500"></div>
         </div>
       </PublicLayout>
@@ -19,12 +20,12 @@ const AttorneysPage: React.FC = () => {
   if (error) {
     return (
       <PublicLayout>
-        <div className="flex flex-col justify-center items-center min-h-[60vh] dark:bg-navy-950 p-4 text-center">
+        <div className="flex flex-col justify-center items-center min-h-[60vh] bg-white dark:bg-navy-950 p-4 text-center">
           <h2 className="text-2xl font-serif font-bold text-navy-900 dark:text-white mb-4">Unable to Load Team</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-8">We're having trouble retrieving our legal team information. Please try again later.</p>
           <button 
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-blue-900 text-white rounded hover:bg-blue-800 transition-colors"
+            className="px-6 py-2 bg-navy-900 dark:bg-gold-500 text-white dark:text-navy-950 rounded hover:bg-navy-800 dark:hover:bg-gold-400 transition-colors"
           >
             Retry
           </button>
@@ -134,9 +135,7 @@ const AttorneysPage: React.FC = () => {
                                     href={`mailto:${attorney.email}`} 
                                     className="flex items-center text-xs text-gray-600 dark:text-gray-400 hover:text-gold-600 dark:hover:text-gold-500 transition-colors tracking-wide"
                                 >
-                                    <svg className="w-3.5 h-3.5 mr-3 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
+                                    <Mail className="w-3.5 h-3.5 mr-3 text-gold-500" />
                                     {attorney.email}
                                 </a>
                                 )}
@@ -145,9 +144,7 @@ const AttorneysPage: React.FC = () => {
                                     href={`tel:${attorney.phone}`} 
                                     className="flex items-center text-xs text-gray-600 dark:text-gray-400 hover:text-gold-600 dark:hover:text-gold-500 transition-colors tracking-wide"
                                 >
-                                    <svg className="w-3.5 h-3.5 mr-3 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
+                                    <Phone className="w-3.5 h-3.5 mr-3 text-gold-500" />
                                     {attorney.phone}
                                 </a>
                                 )}
@@ -179,7 +176,7 @@ const AttorneysPage: React.FC = () => {
               Get Started
             </a>
             <a 
-              href="tel:(410) 988-0123"
+              href="tel:(410) 783-1888"
               className="inline-flex items-center px-10 py-4 border border-white text-base font-medium rounded-sm text-white hover:bg-white hover:text-navy-900 transition-all"
             >
               Call Us
