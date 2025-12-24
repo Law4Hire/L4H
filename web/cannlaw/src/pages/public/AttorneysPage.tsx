@@ -1,22 +1,67 @@
-import React from 'react'
-import { Card } from '@l4h/shared-ui'
+import React, { useState } from 'react'
+import { Card, Modal, Input, Button } from '@l4h/shared-ui'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import PublicLayout from '../../components/PublicLayout'
-import { Mail, Phone, MapPin, Briefcase, Globe, Info, AlertCircle } from 'lucide-react'
+import { Phone, Mail, AlertCircle, MessageSquare } from 'lucide-react'
 
 const AttorneysPage: React.FC = () => {
   const { attorneys, isLoading, error } = useAttorneys()
+  const [selectedAttorney, setSelectedAttorney] = useState<{ name: string } | null>(null)
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    message: ''
+  })
+  const [isSending, setIsSending] = useState(false)
+  const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
   // Map attorney names to local image files
   const localPhotoMap: Record<string, string> = {
     'Denise S. Cann': '/images/attorneys/denise.jpg',
     'Angela Taylor': '/images/attorneys/angela.jpg',
-    'John Charles': '/images/attorneys/john.jpg', // Assuming john.jpg exists or will exist
+    'John Charles': '/images/attorneys/john.jpg',
     'Alex Shu': '/images/attorneys/alex.jpg',
     'Janice Lin': '/images/attorneys/janice.jpg',
     'Chika Okala': '/images/attorneys/chika.jpg',
-    'Wen Lee': '/images/attorneys/wen.jpg', // Assuming wen.jpg exists or will exist
-    'Katherine J. Wong': '/images/attorneys/katherine.jpg' // Assuming katherine.jpg exists or will exist
+    'Wen Lee': '/images/attorneys/wen.jpg',
+    'Katherine J. Wong': '/images/attorneys/katherine.jpg'
+  }
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedAttorney) return
+
+    setIsSending(true)
+    setSendStatus('idle')
+
+    try {
+      const response = await fetch('/v1/public/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: contactForm.name,
+          email: contactForm.email,
+          subject: `Message for ${selectedAttorney.name}`,
+          message: contactForm.message,
+          consultationType: 'general' // Default required field
+        })
+      })
+
+      if (response.ok) {
+        setSendStatus('success')
+        setTimeout(() => {
+          setSelectedAttorney(null)
+          setContactForm({ name: '', email: '', message: '' })
+          setSendStatus('idle')
+        }, 2000)
+      } else {
+        setSendStatus('error')
+      }
+    } catch (err) {
+      setSendStatus('error')
+    } finally {
+      setIsSending(false)
+    }
   }
 
   if (isLoading) {
@@ -95,7 +140,6 @@ const AttorneysPage: React.FC = () => {
                             alt={attorney.name}
                             className="w-40 h-40 rounded-full mx-auto object-cover shadow-md border-4 border-white dark:border-navy-700 grayscale group-hover:grayscale-0 transition-all duration-500"
                             onError={(e) => {
-                                // If primary source fails, try local fallback, then avatars
                                 const target = e.currentTarget;
                                 if (localPhoto && target.src !== window.location.origin + localPhoto) {
                                     target.src = localPhoto;
@@ -158,15 +202,15 @@ const AttorneysPage: React.FC = () => {
                         <div className="mt-auto">
                             {/* Contact Info */}
                             <div className="pt-4 border-t border-gray-100 dark:border-navy-800 space-y-3">
-                                {attorney.email && (
-                                <a 
-                                    href={`mailto:${attorney.email}`} 
-                                    className="flex items-center text-xs text-gray-600 dark:text-gray-400 hover:text-gold-600 dark:hover:text-gold-500 transition-colors tracking-wide"
+                                {/* Email hidden for security - replaced with contact button */}
+                                <button
+                                    onClick={() => setSelectedAttorney({ name: attorney.name })}
+                                    className="flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-gold-600 dark:hover:text-gold-500 transition-colors tracking-wide w-full"
                                 >
-                                    <Mail className="w-3.5 h-3.5 mr-3 text-gold-500" />
-                                    {attorney.email}
-                                </a>
-                                )}
+                                    <MessageSquare className="w-3.5 h-3.5 mr-3 text-gold-500" />
+                                    Send Message
+                                </button>
+
                                 {attorney.phone && (
                                 <a 
                                     href={`tel:${attorney.phone}`} 
@@ -213,6 +257,91 @@ const AttorneysPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Contact Modal */}
+      {selectedAttorney && (
+        <Modal 
+          isOpen={!!selectedAttorney} 
+          onClose={() => setSelectedAttorney(null)}
+          title={`Contact ${selectedAttorney.name}`}
+        >
+          {sendStatus === 'success' ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Message Sent!</h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                Thank you for contacting us. We will get back to you shortly.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleContactSubmit} className="space-y-4">
+              {sendStatus === 'error' && (
+                <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm border border-red-200">
+                  Failed to send message. Please try again or call us directly.
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Name</label>
+                <Input
+                  required
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Full Name"
+                  className="dark:bg-navy-900 dark:border-navy-700 dark:text-white"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Email</label>
+                <Input
+                  type="email"
+                  required
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="email@example.com"
+                  className="dark:bg-navy-900 dark:border-navy-700 dark:text-white"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
+                <textarea
+                  required
+                  rows={4}
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+                  className="w-full p-2 border border-gray-300 dark:border-navy-700 rounded-md focus:ring-2 focus:ring-gold-500 dark:bg-navy-900 dark:text-white"
+                  placeholder="How can we help you?"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button 
+                  variant="outline" 
+                  type="button" 
+                  onClick={() => setSelectedAttorney(null)}
+                  disabled={isSending}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="primary" 
+                  loading={isSending}
+                  className="bg-gold-500 hover:bg-gold-600 text-navy-900"
+                >
+                  Send Message
+                </Button>
+              </div>
+            </form>
+          )}
+        </Modal>
+      )}
     </PublicLayout>
   )
 }
