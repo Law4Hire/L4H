@@ -7,6 +7,18 @@ import { Mail, Phone, MapPin, Briefcase, Globe, Info, AlertCircle } from 'lucide
 const AttorneysPage: React.FC = () => {
   const { attorneys, isLoading, error } = useAttorneys()
 
+  // Map attorney names to local image files
+  const localPhotoMap: Record<string, string> = {
+    'Denise S. Cann': '/images/attorneys/denise.jpg',
+    'Angela Taylor': '/images/attorneys/angela.jpg',
+    'John Charles': '/images/attorneys/john.jpg', // Assuming john.jpg exists or will exist
+    'Alex Shu': '/images/attorneys/alex.jpg',
+    'Janice Lin': '/images/attorneys/janice.jpg',
+    'Chika Okala': '/images/attorneys/chika.jpg',
+    'Wen Lee': '/images/attorneys/wen.jpg', // Assuming wen.jpg exists or will exist
+    'Katherine J. Wong': '/images/attorneys/katherine.jpg' // Assuming katherine.jpg exists or will exist
+  }
+
   if (isLoading) {
     return (
       <PublicLayout>
@@ -69,19 +81,29 @@ const AttorneysPage: React.FC = () => {
                 </div>
             ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {attorneys.map((attorney) => (
+                {attorneys.map((attorney) => {
+                    const localPhoto = localPhotoMap[attorney.name];
+                    const hasPhoto = (attorney.photoUrl && !attorney.photoUrl.includes('placeholder')) || localPhoto;
+                    
+                    return (
                     <div key={attorney.id} className="bg-white dark:bg-navy-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-t-4 border-gold-500 dark:border-navy-800 flex flex-col h-full group">
                     {/* Attorney Photo */}
                     <div className="pt-8 pb-4 text-center bg-gray-50 dark:bg-navy-800 transition-colors">
-                        {attorney.photoUrl && !attorney.photoUrl.includes('placeholder') ? (
+                        {hasPhoto ? (
                         <img 
-                            src={attorney.photoUrl} 
+                            src={attorney.photoUrl || localPhoto} 
                             alt={attorney.name}
                             className="w-40 h-40 rounded-full mx-auto object-cover shadow-md border-4 border-white dark:border-navy-700 grayscale group-hover:grayscale-0 transition-all duration-500"
                             onError={(e) => {
-                            e.currentTarget.onerror = null; 
-                            const initials = attorney.name.split(' ').map((n: string) => n[0]).join('');
-                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${initials}&background=102a43&color=c5a059&size=256&font-size=0.35`;
+                                // If primary source fails, try local fallback, then avatars
+                                const target = e.currentTarget;
+                                if (localPhoto && target.src !== window.location.origin + localPhoto) {
+                                    target.src = localPhoto;
+                                } else {
+                                    target.onerror = null; 
+                                    const initials = attorney.name.split(' ').map((n: string) => n[0]).join('');
+                                    target.src = `https://ui-avatars.com/api/?name=${initials}&background=102a43&color=c5a059&size=256&font-size=0.35`;
+                                }
                             }}
                         />
                         ) : (
@@ -158,7 +180,8 @@ const AttorneysPage: React.FC = () => {
                         </div>
                     </div>
                     </div>
-                ))}
+                );
+                })}
                 </div>
             )}
         </div>
