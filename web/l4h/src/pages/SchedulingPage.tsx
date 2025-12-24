@@ -21,6 +21,7 @@ const SchedulingPage: React.FC = () => {
   const navigate = useNavigate();
   const { success, error: showError } = useToast();
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+  const [isVideoConference, setIsVideoConference] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [groupedSlots, setGroupedSlots] = useState<GroupedSlots>({});
 
@@ -84,6 +85,7 @@ const SchedulingPage: React.FC = () => {
           attorneyId: selectedSlot.attorneyId,
           startTime: selectedSlot.startTime,
           endTime: selectedSlot.endTime,
+          isVideoConference: isVideoConference,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         })
       });
@@ -207,6 +209,19 @@ const SchedulingPage: React.FC = () => {
                     })}
                   </div>
                 </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isVideoConference}
+                    onChange={(e) => setIsVideoConference(e.target.checked)}
+                    className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span className="ml-3 text-gray-700 font-medium">Schedule as Video Conference (Teams/Zoom)</span>
+                </label>
+                <p className="ml-8 text-sm text-gray-500 mt-1">A meeting link will be generated and sent to your email.</p>
               </div>
 
               <div className="flex gap-4">

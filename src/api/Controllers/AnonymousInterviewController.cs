@@ -9,7 +9,7 @@ namespace L4H.Api.Controllers;
 /// Handles anonymous interview flow - no authentication required
 /// </summary>
 [ApiController]
-[Route("api/interview/anonymous")]
+[Route("api/v1/interview/anonymous")]
 [AllowAnonymous]
 public class AnonymousInterviewController : ControllerBase
 {

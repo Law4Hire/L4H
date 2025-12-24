@@ -55,6 +55,23 @@ public class AdminSeedService : IAdminSeedService
             await SeedUserIfNotExists(testEmail, defaultPassword, "Abu", "Testing", isAdmin: false, isStaff: true).ConfigureAwait(false);
             Console.WriteLine("[AdminSeedService] Test user seeded");
 
+            // Seed real legal professionals
+            var legalProfessionals = new[]
+            {
+                ("ataylor@cannlaw.com", "Angela", "Taylor"),
+                ("jcharles@cannlaw.com", "John", "Charles"),
+                ("ashu@cannlaw.com", "Alex", "Shu"),
+                ("jlin@cannlaw.com", "Janice", "Lin"),
+                ("cokala@cannlaw.com", "Chika", "Okala"),
+                ("wlee@cannlaw.com", "Wen", "Lee"),
+                ("kwong@cannlaw.com", "Katherine", "Wong")
+            };
+
+            foreach (var (email, first, last) in legalProfessionals)
+            {
+                await SeedUserIfNotExists(email, defaultPassword, first, last, isAdmin: false, isStaff: true).ConfigureAwait(false);
+            }
+
             Console.WriteLine("[AdminSeedService] About to seed demo verification token...");
             // Seed demo verification token for testing
             await SeedDemoVerificationTokenAsync().ConfigureAwait(false);

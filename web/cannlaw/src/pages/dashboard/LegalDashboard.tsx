@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Card } from '@l4h/shared-ui'
+import { Card, Button } from '@l4h/shared-ui'
 import { useAuth } from '../../hooks/useAuth'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, format } from 'date-fns'
+import { MessageSquare, Calendar, User, Clock, Video, ExternalLink } from 'lucide-react'
 
 interface DashboardStats {
   activeCases: number
@@ -20,10 +21,29 @@ interface ActivityItem {
   time: string
 }
 
+interface Appointment {
+  id: string
+  subject: string
+  startTime: string
+  endTime: string
+  joinUrl?: string
+  clientName: string
+}
+
+interface MessagePreview {
+  id: string
+  sender: string
+  subject: string
+  snippet: string
+  time: string
+}
+
 const LegalDashboard: React.FC = () => {
   const { user } = useAuth()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activity, setActivity] = useState<ActivityItem[]>([])
+  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [messages, setMessages] = useState<MessagePreview[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -32,20 +52,18 @@ const LegalDashboard: React.FC = () => {
         const token = localStorage.getItem('jwt_token')
         const headers = { 'Authorization': `Bearer ${token}` }
 
-        const [statsRes, activityRes] = await Promise.all([
+        const [statsRes, activityRes, appointRes, msgRes] = await Promise.all([
           fetch('/api/v1/dashboard/stats', { headers }),
-          fetch('/api/v1/dashboard/activity', { headers })
+          fetch('/api/v1/dashboard/activity', { headers }),
+          fetch('/api/v1/meetings/my-appointments', { headers }),
+          fetch('/api/v1/messaging/previews', { headers })
         ])
 
-        if (statsRes.ok) {
-          const statsData = await statsRes.json()
-          setStats(statsData)
-        }
-
-        if (activityRes.ok) {
-          const activityData = await activityRes.json()
-          setActivity(activityData)
-        }
+        if (statsRes.ok) setStats(await statsRes.json())
+        if (activityRes.ok) setActivity(await activityRes.json())
+        if (appointRes.ok) setAppointments(await appointRes.json())
+        if (msgRes.ok) setMessages(await msgRes.json())
+        
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
       } finally {
@@ -69,237 +87,164 @@ const LegalDashboard: React.FC = () => {
     : 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Welcome Header */}
-      <div className={
-        "bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white"
-      }>
-        <h1 className="text-2xl font-bold mb-2">
-          Welcome back, {user?.name || 'Legal Professional'}!
-        </h1>
-        <p className="text-blue-100">
-          Here's an overview of your practice and recent activity.
-        </p>
+      <div className="bg-navy-900 rounded-lg p-8 text-white shadow-xl flex justify-between items-center overflow-hidden relative">
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold mb-2 font-serif">
+            Welcome back, {user?.name || 'Legal Professional'}!
+          </h1>
+          <p className="text-blue-200 text-lg">
+            Manage your cases, clients, and legal team from your central command.
+          </p>
+        </div>
+        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-64 h-64 bg-navy-800 rounded-full opacity-50"></div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="p-6 stat-card">
-          <div className={"flex items-center justify-between"}>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Active Cases</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stats?.activeCases || 0}
-              </p>
-            </div>
-            <div className={
-              "w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center"
-            }>
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-sm text-gray-500">Currently active files</span>
-          </div>
-        </Card>
-
-        <Card className="p-6 stat-card">
-          <div className={"flex items-center justify-between"}>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Pending Tasks</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stats?.pendingTasks || 0}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center stat-icon">
-              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-sm text-orange-600">Cases in progress</span>
-          </div>
-        </Card>
-
-        <Card className="p-6 stat-card">
-          <div className={"flex items-center justify-between"}>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stats?.monthlyRevenue || 0}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center stat-icon">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
-            </div>
-          </div>
-          <div className="mt-4">
-            <span className={`text-sm ${revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {revenueGrowth >= 0 ? '↗' : '↘'} {Math.abs(revenueGrowth).toFixed(1)}% from last month
-            </span>
-          </div>
-        </Card>
-
-        <Card className="p-6">
+        <Card className="p-6 border-l-4 border-l-blue-600">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">New Clients</p>
-              <p className="text-3xl font-bold text-gray-900">{stats?.newClients || 0}</p>
+              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Active Cases</p>
+              <p className="text-4xl font-bold text-navy-900 dark:text-white mt-1">{stats?.activeCases || 0}</p>
             </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded flex items-center justify-center text-blue-600">
+              <Calendar size={24} />
             </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-sm text-purple-600">This month</span>
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 border-l-4 border-l-gold-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Appointments</p>
-              <p className="text-3xl font-bold text-gray-900">{stats?.upcomingAppointments || 0}</p>
+              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Appointments</p>
+              <p className="text-4xl font-bold text-navy-900 dark:text-white mt-1">{stats?.upcomingAppointments || 0}</p>
             </div>
-            <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="w-12 h-12 bg-gold-100 dark:bg-gold-900 rounded flex items-center justify-center text-gold-600">
+              <Clock size={24} />
             </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-sm text-indigo-600">Next 7 days</span>
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 border-l-4 border-l-green-600">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Completed Cases</p>
-              <p className="text-3xl font-bold text-gray-900">{stats?.completedCases || 0}</p>
+              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Monthly Billing</p>
+              <p className="text-4xl font-bold text-navy-900 dark:text-white mt-1">
+                ${(stats?.monthlyRevenue || 0).toLocaleString()}
+              </p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded flex items-center justify-center text-green-600">
+              <span className="text-xl font-bold">$</span>
             </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-sm text-green-600">Total completed</span>
           </div>
         </Card>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-          <div className="space-y-4">
-            {activity.length === 0 ? (
-              <p className="text-sm text-gray-500">No recent activity.</p>
-            ) : (
-              activity.map((item) => (
-                <div key={item.id} className="flex items-start space-x-3">
-                  <div className="flex-shrink-0">
-                    {item.type === 'case_update' && (
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Main Feed */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Upcoming Appointments */}
+          <Card title="Upcoming Appointments">
+            <div className="p-6 pt-0">
+              {appointments.length === 0 ? (
+                <p className="text-gray-500 py-4 italic">No upcoming appointments scheduled.</p>
+              ) : (
+                <div className="space-y-4">
+                  {appointments.map(app => (
+                    <div key={app.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-navy-900 rounded-lg border border-gray-100 dark:border-navy-800">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 rounded bg-navy-100 dark:bg-navy-800 flex items-center justify-center text-navy-600 dark:text-gold-500">
+                          <Calendar size={20} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-navy-900 dark:text-white">{app.clientName}</h4>
+                          <p className="text-xs text-gray-500">{format(new Date(app.startTime), 'PPP')} @ {format(new Date(app.startTime), 'p')}</p>
+                        </div>
                       </div>
-                    )}
-                    {(item.type === 'new_client' || item.type === 'client') && (
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                      <div className="flex space-x-2">
+                        {app.joinUrl && (
+                          <Button 
+                            size="sm" 
+                            className="bg-green-600 hover:bg-green-700 text-white flex items-center"
+                            onClick={() => window.open(app.joinUrl, '_blank')}
+                          >
+                            <Video size={14} className="mr-1" /> Join Meeting
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline">Details</Button>
                       </div>
-                    )}
-                    {item.type === 'time_entry' && (
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                    )}
-                    {item.type === 'appointment' && (
-                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                    )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/clients')}>
+              <User size={24} className="text-blue-600" />
+              <span className="text-sm font-bold text-navy-900 dark:text-white">Clients</span>
+            </Button>
+            <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/time-tracking')}>
+              <Clock size={24} className="text-green-600" />
+              <span className="text-sm font-bold text-navy-900 dark:text-white">Billing</span>
+            </Button>
+            <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/messages')}>
+              <MessageSquare size={24} className="text-gold-600" />
+              <span className="text-sm font-bold text-navy-900 dark:text-white">Messages</span>
+            </Button>
+            <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/profile')}>
+              <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
+                {user?.name?.charAt(0)}
+              </div>
+              <span className="text-sm font-bold text-navy-900 dark:text-white">Profile</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Messages Preview */}
+          <Card title="Recent Messages">
+            <div className="p-4 pt-0 space-y-4">
+              {messages.length === 0 ? (
+                <p className="text-gray-500 text-sm italic">No recent messages.</p>
+              ) : (
+                messages.map(msg => (
+                  <div key={msg.id} className="group cursor-pointer" onClick={() => navigate('/messages')}>
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="text-sm font-bold text-navy-900 dark:text-white group-hover:text-blue-600">{msg.sender}</span>
+                      <span className="text-[10px] text-gray-400">{msg.time}</span>
+                    </div>
+                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{msg.subject}</p>
+                    <p className="text-[11px] text-gray-500 truncate">{msg.snippet}</p>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900">{item.message}</p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(item.time).toLocaleString()}
-                    </p>
+                ))
+              )}
+              <Button variant="ghost" size="sm" className="w-full text-blue-600 text-xs mt-2" onClick={() => navigate('/messages')}>
+                View Inbox →
+              </Button>
+            </div>
+          </Card>
+
+          {/* Activity Feed */}
+          <Card title="Activity Log">
+            <div className="p-4 pt-0 space-y-4">
+              {activity.slice(0, 5).map(item => (
+                <div key={item.id} className="flex items-start space-x-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 flex-shrink-0"></div>
+                  <div>
+                    <p className="text-xs text-navy-900 dark:text-white leading-relaxed">{item.message}</p>
+                    <p className="text-[10px] text-gray-400">{formatDistanceToNow(new Date(item.time))} ago</p>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-          <div className="mt-4 pt-4 border-t">
-            <a href="/cases" className="text-sm text-blue-600 hover:text-blue-800">
-              View all activity →
-            </a>
-          </div>
-        </Card>
-
-        {/* Quick Actions */}
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <a 
-              href="/clients" 
-              className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-            >
-              <svg className="w-8 h-8 text-blue-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span className="text-sm font-medium text-blue-900">Manage Clients</span>
-            </a>
-
-            <a 
-              href="/cases" 
-              className="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
-            >
-              <svg className="w-8 h-8 text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="text-sm font-medium text-green-900">View Cases</span>
-            </a>
-
-            <a 
-              href="/schedule" 
-              className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
-            >
-              <svg className="w-8 h-8 text-purple-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span className="text-sm font-medium text-purple-900">Schedule</span>
-            </a>
-
-            <a 
-              href="/admin/reports" 
-              className="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
-            >
-              <svg className="w-8 h-8 text-orange-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <span className="text-sm font-medium text-orange-900">Reports</span>
-            </a>
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   )

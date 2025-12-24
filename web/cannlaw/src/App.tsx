@@ -22,6 +22,7 @@ const LegalDashboard = lazy(() => import('./pages/dashboard/LegalDashboard'))
 const ClientManagement = lazy(() => import('./pages/dashboard/ClientManagement'))
 const ClientProfilePage = lazy(() => import('./pages/dashboard/ClientProfilePage'))
 const TimeTrackingPage = lazy(() => import('./pages/dashboard/TimeTrackingPage'))
+const ProfilePage = lazy(() => import('./pages/dashboard/ProfilePage'))
 
 // Admin billing
 const BillingDashboard = lazy(() => import('./pages/admin/BillingDashboard'))
@@ -48,6 +49,25 @@ const LoadingFallback = () => (
 )
 
 function App() {
+  // Item 11: Automatic Cache Clearing on New Build
+  React.useEffect(() => {
+    // @ts-ignore - __APP_VERSION__ is defined in vite.config.ts
+    const currentVersion = __APP_VERSION__;
+    const storedVersion = localStorage.getItem('app_version');
+    
+    if (storedVersion && storedVersion !== currentVersion) {
+      console.log('New build detected, clearing local storage...');
+      const theme = localStorage.getItem('theme');
+      localStorage.clear();
+      if (theme) localStorage.setItem('theme', theme);
+      
+      localStorage.setItem('app_version', currentVersion);
+      window.location.reload();
+    } else if (!storedVersion) {
+      localStorage.setItem('app_version', currentVersion);
+    }
+  }, []);
+
   return (
     <ToastProvider>
       <Suspense fallback={<LoadingFallback />}>
@@ -108,6 +128,16 @@ function App() {
             <ProtectedRoute requireLegalProfessional>
               <Layout title="Time Tracking">
                 <TimeTrackingPage />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute requireLegalProfessional>
+              <Layout title="My Profile">
+                <ProfilePage />
               </Layout>
             </ProtectedRoute>
           } 

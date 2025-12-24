@@ -134,7 +134,16 @@ export default function AppointmentsPage() {
                   )}
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-4">
+                  {appointment.meeting?.joinUrl && (
+                    <Button
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      onClick={() => window.open(appointment.meeting.joinUrl, '_blank')}
+                    >
+                      Join Meeting
+                    </Button>
+                  )}
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     appointment.status === 'confirmed' 
                       ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'

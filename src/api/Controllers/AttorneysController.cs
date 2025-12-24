@@ -5,6 +5,7 @@ using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Infrastructure.Services;
 using System.Text.Json;
+using System.Security.Claims;
 
 namespace L4H.Api.Controllers;
 
@@ -79,6 +80,60 @@ public class AttorneysController : ControllerBase
         }
 
         return Ok(attorneys);
+    }
+
+    /// <summary>
+    /// Get the current legal professional's attorney profile
+    /// </summary>
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<Attorney>> GetMyProfile()
+    {
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+        var attorney = await _context.Attorneys
+            .FirstOrDefaultAsync(a => a.Email.Equals(email, StringComparison.OrdinalIgnoreCase))
+            .ConfigureAwait(false);
+
+        if (attorney == null) return NotFound("Attorney profile not found for this user.");
+
+        return Ok(attorney);
+    }
+
+    /// <summary>
+    /// Update the current legal professional's attorney profile
+    /// </summary>
+    [HttpPut("me")]
+    [Authorize]
+    public async Task<ActionResult> UpdateMyProfile([FromBody] AttorneyUpdateDto request)
+    {
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+        var attorney = await _context.Attorneys
+            .FirstOrDefaultAsync(a => a.Email.Equals(email, StringComparison.OrdinalIgnoreCase))
+            .ConfigureAwait(false);
+
+        if (attorney == null) return NotFound("Attorney profile not found.");
+
+        // Allow updating specific fields
+        attorney.Bio = request.Bio ?? attorney.Bio;
+        attorney.Title = request.Title ?? attorney.Title;
+        attorney.Phone = request.Phone ?? attorney.Phone;
+        attorney.DirectPhone = request.DirectPhone ?? attorney.DirectPhone;
+        attorney.DirectEmail = request.DirectEmail ?? attorney.DirectEmail;
+        attorney.OfficeLocation = request.OfficeLocation ?? attorney.OfficeLocation;
+        
+        if (request.PhotoUrl != null)
+        {
+            attorney.PhotoUrl = new Uri(request.PhotoUrl, UriKind.RelativeOrAbsolute);
+        }
+
+        attorney.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Ok(attorney);
     }
 
     /// <summary>
@@ -164,7 +219,7 @@ public class AttorneysController : ControllerBase
     /// Upload attorney photo (Admin only)
     /// </summary>
     [HttpPost("{id}/photo")]
-    [Authorize(Policy = "IsAdmin")]
+    [Authorize]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -178,6 +233,15 @@ public class AttorneysController : ControllerBase
         if (attorney == null)
         {
             return NotFound();
+        }
+
+        // Access check: Admin or the attorney themselves (by email)
+        var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+        var isAdmin = User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
+        
+        if (!isAdmin && !attorney.Email.Equals(userEmail, StringComparison.OrdinalIgnoreCase))
+        {
+            return Forbid();
         }
 
         if (photo == null || photo.Length == 0)
@@ -446,4 +510,15 @@ public class AttorneysController : ControllerBase
         _context.Attorneys.AddRange(attorneys);
         await _context.SaveChangesAsync().ConfigureAwait(false);
     }
+}
+
+public class AttorneyUpdateDto
+{
+    public string? Title { get; set; }
+    public string? Bio { get; set; }
+    public string? PhotoUrl { get; set; }
+    public string? Phone { get; set; }
+    public string? DirectPhone { get; set; }
+    public string? DirectEmail { get; set; }
+    public string? OfficeLocation { get; set; }
 }

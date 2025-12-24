@@ -230,6 +230,33 @@ public class MessagingController : ControllerBase
     }
 
     /// <summary>
+    /// Get recent message previews for the dashboard
+    /// </summary>
+    [HttpGet("previews")]
+    [Authorize(Roles = "Attorney,LegalProfessional,Admin")]
+    public async Task<ActionResult<List<object>>> GetMessagePreviews()
+    {
+        var userId = GetCurrentUserId();
+        
+        var threads = await _context.MessageThreads
+            .Include(t => t.Case)
+            .ThenInclude(c => c.User)
+            .Include(t => t.Messages.OrderByDescending(m => m.SentAt))
+            .Where(t => t.RecipientUserId == null || t.RecipientUserId == userId)
+            .OrderByDescending(t => t.LastMessageAt)
+            .Take(5)
+            .ToListAsync().ConfigureAwait(false);
+
+        return Ok(threads.Select(t => new {
+            id = t.Id,
+            sender = $"{t.Case.User.FirstName} {t.Case.User.LastName}",
+            subject = t.Subject,
+            snippet = t.Messages.FirstOrDefault()?.Body ?? "No messages",
+            time = t.LastMessageAt.ToString("O")
+        }));
+    }
+
+    /// <summary>
     /// Get messages for a specific thread
     /// </summary>
     /// <param name="threadId">Thread ID</param>

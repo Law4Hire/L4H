@@ -58,12 +58,48 @@ public class AppointmentsController : ControllerBase
             .ConfigureAwait(false);
 
         var appointments = await _context.Set<Appointment>()
+            .Include(a => a.Meeting)
             .Where(a => caseIds.Contains(a.CaseId))
             .OrderByDescending(a => a.ScheduledStart)
             .ToListAsync()
             .ConfigureAwait(false);
 
         return Ok(appointments);
+    }
+
+    /// <summary>
+    /// List all appointments for the current legal professional
+    /// </summary>
+    [HttpGet("my-appointments")]
+    [Authorize(Roles = "Attorney,LegalProfessional,Admin")]
+    public async Task<ActionResult<List<object>>> GetMyAppointments()
+    {
+        var userIdClaim = User.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new { message = "User not authenticated" });
+        }
+
+        var userIdTyped = new UserId(userId);
+
+        var appointments = await _context.Set<Appointment>()
+            .Include(a => a.Case)
+            .ThenInclude(c => c.User)
+            .Include(a => a.Meeting)
+            .Where(a => a.StaffUserId == userIdTyped)
+            .Where(a => a.ScheduledStart >= DateTimeOffset.UtcNow.AddDays(-1))
+            .OrderBy(a => a.ScheduledStart)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return Ok(appointments.Select(a => new {
+            id = a.Id,
+            subject = a.Type,
+            startTime = a.ScheduledStart,
+            endTime = a.ScheduledEnd,
+            clientName = $"{a.Case.User.FirstName} {a.Case.User.LastName}",
+            joinUrl = a.Meeting?.JoinUrl
+        }));
     }
 
     /// <summary>
@@ -195,6 +231,7 @@ public class AppointmentsController : ControllerBase
         // Get user's active case
         var userCase = await _context.Cases
             .Include(c => c.Package)
+            .Include(c => c.User)
             .Where(c => c.UserId == new UserId(userId))
             .OrderByDescending(c => c.CreatedAt)
             .FirstOrDefaultAsync()
@@ -234,9 +271,6 @@ public class AppointmentsController : ControllerBase
         }
 
         // Create appointment
-        // Note: Attorney.Id is an int, but Appointment.StaffUserId is a UserId (Guid)
-        // TODO: Create a mapping table or add a UserId field to Attorney entity
-        // Temporary: Try to find staff user by email, otherwise generate one
         var staffUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == attorney.Email);
         var staffUserId = staffUser?.Id ?? new UserId(Guid.NewGuid());
 
@@ -247,7 +281,7 @@ public class AppointmentsController : ControllerBase
             StaffUserId = staffUserId,
             ScheduledStart = request.StartTime,
             ScheduledEnd = request.EndTime,
-            Type = "consultation",
+            Type = request.IsVideoConference ? "video_consultation" : "consultation",
             Status = "scheduled",
             Notes = request.Notes,
             TimeZone = request.TimeZone ?? "UTC",
@@ -255,6 +289,35 @@ public class AppointmentsController : ControllerBase
         };
 
         _context.Set<Appointment>().Add(appointment);
+
+        // Create meeting if requested
+        if (request.IsVideoConference)
+        {
+            var meetingResult = await _meetingsProvider.CreateMeetingAsync(new MeetingOptions
+            {
+                Subject = $"Consultation with {attorney.Name}",
+                StartTime = request.StartTime.UtcDateTime,
+                EndTime = request.EndTime.UtcDateTime,
+                Attendees = new List<string> { attorney.Email, userCase.User.Email },
+                WaitingRoomEnabled = _meetingsOptions.WaitingRoomEnabled
+            }).ConfigureAwait(false);
+
+            if (meetingResult.Success && meetingResult.JoinUrl != null)
+            {
+                var meeting = new Meeting
+                {
+                    AppointmentId = appointment.Id,
+                    Provider = _meetingsOptions.Mode.ToLowerInvariant() == "teams" ? MeetingProvider.Teams : MeetingProvider.Fake,
+                    MeetingId = meetingResult.MeetingId ?? Guid.NewGuid().ToString(),
+                    JoinUrl = meetingResult.JoinUrl.ToString(),
+                    WaitingRoom = _meetingsOptions.WaitingRoomEnabled,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                _context.Set<Meeting>().Add(meeting);
+            }
+        }
+
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         _logger.LogInformation("Appointment {AppointmentId} booked for case {CaseId} with attorney {AttorneyId}",
@@ -337,6 +400,7 @@ public class BookAppointmentRequest
     public DateTimeOffset EndTime { get; set; }
     public string? Notes { get; set; }
     public string? TimeZone { get; set; }
+    public bool IsVideoConference { get; set; }
 }
 
 public class BookAppointmentResponse

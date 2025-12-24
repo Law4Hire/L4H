@@ -41,6 +41,26 @@ const LoadingFallback = () => (
 function App() {
   const { isAuthenticated, user } = useAuth()
 
+  // Item 11: Automatic Cache Clearing on New Build
+  React.useEffect(() => {
+    // @ts-ignore - __APP_VERSION__ is defined in vite.config.ts
+    const currentVersion = __APP_VERSION__;
+    const storedVersion = localStorage.getItem('app_version');
+    
+    if (storedVersion && storedVersion !== currentVersion) {
+      console.log('New build detected, clearing local storage...');
+      // Clear everything except theme preference if possible
+      const theme = localStorage.getItem('theme');
+      localStorage.clear();
+      if (theme) localStorage.setItem('theme', theme);
+      
+      localStorage.setItem('app_version', currentVersion);
+      window.location.reload();
+    } else if (!storedVersion) {
+      localStorage.setItem('app_version', currentVersion);
+    }
+  }, []);
+
   return (
     <ToastProvider>
       <Suspense fallback={<LoadingFallback />}>

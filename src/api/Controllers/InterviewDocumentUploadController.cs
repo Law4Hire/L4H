@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace L4H.Api.Controllers;
 
 [ApiController]
-[Route("api/interview/documents")]
+[Route("api/v1/interview/documents")]
 [AllowAnonymous]  // Must support anonymous users during interview
 [Tags("Interview Documents")]
 public class InterviewDocumentUploadController : ControllerBase
