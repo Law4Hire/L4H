@@ -410,7 +410,7 @@ public class AttorneysController : ControllerBase
                 Credentials = "[\"J.D. University of Baltimore School of Law\", \"Member of AILA\"]",
                 PracticeAreas = "[\"Employment Immigration\", \"Family Immigration\", \"Deportation Defense\"]",
                 Languages = "[\"English\"]",
-                PhotoUrl = new Uri("https://cannlaw.com/images/denise.jpg")
+                PhotoUrl = new Uri("/images/attorneys/denise.jpg", UriKind.Relative)
             },
             new Attorney
             {
@@ -429,7 +429,7 @@ public class AttorneysController : ControllerBase
                 Credentials = "[\"J.D.\", \"Member of State Bar\"]",
                 PracticeAreas = "[\"Family Immigration\", \"Removal Defense\"]",
                 Languages = "[\"English\"]",
-                PhotoUrl = null
+                PhotoUrl = new Uri("/images/attorneys/angela.jpg", UriKind.Relative)
             },
             new Attorney
             {
@@ -467,7 +467,7 @@ public class AttorneysController : ControllerBase
                 Credentials = "[\"J.D.\", \"Member of State Bar\"]",
                 PracticeAreas = "[\"Immigration Law\"]",
                 Languages = "[\"English\"]",
-                PhotoUrl = null
+                PhotoUrl = new Uri("/images/attorneys/alex.jpg", UriKind.Relative)
             },
             new Attorney
             {
@@ -486,7 +486,7 @@ public class AttorneysController : ControllerBase
                 Credentials = "[\"J.D.\", \"Member of State Bar\"]",
                 PracticeAreas = "[\"Employment Immigration\", \"Family Immigration\"]",
                 Languages = "[\"English\", \"Mandarin\"]",
-                PhotoUrl = null
+                PhotoUrl = new Uri("/images/attorneys/janice.jpg", UriKind.Relative)
             },
             new Attorney
             {
@@ -505,7 +505,7 @@ public class AttorneysController : ControllerBase
                 Credentials = "[\"J.D.\", \"Member of State Bar\"]",
                 PracticeAreas = "[\"Immigration Law\"]",
                 Languages = "[\"English\"]",
-                PhotoUrl = null
+                PhotoUrl = new Uri("/images/attorneys/chika.jpg", UriKind.Relative)
             },
             new Attorney
             {

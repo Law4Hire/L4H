@@ -24,6 +24,7 @@ public class SiteConfigurationController : ControllerBase
     /// Get the current site configuration
     /// </summary>
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(SiteConfiguration), StatusCodes.Status200OK)]
     public async Task<ActionResult<SiteConfiguration>> GetSiteConfiguration()
     {
