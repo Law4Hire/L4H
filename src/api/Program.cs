@@ -276,6 +276,7 @@ builder.Services.AddScoped<ISeedTask, VisaClassesSeeder>();
 builder.Services.AddScoped<ISeedTask, VisaTypesSeeder>();
 builder.Services.AddScoped<ISeedTask, CategoryClassSeeder>();
 builder.Services.AddScoped<ISeedTask, CountryVisaTypesSeeder>();
+builder.Services.AddScoped<ISeedTask, AttorneysSeeder>();
 builder.Services.AddScoped<ISeedTask, CannlawClientBillingSeeder>();
 builder.Services.AddScoped<ISeedTask, CannlawConfigurationSeeder>();
 builder.Services.AddScoped<ISeedTask, InterviewQuestionsSeeder>();
