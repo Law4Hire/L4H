@@ -387,10 +387,6 @@ public class AttorneysController : ControllerBase
 
     private async Task InitializeDefaultAttorney()
     {
-        // Check for Denise first to avoid duplicates
-        var exists = await _context.Attorneys.AnyAsync(a => a.Email == "dcann@cannlaw.com");
-        if (exists) return;
-
         var attorneys = new[]
         {
             new Attorney
@@ -547,7 +543,33 @@ public class AttorneysController : ControllerBase
             }
         };
 
-        _context.Attorneys.AddRange(attorneys);
+        foreach (var attorney in attorneys)
+        {
+            var existing = await _context.Attorneys.FirstOrDefaultAsync(a => a.Email == attorney.Email);
+            if (existing == null)
+            {
+                _context.Attorneys.Add(attorney);
+            }
+            else
+            {
+                // UPSERT: Update existing fields to match our accurate source of truth
+                existing.Name = attorney.Name;
+                existing.Title = attorney.Title;
+                existing.Bio = attorney.Bio;
+                existing.Phone = attorney.Phone;
+                existing.DirectPhone = attorney.DirectPhone;
+                existing.DirectEmail = attorney.DirectEmail;
+                existing.OfficeLocation = attorney.OfficeLocation;
+                existing.Credentials = attorney.Credentials;
+                existing.PracticeAreas = attorney.PracticeAreas;
+                existing.Languages = attorney.Languages;
+                // Only update photo if the existing one is null or if we want to enforce the seed path
+                // We'll enforce it to ensure the local assets are used as requested.
+                existing.PhotoUrl = attorney.PhotoUrl; 
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+
         await _context.SaveChangesAsync().ConfigureAwait(false);
     }
 }
