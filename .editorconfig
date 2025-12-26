@@ -39,3 +39,12 @@ dotnet_diagnostic.CA5394.severity = none
 
 # Suppress CS8618: Non-nullable field must contain a non-null value when exiting constructor
 dotnet_diagnostic.CS8618.severity = none
+
+# Security: Weak Cryptography should be an error
+dotnet_diagnostic.CA5350.severity = error
+
+# Performance: Mark members as static (noisy) should be none
+dotnet_diagnostic.CA1822.severity = none
+
+# Globalization: Culture-aware formatting should be a warning
+dotnet_diagnostic.CA1305.severity = warning
