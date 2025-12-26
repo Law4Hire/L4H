@@ -4,6 +4,33 @@ import { useAttorneys } from '../../hooks/useAttorneys'
 import PublicLayout from '../../components/PublicLayout'
 import { Phone, Mail, AlertCircle, MessageSquare } from 'lucide-react'
 
+const BioWithReadMore: React.FC<{ bio: string }> = ({ bio }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const maxLength = 200; // Adjust length as needed
+
+  if (bio.length <= maxLength) {
+    return (
+      <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 leading-relaxed border-b border-gray-100 dark:border-navy-800 pb-6 font-light">
+        {bio}
+      </p>
+    );
+  }
+
+  return (
+    <div className="mb-6 border-b border-gray-100 dark:border-navy-800 pb-6 flex-grow">
+      <div className={`text-gray-600 dark:text-gray-300 text-sm leading-relaxed font-light ${isExpanded ? 'max-h-64 overflow-y-auto pr-2 custom-scrollbar' : ''}`}>
+        {isExpanded ? bio : `${bio.substring(0, maxLength)}...`}
+      </div>
+      <button
+        onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+        className="text-gold-600 dark:text-gold-500 text-xs font-bold uppercase tracking-wider mt-2 hover:underline focus:outline-none"
+      >
+        {isExpanded ? 'Show Less' : 'Read Full Bio'}
+      </button>
+    </div>
+  );
+};
+
 const AttorneysPage: React.FC = () => {
   const { attorneys, isLoading, error } = useAttorneys()
   const [selectedAttorney, setSelectedAttorney] = useState<{ name: string } | null>(null)
@@ -131,7 +158,7 @@ const AttorneysPage: React.FC = () => {
                     const hasPhoto = (attorney.photoUrl && !attorney.photoUrl.includes('placeholder')) || localPhoto;
                     
                     return (
-                    <div key={attorney.id} className="bg-white dark:bg-navy-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-t-4 border-gold-500 dark:border-navy-800 flex flex-col h-full group">
+                    <div key={attorney.id} className="bg-white dark:bg-navy-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border-t-4 border-gold-500 dark:border-navy-800 flex flex-col h-full group">
                     {/* Attorney Photo */}
                     <div className="pt-8 pb-4 text-center bg-gray-50 dark:bg-navy-800 transition-colors">
                         {hasPhoto ? (
@@ -168,9 +195,7 @@ const AttorneysPage: React.FC = () => {
 
                         {/* Bio */}
                         {attorney.bio && (
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 leading-relaxed line-clamp-6 border-b border-gray-100 dark:border-navy-800 pb-6 font-light">
-                            {attorney.bio}
-                            </p>
+                            <BioWithReadMore bio={attorney.bio} />
                         )}
 
                         {/* Practice Areas */}
