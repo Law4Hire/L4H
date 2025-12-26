@@ -348,9 +348,9 @@ public class DocumentsController : ControllerBase
                                        d.Description.ToLowerInvariant().Contains(fileName.ToLowerInvariant()));
             }
 
-            if (categoryId.HasValue)
+            if (category.HasValue)
             {
-                query = query.Where(d => d.CategoryId == categoryId.Value);
+                query = query.Where(d => d.Category == category.Value);
             }
 
             if (!string.IsNullOrWhiteSpace(uploadedBy))
