@@ -211,35 +211,57 @@ public class AttorneysController : ControllerBase
     [Authorize(Policy = "IsAdmin")]
     public async Task<ActionResult> UpdateAttorney(int id, [FromBody] Attorney attorney)
     {
-        var existingAttorney = await _context.Attorneys
-            .FirstOrDefaultAsync(a => a.Id == id)
-            .ConfigureAwait(false);
-
-        if (existingAttorney == null)
+        _logger.LogInformation("UpdateAttorney called for ID {Id} with Name: {Name}", id, attorney.Name);
+        
+        try
         {
-            return NotFound();
+            var existingAttorney = await _context.Attorneys
+                .FirstOrDefaultAsync(a => a.Id == id)
+                .ConfigureAwait(false);
+
+            if (existingAttorney == null)
+            {
+                _logger.LogWarning("Attorney with ID {Id} not found", id);
+                return NotFound();
+            }
+
+            // Map fields, handling potential nulls from the request
+            existingAttorney.Name = attorney.Name ?? existingAttorney.Name;
+            existingAttorney.Title = attorney.Title ?? existingAttorney.Title;
+            existingAttorney.Bio = attorney.Bio ?? existingAttorney.Bio;
+            
+            // Allow setting PhotoUrl to null if explicitly intended, but typically we want to preserve unless overwritten
+            existingAttorney.PhotoUrl = attorney.PhotoUrl; 
+            
+            existingAttorney.Email = attorney.Email ?? existingAttorney.Email;
+            existingAttorney.Phone = attorney.Phone ?? existingAttorney.Phone;
+            existingAttorney.DirectPhone = attorney.DirectPhone ?? existingAttorney.DirectPhone;
+            existingAttorney.DirectEmail = attorney.DirectEmail ?? existingAttorney.DirectEmail;
+            existingAttorney.OfficeLocation = attorney.OfficeLocation ?? existingAttorney.OfficeLocation;
+            existingAttorney.DefaultHourlyRate = attorney.DefaultHourlyRate; // Value type
+            existingAttorney.Credentials = attorney.Credentials ?? existingAttorney.Credentials;
+            existingAttorney.PracticeAreas = attorney.PracticeAreas ?? existingAttorney.PracticeAreas;
+            existingAttorney.Languages = attorney.Languages ?? existingAttorney.Languages;
+            existingAttorney.IsActive = attorney.IsActive; // Value type
+            existingAttorney.IsManagingAttorney = attorney.IsManagingAttorney; // Value type
+            existingAttorney.DisplayOrder = attorney.DisplayOrder; // Value type
+            existingAttorney.UpdatedAt = DateTime.UtcNow;
+
+            _logger.LogInformation("Saving changes for Attorney {Id}...", id);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            _logger.LogInformation("Successfully updated Attorney {Id}", id);
+            return Ok();
         }
-
-        existingAttorney.Name = attorney.Name;
-        existingAttorney.Title = attorney.Title;
-        existingAttorney.Bio = attorney.Bio;
-        existingAttorney.PhotoUrl = attorney.PhotoUrl;
-        existingAttorney.Email = attorney.Email;
-        existingAttorney.Phone = attorney.Phone;
-        existingAttorney.DirectPhone = attorney.DirectPhone;
-        existingAttorney.DirectEmail = attorney.DirectEmail;
-        existingAttorney.OfficeLocation = attorney.OfficeLocation;
-        existingAttorney.DefaultHourlyRate = attorney.DefaultHourlyRate;
-        existingAttorney.Credentials = attorney.Credentials;
-        existingAttorney.PracticeAreas = attorney.PracticeAreas;
-        existingAttorney.Languages = attorney.Languages;
-        existingAttorney.IsActive = attorney.IsActive;
-        existingAttorney.IsManagingAttorney = attorney.IsManagingAttorney;
-        existingAttorney.DisplayOrder = attorney.DisplayOrder;
-        existingAttorney.UpdatedAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-        return Ok();
+        catch (DbUpdateException dbEx)
+        {
+            _logger.LogError(dbEx, "Database update error updating attorney {Id}. Inner: {Inner}", id, dbEx.InnerException?.Message);
+            return StatusCode(500, new { message = "Database error updating attorney", details = dbEx.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating attorney {Id}", id);
+            return StatusCode(500, new { message = "Internal server error updating attorney", details = ex.Message });
+        }
     }
 
     /// <summary>
