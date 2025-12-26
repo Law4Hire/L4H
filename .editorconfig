@@ -40,11 +40,22 @@ dotnet_diagnostic.CA5394.severity = none
 # Suppress CS8618: Non-nullable field must contain a non-null value when exiting constructor
 dotnet_diagnostic.CS8618.severity = none
 
-# Security: Weak Cryptography should be an error
+# --- Security Rules ---
+# CA5350: Do Not Use Weak Cryptographic Algorithms
 dotnet_diagnostic.CA5350.severity = error
+# CA5351: Do Not Use Broken Cryptographic Algorithms
+dotnet_diagnostic.CA5351.severity = error
 
-# Performance: Mark members as static (noisy) should be none
+# --- Performance Rules ---
+# CA1822: Mark members as static (noisy) should be none
 dotnet_diagnostic.CA1822.severity = none
+# CA1829: Use Length/Count property instead of Count() when available
+dotnet_diagnostic.CA1829.severity = error
 
-# Globalization: Culture-aware formatting should be a warning
+# --- Globalization Rules ---
+# CA1305: Specify IFormatProvider
 dotnet_diagnostic.CA1305.severity = warning
+
+# --- Reliability Rules ---
+# CA2016: Forward CancellationToken to asynchronous methods
+dotnet_diagnostic.CA2016.severity = error
