@@ -342,26 +342,21 @@ public class DocumentsController : ControllerBase
             .AsQueryable();
 
         // Apply filters
-        if (!string.IsNullOrWhiteSpace(fileName))
-        {
-            query = query.Where(d => d.OriginalFileName.ToLower().Contains(fileName.ToLower()) ||
-                                   d.Description.ToLower().Contains(fileName.ToLower()));
-        }
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                query = query.Where(d => d.OriginalFileName.ToLowerInvariant().Contains(fileName.ToLowerInvariant()) || 
+                                       d.Description.ToLowerInvariant().Contains(fileName.ToLowerInvariant()));
+            }
 
-        if (category.HasValue)
-        {
-            query = query.Where(d => d.Category == category.Value);
-        }
+            if (categoryId.HasValue)
+            {
+                query = query.Where(d => d.CategoryId == categoryId.Value);
+            }
 
-        if (clientId.HasValue)
-        {
-            query = query.Where(d => d.ClientId == clientId.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(uploadedBy))
-        {
-            query = query.Where(d => d.UploadedBy.ToLower().Contains(uploadedBy.ToLower()));
-        }
+            if (!string.IsNullOrWhiteSpace(uploadedBy))
+            {
+                query = query.Where(d => d.UploadedBy.ToLowerInvariant().Contains(uploadedBy.ToLowerInvariant()));
+            }
 
         if (uploadedAfter.HasValue)
         {

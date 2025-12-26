@@ -60,9 +60,9 @@ public class ClientsController : ControllerBase
         {
             var searchLower = search.ToLowerInvariant();
             query = query.Where(c => 
-                c.FirstName.ToLower().Contains(searchLower) ||
-                c.LastName.ToLower().Contains(searchLower) ||
-                c.Email.ToLower().Contains(searchLower));
+                c.FirstName.ToLowerInvariant().Contains(searchLower) || 
+                c.LastName.ToLowerInvariant().Contains(searchLower) || 
+                c.Email.ToLowerInvariant().Contains(searchLower));
         }
 
         if (attorneyId.HasValue)
@@ -257,34 +257,33 @@ public class ClientsController : ControllerBase
             .AsQueryable();
 
         // Apply filters
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            var nameLower = name.ToLower();
-            query = query.Where(c => 
-                c.FirstName.ToLower().Contains(nameLower) ||
-                c.LastName.ToLower().Contains(nameLower));
-        }
-
-        if (!string.IsNullOrWhiteSpace(email))
-        {
-            query = query.Where(c => c.Email.ToLower().Contains(email.ToLower()));
-        }
-
-        if (attorneyId.HasValue)
-        {
-            query = query.Where(c => c.AssignedAttorneyId == attorneyId.Value);
-        }
-
-        if (status.HasValue)
-        {
-            query = query.Where(c => c.Cases.Any(cs => cs.Status == status.Value));
-        }
-
-        if (!string.IsNullOrWhiteSpace(countryOfOrigin))
-        {
-            query = query.Where(c => c.CountryOfOrigin.ToLower().Contains(countryOfOrigin.ToLower()));
-        }
-
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    var nameLower = name.ToLowerInvariant();
+                    query = query.Where(c => 
+                        c.FirstName.ToLowerInvariant().Contains(nameLower) || 
+                        c.LastName.ToLowerInvariant().Contains(nameLower));
+                }
+        
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    query = query.Where(c => c.Email.ToLowerInvariant().Contains(email.ToLowerInvariant()));
+                }
+        
+                if (attorneyId.HasValue)
+                {
+                    query = query.Where(c => c.AssignedAttorneyId == attorneyId.Value);
+                }
+        
+                if (status.HasValue)
+                {
+                    query = query.Where(c => c.Cases.Any(cs => cs.Status == status.Value));
+                }
+        
+                if (!string.IsNullOrWhiteSpace(countryOfOrigin))
+                {
+                    query = query.Where(c => c.CountryOfOrigin.ToLowerInvariant().Contains(countryOfOrigin.ToLowerInvariant()));
+                }
         if (createdAfter.HasValue)
         {
             query = query.Where(c => c.CreatedAt >= createdAfter.Value);
