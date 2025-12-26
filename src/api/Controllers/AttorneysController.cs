@@ -209,9 +209,9 @@ public class AttorneysController : ControllerBase
     /// </summary>
     [HttpPut("{id}")]
     [Authorize(Policy = "IsAdmin")]
-    public async Task<ActionResult> UpdateAttorney(int id, [FromBody] Attorney attorney)
+    public async Task<ActionResult> UpdateAttorney(int id, [FromBody] AttorneyRequestDto request)
     {
-        _logger.LogInformation("UpdateAttorney called for ID {Id} with Name: {Name}", id, attorney.Name);
+        _logger.LogInformation("UpdateAttorney called for ID {Id} with Name: {Name}", id, request.Name);
         
         try
         {
@@ -225,26 +225,38 @@ public class AttorneysController : ControllerBase
                 return NotFound();
             }
 
-            // Map fields, handling potential nulls from the request
-            existingAttorney.Name = attorney.Name ?? existingAttorney.Name;
-            existingAttorney.Title = attorney.Title ?? existingAttorney.Title;
-            existingAttorney.Bio = attorney.Bio ?? existingAttorney.Bio;
+            // Map fields from DTO to Entity
+            existingAttorney.Name = request.Name ?? existingAttorney.Name;
+            existingAttorney.Title = request.Title ?? existingAttorney.Title;
+            existingAttorney.Bio = request.Bio ?? existingAttorney.Bio;
             
-            // Allow setting PhotoUrl to null if explicitly intended, but typically we want to preserve unless overwritten
-            existingAttorney.PhotoUrl = attorney.PhotoUrl; 
+            if (!string.IsNullOrWhiteSpace(request.PhotoUrl))
+            {
+                if (Uri.TryCreate(request.PhotoUrl, UriKind.RelativeOrAbsolute, out var uri))
+                {
+                    existingAttorney.PhotoUrl = uri;
+                }
+            }
+            else
+            {
+                // If explicitly empty, clear it? Or just keep existing? 
+                // Frontend sends current value, so empty string means remove?
+                // Let's assume empty string means clear if not null
+                if (request.PhotoUrl != null) existingAttorney.PhotoUrl = null;
+            }
             
-            existingAttorney.Email = attorney.Email ?? existingAttorney.Email;
-            existingAttorney.Phone = attorney.Phone ?? existingAttorney.Phone;
-            existingAttorney.DirectPhone = attorney.DirectPhone ?? existingAttorney.DirectPhone;
-            existingAttorney.DirectEmail = attorney.DirectEmail ?? existingAttorney.DirectEmail;
-            existingAttorney.OfficeLocation = attorney.OfficeLocation ?? existingAttorney.OfficeLocation;
-            existingAttorney.DefaultHourlyRate = attorney.DefaultHourlyRate; // Value type
-            existingAttorney.Credentials = attorney.Credentials ?? existingAttorney.Credentials;
-            existingAttorney.PracticeAreas = attorney.PracticeAreas ?? existingAttorney.PracticeAreas;
-            existingAttorney.Languages = attorney.Languages ?? existingAttorney.Languages;
-            existingAttorney.IsActive = attorney.IsActive; // Value type
-            existingAttorney.IsManagingAttorney = attorney.IsManagingAttorney; // Value type
-            existingAttorney.DisplayOrder = attorney.DisplayOrder; // Value type
+            existingAttorney.Email = request.Email ?? existingAttorney.Email;
+            existingAttorney.Phone = request.Phone ?? existingAttorney.Phone;
+            existingAttorney.DirectPhone = request.DirectPhone ?? existingAttorney.DirectPhone;
+            existingAttorney.DirectEmail = request.DirectEmail ?? existingAttorney.DirectEmail;
+            existingAttorney.OfficeLocation = request.OfficeLocation ?? existingAttorney.OfficeLocation;
+            existingAttorney.DefaultHourlyRate = request.DefaultHourlyRate;
+            existingAttorney.Credentials = request.Credentials ?? existingAttorney.Credentials;
+            existingAttorney.PracticeAreas = request.PracticeAreas ?? existingAttorney.PracticeAreas;
+            existingAttorney.Languages = request.Languages ?? existingAttorney.Languages;
+            existingAttorney.IsActive = request.IsActive;
+            existingAttorney.IsManagingAttorney = request.IsManagingAttorney;
+            existingAttorney.DisplayOrder = request.DisplayOrder;
             existingAttorney.UpdatedAt = DateTime.UtcNow;
 
             _logger.LogInformation("Saving changes for Attorney {Id}...", id);
@@ -264,9 +276,44 @@ public class AttorneysController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Upload attorney photo (Admin only)
-    /// </summary>
+    // ... (rest of the class)
+
+    private async Task InitializeDefaultAttorney()
+    {
+        // ... (existing code)
+    }
+}
+
+public class AttorneyUpdateDto
+{
+    public string? Title { get; set; }
+    public string? Bio { get; set; }
+    public string? PhotoUrl { get; set; }
+    public string? Phone { get; set; }
+    public string? DirectPhone { get; set; }
+    public string? DirectEmail { get; set; }
+    public string? OfficeLocation { get; set; }
+}
+
+public class AttorneyRequestDto
+{
+    public string? Name { get; set; }
+    public string? Title { get; set; }
+    public string? Bio { get; set; }
+    public string? PhotoUrl { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public string? DirectPhone { get; set; }
+    public string? DirectEmail { get; set; }
+    public string? OfficeLocation { get; set; }
+    public decimal DefaultHourlyRate { get; set; }
+    public string? Credentials { get; set; }
+    public string? PracticeAreas { get; set; }
+    public string? Languages { get; set; }
+    public bool IsActive { get; set; }
+    public bool IsManagingAttorney { get; set; }
+    public int DisplayOrder { get; set; }
+}
     [HttpPost("{id}/photo")]
     [Authorize]
     public async Task<ActionResult> UploadAttorneyPhoto(int id, IFormFile photo)
