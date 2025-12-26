@@ -30,34 +30,13 @@ public class AttorneysController : ControllerBase
     /// Force re-seed of attorney data (Maintenance)
     /// </summary>
     [HttpPost("force-seed")]
-    [AllowAnonymous] // Temporary for fixing the environment
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> ForceSeedAttorneys()
     {
         try
         {
-            // 1. Clear existing attorneys if they don't have dependencies
-            var attorneys = await _context.Attorneys
-                .Include(a => a.AssignedClients)
-                .Include(a => a.TimeEntries)
-                .ToListAsync();
-
-            foreach (var attorney in attorneys)
-            {
-                if (!attorney.AssignedClients.Any() && !attorney.TimeEntries.Any())
-                {
-                    _context.Attorneys.Remove(attorney);
-                }
-                else
-                {
-                    attorney.IsActive = false;
-                }
-            }
-            await _context.SaveChangesAsync();
-
-            // 2. Add Real Attorneys
             await InitializeDefaultAttorney();
-
             return Ok(new { message = "Attorneys successfully re-seeded" });
         }
         catch (Exception ex)
@@ -71,6 +50,7 @@ public class AttorneysController : ControllerBase
     /// Get all active attorneys
     /// </summary>
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(Attorney[]), StatusCodes.Status200OK)]
     public async Task<ActionResult<Attorney[]>> GetAttorneys()
     {
@@ -86,7 +66,6 @@ public class AttorneysController : ControllerBase
 
             if (!attorneys.Any())
             {
-                // Initialize with default attorneys if none exists
                 await InitializeDefaultAttorney();
                 attorneys = await _context.Attorneys
                     .Where(a => a.IsActive)
@@ -102,12 +81,7 @@ public class AttorneysController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting attorneys: {Message}", ex.Message);
-            // Return detailed error in development/debugging
-            return StatusCode(500, new { 
-                message = "Database error retrieving attorneys", 
-                error = ex.Message,
-                stackTrace = ex.StackTrace 
-            });
+            return StatusCode(500, new { message = "Database error retrieving attorneys", error = ex.Message });
         }
     }
 
@@ -146,7 +120,6 @@ public class AttorneysController : ControllerBase
 
         if (attorney == null) return NotFound("Attorney profile not found.");
 
-        // Allow updating specific fields
         attorney.Bio = request.Bio ?? attorney.Bio;
         attorney.Title = request.Title ?? attorney.Title;
         attorney.Phone = request.Phone ?? attorney.Phone;
@@ -172,18 +145,15 @@ public class AttorneysController : ControllerBase
     /// Get a specific attorney by ID
     /// </summary>
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(Attorney), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Attorney>> GetAttorney(int id)
     {
         var attorney = await _context.Attorneys
             .FirstOrDefaultAsync(a => a.Id == id && a.IsActive)
             .ConfigureAwait(false);
 
-        if (attorney == null)
-        {
-            return NotFound();
-        }
+        if (attorney == null) return NotFound();
 
         return Ok(attorney);
     }
@@ -193,15 +163,12 @@ public class AttorneysController : ControllerBase
     /// </summary>
     [HttpPost]
     [Authorize(Policy = "IsAdmin")]
-    [ProducesResponseType(typeof(Attorney), StatusCodes.Status201Created)]
     public async Task<ActionResult<Attorney>> CreateAttorney([FromBody] Attorney attorney)
     {
         attorney.CreatedAt = DateTime.UtcNow;
         attorney.UpdatedAt = DateTime.UtcNow;
-
         _context.Attorneys.Add(attorney);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-
         return CreatedAtAction(nameof(GetAttorney), new { id = attorney.Id }, attorney);
     }
 
@@ -212,138 +179,66 @@ public class AttorneysController : ControllerBase
     [Authorize(Policy = "IsAdmin")]
     public async Task<ActionResult> UpdateAttorney(int id, [FromBody] AttorneyRequestDto request)
     {
-        _logger.LogInformation("UpdateAttorney called for ID {Id} with Name: {Name}", id, request.Name);
-        
+        _logger.LogInformation("UpdateAttorney called for ID {Id}", id);
         try
         {
-            var existingAttorney = await _context.Attorneys
-                .FirstOrDefaultAsync(a => a.Id == id)
-                .ConfigureAwait(false);
+            var existing = await _context.Attorneys.FindAsync(id);
+            if (existing == null) return NotFound();
 
-            if (existingAttorney == null)
-            {
-                _logger.LogWarning("Attorney with ID {Id} not found", id);
-                return NotFound();
-            }
-
-            // Map fields from DTO to Entity
-            existingAttorney.Name = request.Name ?? existingAttorney.Name;
-            existingAttorney.Title = request.Title ?? existingAttorney.Title;
-            existingAttorney.Bio = request.Bio ?? existingAttorney.Bio;
+            existing.Name = request.Name ?? existing.Name;
+            existing.Title = request.Title ?? existing.Title;
+            existing.Bio = request.Bio ?? existing.Bio;
+            existing.Email = request.Email ?? existing.Email;
+            existing.Phone = request.Phone ?? existing.Phone;
+            existing.DirectPhone = request.DirectPhone ?? existing.DirectPhone;
+            existing.DirectEmail = request.DirectEmail ?? existing.DirectEmail;
+            existing.OfficeLocation = request.OfficeLocation ?? existing.OfficeLocation;
+            existing.DefaultHourlyRate = request.DefaultHourlyRate;
+            existing.Credentials = request.Credentials ?? existing.Credentials;
+            existing.PracticeAreas = request.PracticeAreas ?? existing.PracticeAreas;
+            existing.Languages = request.Languages ?? existing.Languages;
+            existing.IsActive = request.IsActive;
+            existing.IsManagingAttorney = request.IsManagingAttorney;
+            existing.DisplayOrder = request.DisplayOrder;
             
             if (!string.IsNullOrWhiteSpace(request.PhotoUrl))
             {
                 if (Uri.TryCreate(request.PhotoUrl, UriKind.RelativeOrAbsolute, out var uri))
-                {
-                    existingAttorney.PhotoUrl = uri;
-                }
-            }
-            else
-            {
-                // If explicitly empty, clear it? Or just keep existing? 
-                // Frontend sends current value, so empty string means remove?
-                // Let's assume empty string means clear if not null
-                if (request.PhotoUrl != null) existingAttorney.PhotoUrl = null;
+                    existing.PhotoUrl = uri;
             }
             
-            existingAttorney.Email = request.Email ?? existingAttorney.Email;
-            existingAttorney.Phone = request.Phone ?? existingAttorney.Phone;
-            existingAttorney.DirectPhone = request.DirectPhone ?? existingAttorney.DirectPhone;
-            existingAttorney.DirectEmail = request.DirectEmail ?? existingAttorney.DirectEmail;
-            existingAttorney.OfficeLocation = request.OfficeLocation ?? existingAttorney.OfficeLocation;
-            existingAttorney.DefaultHourlyRate = request.DefaultHourlyRate;
-            existingAttorney.Credentials = request.Credentials ?? existingAttorney.Credentials;
-            existingAttorney.PracticeAreas = request.PracticeAreas ?? existingAttorney.PracticeAreas;
-            existingAttorney.Languages = request.Languages ?? existingAttorney.Languages;
-            existingAttorney.IsActive = request.IsActive;
-            existingAttorney.IsManagingAttorney = request.IsManagingAttorney;
-            existingAttorney.DisplayOrder = request.DisplayOrder;
-            existingAttorney.UpdatedAt = DateTime.UtcNow;
-
-            _logger.LogInformation("Saving changes for Attorney {Id}...", id);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
-            _logger.LogInformation("Successfully updated Attorney {Id}", id);
+            existing.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
             return Ok();
-        }
-        catch (DbUpdateException dbEx)
-        {
-            _logger.LogError(dbEx, "Database update error updating attorney {Id}. Inner: {Inner}", id, dbEx.InnerException?.Message);
-            return StatusCode(500, new { message = "Database error updating attorney", details = dbEx.Message });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating attorney {Id}", id);
-            return StatusCode(500, new { message = "Internal server error updating attorney", details = ex.Message });
+            return StatusCode(500, new { message = "Error updating attorney", details = ex.Message });
         }
     }
 
-    // ... (rest of the class)
-
-    private async Task InitializeDefaultAttorney()
-    {
-        // ... (existing code)
-    }
-}
-
-public class AttorneyUpdateDto
-{
-    public string? Title { get; set; }
-    public string? Bio { get; set; }
-    public string? PhotoUrl { get; set; }
-    public string? Phone { get; set; }
-    public string? DirectPhone { get; set; }
-    public string? DirectEmail { get; set; }
-    public string? OfficeLocation { get; set; }
-}
     [HttpPost("{id}/photo")]
     [Authorize]
     public async Task<ActionResult> UploadAttorneyPhoto(int id, IFormFile photo)
     {
-        var attorney = await _context.Attorneys
-            .FirstOrDefaultAsync(a => a.Id == id)
-            .ConfigureAwait(false);
+        var attorney = await _context.Attorneys.FindAsync(id);
+        if (attorney == null) return NotFound();
 
-        if (attorney == null)
-        {
-            return NotFound();
-        }
-
-        // Access check: Admin or the attorney themselves (by email)
         var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
         var isAdmin = User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
-        
-        if (!isAdmin && !attorney.Email.Equals(userEmail, StringComparison.OrdinalIgnoreCase))
-        {
-            return Forbid();
-        }
+        if (!isAdmin && !attorney.Email.Equals(userEmail, StringComparison.OrdinalIgnoreCase)) return Forbid();
 
-        if (photo == null || photo.Length == 0)
-        {
-            return BadRequest("No photo file provided");
-        }
-
-        if (!_fileUploadService.IsValidImageFile(photo))
-        {
-            return BadRequest("Invalid image file. Please upload JPG, PNG, or WebP files under 5MB");
-        }
+        if (photo == null || photo.Length == 0) return BadRequest("No photo file provided");
+        if (!_fileUploadService.IsValidImageFile(photo)) return BadRequest("Invalid image file");
 
         try
         {
-            // Delete old photo if exists
-            if (attorney.PhotoUrl != null)
-            {
-                await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
-            }
-
-            // Upload new photo
+            if (attorney.PhotoUrl != null) await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
             var photoUrl = await _fileUploadService.UploadAttorneyPhotoAsync(photo, attorney.Name);
-            
-            // Update attorney record
             attorney.PhotoUrl = new Uri(photoUrl, UriKind.RelativeOrAbsolute);
             attorney.UpdatedAt = DateTime.UtcNow;
-            
-            await _context.SaveChangesAsync().ConfigureAwait(false);
-
+            await _context.SaveChangesAsync();
             return Ok(new { photoUrl });
         }
         catch (Exception ex)
@@ -352,86 +247,46 @@ public class AttorneyUpdateDto
         }
     }
 
-    /// <summary>
-    /// Delete attorney photo (Admin only)
-    /// </summary>
     [HttpDelete("{id}/photo")]
     [Authorize(Policy = "IsAdmin")]
     public async Task<ActionResult> DeleteAttorneyPhoto(int id)
     {
-        var attorney = await _context.Attorneys
-            .FirstOrDefaultAsync(a => a.Id == id)
-            .ConfigureAwait(false);
-
-        if (attorney == null)
-        {
-            return NotFound();
-        }
+        var attorney = await _context.Attorneys.FindAsync(id);
+        if (attorney == null) return NotFound();
 
         if (attorney.PhotoUrl != null)
         {
             await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
             attorney.PhotoUrl = null;
             attorney.UpdatedAt = DateTime.UtcNow;
-            
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
         }
-
         return Ok();
     }
 
-    /// <summary>
-    /// Delete an attorney profile (Admin only)
-    /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Policy = "IsAdmin")]
     public async Task<ActionResult> DeleteAttorney(int id)
     {
-        var attorney = await _context.Attorneys
-            .Include(a => a.AssignedClients)
-            .FirstOrDefaultAsync(a => a.Id == id)
-            .ConfigureAwait(false);
+        var attorney = await _context.Attorneys.Include(a => a.AssignedClients).FirstOrDefaultAsync(a => a.Id == id);
+        if (attorney == null) return NotFound();
+        if (attorney.AssignedClients.Any()) return BadRequest("Cannot delete attorney with assigned clients.");
 
-        if (attorney == null)
-        {
-            return NotFound();
-        }
-
-        // Check if attorney has assigned clients
-        if (attorney.AssignedClients.Any())
-        {
-            return BadRequest("Cannot delete attorney with assigned clients. Please reassign clients first.");
-        }
-
-        // Delete attorney photo if exists
-        if (attorney.PhotoUrl != null)
-        {
-            await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
-        }
-
+        if (attorney.PhotoUrl != null) await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
         _context.Attorneys.Remove(attorney);
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-
+        await _context.SaveChangesAsync();
         return Ok();
     }
 
-    /// <summary>
-    /// Deactivate an attorney profile (Admin only)
-    /// </summary>
     [HttpPost("{id}/deactivate")]
     [Authorize(Policy = "IsAdmin")]
     public async Task<ActionResult> DeactivateAttorney(int id)
     {
         var attorney = await _context.Attorneys.FindAsync(id);
-        if (attorney == null)
-        {
-            return NotFound();
-        }
-
+        if (attorney == null) return NotFound();
         attorney.IsActive = false;
         attorney.UpdatedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-
+        await _context.SaveChangesAsync();
         return Ok();
     }
 
@@ -602,7 +457,6 @@ public class AttorneyUpdateDto
             }
             else
             {
-                // UPSERT: Update existing fields to match our accurate source of truth
                 existing.Name = attorney.Name;
                 existing.Title = attorney.Title;
                 existing.Bio = attorney.Bio;
@@ -613,14 +467,12 @@ public class AttorneyUpdateDto
                 existing.Credentials = attorney.Credentials;
                 existing.PracticeAreas = attorney.PracticeAreas;
                 existing.Languages = attorney.Languages;
-                // Only update photo if the existing one is null or if we want to enforce the seed path
-                // We'll enforce it to ensure the local assets are used as requested.
                 existing.PhotoUrl = attorney.PhotoUrl; 
                 existing.UpdatedAt = DateTime.UtcNow;
             }
         }
 
-        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await _context.SaveChangesAsync();
     }
 }
 
