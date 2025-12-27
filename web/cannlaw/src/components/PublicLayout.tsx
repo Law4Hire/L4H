@@ -13,6 +13,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const { siteConfig } = useSiteConfig()
   const { isAuthenticated, user } = useAuth()
   const location = useLocation()
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -117,18 +118,62 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
               )}
             </div>
             
-            {/* Mobile Menu Button (Hamburger) - Simplified for this layout */}
+            {/* Mobile Menu Button (Hamburger) */}
             <div className="md:hidden flex items-center space-x-2">
                <ThemeToggle />
-               <button className="text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none p-2">
+               <button
+                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                 className="text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none p-2"
+               >
                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                   {mobileMenuOpen ? (
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                   ) : (
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                   )}
                  </svg>
                </button>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white dark:bg-navy-900 border-b border-gray-200 dark:border-navy-700 shadow-lg">
+          <div className="px-4 py-3 space-y-2">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                  location.pathname === item.href
+                    ? 'bg-blue-100 dark:bg-navy-800 text-blue-900 dark:text-gold-500'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-800'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+            <div className="pt-2 border-t border-gray-200 dark:border-navy-700">
+              {isAuthenticated ? (
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full dark:text-white dark:border-navy-600">
+                    Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/login?type=client" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="primary" size="sm" className="w-full bg-blue-900 dark:bg-gold-600 hover:bg-blue-800 dark:hover:bg-gold-500 dark:text-navy-900 font-bold">
+                    Client Portal
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="flex-grow bg-gray-50 dark:bg-navy-950 transition-colors duration-300">{children}</main>

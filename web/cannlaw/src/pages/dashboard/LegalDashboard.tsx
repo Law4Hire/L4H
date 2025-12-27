@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, Button } from '@l4h/shared-ui'
 import { useAuth } from '../../hooks/useAuth'
 import { formatDistanceToNow, format } from 'date-fns'
@@ -40,6 +41,7 @@ interface MessagePreview {
 
 const LegalDashboard: React.FC = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activity, setActivity] = useState<ActivityItem[]>([])
   const [appointments, setAppointments] = useState<Appointment[]>([])
@@ -92,7 +94,7 @@ const LegalDashboard: React.FC = () => {
       <div className="bg-navy-900 rounded-lg p-8 text-white shadow-xl flex justify-between items-center overflow-hidden relative">
         <div className="relative z-10">
           <h1 className="text-3xl font-bold mb-2 font-serif">
-            Welcome back, {user?.name || 'Legal Professional'}!
+            Hello {user?.name || 'Legal Professional'}
           </h1>
           <p className="text-blue-200 text-lg">
             Manage your cases, clients, and legal team from your central command.
