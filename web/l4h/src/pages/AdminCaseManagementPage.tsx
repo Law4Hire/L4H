@@ -149,10 +149,14 @@ const AdminCaseManagementPage: React.FC = () => {
     setIsReviewModalOpen(true);
     try {
         setIsEvaluationsLoading(true);
+        console.log('Fetching evaluations for session:', caseItem.interviewSessionId);
         const evals = await professional.getSessionEvaluations(caseItem.interviewSessionId);
+        console.log('Evaluations received:', evals);
         setEvaluations(evals);
     } catch (err) {
-        error("Failed to load interview evaluations.");
+        console.error('Error loading interview evaluations:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        error("Failed to load interview evaluations", errorMessage);
     } finally {
         setIsEvaluationsLoading(false);
     }
@@ -162,6 +166,7 @@ const AdminCaseManagementPage: React.FC = () => {
     if (!selectedCase || !selectedCase.interviewSessionId) return;
 
     try {
+        console.log('Locking visa:', { sessionId: selectedCase.interviewSessionId, visaTypeId, reason });
         await professional.lockVisa({
             sessionId: selectedCase.interviewSessionId,
             visaTypeId,
@@ -171,7 +176,9 @@ const AdminCaseManagementPage: React.FC = () => {
         setIsReviewModalOpen(false);
         loadCases(); // Refresh cases to show lock status
     } catch (err) {
-        error("Failed to lock visa.");
+        console.error('Error locking visa:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        error("Failed to lock visa", errorMessage);
     }
   }
 
