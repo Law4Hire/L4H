@@ -46,16 +46,27 @@ function App() {
     // @ts-ignore - __APP_VERSION__ is defined in vite.config.ts
     const currentVersion = __APP_VERSION__;
     const storedVersion = localStorage.getItem('app_version');
-    
+
     if (storedVersion && storedVersion !== currentVersion) {
-      console.log('New build detected, clearing local storage...');
-      // Clear everything except theme preference if possible
-      const theme = localStorage.getItem('theme');
-      localStorage.clear();
-      if (theme) localStorage.setItem('theme', theme);
-      
-      localStorage.setItem('app_version', currentVersion);
-      window.location.reload();
+      console.log('New build detected, clearing authentication and storage...');
+
+      // CRITICAL: Call logout to clear server-side cookies before clearing localStorage
+      // This prevents the "stuck cookie" problem where users remain logged in after rebuild
+      fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        credentials: 'include' // Include cookies for proper logout
+      }).catch(err => {
+        // Logout may fail if already logged out - that's okay
+        console.log('Logout during version update:', err.message);
+      }).finally(() => {
+        // Clear everything except theme preference
+        const theme = localStorage.getItem('theme');
+        localStorage.clear();
+        if (theme) localStorage.setItem('theme', theme);
+
+        localStorage.setItem('app_version', currentVersion);
+        window.location.reload();
+      });
     } else if (!storedVersion) {
       localStorage.setItem('app_version', currentVersion);
     }
