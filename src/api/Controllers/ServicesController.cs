@@ -116,6 +116,88 @@ public class ServicesController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Create a new service within a category (Admin only)
+    /// </summary>
+    [HttpPost("categories/{categoryId}/services")]
+    [Authorize(Policy = "IsAdmin")]
+    [ProducesResponseType(typeof(LegalService), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<LegalService>> CreateService(int categoryId, [FromBody] LegalService service)
+    {
+        var category = await _context.ServiceCategories
+            .FirstOrDefaultAsync(sc => sc.Id == categoryId)
+            .ConfigureAwait(false);
+
+        if (category == null)
+        {
+            return NotFound();
+        }
+
+        service.ServiceCategoryId = categoryId;
+        service.CreatedAt = DateTime.UtcNow;
+        service.UpdatedAt = DateTime.UtcNow;
+
+        _context.LegalServices.Add(service);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        return CreatedAtAction(nameof(GetServiceCategory), new { id = categoryId }, service);
+    }
+
+    /// <summary>
+    /// Update a service (Admin only)
+    /// </summary>
+    [HttpPut("services/{id}")]
+    [Authorize(Policy = "IsAdmin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> UpdateService(int id, [FromBody] LegalService service)
+    {
+        var existingService = await _context.LegalServices
+            .FirstOrDefaultAsync(s => s.Id == id)
+            .ConfigureAwait(false);
+
+        if (existingService == null)
+        {
+            return NotFound();
+        }
+
+        existingService.Name = service.Name;
+        existingService.Description = service.Description;
+        existingService.IsActive = service.IsActive;
+        existingService.DisplayOrder = service.DisplayOrder;
+        existingService.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+        return Ok();
+    }
+
+    /// <summary>
+    /// Delete a service (Admin only)
+    /// </summary>
+    [HttpDelete("services/{id}")]
+    [Authorize(Policy = "IsAdmin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> DeleteService(int id)
+    {
+        var service = await _context.LegalServices
+            .FirstOrDefaultAsync(s => s.Id == id)
+            .ConfigureAwait(false);
+
+        if (service == null)
+        {
+            return NotFound();
+        }
+
+        _context.LegalServices.Remove(service);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+        return NoContent();
+    }
+
     private async Task InitializeDefaultServices()
     {
         var familyCategory = new ServiceCategory
