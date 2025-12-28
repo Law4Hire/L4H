@@ -33,6 +33,10 @@ const AdminPage: React.FC = () => {
     navigate('/admin/services')
   }
 
+  const handleVisaLibraryManagement = () => {
+    navigate('/admin/visa-library')
+  }
+
   const handleAttorneysManagement = () => {
     navigate('/admin/attorneys')
   }
@@ -119,6 +123,15 @@ const AdminPage: React.FC = () => {
           </p>
           <Button onClick={handleServicesManagement}>
             Manage Services
+          </Button>
+        </Card>
+
+        <Card title="Visa Library">
+          <p className="text-gray-600 mb-4">
+            Organize visa types into tiles for the public visa library
+          </p>
+          <Button onClick={handleVisaLibraryManagement}>
+            Manage Visa Library
           </Button>
         </Card>
 

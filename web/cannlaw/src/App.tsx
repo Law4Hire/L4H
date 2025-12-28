@@ -39,6 +39,7 @@ const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
 const SiteConfigPage = lazy(() => import('./pages/admin/SiteConfigPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
 const ServicesManagementPage = lazy(() => import('./pages/admin/ServicesManagementPage'))
+const VisaLibraryManagementPage = lazy(() => import('./pages/admin/VisaLibraryManagementPage'))
 const AdminContentManagementPage = lazy(() => import('./pages/admin/AdminContentManagementPage'))
 const AdminAppointmentsPage = lazy(() => import('./pages/admin/AdminAppointmentsPage'))
 
@@ -219,6 +220,16 @@ function App() {
             <ProtectedRoute requireAdmin>
               <Layout title="Services Management">
                 <ServicesManagementPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/visa-library"
+          element={
+            <ProtectedRoute requireAdmin>
+              <Layout title="Visa Library Management">
+                <VisaLibraryManagementPage />
               </Layout>
             </ProtectedRoute>
           }
