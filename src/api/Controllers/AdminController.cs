@@ -1118,6 +1118,73 @@ public class AdminController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Get all admin pricing entries for the simple pricing management system
+    /// </summary>
+    [HttpGet("pricing")]
+    [ProducesResponseType(typeof(AdminPricingEntryResponse[]), StatusCodes.Status200OK)]
+    public async Task<ActionResult<AdminPricingEntryResponse[]>> GetAdminPricing()
+    {
+        var entries = await _context.AdminPricingEntries
+            .Where(p => p.IsActive)
+            .OrderBy(p => p.VisaType)
+            .ThenBy(p => p.PackageType)
+            .ThenBy(p => p.Country)
+            .ToListAsync().ConfigureAwait(false);
+
+        var response = entries.Select(e => new AdminPricingEntryResponse
+        {
+            Id = e.Id.ToString(),
+            VisaType = e.VisaType,
+            PackageType = e.PackageType,
+            Country = e.Country,
+            Price = e.Price,
+            Description = e.Description
+        }).ToArray();
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Update admin pricing entries (adds new and removes deleted ones)
+    /// </summary>
+    [HttpPatch("pricing")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateAdminPricing([FromBody] UpdateAdminPricingRequest request)
+    {
+        var currentUserId = GetCurrentUserId().Value;
+
+        // Remove all existing entries and replace with new ones
+        var existingEntries = await _context.AdminPricingEntries.ToListAsync().ConfigureAwait(false);
+        _context.AdminPricingEntries.RemoveRange(existingEntries);
+
+        // Add new entries
+        foreach (var entry in request.Entries)
+        {
+            var newEntry = new AdminPricingEntry
+            {
+                Id = Guid.NewGuid(),
+                VisaType = entry.VisaType,
+                PackageType = entry.PackageType,
+                Country = entry.Country,
+                Price = entry.Price,
+                Description = entry.Description,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                CreatedByUserId = currentUserId
+            };
+            _context.AdminPricingEntries.Add(newEntry);
+        }
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        await LogAuditAsync("admin", "pricing_updated", "AdminPricing", "all",
+            new { entryCount = request.Entries.Length }).ConfigureAwait(false);
+
+        return Ok();
+    }
+
     private async Task LogAuditAsync(string category, string action, string targetType, string targetId, object details)
     {
         var userId = GetCurrentUserId();
@@ -1382,4 +1449,28 @@ public class UpdatePackageRequest
 {
     public bool? RequiresLawyer { get; set; }
     public bool? IsActive { get; set; }
+}
+
+public class AdminPricingEntryResponse
+{
+    public string Id { get; set; } = string.Empty;
+    public string VisaType { get; set; } = string.Empty;
+    public string PackageType { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public string? Description { get; set; }
+}
+
+public class UpdateAdminPricingRequest
+{
+    public AdminPricingEntryRequest[] Entries { get; set; } = Array.Empty<AdminPricingEntryRequest>();
+}
+
+public class AdminPricingEntryRequest
+{
+    public string VisaType { get; set; } = string.Empty;
+    public string PackageType { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public string? Description { get; set; }
 }

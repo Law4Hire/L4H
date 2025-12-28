@@ -42,6 +42,7 @@ public class L4HDbContext : DbContext
     public DbSet<InterviewQuestionCategory> InterviewQuestionCategories { get; set; }
     public DbSet<InterviewDocumentUpload> InterviewDocumentUploads { get; set; }
     public DbSet<SiteContent> SiteContents { get; set; }
+    public DbSet<AdminPricingEntry> AdminPricingEntries { get; set; }
 
     // USCIS Forms management entities
     public DbSet<USCISFormEntity> USCISForms { get; set; }
