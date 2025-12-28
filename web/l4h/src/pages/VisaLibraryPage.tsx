@@ -2,52 +2,49 @@ import React, { useState, useEffect } from 'react'
 import { Card, Modal, Button } from '@l4h/shared-ui'
 import { useNavigate } from 'react-router-dom'
 
-interface VisaType {
-  code: string
+interface TileVisaType {
+  id: number
   name: string
-  generalCategory: string
-  description: string
+  code: string
+  isActive: boolean
 }
 
-// Fixed QueryClient issue - using useState instead of useQuery
+interface VisaLibraryTile {
+  id: string
+  name: string
+  description: string | null
+  displayOrder: number
+  isActive: boolean
+  visaTypes: TileVisaType[]
+}
+
 const VisaLibraryPage: React.FC = () => {
   const navigate = useNavigate()
-  const [selectedVisa, setSelectedVisa] = useState<VisaType | null>(null)
+  const [selectedVisa, setSelectedVisa] = useState<TileVisaType | null>(null)
+  const [tiles, setTiles] = useState<VisaLibraryTile[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-      // Use static data instead of React Query to avoid provider issues
-    const [visaTypes, setVisaTypes] = useState<VisaType[]>([])
-    const [isLoading, setIsLoading] = useState(true)
-  
-    useEffect(() => {
-      // Fetch active visa types from the database
-      const fetchVisaTypes = async () => {
-        try {
-          setIsLoading(true)
-          const response = await fetch('/api/v1/visa-types')
-          if (!response.ok) {
-            throw new Error('Failed to load visa types')
-          }
-          const data = await response.json()
-          setVisaTypes(data)
-        } catch (error) {
-          console.error('Error loading visa types:', error)
-          // Optionally set empty array or show error message
-          setVisaTypes([])
-        } finally {
-          setIsLoading(false)
+  useEffect(() => {
+    // Fetch visa library tiles from the database
+    const fetchTiles = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch('/api/v1/visa-library/tiles')
+        if (!response.ok) {
+          throw new Error('Failed to load visa library')
         }
+        const data = await response.json()
+        setTiles(data)
+      } catch (error) {
+        console.error('Error loading visa library:', error)
+        setTiles([])
+      } finally {
+        setIsLoading(false)
       }
-
-      fetchVisaTypes()
-  }, [])
-
-  const groupedVisaTypes = visaTypes.reduce((acc, visa) => {
-    if (!acc[visa.generalCategory]) {
-      acc[visa.generalCategory] = []
     }
-    acc[visa.generalCategory].push(visa)
-    return acc
-  }, {} as Record<string, VisaType[]>)
+
+    fetchTiles()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -67,39 +64,53 @@ const VisaLibraryPage: React.FC = () => {
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             <p className="mt-4 text-gray-600 dark:text-gray-400 text-lg">Loading visa information...</p>
           </div>
+        ) : tiles.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">No visa types are currently available. Please check back later.</p>
+          </div>
         ) : (
           <div className="space-y-12">
-            {Object.entries(groupedVisaTypes).map(([category, visas]) => (
-              <section key={category}>
-                <h3 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
-                  {`${category} Visas`}
-                </h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {visas.map((visa) => (
-                    <Card
-                      key={visa.code}
-                      className="p-6 cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105 border-2 hover:border-blue-200"
-                      onClick={() => setSelectedVisa(visa)}
-                    >
-                      <div className="text-center">
-                        <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                            {visa.code}
+            {tiles.map((tile) => (
+              <section key={tile.id}>
+                <div className="text-center mb-6">
+                  <h3 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                    {tile.name}
+                  </h3>
+                  {tile.description && (
+                    <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                      {tile.description}
+                    </p>
+                  )}
+                </div>
+                {tile.visaTypes.length > 0 ? (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {tile.visaTypes.map((visa) => (
+                      <Card
+                        key={visa.id}
+                        className="p-6 cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105 border-2 hover:border-blue-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:border-blue-500"
+                        onClick={() => setSelectedVisa(visa)}
+                      >
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                              {visa.code}
+                            </span>
+                          </div>
+                          <h4 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2">
+                            {visa.name}
+                          </h4>
+                          <span className="inline-flex items-center text-blue-600 dark:text-blue-400 text-sm font-medium">
+                            Learn More →
                           </span>
                         </div>
-                        <h4 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2">
-                          {visa.name}
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
-                          {visa.description}
-                        </p>
-                        <span className="inline-flex items-center text-blue-600 dark:text-blue-400 text-sm font-medium">
-                          Learn More →
-                        </span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 dark:text-gray-400">No visa types assigned to this category yet.</p>
+                  </div>
+                )}
               </section>
             ))}
           </div>
@@ -133,24 +144,24 @@ const VisaLibraryPage: React.FC = () => {
         >
           <div className="space-y-6">
             <div>
-              <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-2 text-lg">Category</h4>
+              <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-2 text-lg">Visa Code</h4>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
-                {`${selectedVisa.generalCategory} Visa`}
+                {selectedVisa.code}
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-2 text-lg">Description</h4>
+              <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-2 text-lg">Visa Name</h4>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                {selectedVisa.description}
+                {selectedVisa.name}
               </p>
             </div>
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Next Steps</h4>
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Ready to Get Started?</h4>
               <p className="text-blue-800 dark:text-blue-200 text-sm">
-                {`Ready to apply for the ${selectedVisa.code} visa? Our immigration attorneys can guide you through the entire process.`}
+                {`Ready to apply for the ${selectedVisa.code} visa? Our immigration attorneys can guide you through the entire process and help determine if this visa type is right for you.`}
               </p>
             </div>
-            <div className="flex justify-end space-x-3 pt-4 border-t">
+            <div className="flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
               <Button
                 variant="outline"
                 onClick={() => setSelectedVisa(null)}
@@ -164,7 +175,7 @@ const VisaLibraryPage: React.FC = () => {
                   navigate('/login')
                 }}
               >
-                {`Apply for ${selectedVisa.code} Visa`}
+                {`Start Application`}
               </Button>
             </div>
           </div>
