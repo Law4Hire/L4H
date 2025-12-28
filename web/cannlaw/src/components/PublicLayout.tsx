@@ -49,7 +49,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
       {/* Top Bar for Associate Login */}
       <div className="bg-navy-900 text-gray-300 py-2 px-4 sm:px-6 lg:px-8 flex justify-between items-center text-xs tracking-wide z-50 relative">
          <div className="hidden sm:block font-light">
-            Providing Comprehensive Immigration Law Services Since 1998
+            Providing Comprehensive Immigration Law Services Since 2002
          </div>
          <div className="flex items-center space-x-6 ml-auto">
             <a href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`} className="hover:text-gold-400 transition-colors flex items-center">
@@ -103,8 +103,8 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
               <ThemeToggle />
             </nav>
 
-            {/* Client Portal Button */}
-            <div className="hidden md:flex items-center pl-4">
+            {/* Client Portal Button - Temporarily Hidden */}
+            {/* <div className="hidden md:flex items-center pl-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">
                   <Button variant="outline" size="sm" className="dark:text-white dark:border-navy-600 dark:hover:bg-navy-800">Dashboard</Button>
@@ -116,7 +116,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
                   </Button>
                 </Link>
               )}
-            </div>
+            </div> */}
             
             {/* Mobile Menu Button (Hamburger) */}
             <div className="md:hidden flex items-center space-x-2">
@@ -156,7 +156,8 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
                 {item.name}
               </Link>
             ))}
-            <div className="pt-2 border-t border-gray-200 dark:border-navy-700">
+            {/* Client Portal Button - Temporarily Hidden */}
+            {/* <div className="pt-2 border-t border-gray-200 dark:border-navy-700">
               {isAuthenticated ? (
                 <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" size="sm" className="w-full dark:text-white dark:border-navy-600">
@@ -170,7 +171,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
                   </Button>
                 </Link>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       )}

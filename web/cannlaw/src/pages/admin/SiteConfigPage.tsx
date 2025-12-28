@@ -133,7 +133,7 @@ const SiteConfigPage: React.FC = () => {
                 required
                 value={formData.primaryPhone}
                 onChange={handleInputChange}
-                placeholder="(410) 783-1888"
+                placeholder="(410) 988-0123"
               />
             </div>
 

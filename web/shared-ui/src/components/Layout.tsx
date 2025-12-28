@@ -105,9 +105,9 @@ export const Layout: React.FC<LayoutProps> = ({
           <div className="flex justify-between items-center h-16">
             {/* Left side - Logo and Brand */}
             <div className="flex items-center space-x-4">
-              <div 
+              <div
                 className="flex items-center space-x-3 cursor-pointer"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/')}
               >
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg">🇺🇸</span>

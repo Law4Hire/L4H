@@ -128,18 +128,11 @@ const AttorneysPage: React.FC = () => {
     <PublicLayout>
       {/* Hero Section */}
       <section className="bg-navy-900 dark:bg-navy-950 text-white py-20 relative overflow-hidden transition-colors duration-300">
-        <div className="absolute inset-0 opacity-10">
-            <img 
-                src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
-                alt="Law Library Background" 
-                className="w-full h-full object-cover"
-            />
-        </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-white">Our Legal Team</h1>
             <div className="w-24 h-1 bg-gold-500 mx-auto mb-8"></div>
             <p className="text-xl max-w-3xl mx-auto text-gray-300 font-light leading-relaxed">
-              Experienced immigration professionals dedicated to providing comprehensive and compassionate representation since 1998.
+              Experienced immigration professionals dedicated to providing comprehensive and compassionate representation since 2002.
             </p>
         </div>
       </section>
@@ -273,8 +266,8 @@ const AttorneysPage: React.FC = () => {
             >
               Get Started
             </a>
-            <a 
-              href="tel:(410) 783-1888"
+            <a
+              href="tel:(410) 988-0123"
               className="inline-flex items-center px-10 py-4 border border-white text-base font-medium rounded-sm text-white hover:bg-white hover:text-navy-900 transition-all"
             >
               Call Us
