@@ -355,16 +355,25 @@ export const appointments = {
   async list() {
     return fetchJson('/v1/appointments')
   },
-  
+
   async create(data: {
     caseId: string
     scheduledAt: string
     duration: number
     notes?: string
   }) {
-    return fetchJson('/v1/appointments', {
+    // Use the /create endpoint which auto-assigns staff and handles time calculations
+    const requestData = {
+      caseId: data.caseId,
+      preferredStartTime: data.scheduledAt,
+      durationMinutes: data.duration,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      notes: data.notes
+    }
+
+    return fetchJson('/v1/appointments/create', {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify(requestData)
     })
   },
   

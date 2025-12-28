@@ -532,9 +532,9 @@ public class SchedulingController : ControllerBase
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
-        // Log audit event
+        // Log audit event with staff email for assignment tracking
         LogAudit("appointment", "created", "Appointment", appointment.Id.ToString(),
-            new { caseId = request.CaseId.Value, startTime = actualStartTime, staffId = availableStaff.Id.Value });
+            new { caseId = request.CaseId.Value, startTime = actualStartTime, staffId = availableStaff.Id.Value, staffEmail = availableStaff.Email });
 
         var response = new AppointmentCreateResponse
         {
@@ -1189,4 +1189,280 @@ public class SchedulingController : ControllerBase
         _context.AuditLogs.Add(auditLog);
         // Note: SaveChangesAsync will be called by the calling method
     }
+
+    /// <summary>
+    /// Get all appointments for admin review (Admin only)
+    /// </summary>
+    /// <param name="status">Optional status filter</param>
+    /// <returns>List of all appointments with details</returns>
+    [HttpGet("admin/all")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType<List<AdminAppointmentResponse>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllAppointmentsForAdmin([FromQuery] string? status = null)
+    {
+        var query = _context.Appointments
+            .Include(a => a.Case)
+            .ThenInclude(c => c.User)
+            .Include(a => a.Staff)
+            .Include(a => a.Meeting)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            query = query.Where(a => a.Status == status);
+        }
+
+        var appointments = await query
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var response = appointments.Select(a => new AdminAppointmentResponse
+        {
+            Id = a.Id,
+            CaseId = a.CaseId.Value,
+            ClientName = $"{a.Case.User.FirstName} {a.Case.User.LastName}",
+            ClientEmail = a.Case.User.Email,
+            StaffUserId = a.StaffUserId.Value != Guid.Empty ? a.StaffUserId.Value : null,
+            StaffEmail = a.Staff?.Email,
+            StartTime = a.StartTime,
+            DurationMinutes = a.DurationMinutes,
+            TimeZone = a.TimeZone,
+            Status = a.Status,
+            Type = a.Type,
+            Notes = a.Notes,
+            CreatedAt = a.CreatedAt,
+            ConfirmedAt = a.ConfirmedAt,
+            CompletedAt = a.CompletedAt,
+            CancelledAt = a.CancelledAt,
+            HasMeeting = a.Meeting != null,
+            MeetingJoinUrl = a.Meeting?.JoinUrl
+        }).ToList();
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Reassign an appointment to a different staff member (Admin only)
+    /// </summary>
+    /// <param name="id">Appointment ID</param>
+    /// <param name="request">Reassignment request</param>
+    /// <returns>Updated appointment details</returns>
+    [HttpPost("{id}/reassign")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType<ReassignAppointmentResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ReassignAppointment(Guid id, [FromBody] ReassignAppointmentRequest request)
+    {
+        var appointment = await _context.Appointments
+            .Include(a => a.Case)
+            .Include(a => a.Staff)
+            .FirstOrDefaultAsync(a => a.Id == id)
+            .ConfigureAwait(false);
+
+        if (appointment == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Appointment Not Found",
+                Detail = "Appointment not found."
+            });
+        }
+
+        // Verify new staff exists
+        var newStaff = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == request.NewStaffUserId)
+            .ConfigureAwait(false);
+
+        if (newStaff == null)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Staff Not Found",
+                Detail = "The specified staff member does not exist."
+            });
+        }
+
+        // Check for scheduling conflicts with new staff
+        var hasConflict = await HasSchedulingConflict(
+            request.NewStaffUserId,
+            appointment.StartTime.DateTime,
+            appointment.StartTime.DateTime.AddMinutes(appointment.DurationMinutes),
+            id
+        ).ConfigureAwait(false);
+
+        if (hasConflict)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Title = "Scheduling Conflict",
+                Detail = "The new staff member has a conflicting appointment at this time."
+            });
+        }
+
+        // Store previous assignment for audit
+        var previousStaffId = appointment.StaffUserId;
+        var previousStaffEmail = appointment.Staff?.Email;
+
+        // Update assignment
+        appointment.StaffUserId = request.NewStaffUserId;
+
+        // Update case activity
+        appointment.Case.LastActivityAt = DateTimeOffset.UtcNow;
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Log audit event with assignment history
+        LogAudit("appointment", "reassigned", "Appointment", appointment.Id.ToString(),
+            new
+            {
+                appointmentId = appointment.Id,
+                previousStaffId = previousStaffId.Value != Guid.Empty ? previousStaffId.Value : (Guid?)null,
+                previousStaffEmail = previousStaffEmail,
+                newStaffId = request.NewStaffUserId.Value,
+                newStaffEmail = newStaff.Email,
+                reason = request.Reason
+            });
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        var response = new ReassignAppointmentResponse
+        {
+            AppointmentId = appointment.Id,
+            NewStaffUserId = appointment.StaffUserId.Value,
+            NewStaffEmail = newStaff.Email,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get assignment history for an appointment (Admin only)
+    /// </summary>
+    /// <param name="id">Appointment ID</param>
+    /// <returns>Assignment history with all reassignments</returns>
+    [HttpGet("{id}/assignment-history")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType<List<AssignmentHistoryEntry>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAssignmentHistory(Guid id)
+    {
+        var appointment = await _context.Appointments
+            .FirstOrDefaultAsync(a => a.Id == id)
+            .ConfigureAwait(false);
+
+        if (appointment == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Appointment Not Found",
+                Detail = "Appointment not found."
+            });
+        }
+
+        // Get all audit logs for this appointment related to assignment
+        var auditLogs = await _context.AuditLogs
+            .Where(a => a.TargetId == id.ToString() &&
+                       (a.Action == "created" || a.Action == "reassigned"))
+            .OrderBy(a => a.CreatedAt)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var history = new List<AssignmentHistoryEntry>();
+
+        foreach (var log in auditLogs)
+        {
+            try
+            {
+                var details = JsonSerializer.Deserialize<Dictionary<string, object>>(log.DetailsJson);
+
+                if (log.Action == "created")
+                {
+                    history.Add(new AssignmentHistoryEntry
+                    {
+                        Timestamp = log.CreatedAt,
+                        Action = "Initial Assignment",
+                        StaffEmail = details?.ContainsKey("staffEmail") == true
+                            ? details["staffEmail"].ToString()
+                            : "Unknown",
+                        PerformedByUserId = log.ActorUserId.Value.Value,
+                        Reason = "Appointment created"
+                    });
+                }
+                else if (log.Action == "reassigned")
+                {
+                    history.Add(new AssignmentHistoryEntry
+                    {
+                        Timestamp = log.CreatedAt,
+                        Action = "Reassigned",
+                        PreviousStaffEmail = details?.ContainsKey("previousStaffEmail") == true
+                            ? details["previousStaffEmail"].ToString()
+                            : null,
+                        StaffEmail = details?.ContainsKey("newStaffEmail") == true
+                            ? details["newStaffEmail"].ToString()
+                            : "Unknown",
+                        PerformedByUserId = log.ActorUserId.Value.Value,
+                        Reason = details?.ContainsKey("reason") == true
+                            ? details["reason"].ToString()
+                            : null
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error parsing audit log {LogId}", log.Id);
+            }
+        }
+
+        return Ok(history);
+    }
+}
+
+// Request/Response models for new endpoints
+public class AdminAppointmentResponse
+{
+    public Guid Id { get; set; }
+    public Guid CaseId { get; set; }
+    public string ClientName { get; set; } = string.Empty;
+    public string ClientEmail { get; set; } = string.Empty;
+    public Guid? StaffUserId { get; set; }
+    public string? StaffEmail { get; set; }
+    public DateTimeOffset StartTime { get; set; }
+    public int DurationMinutes { get; set; }
+    public string TimeZone { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? Type { get; set; }
+    public string? Notes { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? ConfirmedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+    public DateTime? CancelledAt { get; set; }
+    public bool HasMeeting { get; set; }
+    public string? MeetingJoinUrl { get; set; }
+}
+
+public class ReassignAppointmentRequest
+{
+    public required UserId NewStaffUserId { get; set; }
+    public string? Reason { get; set; }
+}
+
+public class ReassignAppointmentResponse
+{
+    public Guid AppointmentId { get; set; }
+    public Guid NewStaffUserId { get; set; }
+    public string NewStaffEmail { get; set; } = string.Empty;
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class AssignmentHistoryEntry
+{
+    public DateTime Timestamp { get; set; }
+    public string Action { get; set; } = string.Empty;
+    public string? PreviousStaffEmail { get; set; }
+    public string StaffEmail { get; set; } = string.Empty;
+    public Guid PerformedByUserId { get; set; }
+    public string? Reason { get; set; }
 }
