@@ -38,6 +38,7 @@ const AdminTimeEntriesPage = lazy(() => import('./pages/AdminTimeEntriesPage'))
 const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
 const SiteConfigPage = lazy(() => import('./pages/admin/SiteConfigPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
+const ServicesManagementPage = lazy(() => import('./pages/admin/ServicesManagementPage'))
 const AdminContentManagementPage = lazy(() => import('./pages/admin/AdminContentManagementPage'))
 
 // Legacy pages (keeping for compatibility)
@@ -201,17 +202,27 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/admin/attorneys" 
+        <Route
+          path="/admin/attorneys"
           element={
             <ProtectedRoute requireAdmin>
               <Layout title="Attorney Management">
                 <AttorneyManagementPage />
               </Layout>
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
+        <Route
+          path="/admin/services"
+          element={
+            <ProtectedRoute requireAdmin>
+              <Layout title="Services Management">
+                <ServicesManagementPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/content" 
           element={
             <ProtectedRoute requireAdmin>

@@ -29,6 +29,18 @@ const AdminPage: React.FC = () => {
     navigate('/admin/workflows')
   }
 
+  const handleServicesManagement = () => {
+    navigate('/admin/services')
+  }
+
+  const handleAttorneysManagement = () => {
+    navigate('/admin/attorneys')
+  }
+
+  const handleSiteConfig = () => {
+    navigate('/admin/config')
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -94,6 +106,33 @@ const AdminPage: React.FC = () => {
           </p>
           <Button onClick={handleWorkflowReview}>
             {'View'}
+          </Button>
+        </Card>
+
+        <Card title="Services Management">
+          <p className="text-gray-600 mb-4">
+            Manage service categories and offerings
+          </p>
+          <Button onClick={handleServicesManagement}>
+            Manage Services
+          </Button>
+        </Card>
+
+        <Card title="Attorney Management">
+          <p className="text-gray-600 mb-4">
+            Manage attorney profiles and information
+          </p>
+          <Button onClick={handleAttorneysManagement}>
+            Manage Attorneys
+          </Button>
+        </Card>
+
+        <Card title="Site Configuration">
+          <p className="text-gray-600 mb-4">
+            Configure site settings and branding
+          </p>
+          <Button onClick={handleSiteConfig}>
+            Configure Site
           </Button>
         </Card>
       </div>
