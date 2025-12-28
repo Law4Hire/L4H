@@ -685,8 +685,8 @@ const AdminUSCISFormsPage: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     {form.pricing ? (
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        <div>P: ${form.pricing.paralegalPriceUSD || 'N/A'}</div>
-                        <div>L: ${form.pricing.lawyerPriceUSD || 'N/A'}</div>
+                        <div>Price: ${form.pricing.selfFilePriceUSD || 'N/A'}</div>
+                        <div>LLC Fee: ${form.pricing.llcFeeUSD || 'N/A'}</div>
                       </div>
                     ) : (
                       <span className="text-sm text-gray-400 dark:text-gray-500">No pricing</span>

@@ -84,7 +84,7 @@ export function useAttorneys() {
         body: JSON.stringify(attorney)
       })
 
-      if (!response.ok) throw new Error('Failed to create attorney')
+      if (!response.ok) throw new Error('Failed to create user profile')
       const newAttorney = await response.json()
       await fetchAttorneys()
       return { success: true, data: newAttorney }
