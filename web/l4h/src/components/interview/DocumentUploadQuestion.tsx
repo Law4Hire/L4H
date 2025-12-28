@@ -173,10 +173,10 @@ export const DocumentUploadQuestion: React.FC<DocumentUploadQuestionProps> = ({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-900">{question.text}</h2>
+      <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{question.text}</h2>
 
       {config.instructionText && (
-        <p className="text-lg text-gray-600">{config.instructionText}</p>
+        <p className="text-lg text-gray-600 dark:text-gray-300">{config.instructionText}</p>
       )}
 
       {/* Drop Zone */}
@@ -185,14 +185,14 @@ export const DocumentUploadQuestion: React.FC<DocumentUploadQuestionProps> = ({
         onDragLeave={() => setDragActive(false)}
         onDrop={handleDrop}
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-          dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+          dragActive ? 'border-blue-500 bg-blue-50 dark:border-gold-500 dark:bg-gold-900/20' : 'border-gray-300 dark:border-gray-700'
         }`}
       >
-        <Upload className="mx-auto mb-4 text-gray-400" size={48} />
-        <p className="text-lg font-semibold mb-2">
+        <Upload className="mx-auto mb-4 text-gray-400 dark:text-gray-500" size={48} />
+        <p className="text-lg font-semibold mb-2 dark:text-white">
           Drag and drop files here, or click to browse
         </p>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           Accepted: {config.allowedFileTypes.map(t => `.${t}`).join(', ')}
         </p>
         <input
@@ -213,35 +213,35 @@ export const DocumentUploadQuestion: React.FC<DocumentUploadQuestionProps> = ({
       {/* Uploaded Files List */}
       {uploadedFiles.length > 0 && (
         <div className="space-y-2">
-          <h3 className="font-semibold">Uploaded Files:</h3>
+          <h3 className="font-semibold dark:text-white">Uploaded Files:</h3>
           {uploadedFiles.map(file => (
             <div
               key={file.id}
-              className="flex items-center justify-between p-3 border rounded-lg"
+              className="flex items-center justify-between p-3 border rounded-lg dark:border-gray-700"
             >
               <div className="flex items-center space-x-3 flex-1">
-                <FileText className="text-blue-600" size={24} />
+                <FileText className="text-blue-600 dark:text-blue-400" size={24} />
                 <div className="flex-1">
-                  <p className="font-medium">{file.name}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium dark:text-white">{file.name}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {(file.size / 1024).toFixed(1)} KB
                   </p>
                 </div>
               </div>
 
               {file.status === 'uploading' && (
-                <div className="text-blue-600">Uploading...</div>
+                <div className="text-blue-600 dark:text-blue-400">Uploading...</div>
               )}
               {file.status === 'complete' && (
-                <CheckCircle className="text-green-600" size={24} />
+                <CheckCircle className="text-green-600 dark:text-green-400" size={24} />
               )}
               {file.status === 'error' && (
-                <span className="text-red-600">Failed</span>
+                <span className="text-red-600 dark:text-red-400">Failed</span>
               )}
 
               <button
                 onClick={() => handleDelete(file.id)}
-                className="ml-3 text-gray-400 hover:text-red-600"
+                className="ml-3 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400"
               >
                 <X size={20} />
               </button>
@@ -262,7 +262,7 @@ export const DocumentUploadQuestion: React.FC<DocumentUploadQuestionProps> = ({
       </div>
 
       {!canContinue() && config.isRequired && (
-        <p className="text-sm text-gray-500 text-right">
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-right">
           Please upload at least {config.minFiles} file(s) to continue
         </p>
       )}

@@ -196,17 +196,69 @@ const AttorneysPage: React.FC = () => {
                             try {
                             const practiceAreas = typeof attorney.practiceAreas === 'string' ? JSON.parse(attorney.practiceAreas) : attorney.practiceAreas
                             if (!Array.isArray(practiceAreas) || practiceAreas.length === 0) return null
-                            
+
                             return (
                                 <div className="mb-4">
                                 <h4 className="font-bold text-navy-900 dark:text-white mb-3 text-[10px] uppercase tracking-widest">Expertise</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {practiceAreas.slice(0, 3).map((area: string, index: number) => (
+                                    {practiceAreas.map((area: string, index: number) => (
                                     <span
                                         key={index}
                                         className="inline-block bg-navy-50 dark:bg-navy-800 text-navy-700 dark:text-navy-200 text-[10px] font-bold uppercase px-2 py-1 rounded-sm border border-navy-100 dark:border-navy-700 tracking-tight"
                                     >
                                         {area}
+                                    </span>
+                                    ))}
+                                </div>
+                                </div>
+                            )
+                            } catch {
+                            return null
+                            }
+                        })()}
+
+                        {/* Languages */}
+                        {attorney.languages && (() => {
+                            try {
+                            const languages = typeof attorney.languages === 'string' ? JSON.parse(attorney.languages) : attorney.languages
+                            if (!Array.isArray(languages) || languages.length === 0) return null
+
+                            return (
+                                <div className="mb-4">
+                                <h4 className="font-bold text-navy-900 dark:text-white mb-3 text-[10px] uppercase tracking-widest">Languages</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {languages.map((language: string, index: number) => (
+                                    <span
+                                        key={index}
+                                        className="inline-block bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase px-2 py-1 rounded-sm border border-blue-100 dark:border-blue-800 tracking-tight"
+                                    >
+                                        {language}
+                                    </span>
+                                    ))}
+                                </div>
+                                </div>
+                            )
+                            } catch {
+                            return null
+                            }
+                        })()}
+
+                        {/* Credentials */}
+                        {attorney.credentials && (() => {
+                            try {
+                            const credentials = typeof attorney.credentials === 'string' ? JSON.parse(attorney.credentials) : attorney.credentials
+                            if (!Array.isArray(credentials) || credentials.length === 0) return null
+
+                            return (
+                                <div className="mb-4">
+                                <h4 className="font-bold text-navy-900 dark:text-white mb-3 text-[10px] uppercase tracking-widest">Credentials</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {credentials.map((credential: string, index: number) => (
+                                    <span
+                                        key={index}
+                                        className="inline-block bg-gold-50 dark:bg-gold-900/20 text-gold-700 dark:text-gold-400 text-[10px] font-bold uppercase px-2 py-1 rounded-sm border border-gold-200 dark:border-gold-800 tracking-tight"
+                                    >
+                                        {credential}
                                     </span>
                                     ))}
                                 </div>
