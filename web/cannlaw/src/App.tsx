@@ -40,6 +40,7 @@ const SiteConfigPage = lazy(() => import('./pages/admin/SiteConfigPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
 const ServicesManagementPage = lazy(() => import('./pages/admin/ServicesManagementPage'))
 const AdminContentManagementPage = lazy(() => import('./pages/admin/AdminContentManagementPage'))
+const AdminAppointmentsPage = lazy(() => import('./pages/admin/AdminAppointmentsPage'))
 
 // Legacy pages (keeping for compatibility)
 const SchedulePage = lazy(() => import('./pages/SchedulePage'))
@@ -223,14 +224,24 @@ function App() {
           }
         />
         <Route
-          path="/admin/content" 
+          path="/admin/content"
           element={
             <ProtectedRoute requireAdmin>
               <Layout title="Content Management">
                 <AdminContentManagementPage />
               </Layout>
             </ProtectedRoute>
-          } 
+          }
+        />
+        <Route
+          path="/admin/appointments"
+          element={
+            <ProtectedRoute requireAdmin>
+              <Layout title="Appointment Management">
+                <AdminAppointmentsPage />
+              </Layout>
+            </ProtectedRoute>
+          }
         />
         <Route 
           path="/admin/billing" 

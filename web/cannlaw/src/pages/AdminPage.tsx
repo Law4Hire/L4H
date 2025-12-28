@@ -41,6 +41,10 @@ const AdminPage: React.FC = () => {
     navigate('/admin/config')
   }
 
+  const handleAppointmentsManagement = () => {
+    navigate('/admin/appointments')
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -133,6 +137,15 @@ const AdminPage: React.FC = () => {
           </p>
           <Button onClick={handleSiteConfig}>
             Configure Site
+          </Button>
+        </Card>
+
+        <Card title="Appointments">
+          <p className="text-gray-600 mb-4">
+            View and manage client appointments and staff assignments
+          </p>
+          <Button onClick={handleAppointmentsManagement}>
+            Manage Appointments
           </Button>
         </Card>
       </div>
