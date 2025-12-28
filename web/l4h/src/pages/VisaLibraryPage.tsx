@@ -19,47 +19,26 @@ const VisaLibraryPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true)
   
     useEffect(() => {
-      // Simulate loading and set static visa data
-      const timer = setTimeout(() => {
-        setVisaTypes([
-          // Nonimmigrant Visas
-          { code: 'B1', name: 'Business Visitor', generalCategory: 'Nonimmigrant', description: 'Business visitor visa for temporary business activities in the United States.' },
-          { code: 'B2', name: 'Tourist Visitor', generalCategory: 'Nonimmigrant', description: 'Tourist visa for pleasure, vacation, or visiting family and friends.' },
-          { code: 'F1', name: 'Student', generalCategory: 'Nonimmigrant', description: 'Student visa for academic studies at accredited US institutions.' },
-          { code: 'F2', name: 'Student Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of F1 students.' },
-          { code: 'H1B', name: 'Specialty Occupation Worker', generalCategory: 'Nonimmigrant', description: 'Specialty occupation visa for professionals with bachelor\'s degree or higher.' },
-          { code: 'H2A', name: 'Agricultural Worker', generalCategory: 'Nonimmigrant', description: 'Temporary agricultural worker visa for seasonal farm labor.' },
-          { code: 'H4', name: 'H1B Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of H1B visa holders.' },
-          { code: 'J1', name: 'Exchange Visitor', generalCategory: 'Nonimmigrant', description: 'Exchange visitor visa for cultural exchange programs.' },
-          { code: 'L1A', name: 'Intracompany Transferee Executive', generalCategory: 'Nonimmigrant', description: 'Intracompany transferee visa for managers and executives.' },
-          { code: 'L1B', name: 'Intracompany Transferee Specialist', generalCategory: 'Nonimmigrant', description: 'Intracompany transferee visa for employees with specialized knowledge.' },
-          { code: 'L2', name: 'L1 Dependent', generalCategory: 'Nonimmigrant', description: 'Dependent visa for spouses and unmarried children under 21 of L1 visa holders.' },
-          { code: 'O1', name: 'Extraordinary Ability', generalCategory: 'Nonimmigrant', description: 'Extraordinary ability visa for individuals with exceptional skills.' },
-          { code: 'TN', name: 'NAFTA Professional', generalCategory: 'Nonimmigrant', description: 'NAFTA professional visa for Canadian and Mexican citizens.' },
-          { code: 'E2', name: 'Treaty Investor', generalCategory: 'Nonimmigrant', description: 'Treaty investor visa for substantial investment in US business.' },
-          
-          // Employment-Based Immigrant Visas
-          { code: 'EB1A', name: 'Extraordinary Ability', generalCategory: 'Employment-Based', description: 'First preference for individuals with extraordinary ability in the sciences, arts, education, business, or athletics.' },
-          { code: 'EB1B', name: 'Outstanding Professors/Researchers', generalCategory: 'Employment-Based', description: 'First preference for outstanding professors and researchers.' },
-          { code: 'EB1C', name: 'Multinational Managers/Executives', generalCategory: 'Employment-Based', description: 'First preference for multinational managers and executives.' },
-          { code: 'EB2A', name: 'Advanced Degree Professionals', generalCategory: 'Employment-Based', description: 'Second preference for professionals with advanced degrees (Master\'s or higher, or Bachelor\'s plus 5 years of experience).' },
-          { code: 'EB2B', name: 'Exceptional Ability', generalCategory: 'Employment-Based', description: 'Second preference for individuals with exceptional ability in the sciences, arts, or business.' },
-          { code: 'EB2 NIW', name: 'National Interest Waiver', description: 'Second preference waiver of job offer and labor certification if it is in the national interest of the US.', generalCategory: 'Employment-Based' },
-          { code: 'EB3', name: 'Skilled Workers & Professionals', generalCategory: 'Employment-Based', description: 'Third preference for skilled workers, professionals, and other workers.' },
-          { code: 'EB4', name: 'Special Immigrants', generalCategory: 'Employment-Based', description: 'Fourth preference for special immigrants, including religious workers and others.' },
-          { code: 'EB5', name: 'Immigrant Investors', generalCategory: 'Employment-Based', description: 'Fifth preference for immigrant investors who invest in a new commercial enterprise.' },
-  
-          // Family-Based Immigrant Visas
-          { code: 'FB1', name: 'First Preference', generalCategory: 'Family-Based', description: 'Unmarried sons and daughters (21 years of age and older) of U.S. citizens.' },
-          { code: 'FB2A', name: 'Second Preference A', generalCategory: 'Family-Based', description: 'Spouses and children (unmarried and under 21 years of age) of lawful permanent residents.' },
-          { code: 'FB2B', name: 'Second Preference B', generalCategory: 'Family-Based', description: 'Unmarried sons and daughters (21 years of age and older) of lawful permanent residents.' },
-          { code: 'FB3', name: 'Third Preference', generalCategory: 'Family-Based', description: 'Married sons and daughters of U.S. citizens.' },
-          { code: 'FB4', name: 'Fourth Preference', generalCategory: 'Family-Based', description: 'Brothers and sisters of adult U.S. citizens.' },
-          { code: 'IR', name: 'Immediate Relatives', generalCategory: 'Family-Based', description: 'Spouses, unmarried children under 21, and parents of U.S. citizens (no numerical limit).' }
-        ])
-        setIsLoading(false)
-      }, 500) // Short delay to simulate loading
-      return () => clearTimeout(timer)
+      // Fetch active visa types from the database
+      const fetchVisaTypes = async () => {
+        try {
+          setIsLoading(true)
+          const response = await fetch('/api/v1/visa-types')
+          if (!response.ok) {
+            throw new Error('Failed to load visa types')
+          }
+          const data = await response.json()
+          setVisaTypes(data)
+        } catch (error) {
+          console.error('Error loading visa types:', error)
+          // Optionally set empty array or show error message
+          setVisaTypes([])
+        } finally {
+          setIsLoading(false)
+        }
+      }
+
+      fetchVisaTypes()
   }, [])
 
   const groupedVisaTypes = visaTypes.reduce((acc, visa) => {
