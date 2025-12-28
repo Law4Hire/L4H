@@ -672,12 +672,13 @@ export default function AdminInterviewQuestionsPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Filter by Category
                 </label>
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowCategoryModal(true)}
-                  className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
                 >
                   Edit Categories
-                </button>
+                </Button>
               </div>
               <select
                 value={selectedCategory}

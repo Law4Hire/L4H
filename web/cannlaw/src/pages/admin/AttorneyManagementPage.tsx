@@ -492,7 +492,7 @@ const AttorneyManagementPage: React.FC = () => {
                     <User className="w-10 h-10 text-navy-300" />
                   </div>
                 )}
-                <span className="mt-2 text-[10px] font-bold uppercase tracking-tighter text-gray-400">Order: {attorney.displayOrder}</span>
+                <span className="mt-2 text-[10px] font-bold uppercase tracking-tighter text-gray-400 dark:text-gray-500">Order: {attorney.displayOrder}</span>
               </div>
               
               <div className="flex-grow min-w-0">
@@ -501,22 +501,22 @@ const AttorneyManagementPage: React.FC = () => {
                     <div className="flex items-center space-x-3">
                         <h3 className="text-xl font-serif font-bold text-navy-900 dark:text-white">{attorney.name}</h3>
                         {attorney.isManagingAttorney && (
-                            <span className="bg-gold-100 text-gold-800 text-[10px] font-black uppercase px-2 py-0.5 rounded-sm tracking-tighter">Managing</span>
+                            <span className="bg-gold-100 text-gold-800 dark:bg-gold-900/30 dark:text-gold-300 text-[10px] font-black uppercase px-2 py-0.5 rounded-sm tracking-tighter">Managing</span>
                         )}
                         {!attorney.isActive && (
-                            <span className="bg-gray-100 text-gray-600 text-[10px] font-black uppercase px-2 py-0.5 rounded-sm tracking-tighter">Inactive</span>
+                            <span className="bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 text-[10px] font-black uppercase px-2 py-0.5 rounded-sm tracking-tighter">Inactive</span>
                         )}
                     </div>
-                    <p className="text-gold-600 font-medium text-sm mt-0.5">{attorney.title}</p>
+                    <p className="text-gold-600 dark:text-gold-400 font-medium text-sm mt-0.5">{attorney.title}</p>
                   </div>
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" onClick={() => handleEdit(attorney)} className="dark:text-white dark:border-navy-700 dark:hover:bg-navy-800">
                       <Edit size="sm" className="mr-1" /> Edit
                     </Button>
                     {attorney.isActive && (
-                        <button 
+                        <button
                             onClick={() => { setAttorneyToDeactivate(attorney); setShowDeactivateModal(true); }}
-                            className="text-xs text-red-500 hover:text-red-700 font-medium px-2"
+                            className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium px-2"
                         >
                             Deactivate
                         </button>
