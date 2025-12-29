@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -50,17 +51,19 @@ public interface IFileUploadService
 public class FileUploadService : IFileUploadService
 {
     private readonly IWebHostEnvironment _environment;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<FileUploadService> _logger;
     private readonly L4HDbContext _context;
-    
+
     private readonly string[] _allowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
     private readonly string[] _allowedDocumentExtensions = { ".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png", ".webp" };
     private readonly long _maxImageFileSize = 5 * 1024 * 1024; // 5MB
     private readonly long _maxDocumentFileSize = 10 * 1024 * 1024; // 10MB
-    
-    public FileUploadService(IWebHostEnvironment environment, ILogger<FileUploadService> logger, L4HDbContext context)
+
+    public FileUploadService(IWebHostEnvironment environment, IConfiguration configuration, ILogger<FileUploadService> logger, L4HDbContext context)
     {
         _environment = environment;
+        _configuration = configuration;
         _logger = logger;
         _context = context;
     }
@@ -74,8 +77,12 @@ public class FileUploadService : IFileUploadService
 
         try
         {
+            // Get base path from configuration
+            var basePath = _configuration.GetValue<string>("FileStorage:BasePath") ?? "/data/uploads";
+            var attorneysSubdir = _configuration.GetValue<string>("FileStorage:AttorneyPhotosSubdir") ?? "attorneys";
+
             // Create uploads directory if it doesn't exist
-            var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads", "attorneys");
+            var uploadsPath = Path.Combine(basePath, attorneysSubdir);
             Directory.CreateDirectory(uploadsPath);
 
             // Generate unique filename

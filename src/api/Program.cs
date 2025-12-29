@@ -386,6 +386,15 @@ Console.WriteLine("[STARTUP] Configuring middleware pipeline...");
 app.UseSerilogRequestLogging();
 Console.WriteLine("[STARTUP] Serilog request logging configured");
 
+// Configure static files for attorney photos and other uploads
+var basePath = builder.Configuration.GetValue<string>("FileStorage:BasePath") ?? "/data/uploads";
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(basePath),
+    RequestPath = "/uploads"
+});
+Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads");
+
 app.UseAuthentication();
 Console.WriteLine("[STARTUP] Authentication configured");
 
