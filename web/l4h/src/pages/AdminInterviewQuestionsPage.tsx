@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Modal, Input, useToast } from '@l4h/shared-ui';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface QuestionOption {
   id?: string;
@@ -70,6 +73,111 @@ const INPUT_TYPES = [
   { value: 'document_upload', label: 'Document Upload' },
   { value: 'attorney_question', label: 'Attorney Question Page' }
 ];
+
+interface SortableQuestionItemProps {
+  question: any;
+  index: number;
+  totalCount: number;
+  onMoveUp: (question: any) => void;
+  onMoveDown: (question: any) => void;
+  onEdit: (question: any) => void;
+  onDelete: (question: any) => void;
+  onAddChild: (question: any) => void;
+  onToggleActive: (question: any) => void;
+}
+
+function SortableQuestionItem({ question, index, totalCount, onMoveUp, onMoveDown, onEdit, onDelete, onAddChild, onToggleActive }: SortableQuestionItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: question.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    marginLeft: `${question.level * 40}px`
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800"
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex-1 flex items-start gap-3">
+          {/* Drag Handle */}
+          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing mt-1">
+            <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+            </svg>
+          </div>
+
+          {question.level > 0 && (
+            <div className="text-gray-400 dark:text-gray-500 text-sm mt-1">
+              └─
+            </div>
+          )}
+
+          <div className="flex flex-col items-center">
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              #{question.displayOrder}
+            </span>
+            <div className="flex flex-col mt-1">
+              <button onClick={() => onMoveUp(question)} disabled={index === 0} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▲</button>
+              <button onClick={() => onMoveDown(question)} disabled={index === totalCount - 1} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▼</button>
+            </div>
+          </div>
+
+          <div className="flex-1">
+            <div className="flex items-center space-x-2">
+              <code className="text-sm font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
+                {question.key}
+              </code>
+              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
+                {question.category}
+              </span>
+              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200">
+                {question.inputType}
+              </span>
+              {question.isRequired && (
+                <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
+                  Required
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-gray-900 dark:text-white font-medium">{question.text}</p>
+            <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+              <span>{question.options.length} options</span>
+              {question.discriminatesVisaCodes && (
+                <span>Visas: {question.discriminatesVisaCodes}</span>
+              )}
+              <span>Weight: {question.selectionWeight}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-end space-y-2">
+          <button onClick={() => onToggleActive(question)} className={`px-3 py-1 text-xs font-semibold rounded-full ${question.isActive ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'}`}>
+            {question.isActive ? 'Active' : 'Inactive'}
+          </button>
+          <div className="flex flex-col space-y-1">
+            <div className="flex space-x-2">
+              <button onClick={() => onEdit(question)} className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">Edit</button>
+              <button onClick={() => onDelete(question)} className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium">Delete</button>
+            </div>
+            <button onClick={() => onAddChild(question)} className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 text-xs font-medium text-left">+ Add Child</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminInterviewQuestionsPage() {
   const navigate = useNavigate();
@@ -367,6 +475,39 @@ export default function AdminInterviewQuestionsPage() {
       { questionId: newQuestions[currentIndex + 1].id, displayOrder: newQuestions[currentIndex + 1].displayOrder }
     ]);
   };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = hierarchicalQuestions.findIndex(q => q.id === active.id);
+    const newIndex = hierarchicalQuestions.findIndex(q => q.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    // Create a reorder array for all affected questions
+    const updates: { questionId: string; displayOrder: number }[] = [];
+
+    // Swap display orders
+    const movedQuestion = hierarchicalQuestions[oldIndex];
+    const targetQuestion = hierarchicalQuestions[newIndex];
+
+    updates.push({ questionId: movedQuestion.id, displayOrder: targetQuestion.displayOrder });
+    updates.push({ questionId: targetQuestion.id, displayOrder: movedQuestion.displayOrder });
+
+    await reorderQuestions(updates);
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   const reorderQuestions = async (updates: { questionId: string; displayOrder: number }[]) => {
     try {
@@ -707,73 +848,33 @@ export default function AdminInterviewQuestionsPage() {
                 No questions found
               </div>
             ) : (
-              hierarchicalQuestions.map((question, index) => (
-                <div
-                  key={question.id}
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  style={{ marginLeft: `${question.level * 40}px` }}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={hierarchicalQuestions.map(q => q.id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  {/* ... (question render logic same as before, simplified for brevity in thought, but full in file) ... */}
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        {question.level > 0 && (
-                          <div className="text-gray-400 dark:text-gray-500 text-sm">
-                            └─
-                          </div>
-                        )}
-                        <div className="flex flex-col items-center">
-                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            #{question.displayOrder}
-                          </span>
-                          <div className="flex flex-col mt-1">
-                            <button onClick={() => moveQuestionUp(question)} disabled={index === 0} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▲</button>
-                            <button onClick={() => moveQuestionDown(question)} disabled={index === hierarchicalQuestions.length - 1} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▼</button>
-                          </div>
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <code className="text-sm font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
-                              {question.key}
-                            </code>
-                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
-                              {question.category}
-                            </span>
-                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200">
-                              {question.inputType}
-                            </span>
-                            {question.isRequired && (
-                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
-                                Required
-                              </span>
-                            )}
-                          </div>
-                          <p className="mt-2 text-gray-900 dark:text-white font-medium">{question.text}</p>
-                          <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                            <span>{question.options.length} options</span>
-                            {question.discriminatesVisaCodes && (
-                              <span>Visas: {question.discriminatesVisaCodes}</span>
-                            )}
-                            <span>Weight: {question.selectionWeight}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-end space-y-2">
-                      <button onClick={() => toggleActive(question)} className={`px-3 py-1 text-xs font-semibold rounded-full ${question.isActive ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'}`}>{question.isActive ? 'Active' : 'Inactive'}</button>
-                      <div className="flex flex-col space-y-1">
-                        <div className="flex space-x-2">
-                          <button onClick={() => openEditModal(question)} className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">Edit</button>
-                          <button onClick={() => { setQuestionToDelete(question); setShowDeleteConfirm(true); }} className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium">Delete</button>
-                        </div>
-                        <button onClick={() => openCreateChildModal(question)} className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 text-xs font-medium text-left">+ Add Child</button>
-                      </div>
-                    </div>
+                  <div className="space-y-4">
+                    {hierarchicalQuestions.map((question, index) => (
+                      <SortableQuestionItem
+                        key={question.id}
+                        question={question}
+                        index={index}
+                        totalCount={hierarchicalQuestions.length}
+                        onMoveUp={moveQuestionUp}
+                        onMoveDown={moveQuestionDown}
+                        onEdit={openEditModal}
+                        onDelete={(q) => { setQuestionToDelete(q); setShowDeleteConfirm(true); }}
+                        onAddChild={openCreateChildModal}
+                        onToggleActive={toggleActive}
+                      />
+                    ))}
                   </div>
-                </div>
-              ))
+                </SortableContext>
+              </DndContext>
             )}
           </div>
         </div>

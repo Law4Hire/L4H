@@ -10,7 +10,9 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(Select-String -Pattern \"error|succeeded|failed\")",
-      "Bash(Select-Object -Last 20)"
+      "Bash(Select-Object -Last 20)",
+      "Bash(cat:*)",
+      "Bash(npm install:*)"
     ]
   }
 }
