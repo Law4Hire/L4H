@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, Button } from '@l4h/shared-ui'
 import { useAuth } from '../../hooks/useAuth'
+import { useCases } from '../../hooks/useCases'
+import { useAttorneys } from '../../hooks/useAttorneys'
 import { formatDistanceToNow, format } from 'date-fns'
-import { MessageSquare, Calendar, User, Clock, Video, ExternalLink } from 'lucide-react'
+import { MessageSquare, Calendar, User, Clock, Video, ExternalLink, Settings, Search, ArrowUpDown, ChevronDown, X } from 'lucide-react'
 
 interface DashboardStats {
   activeCases: number
@@ -48,6 +50,19 @@ const LegalDashboard: React.FC = () => {
   const [messages, setMessages] = useState<MessagePreview[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  // Cases management
+  const { cases, isLoading: casesLoading, error: casesError, fetchCases, assignCase, updateVisaTypes } = useCases()
+  const { attorneys, fetchAttorneys } = useAttorneys()
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showAssigned, setShowAssigned] = useState(false)
+  const [sortBy, setSortBy] = useState('lastActivityAt')
+  const [sortDesc, setSortDesc] = useState(true)
+  const [selectedCase, setSelectedCase] = useState<string | null>(null)
+  const [showCaseModal, setShowCaseModal] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+
+  const isAdmin = user?.roles?.includes('Admin') || false
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -65,7 +80,7 @@ const LegalDashboard: React.FC = () => {
         if (activityRes.ok) setActivity(await activityRes.json())
         if (appointRes.ok) setAppointments(await appointRes.json())
         if (msgRes.ok) setMessages(await msgRes.json())
-        
+
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
       } finally {
@@ -74,7 +89,20 @@ const LegalDashboard: React.FC = () => {
     }
 
     fetchData()
+    fetchCases({ showAssigned, search: searchTerm, sortBy, sortDesc })
+    if (isAdmin) {
+      fetchAttorneys()
+    }
   }, [])
+
+  // Refetch cases when filters change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchCases({ showAssigned, search: searchTerm, sortBy, sortDesc })
+    }, 300) // Debounce search
+
+    return () => clearTimeout(timer)
+  }, [searchTerm, showAssigned, sortBy, sortDesc])
 
   if (isLoading) {
     return (
@@ -84,9 +112,27 @@ const LegalDashboard: React.FC = () => {
     )
   }
 
-  const revenueGrowth = stats 
-    ? ((stats.monthlyRevenue - stats.lastMonthRevenue) / (stats.lastMonthRevenue || 1)) * 100 
+  const revenueGrowth = stats
+    ? ((stats.monthlyRevenue - stats.lastMonthRevenue) / (stats.lastMonthRevenue || 1)) * 100
     : 0
+
+  const handleAssignCase = async (caseId: string, staffId: number) => {
+    const result = await assignCase(caseId, staffId)
+    if (result.success) {
+      await fetchCases({ showAssigned, search: searchTerm, sortBy, sortDesc })
+    } else {
+      alert(result.error || 'Failed to assign case')
+    }
+  }
+
+  const handleSortChange = (field: string) => {
+    if (sortBy === field) {
+      setSortDesc(!sortDesc)
+    } else {
+      setSortBy(field)
+      setSortDesc(true)
+    }
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -100,154 +146,340 @@ const LegalDashboard: React.FC = () => {
             Manage your cases, clients, and legal team from your central command.
           </p>
         </div>
+        <Button
+          onClick={() => setShowSettingsModal(true)}
+          className="relative z-10 bg-navy-800 hover:bg-navy-700 text-white border-navy-700"
+          size="sm"
+        >
+          <Settings size={18} className="mr-2" />
+          Settings
+        </Button>
         <div className="absolute top-0 right-0 -mr-10 -mt-10 w-64 h-64 bg-navy-800 rounded-full opacity-50"></div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="p-6 border-l-4 border-l-blue-600">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Active Cases</p>
-              <p className="text-4xl font-bold text-navy-900 dark:text-white mt-1">{stats?.activeCases || 0}</p>
+      {/* Cases Grid Section */}
+      <Card title="My Cases">
+        <div className="p-6 pt-0">
+          {/* Search and Filter Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <input
+                type="text"
+                placeholder="Search by client name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-navy-700 rounded-lg bg-white dark:bg-navy-900 text-navy-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded flex items-center justify-center text-blue-600">
-              <Calendar size={24} />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 border-l-4 border-l-gold-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Appointments</p>
-              <p className="text-4xl font-bold text-navy-900 dark:text-white mt-1">{stats?.upcomingAppointments || 0}</p>
-            </div>
-            <div className="w-12 h-12 bg-gold-100 dark:bg-gold-900 rounded flex items-center justify-center text-gold-600">
-              <Clock size={24} />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 border-l-4 border-l-green-600">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Monthly Billing</p>
-              <p className="text-4xl font-bold text-navy-900 dark:text-white mt-1">
-                ${(stats?.monthlyRevenue || 0).toLocaleString()}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded flex items-center justify-center text-green-600">
-              <span className="text-xl font-bold">$</span>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Main Feed */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Upcoming Appointments */}
-          <Card title="Upcoming Appointments">
-            <div className="p-6 pt-0">
-              {appointments.length === 0 ? (
-                <p className="text-gray-500 py-4 italic">No upcoming appointments scheduled.</p>
-              ) : (
-                <div className="space-y-4">
-                  {appointments.map(app => (
-                    <div key={app.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-navy-900 rounded-lg border border-gray-100 dark:border-navy-800">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 rounded bg-navy-100 dark:bg-navy-800 flex items-center justify-center text-navy-600 dark:text-gold-500">
-                          <Calendar size={20} />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-navy-900 dark:text-white">{app.clientName}</h4>
-                          <p className="text-xs text-gray-500">{format(new Date(app.startTime), 'PPP')} @ {format(new Date(app.startTime), 'p')}</p>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        {app.joinUrl && (
-                          <Button 
-                            size="sm" 
-                            className="bg-green-600 hover:bg-green-700 text-white flex items-center"
-                            onClick={() => window.open(app.joinUrl, '_blank')}
-                          >
-                            <Video size={14} className="mr-1" /> Join Meeting
-                          </Button>
-                        )}
-                        <Button size="sm" variant="outline">Details</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Card>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/clients')}>
-              <User size={24} className="text-blue-600" />
-              <span className="text-sm font-bold text-navy-900 dark:text-white">Clients</span>
-            </Button>
-            <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/time-tracking')}>
-              <Clock size={24} className="text-green-600" />
-              <span className="text-sm font-bold text-navy-900 dark:text-white">Billing</span>
-            </Button>
-            <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/messages')}>
-              <MessageSquare size={24} className="text-gold-600" />
-              <span className="text-sm font-bold text-navy-900 dark:text-white">Messages</span>
-            </Button>
-            <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/profile')}>
-              <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
-                {user?.name?.charAt(0)}
+            {isAdmin && (
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showAssigned}
+                    onChange={(e) => setShowAssigned(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-navy-900 dark:text-white">Show Assigned Cases</span>
+                </label>
               </div>
-              <span className="text-sm font-bold text-navy-900 dark:text-white">Profile</span>
-            </Button>
+            )}
+          </div>
+
+          {/* Cases Table */}
+          {casesLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : casesError ? (
+            <div className="text-red-600 py-4 text-center">{casesError}</div>
+          ) : cases.length === 0 ? (
+            <div className="text-gray-500 py-8 text-center italic">
+              {isAdmin && !showAssigned ? 'No unassigned cases found.' : 'No cases found.'}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-navy-800">
+                  <tr>
+                    <th
+                      onClick={() => handleSortChange('clientFirstName')}
+                      className="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-navy-700"
+                    >
+                      <div className="flex items-center gap-1">
+                        Client Name
+                        <ArrowUpDown size={14} />
+                      </div>
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th
+                      onClick={() => handleSortChange('status')}
+                      className="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-navy-700"
+                    >
+                      <div className="flex items-center gap-1">
+                        Status
+                        <ArrowUpDown size={14} />
+                      </div>
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Visa Types
+                    </th>
+                    <th
+                      onClick={() => handleSortChange('lastActivityAt')}
+                      className="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-navy-700"
+                    >
+                      <div className="flex items-center gap-1">
+                        Last Activity
+                        <ArrowUpDown size={14} />
+                      </div>
+                    </th>
+                    {isAdmin && (
+                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Assign To
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-navy-900 divide-y divide-gray-200 dark:divide-navy-800">
+                  {cases.map((caseItem) => (
+                    <tr
+                      key={caseItem.id}
+                      onClick={() => {
+                        setSelectedCase(caseItem.id)
+                        setShowCaseModal(true)
+                      }}
+                      className="hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer"
+                    >
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="text-sm font-bold text-navy-900 dark:text-white">
+                          {caseItem.clientFirstName} {caseItem.clientLastName}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {caseItem.clientEmail}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          {caseItem.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">
+                        <div className="flex flex-wrap gap-1">
+                          {caseItem.visaTypes.map((vt) => (
+                            <span
+                              key={vt.visaTypeId}
+                              className={`px-2 py-0.5 text-xs rounded ${
+                                vt.isPrimary
+                                  ? 'bg-gold-100 text-gold-800 dark:bg-gold-900 dark:text-gold-200 font-bold'
+                                  : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                              }`}
+                            >
+                              {vt.visaTypeCode}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {formatDistanceToNow(new Date(caseItem.lastActivityAt))} ago
+                      </td>
+                      {isAdmin && (
+                        <td className="px-4 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                          <select
+                            value={caseItem.assignedStaffId || ''}
+                            onChange={(e) => handleAssignCase(caseItem.id, parseInt(e.target.value))}
+                            className="text-sm border border-gray-300 dark:border-navy-700 rounded px-2 py-1 bg-white dark:bg-navy-800 text-navy-900 dark:text-white"
+                          >
+                            <option value="">Unassigned</option>
+                            {attorneys.map((atty) => (
+                              <option key={atty.id} value={atty.id}>
+                                {atty.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* 3 Cards Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Card 1 - Placeholder */}
+        <Card className="p-6">
+          <div className="flex items-center justify-center h-32 text-gray-400 italic">
+            No card assigned yet
+          </div>
+        </Card>
+
+        {/* Card 2 - Stats */}
+        <Card className="p-6">
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Quick Stats</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Active Cases</span>
+              <span className="text-xl font-bold text-navy-900 dark:text-white">{stats?.activeCases || 0}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Appointments</span>
+              <span className="text-xl font-bold text-navy-900 dark:text-white">{stats?.upcomingAppointments || 0}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Monthly Billing</span>
+              <span className="text-xl font-bold text-navy-900 dark:text-white">${(stats?.monthlyRevenue || 0).toLocaleString()}</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Card 3 - Appointments */}
+        <Card className="p-6">
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Next Appointment</h3>
+          {appointments.length === 0 ? (
+            <div className="flex items-center justify-center h-20 text-gray-400 italic text-sm">
+              No upcoming appointments
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="font-bold text-navy-900 dark:text-white text-sm">{appointments[0].clientName}</div>
+              <div className="text-xs text-gray-500">{format(new Date(appointments[0].startTime), 'PPP')}</div>
+              <div className="text-xs text-gray-500">{format(new Date(appointments[0].startTime), 'p')}</div>
+              {appointments[0].joinUrl && (
+                <Button
+                  size="sm"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white mt-2"
+                  onClick={() => window.open(appointments[0].joinUrl, '_blank')}
+                >
+                  <Video size={14} className="mr-1" /> Join
+                </Button>
+              )}
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/clients')}>
+          <User size={24} className="text-blue-600" />
+          <span className="text-sm font-bold text-navy-900 dark:text-white">Clients</span>
+        </Button>
+        <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/time-tracking')}>
+          <Clock size={24} className="text-green-600" />
+          <span className="text-sm font-bold text-navy-900 dark:text-white">Billing</span>
+        </Button>
+        <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/messages')}>
+          <MessageSquare size={24} className="text-gold-600" />
+          <span className="text-sm font-bold text-navy-900 dark:text-white">Messages</span>
+        </Button>
+        <Button variant="outline" className="flex flex-col h-auto py-6 space-y-2 border-navy-200 dark:border-navy-800" onClick={() => navigate('/profile')}>
+          <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
+            {user?.name?.charAt(0)}
+          </div>
+          <span className="text-sm font-bold text-navy-900 dark:text-white">Profile</span>
+        </Button>
+      </div>
+
+      {/* Case Detail Modal */}
+      {showCaseModal && selectedCase && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-navy-900 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 dark:border-navy-800 flex justify-between items-center sticky top-0 bg-white dark:bg-navy-900">
+              <h2 className="text-2xl font-bold text-navy-900 dark:text-white">Case Details</h2>
+              <button
+                onClick={() => setShowCaseModal(false)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-6">
+              {(() => {
+                const caseData = cases.find(c => c.id === selectedCase)
+                if (!caseData) return <p>Case not found</p>
+                return (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-bold text-gray-500 uppercase">Client Name</label>
+                      <p className="text-lg text-navy-900 dark:text-white">{caseData.clientFirstName} {caseData.clientLastName}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-bold text-gray-500 uppercase">Email</label>
+                      <p className="text-lg text-navy-900 dark:text-white">{caseData.clientEmail}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-bold text-gray-500 uppercase">Status</label>
+                      <p className="text-lg text-navy-900 dark:text-white">{caseData.status}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-bold text-gray-500 uppercase">Visa Types</label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {caseData.visaTypes.map((vt) => (
+                          <span
+                            key={vt.visaTypeId}
+                            className={`px-3 py-1 text-sm rounded ${
+                              vt.isPrimary
+                                ? 'bg-gold-100 text-gold-800 dark:bg-gold-900 dark:text-gold-200 font-bold'
+                                : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                            }`}
+                          >
+                            {vt.visaTypeName} ({vt.visaTypeCode})
+                            {vt.isPrimary && ' - Primary'}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-bold text-gray-500 uppercase">Assigned Staff</label>
+                      <p className="text-lg text-navy-900 dark:text-white">{caseData.assignedStaffName || 'Unassigned'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-bold text-gray-500 uppercase">Created</label>
+                      <p className="text-lg text-navy-900 dark:text-white">{format(new Date(caseData.createdAt), 'PPP')}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-bold text-gray-500 uppercase">Last Activity</label>
+                      <p className="text-lg text-navy-900 dark:text-white">{formatDistanceToNow(new Date(caseData.lastActivityAt))} ago</p>
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+            <div className="p-6 border-t border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-800">
+              <Button onClick={() => setShowCaseModal(false)} className="w-full">Close</Button>
+            </div>
           </div>
         </div>
+      )}
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Messages Preview */}
-          <Card title="Recent Messages">
-            <div className="p-4 pt-0 space-y-4">
-              {messages.length === 0 ? (
-                <p className="text-gray-500 text-sm italic">No recent messages.</p>
-              ) : (
-                messages.map(msg => (
-                  <div key={msg.id} className="group cursor-pointer" onClick={() => navigate('/messages')}>
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="text-sm font-bold text-navy-900 dark:text-white group-hover:text-blue-600">{msg.sender}</span>
-                      <span className="text-[10px] text-gray-400">{msg.time}</span>
-                    </div>
-                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{msg.subject}</p>
-                    <p className="text-[11px] text-gray-500 truncate">{msg.snippet}</p>
-                  </div>
-                ))
-              )}
-              <Button variant="ghost" size="sm" className="w-full text-blue-600 text-xs mt-2" onClick={() => navigate('/messages')}>
-                View Inbox →
-              </Button>
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-navy-900 rounded-lg shadow-xl max-w-2xl w-full">
+            <div className="p-6 border-b border-gray-200 dark:border-navy-800 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-navy-900 dark:text-white">Settings</h2>
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <X size={24} />
+              </button>
             </div>
-          </Card>
-
-          {/* Activity Feed */}
-          <Card title="Activity Log">
-            <div className="p-4 pt-0 space-y-4">
-              {activity.slice(0, 5).map(item => (
-                <div key={item.id} className="flex items-start space-x-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 flex-shrink-0"></div>
-                  <div>
-                    <p className="text-xs text-navy-900 dark:text-white leading-relaxed">{item.message}</p>
-                    <p className="text-[10px] text-gray-400">{formatDistanceToNow(new Date(item.time))} ago</p>
-                  </div>
-                </div>
-              ))}
+            <div className="p-6">
+              <p className="text-gray-500 italic">Settings functionality coming soon. You can update your profile from the Attorneys/Staff admin panel.</p>
             </div>
-          </Card>
+            <div className="p-6 border-t border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-800">
+              <Button onClick={() => setShowSettingsModal(false)} className="w-full">Close</Button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
