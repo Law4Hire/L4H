@@ -20,7 +20,11 @@
       "Bash(fi)",
       "Bash(dotnet test:*)",
       "Bash(gh run:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(Select-String \"utilities\")",
+      "Bash(ls:*)",
+      "Bash(git restore:*)",
+      "Bash(curl:*)"
     ]
   }
 }

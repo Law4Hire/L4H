@@ -28,16 +28,13 @@ export default defineConfig({
           if (id.includes('node_modules/react') ||
               id.includes('node_modules/react-dom') ||
               id.includes('node_modules/react-router-dom') ||
+              id.includes('node_modules/@tanstack/react-query') ||
               id.includes('node_modules/lucide-react') ||
               id.includes('node_modules/use-sync-external-store')) {
             return 'vendor-react';
           }
-          // Separate chunk for @tanstack/react-query
-          if (id.includes('node_modules/@tanstack/react-query')) {
-            return 'vendor-query';
-          }
           // Bundle shared-ui with main app code to ensure React is loaded first
-          // Removed separate chunk for @l4h/shared-ui to fix loading order
+          // Removed separate chunks for @l4h/shared-ui and react-query to fix loading order
 
           // Other node_modules into vendor chunk
           if (id.includes('node_modules')) {
