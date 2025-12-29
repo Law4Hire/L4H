@@ -389,6 +389,12 @@ Console.WriteLine("[STARTUP] Serilog request logging configured");
 
 // Configure static files for attorney photos and other uploads
 var basePath = builder.Configuration.GetValue<string>("FileStorage:BasePath") ?? "/data/uploads";
+// Create directory if it doesn't exist
+if (!Directory.Exists(basePath))
+{
+    Directory.CreateDirectory(basePath);
+    Console.WriteLine($"[STARTUP] Created uploads directory: {basePath}");
+}
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(basePath),
