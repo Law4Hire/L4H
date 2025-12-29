@@ -313,6 +313,8 @@ jobs:
             --overrides='{"spec":{"containers":[{"name":"copy-l4h","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"l4h-data","mountPath":"/data"}]}],"volumes":[{"name":"l4h-data","persistentVolumeClaim":{"claimName":"web-l4h"}}]}}' || true
           kubectl wait --for=condition=Ready pod/copy-l4h -n l4h --timeout=120s || echo "⚠️ Copy pod failed to start"
           if kubectl get pod copy-l4h -n l4h &>/dev/null; then
+            # Clean old files to prevent stale cache issues
+            kubectl exec copy-l4h -n l4h -- sh -c "rm -rf /data/*" || echo "⚠️ Failed to clean old l4h files"
             kubectl cp /tmp/l4h-deploy/web/l4h/dist/. l4h/copy-l4h:/data/ || echo "⚠️ Failed to copy l4h files"
           fi
           kubectl delete pod copy-l4h -n l4h || true
@@ -322,6 +324,8 @@ jobs:
             --overrides='{"spec":{"containers":[{"name":"copy-cannlaw","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"cannlaw-data","mountPath":"/data"}]}],"volumes":[{"name":"cannlaw-data","persistentVolumeClaim":{"claimName":"web-cannlaw"}}]}}' || true
           kubectl wait --for=condition=Ready pod/copy-cannlaw -n l4h --timeout=120s || echo "⚠️ Copy pod failed to start"
           if kubectl get pod copy-cannlaw -n l4h &>/dev/null; then
+            # Clean old files to prevent stale cache issues
+            kubectl exec copy-cannlaw -n l4h -- sh -c "rm -rf /data/*" || echo "⚠️ Failed to clean old cannlaw files"
             kubectl cp /tmp/l4h-deploy/web/cannlaw/dist/. l4h/copy-cannlaw:/data/ || echo "⚠️ Failed to copy cannlaw files"
           fi
           kubectl delete pod copy-cannlaw -n l4h || true

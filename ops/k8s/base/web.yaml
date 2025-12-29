@@ -116,8 +116,24 @@ data:
         root /usr/share/nginx/html/l4h;
         index index.html;
 
+        # Cache hashed assets for 1 year (they have content hashes in filename)
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            try_files $uri =404;
+        }
+
+        # Never cache index.html to ensure users get latest version
+        location = /index.html {
+            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+            add_header Pragma "no-cache";
+            add_header Expires "0";
+            try_files $uri =404;
+        }
+
         # SPA fallback - serve index.html for all routes
         location / {
+            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
             try_files $uri $uri/ /index.html;
         }
 
@@ -150,8 +166,24 @@ data:
         root /usr/share/nginx/html/cannlaw;
         index index.html;
 
+        # Cache hashed assets for 1 year (they have content hashes in filename)
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            try_files $uri =404;
+        }
+
+        # Never cache index.html to ensure users get latest version
+        location = /index.html {
+            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+            add_header Pragma "no-cache";
+            add_header Expires "0";
+            try_files $uri =404;
+        }
+
         # SPA fallback - serve index.html for all routes
         location / {
+            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
             try_files $uri $uri/ /index.html;
         }
 
