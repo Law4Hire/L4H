@@ -17,7 +17,9 @@
       "Bash(if [ -f \"build_and_test_output.txt\" ])",
       "Bash(then tail -50 build_and_test_output.txt)",
       "Bash(else echo \"File does not exist\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(dotnet test:*)",
+      "Bash(gh run:*)"
     ]
   }
 }

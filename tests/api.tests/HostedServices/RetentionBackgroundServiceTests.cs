@@ -169,8 +169,8 @@ public sealed class RetentionBackgroundServiceTests : IDisposable
 
         // Act - Run for a short period then cancel
         var executeTask = service.StartAsync(cancellationTokenSource.Token);
-        
-        await Task.Delay(100);
+
+        await Task.Delay(500); // Give service time to execute and log error
         cancellationTokenSource.Cancel();
 
         try
