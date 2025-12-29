@@ -12,6 +12,7 @@ public class L4HDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Case> Cases { get; set; }
+    public DbSet<CaseVisaType> CaseVisaTypes { get; set; }
     public DbSet<GuardianLink> GuardianLinks { get; set; }
     public DbSet<InterviewSession> InterviewSessions { get; set; }
     public DbSet<VisaRecommendation> VisaRecommendations { get; set; }
@@ -510,6 +511,30 @@ public class L4HDbContext : DbContext
 
             entity.HasIndex(e => e.AttorneySelectedVisaTypeId);
             entity.HasIndex(e => e.IsVisaLockedByAttorney);
+        });
+
+        // Configure CaseVisaType entity
+        modelBuilder.Entity<CaseVisaType>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.CaseId)
+                .HasConversion(
+                    v => v.Value,
+                    v => new CaseId(v));
+
+            entity.HasOne(e => e.Case)
+                .WithMany(e => e.CaseVisaTypes)
+                .HasForeignKey(e => e.CaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.VisaType)
+                .WithMany()
+                .HasForeignKey(e => e.VisaTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => new { e.CaseId, e.DisplayOrder });
+            entity.HasIndex(e => e.IsPrimary);
         });
 
         modelBuilder.Entity<InterviewQA>(entity =>

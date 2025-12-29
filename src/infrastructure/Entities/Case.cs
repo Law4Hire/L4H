@@ -11,7 +11,7 @@ public class Case
     public DateTimeOffset LastActivityAt { get; set; } = DateTimeOffset.UtcNow;
     public int? VisaTypeId { get; set; }
     public int? PackageId { get; set; }
-    public Guid? AssignedStaffId { get; set; }
+    public int? AssignedStaffId { get; set; }
     public bool IsInterviewLocked { get; set; } = false;
 
     // Attorney lock-in fields
@@ -66,4 +66,7 @@ public class Case
     [JsonIgnore]
 
     public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+    [JsonIgnore]
+
+    public ICollection<CaseVisaType> CaseVisaTypes { get; set; } = new List<CaseVisaType>();
 }

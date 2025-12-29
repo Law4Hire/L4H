@@ -148,16 +148,16 @@ public class AppointmentsController : ControllerBase
         bool isPool = true;
         if (userCase.AssignedStaffId.HasValue)
         {
-            var assignedUser = await _context.Users.FindAsync(new UserId(userCase.AssignedStaffId.Value));
-            if (assignedUser != null)
+            var assignedAttorney = await _context.Attorneys.FindAsync(userCase.AssignedStaffId.Value);
+            if (assignedAttorney != null)
             {
-                // Find matching attorney profile by email
-                var assignedAttorney = availableAttorneys
-                    .FirstOrDefault(a => a.Email.Equals(assignedUser.Email, StringComparison.OrdinalIgnoreCase));
-                
-                if (assignedAttorney != null)
+                // Filter to only the assigned attorney
+                var matchingAttorney = availableAttorneys
+                    .FirstOrDefault(a => a.Id == assignedAttorney.Id);
+
+                if (matchingAttorney != null)
                 {
-                    availableAttorneys = new List<Attorney> { assignedAttorney };
+                    availableAttorneys = new List<Attorney> { matchingAttorney };
                     isPool = false; // Assigned specific professional
                 }
             }
