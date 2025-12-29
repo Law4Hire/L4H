@@ -36,10 +36,9 @@ export default defineConfig({
           if (id.includes('node_modules/@tanstack/react-query')) {
             return 'vendor-query';
           }
-          // Shared UI library as separate chunk
-          if (id.includes('@l4h/shared-ui')) {
-            return 'shared-ui';
-          }
+          // Bundle shared-ui with main app code to ensure React is loaded first
+          // Removed separate chunk for @l4h/shared-ui to fix loading order
+
           // Other node_modules into vendor chunk
           if (id.includes('node_modules')) {
             return 'vendor';

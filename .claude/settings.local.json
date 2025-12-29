@@ -19,7 +19,8 @@
       "Bash(else echo \"File does not exist\")",
       "Bash(fi)",
       "Bash(dotnet test:*)",
-      "Bash(gh run:*)"
+      "Bash(gh run:*)",
+      "Bash(echo:*)"
     ]
   }
 }
