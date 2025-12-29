@@ -3,17 +3,15 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    exclude: ['@l4h/shared-ui'],
+  resolve: {
+    preserveSymlinks: true,
+    dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'use-sync-external-store'],
   },
-        resolve: {
-          preserveSymlinks: true,
-          dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'use-sync-external-store'],
-        },
-        define: {
-          '__APP_VERSION__': JSON.stringify(new Date().toISOString()),
-        },
-        base: '/',  build: {
+  define: {
+    '__APP_VERSION__': JSON.stringify(new Date().toISOString()),
+  },
+  base: '/',
+  build: {
     outDir: 'dist',
     sourcemap: true,
     rollupOptions: {

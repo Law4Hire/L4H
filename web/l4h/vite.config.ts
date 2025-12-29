@@ -6,9 +6,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    optimizeDeps: {
-      exclude: ['@l4h/shared-ui'],
-    },
     resolve: {
       preserveSymlinks: true,
       dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'use-sync-external-store'],
