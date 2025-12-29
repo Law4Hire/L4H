@@ -22,17 +22,20 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash].[ext]',
         // Manual chunks for better code-splitting and caching
         manualChunks: (id) => {
-          // Vendor chunk for core React libraries and React-dependent UI libraries
+          // Vendor chunk for core React libraries and ALL React-dependent libraries
           if (id.includes('node_modules/react') ||
               id.includes('node_modules/react-dom') ||
               id.includes('node_modules/react-router-dom') ||
               id.includes('node_modules/@tanstack/react-query') ||
               id.includes('node_modules/lucide-react') ||
-              id.includes('node_modules/use-sync-external-store')) {
+              id.includes('node_modules/use-sync-external-store') ||
+              id.includes('node_modules/@dnd-kit') ||
+              id.includes('node_modules/react-hook-form') ||
+              id.includes('node_modules/@hookform') ||
+              id.includes('shared-ui/src')) {
             return 'vendor-react';
           }
-          // Bundle shared-ui with main app code to ensure React is loaded first
-          // Removed separate chunks for @l4h/shared-ui and react-query to fix loading order
+          // Bundle ALL React-dependent libraries together with React to prevent import order issues
 
           // Other node_modules into vendor chunk
           if (id.includes('node_modules')) {
