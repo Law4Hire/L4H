@@ -37,6 +37,10 @@ const AdminPage: React.FC = () => {
     navigate('/admin/visa-library')
   }
 
+  const handleAlertsManagement = () => {
+    navigate('/admin/alerts')
+  }
+
   const handleAttorneysManagement = () => {
     navigate('/admin/attorneys')
   }
@@ -132,6 +136,15 @@ const AdminPage: React.FC = () => {
           </p>
           <Button onClick={handleVisaLibraryManagement}>
             Manage Visa Library
+          </Button>
+        </Card>
+
+        <Card title="Alerts & Notifications">
+          <p className="text-gray-600 mb-4">
+            Send alerts to users and manage notification templates
+          </p>
+          <Button onClick={handleAlertsManagement}>
+            Manage Alerts
           </Button>
         </Card>
 
