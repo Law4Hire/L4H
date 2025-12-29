@@ -377,6 +377,7 @@ public class AdminInterviewQuestionsController : ControllerBase
             Description = question.Description,
             DiscriminatesVisaCodes = question.DiscriminatesVisaCodes,
             SelectionWeight = question.SelectionWeight,
+            ParentId = question.ParentId,
             PageConfig = question.PageConfig,
             CreatedAt = question.CreatedAt,
             UpdatedAt = question.UpdatedAt,
@@ -438,6 +439,7 @@ public record InterviewQuestionResponse
     public string? Description { get; init; }
     public string? DiscriminatesVisaCodes { get; init; }
     public int SelectionWeight { get; init; }
+    public Guid? ParentId { get; init; }
     public string? PageConfig { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
