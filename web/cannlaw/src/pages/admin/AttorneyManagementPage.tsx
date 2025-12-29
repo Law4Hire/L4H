@@ -258,7 +258,7 @@ const AttorneyManagementPage: React.FC = () => {
       </div>
 
       {showForm && (
-        <Card className="p-8 border-t-4 border-t-gold-500 dark:bg-navy-900 dark:border-navy-800 animate-fade-in">
+        <Card className="p-8 border-t-4 border-t-gold-500 dark:border-t-gold-600 dark:bg-navy-900 dark:border-navy-800 animate-fade-in">
           <div className="flex justify-between items-center mb-8 border-b border-gray-100 dark:border-navy-800 pb-4">
             <h2 className="text-2xl font-serif font-bold text-navy-900 dark:text-white">
               {editingAttorney ? `Edit Profile: ${editingAttorney.name}` : 'New Professional Profile'}
