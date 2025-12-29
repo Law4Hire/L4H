@@ -162,6 +162,41 @@ public class PublicController : ControllerBase
             _ => "US immigration visa classification. Contact us for detailed information."
         };
     }
+
+    /// <summary>
+    /// Get published site content (news, resources, blog posts)
+    /// </summary>
+    [HttpGet("site-content")]
+    [ProducesResponseType<IEnumerable<SiteContentInfo>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPublishedContent([FromQuery] string? type)
+    {
+        var query = _context.SiteContents
+            .Where(c => c.IsPublished && c.PublishedAt.HasValue)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(type))
+        {
+            query = query.Where(c => c.ContentType == type);
+        }
+
+        var content = await query
+            .OrderByDescending(c => c.PublishedAt)
+            .Select(c => new SiteContentInfo
+            {
+                Id = c.Id,
+                Title = c.Title,
+                Summary = c.Summary,
+                Content = c.Content,
+                ContentType = c.ContentType,
+                Author = c.Author,
+                ImageUrl = c.ImageUrl,
+                PublishedAt = c.PublishedAt!.Value,
+                Tags = c.Tags
+            })
+            .ToListAsync();
+
+        return Ok(content);
+    }
 }
 
 public class VisaTypeInfo
@@ -176,4 +211,17 @@ public class VisaListItem
 {
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+}
+
+public class SiteContentInfo
+{
+    public Guid Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Summary { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public string ContentType { get; set; } = string.Empty;
+    public string? Author { get; set; }
+    public string? ImageUrl { get; set; }
+    public DateTime PublishedAt { get; set; }
+    public string? Tags { get; set; }
 }
