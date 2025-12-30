@@ -1,3 +1,4 @@
+using System.Globalization;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -529,9 +530,9 @@ public class CannlawClientBillingSeeder : ISeedTask
                 var document = new Document
                 {
                     ClientId = client.Id,
-                    FileName = $"{docName.Replace(" ", "_").ToLower()}_{client.Id}_{i + 1}.pdf",
+                    FileName = $"{docName.Replace(" ", "_").ToLower(CultureInfo.InvariantCulture)}_{client.Id}_{i + 1}.pdf",
                     OriginalFileName = $"{docName} - {client.FirstName} {client.LastName}.pdf",
-                    FileUrl = $"/documents/clients/{client.Id}/{docName.Replace(" ", "_").ToLower()}_{i + 1}.pdf",
+                    FileUrl = $"/documents/clients/{client.Id}/{docName.Replace(" ", "_").ToLower(CultureInfo.InvariantCulture)}_{i + 1}.pdf",
                     ContentType = "application/pdf",
                     FileSize = Random.Shared.Next(100000, 5000000), // 100KB to 5MB
                     Category = category,

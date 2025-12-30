@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using L4H.Infrastructure.Data;
@@ -60,11 +61,11 @@ public class ClientService : IClientService
         // Filter by search term (name or email)
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            var lowerSearchTerm = searchTerm.ToLower();
-            query = query.Where(c => 
-                c.FirstName.ToLower().Contains(lowerSearchTerm) ||
-                c.LastName.ToLower().Contains(lowerSearchTerm) ||
-                c.Email.ToLower().Contains(lowerSearchTerm));
+            var lowerSearchTerm = searchTerm.ToLower(CultureInfo.InvariantCulture);
+            query = query.Where(c =>
+                c.FirstName.ToLower(CultureInfo.InvariantCulture).Contains(lowerSearchTerm) ||
+                c.LastName.ToLower(CultureInfo.InvariantCulture).Contains(lowerSearchTerm) ||
+                c.Email.ToLower(CultureInfo.InvariantCulture).Contains(lowerSearchTerm));
         }
 
         // Filter by assigned attorney

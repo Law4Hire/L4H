@@ -97,14 +97,14 @@ public class CasesController : ControllerBase
         // Search by client name
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var searchLower = search.ToLower();
+            var searchLower = search.ToLower(CultureInfo.InvariantCulture);
             query = query.Where(c =>
-                (c.User.FirstName != null && c.User.FirstName.ToLower().Contains(searchLower)) ||
-                (c.User.LastName != null && c.User.LastName.ToLower().Contains(searchLower)));
+                (c.User.FirstName != null && c.User.FirstName.ToLower(CultureInfo.InvariantCulture).Contains(searchLower)) ||
+                (c.User.LastName != null && c.User.LastName.ToLower(CultureInfo.InvariantCulture).Contains(searchLower)));
         }
 
         // Apply sorting
-        query = sortBy?.ToLower() switch
+        query = sortBy?.ToLower(CultureInfo.InvariantCulture) switch
         {
             "firstname" => sortDesc
                 ? query.OrderByDescending(c => c.User.FirstName)

@@ -1,3 +1,4 @@
+using System.Globalization;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -125,7 +126,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             StringComparer.OrdinalIgnoreCase);
 
         // Evaluate based on visa code
-        switch (visa.Code.ToUpper())
+        switch (visa.Code.ToUpper(CultureInfo.InvariantCulture))
         {
             case "B-2": // Tourist/Visitor
                 result = EvaluateB2(visa, answerDict, user);
@@ -449,7 +450,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
 
         var docs = new List<string> { "Valid Passport", "Passport Photos", "Application Form" };
 
-        switch (visa.Code.ToUpper())
+        switch (visa.Code.ToUpper(CultureInfo.InvariantCulture))
         {
             case "H-1B":
                 docs.AddRange(new[] {
@@ -498,7 +499,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
     {
         var benefits = new List<string>();
 
-        switch (visa.Code.ToUpper())
+        switch (visa.Code.ToUpper(CultureInfo.InvariantCulture))
         {
             case "H-1B":
                 benefits.AddRange(new[] {

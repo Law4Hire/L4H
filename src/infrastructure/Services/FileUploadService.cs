@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -456,7 +457,7 @@ public class FileUploadService : IFileUploadService
             TargetType = "Document",
             TargetId = documentId.ToString(),
             Action = action,
-            DetailsJson = $"Document {action.ToLower()} operation",
+            DetailsJson = $"Document {action.ToLower(CultureInfo.InvariantCulture)} operation",
             CreatedAt = DateTime.UtcNow
         };
 
