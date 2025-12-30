@@ -10,8 +10,9 @@
         await page.FillAsync("input[name='postalCode']", "12345").ConfigureAwait(false);
 
         // Select country (SearchableSelect) - using PressSequentially to trigger React onChange
-        var countryInput = await page.QuerySelectorAsync("input[placeholder*='Search and select your country']").ConfigureAwait(false);
-        if (countryInput != null)
+        var countryInput = page.Locator("input[placeholder*='Search and select your country']");
+        var countryCount = await countryInput.CountAsync().ConfigureAwait(false);
+        if (countryCount > 0)
         {
             await countryInput.ClickAsync().ConfigureAwait(false);
             await page.WaitForTimeoutAsync(500).ConfigureAwait(false);
@@ -39,8 +40,9 @@
         }
 
         // Select nationality (SearchableSelect) - using PressSequentially to trigger React onChange
-        var nationalityInput = await page.QuerySelectorAsync("input[placeholder*='Search and select your passport country']").ConfigureAwait(false);
-        if (nationalityInput != null)
+        var nationalityInput = page.Locator("input[placeholder*='Search and select your passport country']");
+        var nationalityCount = await nationalityInput.CountAsync().ConfigureAwait(false);
+        if (nationalityCount > 0)
         {
             await nationalityInput.ClickAsync().ConfigureAwait(false);
             await page.WaitForTimeoutAsync(500).ConfigureAwait(false);
