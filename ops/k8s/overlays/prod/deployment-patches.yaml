@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqlserver-prod
+  namespace: l4h-prod
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        environment: production
+    spec:
+      containers:
+      - name: sqlserver
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-prod
+  namespace: l4h-prod
+spec:
+  replicas: 2  # PROD runs 2 replicas for HA
+  template:
+    metadata:
+      labels:
+        environment: production
+    spec:
+      containers:
+      - name: api
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-prod
+  namespace: l4h-prod
+spec:
+  replicas: 2  # PROD runs 2 replicas for HA
+  template:
+    metadata:
+      labels:
+        environment: production

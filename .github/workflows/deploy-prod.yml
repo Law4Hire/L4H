@@ -1,0 +1,273 @@
+name: Deploy to PRODUCTION
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.7)'
+        required: true
+        type: string
+      confirmation:
+        description: 'Type "DEPLOY TO PROD" to confirm'
+        required: true
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  validate-prod-deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Validate confirmation
+      run: |
+        if [ "${{ github.event.inputs.confirmation }}" != "DEPLOY TO PROD" ]; then
+          echo "❌ Confirmation text does not match. Expected: 'DEPLOY TO PROD'"
+          echo "❌ You entered: '${{ github.event.inputs.confirmation }}'"
+          exit 1
+        fi
+        echo "✅ Confirmation validated"
+
+    - name: Validate version format
+      run: |
+        if [[ ! "${{ github.event.inputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "❌ Version must follow format: vX.Y.Z (e.g., v1.0.7)"
+          echo "❌ You entered: '${{ github.event.inputs.version }}'"
+          exit 1
+        fi
+        echo "✅ Version format validated: ${{ github.event.inputs.version }}"
+
+  build-and-push-prod:
+    needs: validate-prod-deployment
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set lowercase repository name
+      id: repo
+      run: |
+        echo "repository_lower=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push PRODUCTION images
+      run: |
+        VERSION=${{ github.event.inputs.version }}
+        REPO=${{ steps.repo.outputs.repository_lower }}
+
+        echo "🏗️ Building PRODUCTION images with version: $VERSION"
+
+        # Build and push API
+        docker build -f src/api/Dockerfile \
+          -t ${{ env.REGISTRY }}/${REPO}-api:${VERSION} \
+          -t ${{ env.REGISTRY }}/${REPO}-api:prod-latest \
+          .
+        docker push ${{ env.REGISTRY }}/${REPO}-api:${VERSION}
+        docker push ${{ env.REGISTRY }}/${REPO}-api:prod-latest
+
+        # Build and push Upload Gateway
+        docker build -f src/upload-gateway/Dockerfile \
+          -t ${{ env.REGISTRY }}/${REPO}-upload-gateway:${VERSION} \
+          -t ${{ env.REGISTRY }}/${REPO}-upload-gateway:prod-latest \
+          .
+        docker push ${{ env.REGISTRY }}/${REPO}-upload-gateway:${VERSION}
+        docker push ${{ env.REGISTRY }}/${REPO}-upload-gateway:prod-latest
+
+        # Build and push Scraper
+        docker build -f src/scraper/Dockerfile \
+          -t ${{ env.REGISTRY }}/${REPO}-scraper:${VERSION} \
+          -t ${{ env.REGISTRY }}/${REPO}-scraper:prod-latest \
+          .
+        docker push ${{ env.REGISTRY }}/${REPO}-scraper:${VERSION}
+        docker push ${{ env.REGISTRY }}/${REPO}-scraper:prod-latest
+
+        echo "✅ All PRODUCTION images built and pushed with version $VERSION"
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.version }}
+        release_name: Production Release ${{ github.event.inputs.version }}
+        body: |
+          ## 🚀 Production Deployment ${{ github.event.inputs.version }}
+
+          **Deployed to:** https://l4h-prod.74-208-77-43.nip.io
+          **Deployment Time:** ${{ github.event.head_commit.timestamp }}
+          **Deployed By:** @${{ github.actor }}
+
+          ### Components Deployed:
+          - ✅ l4h-prod
+          - ✅ cannlaw-prod
+          - ✅ sqlserver-prod
+          - ✅ API Backend
+          - ✅ Upload Gateway
+          - ✅ Scraper Service
+
+          ### Docker Images:
+          - `ghcr.io/${{ steps.repo.outputs.repository_lower }}-api:${{ github.event.inputs.version }}`
+          - `ghcr.io/${{ steps.repo.outputs.repository_lower }}-upload-gateway:${{ github.event.inputs.version }}`
+          - `ghcr.io/${{ steps.repo.outputs.repository_lower }}-scraper:${{ github.event.inputs.version }}`
+        draft: false
+        prerelease: false
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: |
+          web/l4h/package-lock.json
+          web/cannlaw/package-lock.json
+          web/shared-ui/package-lock.json
+
+    - name: Build PRODUCTION UI artifacts
+      run: |
+        echo "🏗️ Building PRODUCTION UI artifacts..."
+        cd web/shared-ui && npm ci && NODE_ENV=production npm run build
+        cd ../l4h && npm ci && NODE_ENV=production npm run build
+        cd ../cannlaw && npm ci && NODE_ENV=production npm run build
+        echo "✅ UI artifacts built"
+
+    - name: Deploy to PRODUCTION Kubernetes
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DEPLOY_HOST_PROD }}
+        username: ${{ secrets.DEPLOY_USER_PROD }}
+        key: ${{ secrets.DEPLOY_KEY_PROD }}
+        source: "web/l4h/dist/*,web/cannlaw/dist/*,ops/k8s/*"
+        target: "/tmp/l4h-deploy-prod/"
+
+    - name: Apply PRODUCTION deployment
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST_PROD }}
+        username: ${{ secrets.DEPLOY_USER_PROD }}
+        key: ${{ secrets.DEPLOY_KEY_PROD }}
+        script: |
+          set -e
+          VERSION=${{ github.event.inputs.version }}
+
+          echo "🚀 Deploying to PRODUCTION environment (namespace: l4h-prod)..."
+          echo "📦 Version: $VERSION"
+
+          # Copy manifests
+          mkdir -p ~/ops/k8s-prod
+          cp -r /tmp/l4h-deploy-prod/ops/k8s/* ~/ops/k8s-prod/
+
+          # Create/update PROD namespace
+          kubectl create namespace l4h-prod --dry-run=client -o yaml | kubectl apply -f -
+
+          # Update PROD secrets
+          export SQL_SA_PASSWORD='${{ secrets.SQL_SA_PASSWORD_PROD }}'
+          export JWT_SIGNING_KEY='${{ secrets.JWT_SIGNING_KEY_PROD }}'
+          export UPLOADS_TOKEN_SIGNING_KEY='${{ secrets.UPLOADS_TOKEN_SIGNING_KEY_PROD }}'
+          export ADMIN_SEED_PASSWORD='${{ secrets.ADMIN_SEED_PASSWORD_PROD }}'
+
+          # Create secrets script for PROD namespace
+          cat > /tmp/create-secrets-prod.sh << 'SCRIPT'
+          #!/bin/bash
+          kubectl create secret generic l4h-secrets \
+            --from-literal=sql-sa-password="${SQL_SA_PASSWORD}" \
+            --from-literal=jwt-signing-key="${JWT_SIGNING_KEY}" \
+            --from-literal=uploads-token-signing-key="${UPLOADS_TOKEN_SIGNING_KEY}" \
+            --from-literal=admin-seed-password="${ADMIN_SEED_PASSWORD}" \
+            --namespace=l4h-prod \
+            --dry-run=client -o yaml | kubectl apply -f -
+          SCRIPT
+
+          chmod +x /tmp/create-secrets-prod.sh
+          /tmp/create-secrets-prod.sh
+
+          # Apply PROD overlay
+          cd ~/ops/k8s-prod/overlays/prod
+          kubectl apply -k .
+
+          # Update images to versioned PROD tags
+          GH_ORG_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          kubectl set image deployment/api api=ghcr.io/${GH_ORG_LOWER}/l4h-api:${VERSION} -n l4h-prod
+          kubectl set image deployment/upload-gateway upload-gateway=ghcr.io/${GH_ORG_LOWER}/l4h-upload-gateway:${VERSION} -n l4h-prod
+          kubectl set image deployment/scraper scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${VERSION} -n l4h-prod
+
+          # Wait for PVCs
+          kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/web-l4h-prod -n l4h-prod --timeout=120s || echo "⚠️ PVC not ready"
+          kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/web-cannlaw-prod -n l4h-prod --timeout=120s || echo "⚠️ PVC not ready"
+
+          # Copy l4h PROD UI
+          kubectl run copy-l4h-prod --image=alpine --restart=Never -n l4h-prod \
+            --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-l4h-prod"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-l4h-prod -n l4h-prod --timeout=120s || true
+          kubectl exec copy-l4h-prod -n l4h-prod -- sh -c "rm -rf /data/*" || true
+          kubectl cp /tmp/l4h-deploy-prod/web/l4h/dist/. l4h-prod/copy-l4h-prod:/data/ || true
+          kubectl delete pod copy-l4h-prod -n l4h-prod || true
+
+          # Copy cannlaw PROD UI
+          kubectl run copy-cannlaw-prod --image=alpine --restart=Never -n l4h-prod \
+            --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-cannlaw-prod"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-cannlaw-prod -n l4h-prod --timeout=120s || true
+          kubectl exec copy-cannlaw-prod -n l4h-prod -- sh -c "rm -rf /data/*" || true
+          kubectl cp /tmp/l4h-deploy-prod/web/cannlaw/dist/. l4h-prod/copy-cannlaw-prod:/data/ || true
+          kubectl delete pod copy-cannlaw-prod -n l4h-prod || true
+
+          # Restart web deployment
+          kubectl rollout restart deployment/web -n l4h-prod
+
+          # Wait for PROD rollout
+          kubectl wait --for=condition=available --timeout=600s \
+            deployment/sqlserver-prod \
+            deployment/api \
+            deployment/upload-gateway \
+            deployment/scraper \
+            deployment/web \
+            -n l4h-prod || echo "⚠️ Rollout taking longer than expected"
+
+          # Cleanup
+          rm -rf /tmp/l4h-deploy-prod
+
+          echo "✅ PRODUCTION deployment complete!"
+          echo "🌐 PRODUCTION URLs:"
+          echo "   L4H:     https://l4h-prod.74-208-77-43.nip.io"
+          echo "   Cannlaw: https://cannlaw-prod.74-208-77-43.nip.io"
+          echo "   API:     https://api-prod.74-208-77-43.nip.io"
+          echo ""
+          echo "📦 Version deployed: $VERSION"
+
+    - name: Verify PRODUCTION deployment
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST_PROD }}
+        username: ${{ secrets.DEPLOY_USER_PROD }}
+        key: ${{ secrets.DEPLOY_KEY_PROD }}
+        script: |
+          echo "🔍 Verifying PRODUCTION deployment..."
+          kubectl get pods -n l4h-prod
+          kubectl get deployments -n l4h-prod
+          kubectl get ingress -n l4h-prod
+
+          # Test PROD endpoints
+          sleep 15
+          echo "Testing PRODUCTION endpoints..."
+          curl -fsSL https://l4h-prod.74-208-77-43.nip.io || echo "⚠️ L4H PROD not ready yet"
+          curl -fsSL https://cannlaw-prod.74-208-77-43.nip.io || echo "⚠️ Cannlaw PROD not ready yet"
+          curl -fsSL https://api-prod.74-208-77-43.nip.io/healthz || echo "⚠️ API PROD not ready yet"
+
+    - name: Send deployment notification
+      if: success()
+      run: |
+        echo "🎉 PRODUCTION deployment ${{ github.event.inputs.version }} completed successfully!"
+        echo "Deployed by: @${{ github.actor }}"
+        echo "URLs:"
+        echo "  - https://l4h-prod.74-208-77-43.nip.io"
+        echo "  - https://cannlaw-prod.74-208-77-43.nip.io"

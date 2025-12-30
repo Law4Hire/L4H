@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: l4h-prod
+
+resources:
+  - ../../base
+
+namePrefix: ""
+nameSuffix: "-prod"
+
+commonLabels:
+  environment: production
+  managed-by: kustomize
+
+# PRODUCTION-specific patches
+patchesStrategicMerge:
+  - ingress-patch.yaml
+  - deployment-patches.yaml
+
+# PROD uses separate namespace and resource naming

@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: l4h-ingress
+  namespace: l4h-prod
+spec:
+  rules:
+  - host: l4h-prod.74-208-77-43.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-prod
+            port:
+              number: 80
+  - host: cannlaw-prod.74-208-77-43.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-prod
+            port:
+              number: 80
+  - host: api-prod.74-208-77-43.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-prod
+            port:
+              number: 8080
