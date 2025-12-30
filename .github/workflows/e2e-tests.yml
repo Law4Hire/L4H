@@ -52,6 +52,9 @@ jobs:
     - name: Build solution
       run: dotnet build --no-restore --configuration Release
 
+    - name: Install Playwright browsers and dependencies
+      run: pwsh tests/ui.e2e/bin/Release/net10.0/playwright.ps1 install --with-deps
+
     - name: Wait for SQL Server
       run: |
         echo "Waiting for SQL Server to be ready..."
