@@ -37,10 +37,10 @@ public class Document
     [Required]
     [MaxLength(255)]
     public string UploadedBy { get; set; } = string.Empty;
-    
+
     // Security and access control
-    public bool IsConfidential { get; set; } = false;
-    
+    public bool IsConfidential { get; set; }
+
     [MaxLength(500)]
     public string AccessNotes { get; set; } = string.Empty;
     

@@ -14,7 +14,7 @@ public class SentMailRecord
 public class FakeGraphMailProvider : IMailProvider
 {
     private readonly List<SentMailRecord> _sentMails = new();
-    public bool SimulateFailure { get; set; } = false;
+    public bool SimulateFailure { get; set; }
 
     public Task<SendMailResponse> SendMailAsync(SendMailRequest request, CancellationToken cancellationToken = default)
     {

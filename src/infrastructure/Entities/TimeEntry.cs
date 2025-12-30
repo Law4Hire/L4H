@@ -35,8 +35,8 @@ public class TimeEntry
     
     [Column(TypeName = "decimal(10,2)")]
     public decimal BillableAmount { get; set; }
-    
-    public bool IsBilled { get; set; } = false;
+
+    public bool IsBilled { get; set; }
     public DateTime? BilledDate { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

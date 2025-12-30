@@ -2,7 +2,7 @@ namespace L4H.Infrastructure.Services.Teams;
 
 public class FakeMeetingsProvider : IMeetingsProvider
 {
-    public bool SimulateFailure { get; set; } = false;
+    public bool SimulateFailure { get; set; }
 
     public Task<CreateMeetingResponse> CreateMeetingAsync(CreateMeetingRequest request, CancellationToken cancellationToken = default)
     {

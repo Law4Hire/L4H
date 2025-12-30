@@ -157,7 +157,7 @@ public class SessionManager : ISessionManager
             .Where(ve => ve.SessionId == sessionId)
             .ToListAsync();
 
-        if (existingEvaluations.Any())
+        if (existingEvaluations.Count > 0)
         {
             _context.VisaEvaluations.RemoveRange(existingEvaluations);
         }
@@ -302,7 +302,7 @@ public class SessionManager : ISessionManager
             session.Status = "abandoned";
         }
 
-        if (abandonedSessions.Any())
+        if (abandonedSessions.Count > 0)
         {
             await _context.SaveChangesAsync();
         }
@@ -315,7 +315,7 @@ public class SessionManager : ISessionManager
                 s.StartedAt < veryOldCutoff)
             .ToListAsync();
 
-        if (sessionsToDelete.Any())
+        if (sessionsToDelete.Count > 0)
         {
             _context.InterviewSessions.RemoveRange(sessionsToDelete);
             await _context.SaveChangesAsync();

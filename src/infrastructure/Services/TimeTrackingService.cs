@@ -424,7 +424,7 @@ public class TimeTrackingService : ITimeTrackingService
             .Where(te => timeEntryIds.Contains(te.Id))
             .ToListAsync();
 
-        if (!timeEntries.Any())
+        if (timeEntries.Count == 0)
         {
             return false;
         }

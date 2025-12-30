@@ -12,11 +12,11 @@ public class Case
     public int? VisaTypeId { get; set; }
     public int? PackageId { get; set; }
     public int? AssignedStaffId { get; set; }
-    public bool IsInterviewLocked { get; set; } = false;
+    public bool IsInterviewLocked { get; set; }
 
     // Attorney lock-in fields
     public int? AttorneySelectedVisaTypeId { get; set; }
-    public bool IsVisaLockedByAttorney { get; set; } = false;
+    public bool IsVisaLockedByAttorney { get; set; }
     public DateTime? VisaLockedAt { get; set; }
     public Guid? VisaLockedByStaffId { get; set; }
 

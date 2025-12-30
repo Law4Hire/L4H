@@ -8,6 +8,11 @@ namespace L4H.Infrastructure.SeedData;
 
 public class USSubdivisionsSeeder : ISeedTask
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     public string Name => "US Subdivisions";
 
     private readonly L4HDbContext _context;
@@ -116,11 +121,8 @@ public class USSubdivisionsSeeder : ISeedTask
             {
                 using var reader = new StreamReader(stream);
                 var json = reader.ReadToEnd();
-                var subdivisions = JsonSerializer.Deserialize<List<SubdivisionData>>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-                if (subdivisions != null && subdivisions.Any())
+                var subdivisions = JsonSerializer.Deserialize<List<SubdivisionData>>(json, JsonOptions);
+                if (subdivisions != null && subdivisions.Count > 0)
                 {
                     return subdivisions;
                 }

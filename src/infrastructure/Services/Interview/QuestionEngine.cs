@@ -43,7 +43,7 @@ public class QuestionEngine : IQuestionEngine
             .OrderBy(q => q.Order)
             .ToList();
 
-        if (criticalQuestions.Any())
+        if (criticalQuestions.Count > 0)
         {
             return criticalQuestions.First();
         }
@@ -81,7 +81,7 @@ public class QuestionEngine : IQuestionEngine
 
         // Complete if we've narrowed down to 3 or fewer visas with pricing
         var commercialVisas = remainingVisas
-            .Where(v => v.PricingRules.Any())
+            .Where(v => v.PricingRules.Count > 0)
             .ToList();
 
         if (commercialVisas.Count <= 3 && commercialVisas.Count > 0)
@@ -96,7 +96,7 @@ public class QuestionEngine : IQuestionEngine
         }
 
         // Complete if no commercially available visas remain
-        if (!commercialVisas.Any())
+        if (commercialVisas.Count == 0)
         {
             return true;
         }
@@ -116,7 +116,7 @@ public class QuestionEngine : IQuestionEngine
             .Where(q => q.Category != "critical" && !answeredKeys.Contains(q.Key))
             .ToList();
 
-        if (!unansweredQuestions.Any() || !remainingVisas.Any())
+        if (unansweredQuestions.Count == 0 || remainingVisas.Count == 0)
         {
             return null;
         }

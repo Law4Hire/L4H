@@ -121,12 +121,12 @@ public class CitizenshipCaseService : ICitizenshipCaseService
         var result = new CitizenshipRecommendationResult();
 
         // Determine eligibility and recommended application type
-        if (answers.ApplicationType == CitizenshipApplicationType.N400_Naturalization || 
+        if (answers.ApplicationType == CitizenshipApplicationType.N400Naturalization || 
             answers.CurrentStatus == "permanent_resident")
         {
             result = await EvaluateN400EligibilityAsync(answers).ConfigureAwait(false);
         }
-        else if (answers.ApplicationType == CitizenshipApplicationType.N600_CertificateOfCitizenship ||
+        else if (answers.ApplicationType == CitizenshipApplicationType.N600CertificateOfCitizenship ||
                  answers.CurrentStatus == "derived_citizen" || 
                  answers.CurrentStatus == "us_citizen_born_abroad")
         {
@@ -157,7 +157,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
     {
         var result = new CitizenshipRecommendationResult
         {
-            RecommendedApplication = CitizenshipApplicationType.N400_Naturalization
+            RecommendedApplication = CitizenshipApplicationType.N400Naturalization
         };
 
         var issues = new List<string>();
@@ -205,7 +205,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
             issues.Add("Must be willing to take oath of allegiance and show attachment to Constitution.");
         }
 
-        result.IsEligible = !issues.Any();
+        result.IsEligible = issues.Count == 0;
         result.EligibilityReason = result.IsEligible 
             ? "Meets all requirements for N-400 naturalization."
             : string.Join(" ", issues);
@@ -234,7 +234,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
     {
         var result = new CitizenshipRecommendationResult
         {
-            RecommendedApplication = CitizenshipApplicationType.N600_CertificateOfCitizenship
+            RecommendedApplication = CitizenshipApplicationType.N600CertificateOfCitizenship
         };
 
         var issues = new List<string>();
@@ -262,7 +262,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
             }
         }
 
-        result.IsEligible = !issues.Any();
+        result.IsEligible = issues.Count == 0;
         result.EligibilityReason = result.IsEligible 
             ? "Meets requirements for N-600 Certificate of Citizenship."
             : string.Join(" ", issues);
@@ -304,7 +304,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
     {
         return Task.FromResult(applicationType switch
         {
-            CitizenshipApplicationType.N400_Naturalization => new List<string>
+            CitizenshipApplicationType.N400Naturalization => new List<string>
             {
                 "Form N-400 (Application for Naturalization)",
                 "Copy of Permanent Resident Card (Green Card)",
@@ -316,7 +316,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
                 "Selective Service registration (if applicable)",
                 "Court records (if any arrests or citations)"
             },
-            CitizenshipApplicationType.N600_CertificateOfCitizenship => new List<string>
+            CitizenshipApplicationType.N600CertificateOfCitizenship => new List<string>
             {
                 "Form N-600 (Application for Certificate of Citizenship)",
                 "Copy of birth certificate",
@@ -340,7 +340,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
     {
         var testInfo = new CitizenshipTestInformation();
 
-        if (answers.ApplicationType == CitizenshipApplicationType.N400_Naturalization)
+        if (answers.ApplicationType == CitizenshipApplicationType.N400Naturalization)
         {
             // English test requirements
             testInfo.NeedsEnglishTest = !QualifiesForEnglishException(answers);
@@ -380,7 +380,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
 
         return applicationType switch
         {
-            CitizenshipApplicationType.N400_Naturalization => new List<string>
+            CitizenshipApplicationType.N400Naturalization => new List<string>
             {
                 "Complete Form N-400",
                 "Gather required documents",
@@ -390,7 +390,7 @@ public class CitizenshipCaseService : ICitizenshipCaseService
                 "Attend naturalization interview",
                 "Take oath of allegiance ceremony"
             },
-            CitizenshipApplicationType.N600_CertificateOfCitizenship => new List<string>
+            CitizenshipApplicationType.N600CertificateOfCitizenship => new List<string>
             {
                 "Complete Form N-600",
                 "Gather required documents",

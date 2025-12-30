@@ -129,8 +129,7 @@ public class SessionManagementService : ISessionManagementService
 
     private static string HashToken(string token)
     {
-        using var sha256 = SHA256.Create();
-        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
         return Convert.ToBase64String(hashBytes);
     }
 }

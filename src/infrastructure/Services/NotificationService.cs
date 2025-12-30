@@ -505,7 +505,7 @@ public class NotificationService : INotificationService
                 .Where(n => n.ExpiresAt != null && n.ExpiresAt < DateTime.UtcNow)
                 .ToListAsync();
 
-            if (expiredNotifications.Any())
+            if (expiredNotifications.Count > 0)
             {
                 _context.Notifications.RemoveRange(expiredNotifications);
                 await _context.SaveChangesAsync();

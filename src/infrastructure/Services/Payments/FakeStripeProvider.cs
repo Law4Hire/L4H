@@ -2,7 +2,7 @@ namespace L4H.Infrastructure.Services.Payments;
 
 public class FakeStripeProvider : IPaymentProvider
 {
-    public bool SimulateFailure { get; set; } = false;
+    public bool SimulateFailure { get; set; }
 
     public Task<CheckoutSessionResponse> CreateCheckoutSessionAsync(CheckoutSessionRequest request, CancellationToken cancellationToken = default)
     {

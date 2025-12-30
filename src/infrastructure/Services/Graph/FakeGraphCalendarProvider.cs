@@ -4,7 +4,7 @@ namespace L4H.Infrastructure.Services.Graph;
 
 public class FakeGraphCalendarProvider : ICalendarProvider
 {
-    public bool SimulateFailure { get; set; } = false;
+    public bool SimulateFailure { get; set; }
 
     public Task<CalendarAvailabilityResponse> GetAvailabilityAsync(CalendarAvailabilityRequest request, CancellationToken cancellationToken = default)
     {

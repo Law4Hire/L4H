@@ -60,7 +60,7 @@ public class SecretsValidationService : ISecretsValidationService
             errors.Add("SQL connection string is required");
         }
 
-        if (errors.Any())
+        if (errors.Count > 0)
         {
             var errorMessage = string.Join("; ", errors);
             _logger.LogCritical("Secrets validation failed: {Errors}", errorMessage);

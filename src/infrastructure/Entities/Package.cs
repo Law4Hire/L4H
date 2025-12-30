@@ -14,7 +14,7 @@ public class Package
     /// When true, scheduling should only show lawyer availability.
     /// When false, scheduling can show both lawyer and paralegal availability.
     /// </summary>
-    public bool RequiresLawyer { get; set; } = false;
+    public bool RequiresLawyer { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

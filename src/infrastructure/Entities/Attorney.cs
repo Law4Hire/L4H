@@ -53,10 +53,10 @@ public class Attorney
     public string OfficeLocation { get; set; } = string.Empty;
     
     [Column(TypeName = "decimal(10,2)")]
-    public decimal DefaultHourlyRate { get; set; } = 0;
-    
+    public decimal DefaultHourlyRate { get; set; }
+
     public bool IsActive { get; set; } = true;
-    public bool IsManagingAttorney { get; set; } = false;
+    public bool IsManagingAttorney { get; set; }
     public int DisplayOrder { get; set; }
     
     // Navigation properties for client billing system

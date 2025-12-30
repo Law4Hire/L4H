@@ -16,7 +16,7 @@ public class FormField
     public string Name { get; set; } = string.Empty;
     public string LabelKey { get; set; } = string.Empty;
     public FormFieldType Type { get; set; } = FormFieldType.Text;
-    public bool Required { get; set; } = false;
+    public bool Required { get; set; }
     public string? DataKey { get; set; }
 
     // Navigation properties

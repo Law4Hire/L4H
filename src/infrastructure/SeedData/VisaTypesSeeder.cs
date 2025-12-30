@@ -8,6 +8,11 @@ namespace L4H.Infrastructure.SeedData;
 
 public class VisaTypesSeeder : ISeedTask
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     public string Name => "Visa Types";
 
     private readonly L4HDbContext _context;
@@ -60,12 +65,9 @@ public class VisaTypesSeeder : ISeedTask
             if (File.Exists(jsonFilePath))
             {
                 var json = File.ReadAllText(jsonFilePath);
-                var visaTypesWrapper = JsonSerializer.Deserialize<VisaTypesWrapper>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                var visaTypesWrapper = JsonSerializer.Deserialize<VisaTypesWrapper>(json, JsonOptions);
 
-                if (visaTypesWrapper?.Visas != null && visaTypesWrapper.Visas.Any())
+                if (visaTypesWrapper?.Visas != null && visaTypesWrapper.Visas.Count > 0)
                 {
                     var visaTypes = visaTypesWrapper.Visas.Select(v => new VisaTypeData
                     {

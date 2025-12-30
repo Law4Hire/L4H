@@ -27,7 +27,7 @@ public class CaseVisaType
     /// <summary>
     /// Whether this visa type is the primary one for the case
     /// </summary>
-    public bool IsPrimary { get; set; } = false;
+    public bool IsPrimary { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

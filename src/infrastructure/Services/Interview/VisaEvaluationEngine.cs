@@ -75,7 +75,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
 
         if (remainingVisas.Count <= 3) return true;
         if (answers.Count >= 8) return true;
-        if (!remainingVisas.Any(v => v.PricingRules.Any())) return true;
+        if (!remainingVisas.Any(v => v.PricingRules.Count > 0)) return true;
 
         return false;
     }

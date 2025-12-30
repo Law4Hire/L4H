@@ -219,7 +219,7 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         }
 
         // If session already has evaluations, return those
-        if (session.VisaEvaluations.Any())
+        if (session.VisaEvaluations.Count > 0)
         {
             return session.VisaEvaluations
                 .OrderBy(ve => ve.Rank)

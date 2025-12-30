@@ -217,9 +217,9 @@ public class CitizenshipInterviewAnswers
 
 public enum CitizenshipApplicationType
 {
-    N400_Naturalization,
-    N600_CertificateOfCitizenship,
-    N600K_CitizenshipForAdoptedChild
+    N400Naturalization,
+    N600CertificateOfCitizenship,
+    N600KCitizenshipForAdoptedChild
 }
 
 public enum EnglishProficiencyLevel

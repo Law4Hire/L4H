@@ -30,7 +30,7 @@ public class Appointment
         set => ScheduledEnd = ScheduledStart.AddMinutes(value);
     }
     public string TimeZone { get; set; } = "UTC";
-    public int TimezoneOffsetMinutes { get; set; } = 0;
+    public int TimezoneOffsetMinutes { get; set; }
     public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? ConfirmedAt { get; set; }

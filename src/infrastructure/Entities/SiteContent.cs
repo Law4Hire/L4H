@@ -29,7 +29,7 @@ namespace L4H.Infrastructure.Entities
 
         public string? ImageUrl { get; set; }
 
-        public bool IsPublished { get; set; } = false;
+        public bool IsPublished { get; set; }
 
         public DateTime? PublishedAt { get; set; }
 

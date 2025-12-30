@@ -8,6 +8,11 @@ namespace L4H.Infrastructure.SeedData;
 
 public class VisaClassesSeeder : ISeedTask
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     public string Name => "Visa Classes";
 
     private readonly L4HDbContext _context;
@@ -62,11 +67,8 @@ public class VisaClassesSeeder : ISeedTask
             {
                 using var reader = new StreamReader(stream);
                 var json = reader.ReadToEnd();
-                var visaClasses = JsonSerializer.Deserialize<List<VisaClassData>>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-                if (visaClasses != null && visaClasses.Any())
+                var visaClasses = JsonSerializer.Deserialize<List<VisaClassData>>(json, JsonOptions);
+                if (visaClasses != null && visaClasses.Count > 0)
                 {
                     return visaClasses;
                 }

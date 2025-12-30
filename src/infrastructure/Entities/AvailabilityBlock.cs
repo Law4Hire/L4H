@@ -17,7 +17,7 @@ public class AvailabilityBlock
     public string TimeZone { get; set; } = "UTC"; // IANA timezone
     public string Type { get; set; } = "available"; // available, unavailable, break
     public string? Reason { get; set; }
-    public bool IsRecurring { get; set; } = false;
+    public bool IsRecurring { get; set; }
     public string? RecurrencePattern { get; set; } // JSON for recurring rules
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? ExpiresAt { get; set; }

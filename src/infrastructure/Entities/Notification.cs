@@ -24,11 +24,11 @@ public class Notification
     
     [Required]
     public NotificationPriority Priority { get; set; }
-    
-    public bool IsRead { get; set; } = false;
-    
-    public bool IsEmailSent { get; set; } = false;
-    
+
+    public bool IsRead { get; set; }
+
+    public bool IsEmailSent { get; set; }
+
     public DateTime? EmailSentAt { get; set; }
     
     public string? RelatedEntityType { get; set; }
