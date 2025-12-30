@@ -218,7 +218,7 @@ public class CannlawClientBillingSeeder : ISeedTask
 
         _context.Attorneys.AddRange(attorneys);
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Seeded {attorneys.Length} attorneys.");
+        _logger.LogInformation("Seeded {AttorneyCount} attorneys.", attorneys.Length);
     }
 
     private async Task SeedBillingRatesAsync()
@@ -276,7 +276,7 @@ public class CannlawClientBillingSeeder : ISeedTask
 
         _context.BillingRates.AddRange(billingRates);
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Seeded {billingRates.Count} billing rates.");
+        _logger.LogInformation("Seeded {BillingRateCount} billing rates.", billingRates.Count);
     }
 
     private async Task SeedClientsAsync()
@@ -372,7 +372,7 @@ public class CannlawClientBillingSeeder : ISeedTask
 
         _context.Clients.AddRange(clients);
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Seeded {clients.Length} clients.");
+        _logger.LogInformation("Seeded {ClientCount} clients.", clients.Length);
     }
 
     private async Task SeedCasesAsync()
@@ -434,7 +434,7 @@ public class CannlawClientBillingSeeder : ISeedTask
 
         _context.CannlawCases.AddRange(cases);
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Seeded {cases.Count} cases with status history.");
+        _logger.LogInformation("Seeded {CaseCount} cases with status history.", cases.Count);
     }
 
     private async Task SeedTimeEntriesAsync()
@@ -492,7 +492,7 @@ public class CannlawClientBillingSeeder : ISeedTask
 
         _context.TimeEntries.AddRange(timeEntries);
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Seeded {timeEntries.Count} time entries.");
+        _logger.LogInformation("Seeded {TimeEntryCount} time entries.", timeEntries.Count);
     }
 
     private async Task SeedDocumentsAsync()
@@ -548,7 +548,7 @@ public class CannlawClientBillingSeeder : ISeedTask
 
         _context.Documents.AddRange(documents);
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Seeded {documents.Count} documents.");
+        _logger.LogInformation("Seeded {DocumentCount} documents.", documents.Count);
     }
 
     private async Task SeedNotificationTemplatesAsync()
@@ -628,7 +628,7 @@ public class CannlawClientBillingSeeder : ISeedTask
 
         _context.NotificationTemplates.AddRange(templates);
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Seeded {templates.Count} notification templates.");
+        _logger.LogInformation("Seeded {TemplateCount} notification templates.", templates.Count);
     }
 
     private async Task CreateAdminUserAsync()
