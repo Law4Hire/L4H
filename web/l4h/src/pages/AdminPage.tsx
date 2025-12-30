@@ -130,6 +130,22 @@ const AdminPage: React.FC = () => {
           </Button>
         </Card>
 
+        <Card title="Visa Library">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Manage visa library categories and assign visa types</p>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              console.log('Manage Visa Library button clicked - navigating to /admin/visa-library')
+              navigate('/admin/visa-library')
+            }}
+            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
+            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
+          >
+            Manage Library
+          </Button>
+        </Card>
+
         <Card title="Reports & Analytics">
           <p className="text-gray-600 dark:text-gray-400 mb-4">View platform statistics and reports</p>
           <div className="text-sm text-gray-500 dark:text-gray-400">Coming soon...</div>

@@ -67,6 +67,14 @@ export default function AppointmentsPage() {
       return
     }
 
+    // Validate that the scheduled date is in the future
+    const scheduledDate = new Date(newAppointment.scheduledAt)
+    const now = new Date()
+    if (scheduledDate <= now) {
+      error('Invalid Date', 'Appointment date must be in the future')
+      return
+    }
+
     createAppointmentMutation.mutate(newAppointment)
   }
 
@@ -195,6 +203,7 @@ export default function AppointmentsPage() {
             type="datetime-local"
             value={newAppointment.scheduledAt}
             onChange={(e) => setNewAppointment(prev => ({ ...prev, scheduledAt: e.target.value }))}
+            min={new Date().toISOString().slice(0, 16)}
             required
           />
 

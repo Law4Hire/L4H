@@ -188,7 +188,16 @@ const AdminPricingPage: React.FC = () => {
       }
 
       setEditingPackage(null)
-      loadData() // Refresh data
+      await loadData() // Refresh data
+
+      // Update selectedVisaType with refreshed data from the server
+      setVisaTypes(prevVisaTypes => {
+        const updatedVisaType = prevVisaTypes.find(vt => vt.id === selectedVisaType.id)
+        if (updatedVisaType) {
+          setSelectedVisaType(updatedVisaType)
+        }
+        return prevVisaTypes
+      })
     } catch (err) {
       console.error('Error updating pricing:', err)
       error('Failed to update pricing', err instanceof Error ? err.message : 'Unknown error')

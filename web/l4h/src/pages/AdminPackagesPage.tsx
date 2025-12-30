@@ -107,7 +107,7 @@ const AdminPackagesPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-navy-900 overflow-hidden shadow rounded-lg transition-colors">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg transition-colors">
         <div className="px-4 py-5 sm:p-6 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -117,10 +117,10 @@ const AdminPackagesPage: React.FC = () => {
               Configure package settings including lawyer-only requirements for scheduling.
             </p>
           </div>
-          <Button 
-            onClick={loadPackages} 
-            variant="outline" 
-            className="flex items-center gap-2 dark:border-navy-700 dark:text-gray-300"
+          <Button
+            onClick={loadPackages}
+            variant="outline"
+            className="flex items-center gap-2 dark:border-gray-600 dark:text-gray-300"
           >
             <RefreshCw size={16} />
             Refresh
@@ -128,15 +128,15 @@ const AdminPackagesPage: React.FC = () => {
         </div>
       </div>
 
-      <Card title="Service Packages" className="dark:bg-navy-900 dark:border-navy-800">
+      <Card title="Service Packages" className="dark:bg-gray-800 dark:border-gray-700">
         <div className="overflow-x-auto">
           {packages.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-gray-500 dark:text-gray-400 italic">No packages found. Check database seeding.</p>
             </div>
           ) : (
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-navy-800">
-              <thead className="bg-gray-50 dark:bg-navy-800">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Package
@@ -152,9 +152,9 @@ const AdminPackagesPage: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-navy-900 divide-y divide-gray-200 dark:divide-navy-800">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {packages.map(pkg => (
-                  <tr key={pkg.id} className={!pkg.isActive ? 'bg-gray-50 dark:bg-navy-950/50' : ''}>
+                  <tr key={pkg.id} className={!pkg.isActive ? 'bg-gray-50 dark:bg-gray-900/50' : ''}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div>
@@ -176,7 +176,7 @@ const AdminPackagesPage: React.FC = () => {
                           onClick={() => toggleRequiresLawyer(pkg)}
                           disabled={saving === pkg.id}
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                            pkg.requiresLawyer ? 'bg-blue-600' : 'bg-gray-200 dark:bg-navy-700'
+                            pkg.requiresLawyer ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
                           } ${saving === pkg.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                         >
                           <span
@@ -200,7 +200,7 @@ const AdminPackagesPage: React.FC = () => {
                           onClick={() => toggleIsActive(pkg)}
                           disabled={saving === pkg.id}
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                            pkg.isActive ? 'bg-green-600' : 'bg-gray-200 dark:bg-navy-700'
+                            pkg.isActive ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-600'
                           } ${saving === pkg.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                         >
                           <span

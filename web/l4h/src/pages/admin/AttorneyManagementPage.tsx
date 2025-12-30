@@ -319,12 +319,12 @@ const AttorneyManagementPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-20">
       {/* Header */}
-      <div className="bg-white dark:bg-navy-900 rounded-lg shadow-sm p-6 flex justify-between items-center transition-colors">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 flex justify-between items-center transition-colors">
         <div>
-          <h1 className="text-2xl font-bold text-navy-900 dark:text-white">Attorney Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Attorney Management</h1>
           <p className="text-gray-600 dark:text-gray-400">Manage legal professional profiles and public listings</p>
         </div>
-        <Button 
+        <Button
           variant="primary"
           onClick={() => { resetForm(); setShowForm(true); }}
           className="flex items-center gap-2"
@@ -336,9 +336,9 @@ const AttorneyManagementPage: React.FC = () => {
 
       {/* Attorney Form */}
       {showForm && (
-        <Card className="p-6 border-t-4 border-t-blue-600 dark:bg-navy-900 dark:border-navy-800">
+        <Card className="p-6 border-t-4 border-t-blue-600 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
               {editingAttorney ? <Edit size={20} /> : <User size={20} />}
               {editingAttorney ? `Edit: ${editingAttorney.name}` : 'New Professional Profile'}
             </h2>
@@ -351,20 +351,20 @@ const AttorneyManagementPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Sidebar: Photo and Status */}
               <div className="space-y-6">
-                <div className="bg-gray-50 dark:bg-navy-800 p-6 rounded-xl text-center space-y-4">
-                  <label className="block text-sm font-bold text-navy-900 dark:text-gray-300 uppercase tracking-wider">
+                <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-xl text-center space-y-4">
+                  <label className="block text-sm font-bold text-gray-900 dark:text-gray-300 uppercase tracking-wider">
                     Profile Photo
                   </label>
                   <div className="relative group mx-auto w-32 h-32">
                     {formData.photoUrl ? (
-                      <img 
-                        src={formData.photoUrl} 
+                      <img
+                        src={formData.photoUrl}
                         alt="Preview"
-                        className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-navy-700 shadow-md"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-600 shadow-md"
                       />
                     ) : (
-                      <div className="w-32 h-32 rounded-full bg-navy-100 dark:bg-navy-700 flex items-center justify-center border-4 border-white dark:border-navy-600">
-                        <User className="w-12 h-12 text-navy-300 dark:text-navy-500" />
+                      <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-600">
+                        <User className="w-12 h-12 text-gray-300 dark:text-gray-500" />
                       </div>
                     )}
                     <button
@@ -387,7 +387,7 @@ const AttorneyManagementPage: React.FC = () => {
                     <p className="text-[10px] text-gray-500 italic">Save profile to enable photo upload</p>
                   )}
                   
-                  <div className="pt-4 border-t border-gray-200 dark:border-navy-700 space-y-3">
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-600 space-y-3">
                     <label className="flex items-center justify-between cursor-pointer group">
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Publicly Active</span>
                       <input
@@ -412,7 +412,7 @@ const AttorneyManagementPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-bold text-navy-900 dark:text-gray-300 uppercase tracking-wider">
+                  <label className="block text-sm font-bold text-gray-900 dark:text-gray-300 uppercase tracking-wider">
                     Display Order
                   </label>
                   <Input
@@ -420,7 +420,7 @@ const AttorneyManagementPage: React.FC = () => {
                     type="number"
                     value={formData.displayOrder}
                     onChange={handleInputChange}
-                    className="dark:bg-navy-800 dark:border-navy-700"
+                    className="dark:bg-gray-700 dark:border-gray-600"
                   />
                 </div>
               </div>
@@ -436,7 +436,7 @@ const AttorneyManagementPage: React.FC = () => {
                       onChange={handleInputChange}
                       placeholder="e.g. Denise S. Cann"
                       error={!!formErrors.name}
-                      className="dark:bg-navy-800"
+                      className="dark:bg-gray-700"
                     />
                   </div>
                   <div>
@@ -446,7 +446,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.title}
                       onChange={handleInputChange}
                       placeholder="e.g. Senior Attorney"
-                      className="dark:bg-navy-800"
+                      className="dark:bg-gray-700"
                     />
                   </div>
                   <div>
@@ -456,12 +456,12 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.officeLocation}
                       onChange={handleInputChange}
                       placeholder="e.g. Baltimore Office"
-                      className="dark:bg-navy-800"
+                      className="dark:bg-gray-700"
                     />
                   </div>
                 </div>
 
-                <div className="bg-blue-50 dark:bg-navy-800/50 p-4 rounded-lg border border-blue-100 dark:border-navy-700">
+                <div className="bg-blue-50 dark:bg-gray-800/50 p-4 rounded-lg border border-blue-100 dark:border-gray-600">
                   <h3 className="text-xs font-bold text-blue-800 dark:text-blue-400 uppercase mb-3 flex items-center gap-2">
                     <Mail size={14} /> Contact Information
                   </h3>
@@ -472,7 +472,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="public@cannlaw.com"
-                      className="bg-white dark:bg-navy-900"
+                      className="bg-white dark:bg-gray-800"
                     />
                     <Input
                       name="phone"
@@ -480,7 +480,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="(410) 783-1888"
-                      className="bg-white dark:bg-navy-900"
+                      className="bg-white dark:bg-gray-800"
                     />
                     <Input
                       name="directEmail"
@@ -488,7 +488,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.directEmail}
                       onChange={handleInputChange}
                       placeholder="direct@cannlaw.com"
-                      className="bg-white dark:bg-navy-900"
+                      className="bg-white dark:bg-gray-800"
                     />
                     <Input
                       name="directPhone"
@@ -496,7 +496,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.directPhone}
                       onChange={handleInputChange}
                       placeholder="(410) 783-XXXX"
-                      className="bg-white dark:bg-navy-900"
+                      className="bg-white dark:bg-gray-800"
                     />
                   </div>
                 </div>
@@ -508,7 +508,7 @@ const AttorneyManagementPage: React.FC = () => {
                     rows={5}
                     value={formData.bio}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 dark:border-navy-700 rounded-lg dark:bg-navy-800 dark:text-white"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
                     placeholder="Describe professional background and expertise..."
                   />
                 </div>
@@ -521,7 +521,7 @@ const AttorneyManagementPage: React.FC = () => {
                       rows={3}
                       value={formData.practiceAreas}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 dark:border-navy-700 rounded-lg dark:bg-navy-800 font-mono text-xs dark:text-gray-300"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-gray-300"
                       placeholder='["Area 1", "Area 2"]'
                     />
                   </div>
@@ -532,7 +532,7 @@ const AttorneyManagementPage: React.FC = () => {
                       rows={3}
                       value={formData.languages}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 dark:border-navy-700 rounded-lg dark:bg-navy-800 font-mono text-xs dark:text-gray-300"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-gray-300"
                       placeholder='["English", "Spanish"]'
                     />
                   </div>
@@ -543,13 +543,13 @@ const AttorneyManagementPage: React.FC = () => {
                       rows={3}
                       value={formData.credentials}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 dark:border-navy-700 rounded-lg dark:bg-navy-800 font-mono text-xs dark:text-gray-300"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-gray-300"
                       placeholder='["J.D.", "LLM"]'
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-4 pt-6 border-t dark:border-navy-800">
+                <div className="flex justify-end gap-4 pt-6 border-t dark:border-gray-700">
                   <Button variant="outline" onClick={resetForm} disabled={isSubmitting}>
                     Cancel
                   </Button>
@@ -566,67 +566,67 @@ const AttorneyManagementPage: React.FC = () => {
       {/* Attorney List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {attorneys.map((attorney) => (
-          <div 
-            key={attorney.id} 
-            className={`bg-white dark:bg-navy-900 rounded-xl shadow-md overflow-hidden border-t-4 transition-all hover:shadow-xl ${
+          <div
+            key={attorney.id}
+            className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border-t-4 transition-all hover:shadow-xl ${
               attorney.isActive ? 'border-t-blue-600' : 'border-t-gray-400 opacity-75'
             }`}
           >
             <div className="p-6">
               <div className="flex items-center space-x-4 mb-4">
                 {attorney.photoUrl ? (
-                  <img 
-                    src={attorney.photoUrl} 
+                  <img
+                    src={attorney.photoUrl}
                     alt={attorney.name}
-                    className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-100 dark:ring-navy-800 shadow-sm"
+                    className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700 shadow-sm"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-navy-100 dark:bg-navy-800 flex items-center justify-center text-navy-400">
+                  <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400">
                     <User size={32} />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-bold text-navy-900 dark:text-white truncate">{attorney.name}</h3>
-                  <p className="text-xs font-bold text-gold-600 dark:text-gold-500 uppercase tracking-widest truncate">{attorney.title}</p>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">{attorney.name}</h3>
+                  <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest truncate">{attorney.title}</p>
                 </div>
               </div>
 
               <div className="space-y-3 mb-6 text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-2">
-                  <Mail size={14} className="text-navy-300" />
+                  <Mail size={14} className="text-gray-400" />
                   <span className="truncate">{attorney.email || 'No email'}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin size={14} className="text-navy-300" />
+                  <MapPin size={14} className="text-gray-400" />
                   <span>{attorney.officeLocation || 'Remote'}</span>
                 </div>
-                <div className="flex items-center gap-2 font-medium text-navy-900 dark:text-blue-400">
+                <div className="flex items-center gap-2 font-medium text-gray-900 dark:text-blue-400">
                   <Briefcase size={14} />
                   <span>${attorney.defaultHourlyRate}/hr</span>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-navy-800">
-                <Button 
-                  size="sm" 
-                  variant="outline" 
+              <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+                <Button
+                  size="sm"
+                  variant="outline"
                   onClick={() => handleEdit(attorney)}
-                  className="flex items-center gap-1 dark:border-navy-700"
+                  className="flex items-center gap-1 dark:border-gray-600"
                 >
                   <Edit size={14} /> Edit
                 </Button>
-                
+
                 {attorney.isActive ? (
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
+                  <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => { setAttorneyToDeactivate(attorney); setShowDeactivateModal(true); }}
-                    className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:border-navy-700"
+                    className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:border-gray-600"
                   >
                     Deactivate
                   </Button>
                 ) : (
-                  <span className="px-3 py-1 bg-gray-100 dark:bg-navy-800 text-gray-500 rounded-full text-xs font-bold uppercase tracking-tighter">
+                  <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 rounded-full text-xs font-bold uppercase tracking-tighter">
                     Inactive
                   </span>
                 )}

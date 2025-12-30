@@ -214,9 +214,9 @@ const InterviewPage: React.FC = () => {
                 <button
                   key={option.value}
                   onClick={() => handleAnswer(option.value)}
-                  className="p-6 border-2 border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-600 dark:hover:border-gold-500 hover:bg-blue-50 dark:hover:bg-navy-800 transition-all text-left group"
+                  className="p-6 border-2 border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-600 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all text-left group"
                 >
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-gold-500">{option.label}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">{option.label}</h3>
                 </button>
               ))}
             </div>
@@ -226,13 +226,13 @@ const InterviewPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-navy-950 dark:to-navy-900 p-6 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6 transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-white dark:bg-navy-800 rounded-xl shadow-2xl p-8 md:p-12 transition-colors">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 md:p-12 transition-colors">
           {!isComplete && !isLoading && (
             <button
               onClick={startInterview} // Back button restarts the interview for now
-              className="flex items-center text-blue-600 dark:text-gold-500 hover:text-blue-800 dark:hover:text-gold-400 mb-6 font-semibold transition-colors"
+              className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mb-6 font-semibold transition-colors"
             >
               <ChevronLeft size={20} className="mr-1" />
               Back

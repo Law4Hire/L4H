@@ -36,6 +36,18 @@ public class JwtTokenService : IJwtTokenService
             new Claim("is_legal_professional", user.IsLegalProfessional.ToString())
         };
 
+        // Add role claims for authorization
+        if (user.IsAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+        }
+
+        if (user.IsLegalProfessional)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "LegalProfessional"));
+            claims.Add(new Claim(ClaimTypes.Role, "Attorney")); // Alias for backward compatibility
+        }
+
         // Add attorney assignment information for legal professionals
         if (user.IsLegalProfessional && user.AttorneyId.HasValue)
         {

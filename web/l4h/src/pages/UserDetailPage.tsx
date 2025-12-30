@@ -153,19 +153,19 @@ const UserDetailPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {user.firstName} {user.lastName}
               </h1>
-              <p className="text-gray-600">{user.email}</p>
+              <p className="text-gray-600 dark:text-gray-300">{user.email}</p>
             </div>
             <Button
               variant="ghost"
               onClick={() => navigate('/admin/users')}
-              className="text-blue-600 hover:text-blue-900"
+              className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
             >
               ← Back to Users
             </Button>
@@ -177,12 +177,12 @@ const UserDetailPage: React.FC = () => {
       <Card title="Account Status">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Active Status</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Active Status</h3>
             <div className="flex items-center space-x-3">
               <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                 user.isActive
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                  : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
               }`}>
                 {user.isActive ? 'Active' : 'Inactive'}
               </span>
@@ -190,7 +190,7 @@ const UserDetailPage: React.FC = () => {
                 size="sm"
                 variant={user.isActive ? "ghost" : "primary"}
                 onClick={() => toggleUserStatus(!user.isActive)}
-                className={user.isActive ? "text-red-600 hover:text-red-700" : ""}
+                className={user.isActive ? "text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" : ""}
               >
                 {user.isActive ? 'Deactivate' : 'Activate'}
               </Button>
@@ -198,13 +198,13 @@ const UserDetailPage: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Email Verification</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Email Verification</h3>
             <div className="space-y-2">
               <div className="flex items-center space-x-3">
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                   user.emailVerified
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-yellow-100 text-yellow-800'
+                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                 }`}>
                   {user.emailVerified ? 'Verified' : 'Unverified'}
                 </span>
@@ -215,7 +215,7 @@ const UserDetailPage: React.FC = () => {
                     size="sm"
                     variant="ghost"
                     onClick={handleVerifyEmail}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Manual Verify
                   </Button>
@@ -223,7 +223,7 @@ const UserDetailPage: React.FC = () => {
                     size="sm"
                     variant="ghost"
                     onClick={handleResendEmail}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Resend Email
                   </Button>
@@ -239,30 +239,30 @@ const UserDetailPage: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-700">Administrator</h3>
-              <p className="text-sm text-gray-500">Full system access and user management</p>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Administrator</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Full system access and user management</p>
             </div>
             <label className="flex items-center">
               <input
                 type="checkbox"
                 checked={user.isAdmin}
                 onChange={(e) => updateUserRole(e.target.checked, user.isStaff)}
-                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                className="rounded border-gray-300 dark:border-gray-600 text-blue-600 dark:text-blue-500 shadow-sm focus:border-blue-300 dark:focus:border-blue-500 focus:ring focus:ring-blue-200 dark:focus:ring-blue-800 focus:ring-opacity-50 dark:bg-gray-700"
               />
             </label>
           </div>
 
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-700">Legal Professional</h3>
-              <p className="text-sm text-gray-500">Access to case management and legal tools</p>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Legal Professional</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Access to case management and legal tools</p>
             </div>
             <label className="flex items-center">
               <input
                 type="checkbox"
                 checked={user.isStaff}
                 onChange={(e) => updateUserRole(user.isAdmin, e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                className="rounded border-gray-300 dark:border-gray-600 text-blue-600 dark:text-blue-500 shadow-sm focus:border-blue-300 dark:focus:border-blue-500 focus:ring focus:ring-blue-200 dark:focus:ring-blue-800 focus:ring-opacity-50 dark:bg-gray-700"
               />
             </label>
           </div>
@@ -273,7 +273,7 @@ const UserDetailPage: React.FC = () => {
       <Card title="Password Management">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               New Password
             </label>
             <div className="flex space-x-3">
@@ -298,11 +298,11 @@ const UserDetailPage: React.FC = () => {
 
       {/* Danger Zone */}
       <Card title="Danger Zone">
-        <div className="border border-red-200 rounded-lg p-4">
+        <div className="border border-red-200 dark:border-red-800 rounded-lg p-4 dark:bg-red-900/10">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-red-800">Delete User</h3>
-              <p className="text-sm text-red-600">
+              <h3 className="text-sm font-medium text-red-800 dark:text-red-400">Delete User</h3>
+              <p className="text-sm text-red-600 dark:text-red-400">
                 Permanently delete this user and all associated data. This action cannot be undone.
               </p>
             </div>
@@ -310,13 +310,13 @@ const UserDetailPage: React.FC = () => {
               variant="ghost"
               onClick={() => setShowDeleteModal(true)}
               disabled={user.isAdmin}
-              className="text-red-600 hover:text-red-700 border-red-300 hover:border-red-400"
+              className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 border-red-300 dark:border-red-700 hover:border-red-400 dark:hover:border-red-600"
             >
               Delete User
             </Button>
           </div>
           {user.isAdmin && (
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
               Admin users cannot be deleted for security reasons.
             </p>
           )}
@@ -325,13 +325,13 @@ const UserDetailPage: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div className="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-70 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
             <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Delete User
               </h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                 Are you sure you want to delete <strong>{user.firstName} {user.lastName}</strong>?
                 This action cannot be undone and will permanently remove all user data.
               </p>
@@ -357,17 +357,17 @@ const UserDetailPage: React.FC = () => {
 
       {/* Verification Link Modal */}
       {showLinkModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div className="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-70 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
             <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Email Verification Link
               </h3>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Verification Link (Demo Mode)
                 </label>
-                <div className="bg-gray-50 p-3 rounded border break-all text-sm">
+                <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600 break-all text-sm text-gray-900 dark:text-gray-100">
                   {verificationLink}
                 </div>
               </div>
@@ -387,7 +387,7 @@ const UserDetailPage: React.FC = () => {
                 <Button
                   variant="ghost"
                   onClick={() => window.open(verificationLink, '_blank')}
-                  className="text-blue-600 hover:text-blue-700"
+                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                 >
                   Open Link
                 </Button>

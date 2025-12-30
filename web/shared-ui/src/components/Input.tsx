@@ -53,6 +53,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             // Base styles
             'block w-full rounded-md border shadow-sm transition-colors',
             'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100',
+            'focus:bg-white dark:focus:bg-gray-800',
             'focus:outline-none focus:ring-1',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             'placeholder:text-gray-400 dark:placeholder:text-gray-500',

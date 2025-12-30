@@ -35,10 +35,11 @@ const PricingPage: React.FC = () => {
 
   const activeCase = casesList.length > 0 ? casesList[0] : undefined
 
-  // Fetch pricing data
+  // Fetch pricing data - only if we have an active case
   const { data: pricingData, isLoading, error } = useQuery({
     queryKey: ['pricing', activeCase?.visaTypeCode, user?.country],
-    queryFn: () => pricing.get(activeCase?.visaTypeCode, user?.country)
+    queryFn: () => pricing.get(activeCase?.visaTypeCode, user?.country),
+    enabled: !!activeCase // Only run query if we have an active case
   })
 
   // Select package mutation
@@ -75,7 +76,30 @@ const PricingPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-lg">{'Loading...'}</div>
+        <div className="text-lg text-gray-900 dark:text-white">{'Loading...'}</div>
+      </div>
+    )
+  }
+
+  // Show message if no active case
+  if (!activeCase) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            {'Our Service Packages'}
+          </h1>
+        </div>
+        <Card>
+          <div className="p-8 text-center">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              {'You need to create a case before selecting a pricing package.'}
+            </p>
+            <Button onClick={() => navigate('/dashboard')}>
+              {'Go to Dashboard'}
+            </Button>
+          </div>
+        </Card>
       </div>
     )
   }
@@ -83,17 +107,17 @@ const PricingPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
           {'Our Service Packages'}
         </h1>
-        <p className="text-lg text-gray-600">
+        <p className="text-lg text-gray-600 dark:text-gray-400">
           {'Select a plan that works for you'}
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4" role="alert">
-          <div className="text-red-800">{'Error'}</div>
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md p-4" role="alert">
+          <div className="text-red-800 dark:text-red-200">{'Error loading pricing data'}</div>
         </div>
       )}
 
@@ -103,26 +127,26 @@ const PricingPage: React.FC = () => {
             <Card key={pkg.id} className="relative">
               <div className="p-6">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     {pkg.name}
                   </h3>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
                     {pkg.description}
                   </p>
-                  <div className="text-4xl font-bold text-blue-600">
+                  <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
                     {formatCurrency(pkg.price, pkg.currency)}
                   </div>
                 </div>
 
                 <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                     {'Features'}
                   </h4>
                   <ul className="space-y-2">
                     {pkg.features.map((feature, index) => (
                       <li key={index} className="flex items-center">
                         <svg
-                          className="h-5 w-5 text-green-500 mr-3"
+                          className="h-5 w-5 text-green-500 dark:text-green-400 mr-3"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -132,7 +156,7 @@ const PricingPage: React.FC = () => {
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span className="text-gray-700">{feature}</span>
+                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -155,7 +179,7 @@ const PricingPage: React.FC = () => {
 
                 {selectedPackage === pkg.id && (
                   <div className="absolute top-4 right-4">
-                    <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full text-xs font-medium">
                       {'Current Plan'}
                     </div>
                   </div>

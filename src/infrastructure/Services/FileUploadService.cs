@@ -78,12 +78,8 @@ public class FileUploadService : IFileUploadService
 
         try
         {
-            // Get base path from configuration
-            var basePath = _configuration.GetValue<string>("FileStorage:BasePath") ?? "/data/uploads";
-            var attorneysSubdir = _configuration.GetValue<string>("FileStorage:AttorneyPhotosSubdir") ?? "attorneys";
-
-            // Create uploads directory if it doesn't exist
-            var uploadsPath = Path.Combine(basePath, attorneysSubdir);
+            // Create uploads directory if it doesn't exist (using WebRootPath for public access)
+            var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads", "attorneys");
             Directory.CreateDirectory(uploadsPath);
 
             // Generate unique filename
@@ -94,7 +90,7 @@ public class FileUploadService : IFileUploadService
 
             // Process and save the image
             using var image = await Image.LoadAsync(file.OpenReadStream());
-            
+
             // Resize image to standard attorney photo size (400x400)
             image.Mutate(x => x.Resize(new ResizeOptions
             {

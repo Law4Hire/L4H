@@ -117,16 +117,16 @@ const VisaLibraryPage: React.FC = () => {
         )}
 
         {/* Call to Action */}
-        <div className="bg-blue-600 dark:bg-blue-700 rounded-lg p-8 text-center text-white mt-16">
+        <div className="bg-blue-600 dark:bg-gray-800 dark:border dark:border-gray-700 rounded-lg p-8 text-center text-white dark:text-gray-100 mt-16">
           <h3 className="text-2xl font-bold mb-4">
             Need Help Choosing the Right Visa?
           </h3>
-          <p className="text-lg text-blue-100 dark:text-blue-200 mb-6">
+          <p className="text-lg text-blue-100 dark:text-gray-300 mb-6">
             Our immigration experts can help you determine which visa category fits your situation best.
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="bg-white dark:bg-blue-600 text-blue-600 dark:text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-blue-700 transition-colors"
           >
             Start Your Application
           </button>

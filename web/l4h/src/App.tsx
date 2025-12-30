@@ -28,6 +28,7 @@ const AdminInterviewQuestionsPage = lazy(() => import('./pages/AdminInterviewQue
 const AdminPackagesPage = lazy(() => import('./pages/AdminPackagesPage'))
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
 const AdminUSCISFormsPage = lazy(() => import('./pages/AdminUSCISFormsPage'))
+const AdminVisaLibraryPage = lazy(() => import('./pages/AdminVisaLibraryPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
 
@@ -415,6 +416,21 @@ function App() {
                 isAuthenticated={isAuthenticated}
               >
                 <AdminUSCISFormsPage />
+              </Layout>
+            </RouteGuard>
+          }
+        />
+        <Route
+          path="/admin/visa-library"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Visa Library Management'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminVisaLibraryPage />
               </Layout>
             </RouteGuard>
           }
