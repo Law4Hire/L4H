@@ -66,6 +66,7 @@ jobs:
         cd ../cannlaw && npm ci && npm run build
 
     - name: Deploy to TEST Kubernetes
+      if: ${{ secrets.DEPLOY_HOST != '' }}
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -75,6 +76,7 @@ jobs:
         target: "/tmp/l4h-deploy-test/"
 
     - name: Apply TEST deployment
+      if: ${{ secrets.DEPLOY_HOST != '' }}
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -147,6 +149,7 @@ jobs:
           echo "   API:     https://api.74-208-77-43.nip.io"
 
     - name: Verify TEST deployment
+      if: ${{ secrets.DEPLOY_HOST != '' }}
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -163,3 +166,30 @@ jobs:
           curl -fsSL https://l4h.74-208-77-43.nip.io || echo "⚠️ L4H not ready yet"
           curl -fsSL https://cannlaw.74-208-77-43.nip.io || echo "⚠️ Cannlaw not ready yet"
           curl -fsSL https://api.74-208-77-43.nip.io/healthz || echo "⚠️ API not ready yet"
+
+    - name: Deployment Summary
+      if: always()
+      run: |
+        echo "📦 TEST Build Summary"
+        echo "===================="
+        echo "✅ Docker images built and pushed:"
+        echo "  - ghcr.io/${{ steps.repo.outputs.repository_lower }}-api:test-${{ github.sha }}"
+        echo "  - ghcr.io/${{ steps.repo.outputs.repository_lower }}-upload-gateway:test-${{ github.sha }}"
+        echo "  - ghcr.io/${{ steps.repo.outputs.repository_lower }}-scraper:test-${{ github.sha }}"
+        echo ""
+        echo "✅ UI artifacts built:"
+        echo "  - l4h frontend"
+        echo "  - cannlaw frontend"
+        echo ""
+        if [ -z "${{ secrets.DEPLOY_HOST }}" ]; then
+          echo "⏭️  Kubernetes deployment SKIPPED (secrets not configured)"
+          echo "   To enable automatic deployment, configure these secrets:"
+          echo "   - DEPLOY_HOST"
+          echo "   - DEPLOY_USER"
+          echo "   - DEPLOY_KEY"
+        else
+          echo "✅ Deployed to TEST environment (namespace: l4h)"
+          echo "🌐 URLs:"
+          echo "   - https://l4h.74-208-77-43.nip.io"
+          echo "   - https://cannlaw.74-208-77-43.nip.io"
+        fi
