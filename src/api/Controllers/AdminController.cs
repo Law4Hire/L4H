@@ -440,7 +440,7 @@ public class AdminController : ControllerBase
             PasswordHash = _passwordHasher.HashPassword(request.Password),
             IsAdmin = request.IsAdmin,
             IsStaff = request.IsStaff,
-            IsLegalProfessional = request.isStaff, // Sync with isStaff
+            IsLegalProfessional = request.IsStaff, // Sync with IsStaff
             IsActive = true,
             EmailVerified = false,
             CreatedAt = DateTime.UtcNow,
