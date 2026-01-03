@@ -74,7 +74,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
         {
             builder.ConfigureServices(services =>
             {
-                services.Configure<MeetingsOptions>(options =>
+                services.Configure<L4H.Api.Configuration.MeetingsOptions>(options =>
                 {
                     options.Mode = "Teams";
                 });
@@ -112,7 +112,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
         {
             builder.ConfigureServices(services =>
             {
-                services.Configure<MeetingsOptions>(options =>
+                services.Configure<L4H.Api.Configuration.MeetingsOptions>(options =>
                 {
                     options.Mode = "Fake";
                 });
@@ -150,7 +150,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
         {
             builder.ConfigureServices(services =>
             {
-                services.Configure<MeetingsOptions>(options =>
+                services.Configure<L4H.Api.Configuration.MeetingsOptions>(options =>
                 {
                     options.Mode = "Teams";
                 });
@@ -190,7 +190,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
         {
             builder.ConfigureServices(services =>
             {
-                services.Configure<MeetingsOptions>(options =>
+                services.Configure<L4H.Api.Configuration.MeetingsOptions>(options =>
                 {
                     options.Mode = "Teams";
                 });
@@ -232,7 +232,7 @@ public sealed class TeamsMeetingsTests : IClassFixture<WebApplicationFactory<Pro
         {
             builder.ConfigureServices(services =>
             {
-                services.Configure<MeetingsOptions>(options =>
+                services.Configure<L4H.Api.Configuration.MeetingsOptions>(options =>
                 {
                     options.Mode = "Teams";
                     options.WaitingRoomEnabled = true;
