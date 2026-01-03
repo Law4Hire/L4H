@@ -69,6 +69,7 @@ public class L4HDbContext : DbContext
     
     // Cannlaw entities
     public DbSet<SiteConfiguration> SiteConfigurations { get; set; }
+    public DbSet<ContactMessage> ContactMessages { get; set; }
     public DbSet<ServiceCategory> ServiceCategories { get; set; }
     public DbSet<LegalService> LegalServices { get; set; }
     public DbSet<Attorney> Attorneys { get; set; }

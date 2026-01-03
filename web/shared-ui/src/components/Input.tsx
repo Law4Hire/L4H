@@ -57,10 +57,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             'focus:outline-none focus:ring-1',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+            // Autofill styles - override browser defaults to match our theme
+            'autofill:bg-white dark:autofill:bg-gray-800',
+            'autofill:text-gray-900 dark:autofill:text-gray-100',
+            'autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(31,41,55)]',
             // RTL support
             'rtl:text-right ltr:text-left',
             // Special handling for specific input types that should remain LTR
-            (props.type === 'email' || props.type === 'url' || props.type === 'tel' || props.type === 'number') && 
+            (props.type === 'email' || props.type === 'url' || props.type === 'tel' || props.type === 'number') &&
             'rtl:text-left rtl:direction-ltr',
             // Variant styles
             variantClasses[currentVariant],

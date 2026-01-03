@@ -15,6 +15,9 @@ public class SiteConfiguration
     
     [MaxLength(50)]
     public string PrimaryPhone { get; set; } = string.Empty;
+
+    [MaxLength(50)]
+    public string CorporatePhone { get; set; } = string.Empty;
     
     [MaxLength(255)]
     public string Email { get; set; } = string.Empty;

@@ -2,13 +2,15 @@ import React from 'react'
 import { Card } from '@l4h/shared-ui'
 import { useServices } from '../../hooks/useServices'
 import { useSiteConfig } from '../../hooks/useSiteConfig'
+import { usePricing } from '../../hooks/usePricing'
 import PublicLayout from '../../components/PublicLayout'
 
 const FeesPage: React.FC = () => {
   const { serviceCategories, isLoading: servicesLoading } = useServices()
   const { siteConfig, isLoading: configLoading } = useSiteConfig()
+  const { packages, isLoading: pricingLoading } = usePricing()
 
-  if (servicesLoading || configLoading) {
+  if (servicesLoading || configLoading || pricingLoading) {
     return (
       <PublicLayout>
         <div className="flex justify-center items-center min-h-screen">
@@ -83,45 +85,89 @@ const FeesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Service Categories Pricing */}
+      {/* Pricing Packages */}
       <section className="py-16 bg-gray-50 dark:bg-navy-950 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Service Categories</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Sample Pricing</h2>
             <p className="text-lg text-gray-600 dark:text-gray-400">
-              Pricing varies based on case complexity and specific requirements
+              Transparent pricing examples for common visa types. Your specific case may vary based on complexity.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {serviceCategories.map((category) => (
-              <Card key={category.id} className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{category.name}</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">{category.description}</p>
-                
-                <div className="space-y-3 mb-6">
-                  {category.services?.slice(0, 4).map((service) => (
-                    <div key={service.id} className="flex items-center text-sm text-gray-700 dark:text-gray-300">
-                      <svg className="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {service.name}
-                    </div>
-                  ))}
-                </div>
+            {packages.length > 0 ? (
+              packages.slice(0, 6).map((pkg) => (
+                <Card key={pkg.id} className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{pkg.displayName}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">{pkg.description}</p>
 
-                <div className="border-t dark:border-navy-700 pt-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Starting from:</p>
-                  <p className="text-2xl font-bold text-blue-600 dark:text-gold-500 mb-4">Contact for Quote</p>
-                  <a 
-                    href="/contact" 
-                    className="block w-full text-center px-4 py-2 bg-blue-600 dark:bg-gold-600 text-white dark:text-navy-900 font-bold rounded-lg hover:bg-blue-700 dark:hover:bg-gold-500 transition-colors"
-                  >
-                    Get Quote
-                  </a>
-                </div>
-              </Card>
-            ))}
+                  {pkg.features && pkg.features.length > 0 && (
+                    <div className="space-y-3 mb-6">
+                      {pkg.features.slice(0, 4).map((feature, idx) => (
+                        <div key={idx} className="flex items-start text-sm text-gray-700 dark:text-gray-300">
+                          <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="border-t dark:border-navy-700 pt-4 mt-auto">
+                    {typeof pkg.basePrice === 'number' && pkg.basePrice > 0 ? (
+                      <>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Starting from:</p>
+                        <p className="text-3xl font-bold text-blue-600 dark:text-gold-500 mb-4">
+                          ${pkg.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Pricing:</p>
+                        <p className="text-2xl font-bold text-blue-600 dark:text-gold-500 mb-4">Contact for Quote</p>
+                      </>
+                    )}
+                    <a
+                      href="/contact"
+                      className="block w-full text-center px-4 py-2 bg-blue-600 dark:bg-gold-600 text-white dark:text-navy-900 font-bold rounded-lg hover:bg-blue-700 dark:hover:bg-gold-500 transition-colors"
+                    >
+                      Get Started
+                    </a>
+                  </div>
+                </Card>
+              ))
+            ) : (
+              serviceCategories.slice(0, 6).map((category) => (
+                <Card key={category.id} className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{category.name}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">{category.description}</p>
+
+                  <div className="space-y-3 mb-6">
+                    {category.services?.slice(0, 4).map((service) => (
+                      <div key={service.id} className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                        <svg className="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {service.name}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="border-t dark:border-navy-700 pt-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Pricing:</p>
+                    <p className="text-2xl font-bold text-blue-600 dark:text-gold-500 mb-4">Contact for Quote</p>
+                    <a
+                      href="/contact"
+                      className="block w-full text-center px-4 py-2 bg-blue-600 dark:bg-gold-600 text-white dark:text-navy-900 font-bold rounded-lg hover:bg-blue-700 dark:hover:bg-gold-500 transition-colors"
+                    >
+                      Get Quote
+                    </a>
+                  </div>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </section>

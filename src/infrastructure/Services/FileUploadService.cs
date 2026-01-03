@@ -20,6 +20,9 @@ public interface IFileUploadService
     // Attorney photo management
     Task<string> UploadAttorneyPhotoAsync(IFormFile file, string attorneyName);
     Task<string> ProcessAttorneyPhotoAsync(IFormFile file, int attorneyId);
+
+    // USCIS Forms management
+    Task<string> UploadUSCISFormAsync(IFormFile file, string formNumber);
     
     // Client document management
     Task<Document> UploadClientDocumentAsync(IFormFile file, int clientId, DocumentCategory category, string uploadedBy, string? description = null);
@@ -55,6 +58,7 @@ public class FileUploadService : IFileUploadService
     private readonly IConfiguration _configuration;
     private readonly ILogger<FileUploadService> _logger;
     private readonly L4HDbContext _context;
+    private readonly string _baseUploadPath;
 
     private readonly string[] _allowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
     private readonly string[] _allowedDocumentExtensions = { ".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png", ".webp" };
@@ -67,6 +71,10 @@ public class FileUploadService : IFileUploadService
         _configuration = configuration;
         _logger = logger;
         _context = context;
+
+        // Use configured basePath from FileStorage:BasePath, fallback to platform-appropriate default
+        _baseUploadPath = configuration.GetValue<string>("FileStorage:BasePath")
+            ?? Path.Combine(environment.ContentRootPath, "uploads");
     }
 
     public async Task<string> UploadAttorneyPhotoAsync(IFormFile file, string attorneyName)
@@ -78,8 +86,8 @@ public class FileUploadService : IFileUploadService
 
         try
         {
-            // Create uploads directory if it doesn't exist (using WebRootPath for public access)
-            var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads", "attorneys");
+            // Create uploads directory if it doesn't exist (using configured base path)
+            var uploadsPath = Path.Combine(_baseUploadPath, "attorneys");
             Directory.CreateDirectory(uploadsPath);
 
             // Generate unique filename
@@ -112,6 +120,44 @@ public class FileUploadService : IFileUploadService
         }
     }
 
+    public async Task<string> UploadUSCISFormAsync(IFormFile file, string formNumber)
+    {
+        if (file == null || file.Length == 0)
+        {
+            throw new ArgumentException("Invalid file");
+        }
+
+        try
+        {
+            // Create uploads directory if it doesn't exist
+            var uploadsPath = Path.Combine(_baseUploadPath, "uscis-forms");
+            Directory.CreateDirectory(uploadsPath);
+
+            // Generate unique filename
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (fileExtension != ".pdf")
+            {
+                throw new ArgumentException("Only PDF files are allowed for USCIS forms");
+            }
+
+            var sanitizedNumber = SanitizeFileName(formNumber);
+            var fileName = $"{sanitizedNumber}_{Guid.NewGuid()}{fileExtension}";
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            // Save the file
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            // Return relative URL path
+            return $"/uploads/uscis-forms/{fileName}";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error uploading USCIS form {FormNumber}", formNumber);
+            throw new InvalidOperationException("Failed to upload USCIS form", ex);
+        }
+    }
+
     public async Task<string> UploadClientDocumentAsync(IFormFile file, int clientId, string category)
     {
         if (!IsValidDocumentFile(file))
@@ -122,7 +168,7 @@ public class FileUploadService : IFileUploadService
         try
         {
             // Create uploads directory if it doesn't exist
-            var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads", "clients", clientId.ToString(), category);
+            var uploadsPath = Path.Combine(_baseUploadPath, "clients", clientId.ToString(), category);
             Directory.CreateDirectory(uploadsPath);
 
             // Generate unique filename
@@ -153,8 +199,9 @@ public class FileUploadService : IFileUploadService
             if (string.IsNullOrEmpty(filePath))
                 return Task.FromResult(false);
 
-            // Convert relative URL to physical path
-            var physicalPath = Path.Combine(_environment.WebRootPath, filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+            // Convert relative URL to physical path - remove /uploads prefix and combine with base path
+            var relativePath = filePath.TrimStart('/').Replace("/uploads/", "").Replace('/', Path.DirectorySeparatorChar);
+            var physicalPath = Path.Combine(_baseUploadPath, relativePath);
 
             if (File.Exists(physicalPath))
             {
@@ -215,7 +262,7 @@ public class FileUploadService : IFileUploadService
         {
             // Create uploads directory if it doesn't exist
             var categoryName = category.ToString().ToLowerInvariant();
-            var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads", "clients", clientId.ToString(), categoryName);
+            var uploadsPath = Path.Combine(_baseUploadPath, "clients", clientId.ToString(), categoryName);
             Directory.CreateDirectory(uploadsPath);
 
             // Generate unique filename
@@ -356,8 +403,9 @@ public class FileUploadService : IFileUploadService
 
     public async Task<byte[]> GetFileContentAsync(string filePath)
     {
-        var physicalPath = Path.Combine(_environment.WebRootPath, filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-        
+        var relativePath = filePath.TrimStart('/').Replace("/uploads/", "").Replace('/', Path.DirectorySeparatorChar);
+        var physicalPath = Path.Combine(_baseUploadPath, relativePath);
+
         if (!File.Exists(physicalPath))
         {
             throw new FileNotFoundException($"File not found: {filePath}");
@@ -368,7 +416,8 @@ public class FileUploadService : IFileUploadService
 
     public Task<bool> FileExistsAsync(string filePath)
     {
-        var physicalPath = Path.Combine(_environment.WebRootPath, filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+        var relativePath = filePath.TrimStart('/').Replace("/uploads/", "").Replace('/', Path.DirectorySeparatorChar);
+        var physicalPath = Path.Combine(_baseUploadPath, relativePath);
         return Task.FromResult(File.Exists(physicalPath));
     }
 

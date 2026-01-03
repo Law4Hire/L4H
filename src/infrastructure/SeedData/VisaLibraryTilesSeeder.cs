@@ -87,6 +87,61 @@ public class VisaLibraryTilesSeeder : ISeedTask
         await _context.VisaLibraryTiles.AddRangeAsync(tiles).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
-        _logger.LogInformation("[SEED] Successfully seeded {Count} visa library tiles", tiles.Count);
+        // Add some default mappings
+        var nonimmigrantTile = tiles.First(t => t.Name == "Nonimmigrant Visas");
+        var immigrantTile = tiles.First(t => t.Name == "Immigrant Visas");
+
+        var visaTypes = await _context.VisaTypes.ToListAsync().ConfigureAwait(false);
+        
+        if (visaTypes.Any())
+        {
+            var mappings = new List<VisaLibraryTileMapping>();
+            var order = 0;
+
+            // Map common non-immigrant visas
+            var niCodes = new[] { "B-1", "B-2", "F-1", "H-1B", "L-1A", "O-1", "TN", "E-2" };
+            foreach (var code in niCodes)
+            {
+                var vt = visaTypes.FirstOrDefault(v => v.Code == code);
+                if (vt != null)
+                {
+                    mappings.Add(new VisaLibraryTileMapping
+                    {
+                        Id = Guid.NewGuid(),
+                        TileId = nonimmigrantTile.Id,
+                        VisaTypeId = vt.Id,
+                        DisplayOrder = order++,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+            }
+
+            // Map common immigrant visas
+            var iCodes = new[] { "EB-1A", "EB-1B", "EB-1C", "EB-2A", "EB-2B", "EB2-NIW", "EB-3", "EB-5" };
+            order = 0;
+            foreach (var code in iCodes)
+            {
+                var vt = visaTypes.FirstOrDefault(v => v.Code == code);
+                if (vt != null)
+                {
+                    mappings.Add(new VisaLibraryTileMapping
+                    {
+                        Id = Guid.NewGuid(),
+                        TileId = immigrantTile.Id,
+                        VisaTypeId = vt.Id,
+                        DisplayOrder = order++,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+            }
+
+            if (mappings.Any())
+            {
+                await _context.VisaLibraryTileMappings.AddRangeAsync(mappings).ConfigureAwait(false);
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+            }
+        }
+
+        _logger.LogInformation("[SEED] Successfully seeded {Count} visa library tiles and default mappings", tiles.Count);
     }
 }

@@ -5,6 +5,8 @@ using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
 
+using L4H.Infrastructure.Services;
+
 namespace L4H.Api.Controllers;
 
 [ApiController]
@@ -14,10 +16,12 @@ namespace L4H.Api.Controllers;
 public class AdminUSCISFormsController : ControllerBase
 {
     private readonly L4HDbContext _context;
+    private readonly IFileUploadService _fileUploadService;
 
-    public AdminUSCISFormsController(L4HDbContext context)
+    public AdminUSCISFormsController(L4HDbContext context, IFileUploadService fileUploadService)
     {
         _context = context;
+        _fileUploadService = fileUploadService;
     }
 
     /// <summary>
@@ -208,6 +212,43 @@ public class AdminUSCISFormsController : ControllerBase
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Upload a PDF file for a USCIS form
+    /// </summary>
+    [HttpPost("{id}/file")]
+    [ProducesResponseType(typeof(USCISFormResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<USCISFormResponse>> UploadFormFile(Guid id, IFormFile file)
+    {
+        var form = await _context.USCISForms
+            .Include(f => f.Pricing.Where(p => p.IsActive))
+            .Include(f => f.VisaTypeMappings)
+            .FirstOrDefaultAsync(f => f.Id == id).ConfigureAwait(false);
+
+        if (form == null) return NotFound(new ProblemDetails { Title = "Form not found" });
+
+        if (file == null || file.Length == 0) return BadRequest("No file provided");
+        
+        // Validate PDF
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (ext != ".pdf") return BadRequest("Only PDF files are allowed");
+
+        try 
+        {
+            var fileUrl = await _fileUploadService.UploadUSCISFormAsync(file, form.FormNumber);
+            form.FormUrl = fileUrl;
+            form.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            
+            return Ok(MapFormToResponse(form));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ProblemDetails { Title = "Upload failed", Detail = ex.Message });
+        }
     }
 
     // ========== PRICING MANAGEMENT ENDPOINTS ==========

@@ -146,16 +146,6 @@ const AdminPage: React.FC = () => {
           </Button>
         </Card>
 
-        <Card title="Reports & Analytics">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">View platform statistics and reports</p>
-          <div className="text-sm text-gray-500 dark:text-gray-400">Coming soon...</div>
-        </Card>
-
-        <Card title="System Settings">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Configure platform settings and features</p>
-          <div className="text-sm text-gray-500 dark:text-gray-400">Coming soon...</div>
-        </Card>
-
         <Card title="Legal Professionals">
           <p className="text-gray-600 dark:text-gray-400 mb-4">Manage legal professional accounts</p>
           <Button
@@ -169,6 +159,27 @@ const AdminPage: React.FC = () => {
             style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
           >
             Manage Attorneys
+          </Button>
+        </Card>
+
+        <Card title="Reports & Analytics">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">View platform statistics and reports</p>
+          <div className="text-sm text-gray-500 dark:text-gray-400">Coming soon...</div>
+        </Card>
+
+        <Card title="System Settings">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Configure platform settings including phone number</p>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              console.log('System Settings button clicked - navigating to /admin/system-settings')
+              navigate('/admin/system-settings')
+            }}
+            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
+            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
+          >
+            Configure Settings
           </Button>
         </Card>
       </div>

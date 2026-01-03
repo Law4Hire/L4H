@@ -23,6 +23,7 @@ public class CannlawConfigurationService
     {
         _logger.LogInformation("Initializing Cannlaw system configuration settings...");
 
+        await InitializeSiteConfigurationAsync();
         await InitializeBillingSettingsAsync();
         await InitializeFileUploadSettingsAsync();
         await InitializeNotificationSettingsAsync();
@@ -30,6 +31,59 @@ public class CannlawConfigurationService
 
         await _context.SaveChangesAsync();
         _logger.LogInformation("Cannlaw system configuration settings initialized successfully.");
+    }
+
+    private async Task InitializeSiteConfigurationAsync()
+    {
+        // Check if SiteConfiguration already exists
+        var existingConfig = await _context.SiteConfigurations.FirstOrDefaultAsync();
+        if (existingConfig != null)
+        {
+            _logger.LogInformation("SiteConfiguration already exists, skipping initialization.");
+            return;
+        }
+
+        _logger.LogInformation("Creating default SiteConfiguration...");
+
+        var locations = System.Text.Json.JsonSerializer.Serialize(new object[]
+        {
+            new { city = "Baltimore, Maryland", type = "Primary" },
+            new { city = "Martinsburg, West Virginia", zip = "25403", type = "USA Office" },
+            new { city = "Taichung, Taiwan", address = "42 Datong Jie, 7th Floor", type = "International Office" }
+        });
+
+        var socialMedia = System.Text.Json.JsonSerializer.Serialize(new[]
+        {
+            "Facebook",
+            "WhatsApp!",
+            "LINE",
+            "SKYPE: cannlegalgroup"
+        });
+
+        var sellingPoints = System.Text.Json.JsonSerializer.Serialize(new[]
+        {
+            "24/7 Round-the-Clock Support",
+            "Direct Online Client Access to case status, attorneys, and checklists"
+        });
+
+        var siteConfig = new SiteConfiguration
+        {
+            FirmName = "Cann Legal Group",
+            ManagingAttorney = "Denise S. Cann",
+            PrimaryPhone = "(410) 988-0123",
+            CorporatePhone = "(410) 988-0123",
+            Email = "information@cannlaw.com",
+            PrimaryFocusStatement = "Fast, efficient, and convenient. Comprehensive representation from state side through consular processing.",
+            Locations = locations,
+            SocialMediaPlatforms = socialMedia,
+            UniqueSellingPoints = sellingPoints,
+            LogoUrl = "",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.SiteConfigurations.Add(siteConfig);
+        _logger.LogInformation("SiteConfiguration created with phone number: (410) 988-0123");
     }
 
     private async Task InitializeBillingSettingsAsync()

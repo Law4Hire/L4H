@@ -29,11 +29,11 @@ export function useSiteConfig() {
     try {
       setIsLoading(true)
       const response = await fetch('/api/v1/site-config')
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch site configuration')
       }
-      
+
       const config = await response.json()
       setSiteConfig(config)
       setError(null)

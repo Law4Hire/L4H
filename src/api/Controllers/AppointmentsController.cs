@@ -19,13 +19,13 @@ namespace L4H.Api.Controllers;
 [Tags("Appointments")]
 public class AppointmentsController : ControllerBase
 {
-    private readonly L4H.Api.Services.Providers.IMeetingsProvider _meetingsProvider;
+    private readonly L4H.Infrastructure.Services.Teams.IMeetingsProvider _meetingsProvider;
     private readonly ILogger<AppointmentsController> _logger;
     private readonly L4H.Api.Configuration.MeetingsOptions _meetingsOptions;
     private readonly L4HDbContext _context;
 
     public AppointmentsController(
-        L4H.Api.Services.Providers.IMeetingsProvider meetingsProvider,
+        L4H.Infrastructure.Services.Teams.IMeetingsProvider meetingsProvider,
         ILogger<AppointmentsController> logger,
         IOptions<L4H.Api.Configuration.MeetingsOptions> meetingsOptions,
         L4HDbContext context)
@@ -293,28 +293,36 @@ public class AppointmentsController : ControllerBase
         // Create meeting if requested
         if (request.IsVideoConference)
         {
-            var meetingResult = await _meetingsProvider.CreateMeetingAsync(new MeetingOptions
+            try 
             {
-                Subject = $"Consultation with {attorney.Name}",
-                StartTime = request.StartTime.UtcDateTime,
-                EndTime = request.EndTime.UtcDateTime,
-                Attendees = new List<string> { attorney.Email, userCase.User.Email },
-                WaitingRoomEnabled = _meetingsOptions.WaitingRoomEnabled
-            }).ConfigureAwait(false);
-
-            if (meetingResult.Success && meetingResult.JoinUrl != null)
-            {
-                var meeting = new Meeting
+                var meetingResult = await _meetingsProvider.CreateMeetingAsync(new CreateMeetingRequest
                 {
                     AppointmentId = appointment.Id,
-                    Provider = _meetingsOptions.Mode.ToLowerInvariant() == "teams" ? MeetingProvider.Teams : MeetingProvider.Fake,
-                    MeetingId = meetingResult.MeetingId ?? Guid.NewGuid().ToString(),
-                    JoinUrl = meetingResult.JoinUrl.ToString(),
-                    WaitingRoom = _meetingsOptions.WaitingRoomEnabled,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
-                _context.Set<Meeting>().Add(meeting);
+                    Subject = $"Consultation with {attorney.Name}",
+                    StartTime = request.StartTime,
+                    EndTime = request.EndTime,
+                    WaitingRoom = _meetingsOptions.WaitingRoomEnabled
+                }).ConfigureAwait(false);
+
+                if (meetingResult != null)
+                {
+                    var meeting = new Meeting
+                    {
+                        AppointmentId = appointment.Id,
+                        Provider = _meetingsOptions.Mode.ToLowerInvariant() == "teams" ? MeetingProvider.Teams : MeetingProvider.Fake,
+                        MeetingId = meetingResult.MeetingId ?? Guid.NewGuid().ToString(),
+                        JoinUrl = meetingResult.JoinUrl,
+                        WaitingRoom = _meetingsOptions.WaitingRoomEnabled,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+                    _context.Set<Meeting>().Add(meeting);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create meeting for appointment {AppointmentId}", appointment.Id);
+                // Continue booking appointment even if meeting creation fails
             }
         }
 
@@ -341,30 +349,24 @@ public class AppointmentsController : ControllerBase
 
         try
         {
-            var meetingOptions = new MeetingOptions
+            var appointmentId = Guid.NewGuid();
+            var meetingRequest = new CreateMeetingRequest
             {
+                AppointmentId = appointmentId,
                 Subject = request.Subject,
-                StartTime = request.StartTime,
-                EndTime = request.EndTime,
-                Attendees = request.Attendees ?? new List<string>(),
-                WaitingRoomEnabled = _meetingsOptions.WaitingRoomEnabled
+                StartTime = new DateTimeOffset(request.StartTime),
+                EndTime = new DateTimeOffset(request.EndTime),
+                WaitingRoom = _meetingsOptions.WaitingRoomEnabled
             };
 
-            var result = await _meetingsProvider.CreateMeetingAsync(meetingOptions).ConfigureAwait(false);
+            var result = await _meetingsProvider.CreateMeetingAsync(meetingRequest).ConfigureAwait(false);
             
-            if (result.Success)
+            return CreatedAtAction(nameof(CreateAppointment), new { id = result.MeetingId }, new
             {
-                return CreatedAtAction(nameof(CreateAppointment), new { id = result.MeetingId }, new
-                {
-                    meetingId = result.MeetingId,
-                    joinUrl = result.JoinUrl,
-                    message = result.Message ?? "Appointment created successfully."
-                });
-            }
-            else
-            {
-                return StatusCode(500, new { message = result.ErrorMessage ?? "Failed to create appointment." });
-            }
+                meetingId = result.MeetingId,
+                joinUrl = result.JoinUrl,
+                message = "Appointment created successfully."
+            });
         }
         catch (Exception ex)
         {

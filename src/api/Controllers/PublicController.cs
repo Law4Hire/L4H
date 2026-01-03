@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using L4H.Infrastructure.Data;
+using L4H.Infrastructure.Entities;
+using L4H.Infrastructure.Services;
 using L4H.Shared.Models;
 using FluentValidation;
 
@@ -14,15 +16,18 @@ public class PublicController : ControllerBase
     private readonly L4HDbContext _context;
     private readonly IValidator<ContactFormRequest> _contactFormValidator;
     private readonly ILogger<PublicController> _logger;
+    private readonly IMailService _mailService;
 
     public PublicController(
         L4HDbContext context,
         IValidator<ContactFormRequest> contactFormValidator,
-        ILogger<PublicController> logger)
+        ILogger<PublicController> logger,
+        IMailService mailService)
     {
         _context = context;
         _contactFormValidator = contactFormValidator;
         _logger = logger;
+        _mailService = mailService;
     }
 
     /// <summary>
@@ -36,10 +41,11 @@ public class PublicController : ControllerBase
             .Where(v => v.IsActive)
             .Select(v => new VisaTypeInfo
             {
+                Id = v.Id,
                 Code = v.Code ?? string.Empty,
                 Name = v.Name ?? string.Empty,
                 GeneralCategory = v.GeneralCategory ?? string.Empty,
-                Description = GetVisaDescription(v.Code ?? string.Empty)
+                Description = L4H.Api.Helpers.VisaDescriptionHelper.GetDescription(v.Code ?? string.Empty)
             })
             .OrderBy(v => v.GeneralCategory)
             .ThenBy(v => v.Name)
@@ -110,13 +116,72 @@ public class PublicController : ControllerBase
                 "Contact form submitted: {ReferenceId}, Name: {Name}, Email: {Email}, Type: {Type}",
                 referenceId, request.Name, request.Email, request.ConsultationType);
 
-            // TODO: In production, you would:
-            // 1. Save to database (ContactInquiry table)
-            // 2. Send email notification to staff
-            // 3. Send confirmation email to submitter
-            // 4. Integrate with CRM system
+            // 1. Save to database
+            var message = new ContactMessage
+            {
+                Name = request.Name,
+                Email = request.Email,
+                Phone = request.Phone,
+                Subject = request.Subject,
+                Message = request.Message,
+                ConsultationType = request.ConsultationType,
+                ReferenceId = referenceId,
+                CreatedAt = DateTime.UtcNow,
+                IsProcessed = false
+            };
 
-            // For now, we'll just log and return success
+            _context.ContactMessages.Add(message);
+            await _context.SaveChangesAsync();
+
+            // 2. Get site configuration for notification email
+            var siteConfig = await _context.SiteConfigurations.FirstOrDefaultAsync();
+            var adminEmail = siteConfig?.Email ?? "information@cannlaw.com";
+
+            // 3. Send email notification to staff
+            var staffSubject = $"New Contact Inquiry: {request.Subject ?? "No Subject"} ({referenceId})";
+            var staffBody = $@"
+                <h2>New Contact Inquiry</h2>
+                <p><strong>Reference ID:</strong> {referenceId}</p>
+                <p><strong>Name:</strong> {request.Name}</p>
+                <p><strong>Email:</strong> {request.Email}</p>
+                <p><strong>Phone:</strong> {request.Phone}</p>
+                <p><strong>Type:</strong> {request.ConsultationType}</p>
+                <hr />
+                <p><strong>Message:</strong></p>
+                <p>{request.Message}</p>
+            ";
+
+            try 
+            {
+                await _mailService.SendEmailAsync(adminEmail, staffSubject, staffBody);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send admin notification email for inquiry {ReferenceId}", referenceId);
+                // Don't fail the request if email fails, but log it
+            }
+
+            // 4. Send confirmation email to submitter
+            var userSubject = $"We received your inquiry ({referenceId})";
+            var userBody = $@"
+                <h2>Thank you for contacting Cannlaw</h2>
+                <p>Dear {request.Name},</p>
+                <p>We have received your inquiry and will get back to you within 24 hours.</p>
+                <p><strong>Reference ID:</strong> {referenceId}</p>
+                <br />
+                <p>Best regards,</p>
+                <p>The Cannlaw Team</p>
+            ";
+
+            try
+            {
+                await _mailService.SendEmailAsync(request.Email, userSubject, userBody);
+            }
+            catch (Exception ex)
+            {
+                 _logger.LogError(ex, "Failed to send user confirmation email for inquiry {ReferenceId}", referenceId);
+            }
+
             return Ok(new ContactFormResponse
             {
                 Success = true,
@@ -134,33 +199,6 @@ public class PublicController : ControllerBase
                 Status = StatusCodes.Status500InternalServerError
             });
         }
-    }
-
-    private static string GetVisaDescription(string code)
-    {
-        return code switch
-        {
-            "B1" => "Business visitor visa for temporary business activities in the United States.",
-            "B2" => "Tourist visa for pleasure, vacation, or visiting family and friends.",
-            "F1" => "Student visa for academic studies at accredited US institutions.",
-            "F2" => "Dependent visa for spouses and children of F1 students.",
-            "H1B" => "Specialty occupation visa for professionals with bachelor's degree or higher.",
-            "H2A" => "Temporary agricultural worker visa for seasonal farm labor.",
-            "H2B" => "Temporary non-agricultural worker visa for seasonal or peak load work.",
-            "H4" => "Dependent visa for spouses and children of H1B visa holders.",
-            "J1" => "Exchange visitor visa for cultural exchange programs.",
-            "L1A" => "Intracompany transferee visa for managers and executives.",
-            "L1B" => "Intracompany transferee visa for employees with specialized knowledge.",
-            "L2" => "Dependent visa for spouses and children of L1 visa holders.",
-            "O1" => "Extraordinary ability visa for individuals with exceptional skills.",
-            "TN" => "NAFTA professional visa for Canadian and Mexican citizens.",
-            "E2" => "Treaty investor visa for substantial investment in US business.",
-            "EB1" => "First preference employment-based green card for priority workers.",
-            "EB2" => "Second preference employment-based green card for advanced degree holders.",
-            "EB3" => "Third preference employment-based green card for skilled workers.",
-            "EB5" => "Fifth preference employment-based green card for investors.",
-            _ => "US immigration visa classification. Contact us for detailed information."
-        };
     }
 
     /// <summary>
@@ -201,6 +239,7 @@ public class PublicController : ControllerBase
 
 public class VisaTypeInfo
 {
+    public int Id { get; set; }
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string GeneralCategory { get; set; } = string.Empty;

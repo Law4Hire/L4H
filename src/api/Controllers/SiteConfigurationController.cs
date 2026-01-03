@@ -65,6 +65,7 @@ public class SiteConfigurationController : ControllerBase
             existingConfig.FirmName = config.FirmName;
             existingConfig.ManagingAttorney = config.ManagingAttorney;
             existingConfig.PrimaryPhone = config.PrimaryPhone;
+            existingConfig.CorporatePhone = config.CorporatePhone;
             existingConfig.Email = config.Email;
             existingConfig.PrimaryFocusStatement = config.PrimaryFocusStatement;
             existingConfig.Locations = config.Locations;
@@ -105,7 +106,8 @@ public class SiteConfigurationController : ControllerBase
         {
             FirmName = "Cann Legal Group",
             ManagingAttorney = "Denise S. Cann",
-            PrimaryPhone = "(410) 783-1888",
+            PrimaryPhone = "(410) 988-0123",
+            CorporatePhone = "(410) 988-0123",
             Email = "information@cannlaw.com",
             PrimaryFocusStatement = "Fast, efficient, and convenient. Comprehensive representation from state side through consular processing.",
             Locations = locations,

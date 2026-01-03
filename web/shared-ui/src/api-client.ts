@@ -713,6 +713,13 @@ export const admin = {
     return fetchJson('/v1/admin/users')
   },
 
+  async createUser(userData: any) {
+    return fetchJson('/v1/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(userData)
+    })
+  },
+
   async updateUserRoles(userId: string, roles: { isAdmin: boolean; isStaff: boolean }) {
     return fetchJson(`/v1/admin/users/${userId}/roles`, {
       method: 'PUT',

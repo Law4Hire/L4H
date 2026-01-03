@@ -212,6 +212,72 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
+    /// Create a new package (admin only)
+    /// </summary>
+    [HttpPost("pricing/packages")]
+    [ProducesResponseType(typeof(AdminPackageResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<AdminPackageResponse>> CreatePackage([FromBody] CreatePackageRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Code) || string.IsNullOrWhiteSpace(request.DisplayName))
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid Input",
+                Detail = "Package Code and Display Name are required"
+            });
+        }
+
+        var existingPackage = await _context.Packages
+            .FirstOrDefaultAsync(p => p.Code == request.Code)
+            .ConfigureAwait(false);
+
+        if (existingPackage != null)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Title = "Package Exists",
+                Detail = $"A package with code '{request.Code}' already exists"
+            });
+        }
+
+        var package = new Package
+        {
+            Code = request.Code,
+            DisplayName = request.DisplayName,
+            Description = request.Description,
+            SortOrder = request.SortOrder,
+            RequiresLawyer = request.RequiresLawyer,
+            IsActive = request.IsActive,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.Packages.Add(package);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        await LogAuditAsync("admin", "package_create", "Package", package.Id.ToString(),
+            new { packageCode = package.Code, displayName = package.DisplayName }).ConfigureAwait(false);
+
+        var response = new AdminPackageResponse
+        {
+            Id = package.Id,
+            Code = package.Code,
+            DisplayName = package.DisplayName,
+            Description = package.Description,
+            SortOrder = package.SortOrder,
+            IsActive = package.IsActive,
+            RequiresLawyer = package.RequiresLawyer,
+            CreatedAt = package.CreatedAt,
+            UpdatedAt = package.UpdatedAt
+        };
+
+        return CreatedAtAction(nameof(GetAdminPackages), null, response);
+    }
+
+    /// <summary>
     /// Update package settings (RequiresLawyer, IsActive, etc.)
     /// </summary>
     /// <param name="id">Package ID</param>
@@ -238,6 +304,27 @@ public class AdminController : ControllerBase
         }
 
         var changes = new List<object>();
+
+        if (!string.IsNullOrWhiteSpace(request.DisplayName) && package.DisplayName != request.DisplayName)
+        {
+            var oldValue = package.DisplayName;
+            package.DisplayName = request.DisplayName;
+            changes.Add(new { field = "DisplayName", oldValue, newValue = request.DisplayName });
+        }
+
+        if (request.Description != null && package.Description != request.Description)
+        {
+            var oldValue = package.Description;
+            package.Description = request.Description;
+            changes.Add(new { field = "Description", oldValue, newValue = request.Description });
+        }
+
+        if (request.SortOrder.HasValue && package.SortOrder != request.SortOrder.Value)
+        {
+            var oldValue = package.SortOrder;
+            package.SortOrder = request.SortOrder.Value;
+            changes.Add(new { field = "SortOrder", oldValue, newValue = request.SortOrder.Value });
+        }
 
         if (request.RequiresLawyer.HasValue && package.RequiresLawyer != request.RequiresLawyer.Value)
         {
@@ -305,6 +392,81 @@ public class AdminController : ControllerBase
             new { userCount = users.Count }).ConfigureAwait(false);
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Create a new user (admin only)
+    /// </summary>
+    /// <param name="request">User creation request</param>
+    /// <returns>Created user information</returns>
+    [HttpPost("users")]
+    [ProducesResponseType(typeof(AdminUserResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<AdminUserResponse>> CreateUser([FromBody] CreateUserRequest request)
+    {
+        // Validate input
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid Input",
+                Detail = "Email and password are required"
+            });
+        }
+
+        // Check if user already exists
+        var existingUser = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == request.Email.ToLowerInvariant())
+            .ConfigureAwait(false);
+
+        if (existingUser != null)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Title = "User Already Exists",
+                Detail = "A user with this email address already exists"
+            });
+        }
+
+        // Create new user
+        var user = new User
+        {
+            Id = new UserId(Guid.NewGuid()),
+            Email = request.Email.ToLowerInvariant(),
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            PasswordHash = _passwordHasher.HashPassword(request.Password),
+            IsAdmin = request.IsAdmin,
+            IsStaff = request.IsStaff,
+            IsActive = true,
+            EmailVerified = false,
+            CreatedAt = DateTime.UtcNow,
+            Country = "US" // Default country
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Audit log
+        await LogAuditAsync("admin", "user_created", "User", user.Id.ToString(),
+            new { email = user.Email, isAdmin = user.IsAdmin, isStaff = user.IsStaff, createdBy = GetCurrentUserId().ToString() }).ConfigureAwait(false);
+
+        var response = new AdminUserResponse
+        {
+            Id = user.Id.ToString(),
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            IsAdmin = user.IsAdmin,
+            IsStaff = user.IsStaff,
+            IsActive = user.IsActive,
+            EmailVerified = user.EmailVerified,
+            CreatedAt = user.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
+        };
+
+        return CreatedAtAction(nameof(GetAdminUsers), new { id = user.Id.ToString() }, response);
     }
 
     /// <summary>
@@ -1426,6 +1588,16 @@ public class ChangeUserStatusRequest
     public bool IsActive { get; set; }
 }
 
+public class CreateUserRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public bool IsAdmin { get; set; }
+    public bool IsStaff { get; set; }
+}
+
 public class AdminVerificationTokenResponse
 {
     public string Token { get; set; } = string.Empty;
@@ -1445,8 +1617,21 @@ public class DatabaseStatsResponse
     public DateTime GeneratedAt { get; set; }
 }
 
+public class CreatePackageRequest
+{
+    public string Code { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public int SortOrder { get; set; }
+    public bool RequiresLawyer { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
 public class UpdatePackageRequest
 {
+    public string? DisplayName { get; set; }
+    public string? Description { get; set; }
+    public int? SortOrder { get; set; }
     public bool? RequiresLawyer { get; set; }
     public bool? IsActive { get; set; }
 }

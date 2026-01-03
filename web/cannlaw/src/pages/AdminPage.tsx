@@ -53,6 +53,10 @@ const AdminPage: React.FC = () => {
     navigate('/admin/appointments')
   }
 
+  const handleInterviewEditor = () => {
+    navigate('/admin/interview')
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -172,6 +176,15 @@ const AdminPage: React.FC = () => {
           </p>
           <Button onClick={handleAppointmentsManagement}>
             Manage Appointments
+          </Button>
+        </Card>
+
+        <Card title="Interview Editor">
+          <p className="text-gray-600 mb-4">
+            Manage interview questions and decision trees
+          </p>
+          <Button onClick={handleInterviewEditor}>
+            Edit Interview
           </Button>
         </Card>
       </div>

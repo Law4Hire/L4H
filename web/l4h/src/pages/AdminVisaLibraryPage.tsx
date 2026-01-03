@@ -66,8 +66,8 @@ export default function AdminVisaLibraryPage() {
       const tilesData = await tilesResponse.json();
       setTiles(tilesData);
 
-      // Load all visa types
-      const visaTypesResponse = await fetch('/api/v1/visa-types', { headers });
+      // Load all visa types (using admin pricing endpoint for extensive list)
+      const visaTypesResponse = await fetch('/api/v1/admin/pricing/visa-types', { headers });
       if (!visaTypesResponse.ok) throw new Error('Failed to load visa types');
       const visaTypesData = await visaTypesResponse.json();
       setVisaTypes(visaTypesData);

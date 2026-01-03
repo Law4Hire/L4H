@@ -72,7 +72,7 @@ const ServicesPage: React.FC = () => {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16">
+      <section className="bg-gradient-to-r from-blue-900 to-blue-700 dark:from-navy-900 dark:to-navy-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Immigration Services</h1>
@@ -84,7 +84,7 @@ const ServicesPage: React.FC = () => {
       </section>
 
       {/* Services Content */}
-      <section className="py-16 bg-white dark:bg-navy-950 transition-colors duration-300">
+      <section className="py-16 bg-white dark:bg-navy-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {displayCategories.map((category: any, categoryIndex: number) => (
             <div key={category.id} className={`${categoryIndex > 0 ? 'mt-16' : ''}`}>
@@ -97,7 +97,7 @@ const ServicesPage: React.FC = () => {
               {/* Services Grid */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {category.services?.map((service: any) => (
-                  <Card key={service.id} className="p-6 hover:shadow-lg transition-all dark:bg-navy-900 dark:border-navy-800 border-t-4 border-t-gold-500 dark:border-t-gold-600">
+                  <Card key={service.id} className="p-6 hover:shadow-lg transition-all dark:bg-navy-800 dark:border-navy-700 border-t-4 border-t-gold-500 dark:border-t-gold-600">
                     <div className="flex items-start space-x-3">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-gold-100 dark:bg-gold-900 rounded-full flex items-center justify-center">
@@ -120,7 +120,7 @@ const ServicesPage: React.FC = () => {
           ))}
 
           {/* Contact CTA */}
-          <div className="mt-16 bg-navy-50 dark:bg-navy-900 rounded-lg p-10 text-center transition-colors border border-navy-100 dark:border-navy-800 shadow-inner">
+          <div className="mt-16 bg-navy-50 dark:bg-navy-800 rounded-lg p-10 text-center transition-colors border border-navy-100 dark:border-navy-700 shadow-inner">
             <h3 className="text-2xl font-serif font-bold text-navy-900 dark:text-white mb-4">
               Don't See Your Specific Need?
             </h3>

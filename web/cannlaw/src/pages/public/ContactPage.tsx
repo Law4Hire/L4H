@@ -27,7 +27,7 @@ const ContactPage: React.FC = () => {
     setSubmitStatus('idle')
 
     try {
-      const response = await fetch('/v1/public/contact', {
+      const response = await fetch('/api/v1/public/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

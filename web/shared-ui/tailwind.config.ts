@@ -6,6 +6,13 @@ const config: Config = {
     './index.html',
   ],
   darkMode: 'class',
+  variants: {
+    extend: {
+      backgroundColor: ['autofill'],
+      textColor: ['autofill'],
+      boxShadow: ['autofill'],
+    },
+  },
   theme: {
     extend: {
       colors: {

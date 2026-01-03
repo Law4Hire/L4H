@@ -438,117 +438,132 @@ public class SchedulingController : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> CreateAppointment([FromBody] AppointmentCreateRequest request)
     {
-        var userId = GetCurrentUserId();
-
-        // Get the case and verify ownership
-        var caseEntity = await _context.Cases
-            .FirstOrDefaultAsync(c => c.Id == request.CaseId).ConfigureAwait(false);
-
-        if (caseEntity == null)
+        try
         {
-            return NotFound(new ProblemDetails
+            var userId = GetCurrentUserId();
+
+            // Get the case and verify ownership
+            var caseEntity = await _context.Cases
+                .FirstOrDefaultAsync(c => c.Id == request.CaseId).ConfigureAwait(false);
+
+            if (caseEntity == null)
             {
-                Title = "Case Not Found",
-                Detail = "Case not found."
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Case Not Found",
+                    Detail = "Case not found."
+                });
+            }
+
+            if (caseEntity.UserId != userId && !IsStaff())
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this appointment."
+                });
+            }
+
+            // Check for existing active appointments for this case
+            var existingAppointment = await _context.Appointments
+                .FirstOrDefaultAsync(a => a.CaseId == request.CaseId &&
+                                         (a.Status == "scheduled" || a.Status == "confirmed")).ConfigureAwait(false);
+
+            if (existingAppointment != null)
+            {
+                return Conflict(new ProblemDetails
+                {
+                    Title = "Appointment Exists",
+                    Detail = "An active appointment already exists for this case."
+                });
+            }
+
+            // Find available staff member
+            var availableStaff = await FindAvailableStaff(request.PreferredStartTime, request.DurationMinutes).ConfigureAwait(false);
+
+            if (availableStaff == null)
+            {
+                return Conflict(new ProblemDetails
+                {
+                    Title = "No Staff Available",
+                    Detail = "No staff members are available for the selected time."
+                });
+            }
+
+            // Calculate buffer times
+            var bufferMinutes = await GetAppointmentBufferMinutes().ConfigureAwait(false);
+
+            // Ensure the datetime is treated as UTC or local based on the kind
+            var actualStartTime = DateTime.SpecifyKind(request.PreferredStartTime, DateTimeKind.Unspecified);
+            var actualEndTime = actualStartTime.AddMinutes(request.DurationMinutes);
+
+            // Check for conflicts with buffer
+            var hasConflict = await HasSchedulingConflict(availableStaff.Id,
+                actualStartTime.AddMinutes(-bufferMinutes),
+                actualEndTime.AddMinutes(bufferMinutes)).ConfigureAwait(false);
+
+            if (hasConflict)
+            {
+                return Conflict(new ProblemDetails
+                {
+                    Title = "Scheduling Conflict",
+                    Detail = "The selected time conflicts with another appointment."
+                });
+            }
+
+            // Get timezone offset for the requested timezone
+            var timezoneOffset = GetTimezoneOffsetMinutes(request.TimeZone, request.PreferredStartTime);
+
+            // Create the appointment - use DateTimeOffset for proper timezone handling
+            var startTimeOffset = new DateTimeOffset(actualStartTime, TimeSpan.FromMinutes(timezoneOffset));
+            var appointment = new Appointment
+            {
+                CaseId = request.CaseId,
+                StaffId = availableStaff.Id,
+                ScheduledStart = startTimeOffset,
+                ScheduledEnd = startTimeOffset.AddMinutes(request.DurationMinutes),
+                TimeZone = request.TimeZone,
+                TimezoneOffsetMinutes = timezoneOffset,
+                Status = "scheduled",
+                Notes = request.Notes,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Appointments.Add(appointment);
+
+            // Lock interview for this case (per specification)
+            caseEntity.IsInterviewLocked = true;
+            caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            // Log audit event with staff email for assignment tracking
+            LogAudit("appointment", "created", "Appointment", appointment.Id.ToString(),
+                new { caseId = request.CaseId.Value, startTime = actualStartTime, staffId = availableStaff.Id.Value, staffEmail = availableStaff.Email });
+
+            var response = new AppointmentCreateResponse
+            {
+                AppointmentId = appointment.Id,
+                StartTime = actualStartTime,
+                DurationMinutes = appointment.DurationMinutes,
+                TimeZone = appointment.TimeZone,
+                Status = appointment.Status,
+                StaffName = availableStaff.Email, // Could be enhanced with staff name field
+                CreatedAt = appointment.CreatedAt,
+                Notes = appointment.Notes
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating appointment for case {CaseId}: {Message}", request.CaseId, ex.Message);
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = "Appointment Creation Failed",
+                Detail = $"An error occurred while creating the appointment: {ex.Message}"
             });
         }
-
-        if (caseEntity.UserId != userId && !IsStaff())
-        {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = "Access denied to this appointment."
-            });
-        }
-
-        // Check for existing active appointments for this case
-        var existingAppointment = await _context.Appointments
-            .FirstOrDefaultAsync(a => a.CaseId == request.CaseId && 
-                                     (a.Status == "scheduled" || a.Status == "confirmed")).ConfigureAwait(false);
-
-        if (existingAppointment != null)
-        {
-            return Conflict(new ProblemDetails
-            {
-                Title = "Appointment Exists",
-                Detail = "An active appointment already exists for this case."
-            });
-        }
-
-        // Find available staff member
-        var availableStaff = await FindAvailableStaff(request.PreferredStartTime, request.DurationMinutes).ConfigureAwait(false);
-        
-        if (availableStaff == null)
-        {
-            return Conflict(new ProblemDetails
-            {
-                Title = "No Staff Available",
-                Detail = "No staff members are available for the selected time."
-            });
-        }
-
-        // Calculate buffer times
-        var bufferMinutes = await GetAppointmentBufferMinutes().ConfigureAwait(false);
-        var actualStartTime = request.PreferredStartTime;
-        var actualEndTime = actualStartTime.AddMinutes(request.DurationMinutes);
-
-        // Check for conflicts with buffer
-        var hasConflict = await HasSchedulingConflict(availableStaff.Id, 
-            actualStartTime.AddMinutes(-bufferMinutes), 
-            actualEndTime.AddMinutes(bufferMinutes)).ConfigureAwait(false);
-
-        if (hasConflict)
-        {
-            return Conflict(new ProblemDetails
-            {
-                Title = "Scheduling Conflict",
-                Detail = "The selected time conflicts with another appointment."
-            });
-        }
-
-        // Get timezone offset for the requested timezone
-        var timezoneOffset = GetTimezoneOffsetMinutes(request.TimeZone, request.PreferredStartTime);
-
-        // Create the appointment
-        var appointment = new Appointment
-        {
-            CaseId = request.CaseId,
-            StaffId = availableStaff.Id,
-            StartTime = actualStartTime.ToUniversalTime(),
-            DurationMinutes = request.DurationMinutes,
-            TimeZone = request.TimeZone,
-            TimezoneOffsetMinutes = timezoneOffset,
-            Status = "scheduled",
-            Notes = request.Notes,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.Appointments.Add(appointment);
-
-        // Lock interview for this case (per specification)
-        caseEntity.IsInterviewLocked = true;
-        caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
-
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-
-        // Log audit event with staff email for assignment tracking
-        LogAudit("appointment", "created", "Appointment", appointment.Id.ToString(),
-            new { caseId = request.CaseId.Value, startTime = actualStartTime, staffId = availableStaff.Id.Value, staffEmail = availableStaff.Email });
-
-        var response = new AppointmentCreateResponse
-        {
-            AppointmentId = appointment.Id,
-            StartTime = actualStartTime,
-            DurationMinutes = appointment.DurationMinutes,
-            TimeZone = appointment.TimeZone,
-            Status = appointment.Status,
-            StaffName = availableStaff.Email, // Could be enhanced with staff name field
-            CreatedAt = appointment.CreatedAt,
-            Notes = appointment.Notes
-        };
-
-        return Ok(response);
     }
 
     /// <summary>

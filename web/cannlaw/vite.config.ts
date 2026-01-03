@@ -52,6 +52,10 @@ export default defineConfig({
         target: 'http://localhost:8765',
         changeOrigin: true
       },
+      '/uploads': {
+        target: 'http://localhost:8765',
+        changeOrigin: true
+      },
       '/gateway': {
         target: 'http://localhost:7070',
         changeOrigin: true
@@ -62,6 +66,10 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
+        target: 'http://localhost:8765',
+        changeOrigin: true
+      },
+      '/uploads': {
         target: 'http://localhost:8765',
         changeOrigin: true
       },

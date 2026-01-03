@@ -67,21 +67,8 @@ const UserManagementPage: React.FC = () => {
 
     try {
       setCreating(true)
-      const token = localStorage.getItem('jwt_token')
-
-      const response = await fetch('/api/v1/admin/users', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.detail || 'Failed to create user')
-      }
+      
+      await admin.createUser(formData)
 
       success('User created successfully')
       setShowCreateModal(false)
@@ -95,7 +82,7 @@ const UserManagementPage: React.FC = () => {
       })
       fetchUsers()
     } catch (err: any) {
-      error('Failed to create user', err.message)
+      error('Failed to create user', err.detail || err.message)
     } finally {
       setCreating(false)
     }

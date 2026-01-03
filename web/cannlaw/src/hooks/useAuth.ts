@@ -47,16 +47,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  // Helper function to decode JWT and extract user information
+  const decodeJwt = (token: string): User | null => {
+    try {
+      const base64Url = token.split('.')[1]
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      )
+      const payload = JSON.parse(jsonPayload)
+
+      // Check if token is expired
+      if (payload.exp && payload.exp * 1000 < Date.now()) {
+        return null
+      }
+
+      // Extract user information from JWT claims
+      const userId = payload.sub || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
+      const email = payload.email || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress']
+      const isAdmin = payload.is_admin === 'True' || payload.is_admin === true
+      const isLegalProfessional = payload.is_legal_professional === 'True' || payload.is_legal_professional === true
+      const firstName = payload.given_name || payload.firstName || ''
+      const lastName = payload.family_name || payload.lastName || ''
+      const name = payload.name || `${firstName} ${lastName}`.trim() || email
+      const attorneyId = payload.attorney_id ? parseInt(payload.attorney_id) : undefined
+
+      // Determine role
+      let role: 'Admin' | 'LegalProfessional' | 'Client' = 'Client'
+      if (isAdmin) {
+        role = 'Admin'
+      } else if (isLegalProfessional) {
+        role = 'LegalProfessional'
+      }
+
+      return {
+        id: parseInt(userId),
+        email,
+        role,
+        attorneyId,
+        name,
+        isAdmin,
+        isLegalProfessional
+      }
+    } catch (error) {
+      console.error('Failed to decode JWT:', error)
+      return null
+    }
+  }
+
   const validateToken = async (token: string) => {
     try {
-      const response = await fetch('/api/v1/auth/validate', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        const userData = await response.json()
+      const userData = decodeJwt(token)
+      if (userData) {
         setUser(userData)
       } else {
         localStorage.removeItem('jwt_token')
@@ -80,10 +125,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (response.ok) {
-        const { token, user: userData } = await response.json()
-        localStorage.setItem('jwt_token', token)
-        setUser(userData)
-        return { success: true }
+        const authResponse = await response.json()
+        const token = authResponse.token
+
+        // Decode JWT to extract user information
+        const userData = decodeJwt(token)
+
+        if (userData) {
+          localStorage.setItem('jwt_token', token)
+          setUser(userData)
+          return { success: true }
+        } else {
+          return { success: false, error: 'Failed to decode user information' }
+        }
       } else {
         const error = await response.text()
         return { success: false, error }
@@ -104,10 +158,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (response.ok) {
-        const { token, user: userData } = await response.json()
-        localStorage.setItem('jwt_token', token)
-        setUser(userData)
-        return { success: true }
+        const authResponse = await response.json()
+        const token = authResponse.token
+
+        // Decode JWT to extract user information
+        const userData = decodeJwt(token)
+
+        if (userData) {
+          localStorage.setItem('jwt_token', token)
+          setUser(userData)
+          return { success: true }
+        } else {
+          return { success: false, error: 'Failed to decode user information' }
+        }
       } else {
         const error = await response.text()
         // Try to parse JSON error if possible

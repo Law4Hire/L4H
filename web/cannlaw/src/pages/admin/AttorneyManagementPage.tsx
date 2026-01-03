@@ -58,6 +58,8 @@ const AttorneyManagementPage: React.FC = () => {
   const [attorneyToDeactivate, setAttorneyToDeactivate] = useState<Attorney | null>(null)
   
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [pendingPhotoFile, setPendingPhotoFile] = useState<File | null>(null)
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string>('')
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [formErrors, setFormErrors] = useState<FormErrors>({})
@@ -113,38 +115,41 @@ const AttorneyManagementPage: React.FC = () => {
     if (formErrors[name]) setFormErrors(prev => ({ ...prev, [name]: '' }))
   }
 
+  const uploadPhotoToServer = async (attorneyId: number, file: File) => {
+    const uploadData = new FormData()
+    uploadData.append('photo', file)
+
+    const token = localStorage.getItem('jwt_token')
+    const response = await fetch(`/api/v1/attorneys/${attorneyId}/photo`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: uploadData
+    })
+
+    if (!response.ok) throw new Error('Failed to upload photo')
+    return await response.json()
+  }
+
   const handlePhotoUpload = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       toastError('Invalid file type', 'Please select an image file (JPG, PNG, WebP)')
       return
     }
 
-    // If we're creating a new attorney, we can't upload yet because we need an ID
-    // Instead, we'll create a local preview URL
+    // If creating new attorney, store file for upload after save
     if (!editingAttorney) {
+        setPendingPhotoFile(file)
         const previewUrl = URL.createObjectURL(file)
-        setFormData(prev => ({ ...prev, photoUrl: previewUrl }))
-        // In a real scenario, we might upload to a temp location or wait for creation
+        setPhotoPreviewUrl(previewUrl)
         toastSuccess('Photo selected', 'Photo will be saved when you create the attorney.')
         return
     }
 
     setUploadingPhoto(true)
     try {
-      const uploadData = new FormData()
-      uploadData.append('photo', file)
-
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/attorneys/${editingAttorney.id}/photo`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: uploadData
-      })
-
-      if (!response.ok) throw new Error('Failed to upload photo')
-
-      const result = await response.json()
+      const result = await uploadPhotoToServer(editingAttorney.id, file)
       setFormData(prev => ({ ...prev, photoUrl: result.photoUrl }))
+      setPhotoPreviewUrl(result.photoUrl)
       toastSuccess('Success', 'Photo uploaded and updated successfully')
       fetchAttorneys()
     } catch (error: any) {
@@ -182,6 +187,11 @@ const AttorneyManagementPage: React.FC = () => {
     setEditingAttorney(null)
     setShowForm(false)
     setFormErrors({})
+    setPendingPhotoFile(null)
+    if (photoPreviewUrl && photoPreviewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(photoPreviewUrl)
+    }
+    setPhotoPreviewUrl('')
   }
 
   const handleEdit = (attorney: Attorney) => {
@@ -204,6 +214,7 @@ const AttorneyManagementPage: React.FC = () => {
       displayOrder: attorney.displayOrder || 1
     })
     setEditingAttorney(attorney)
+    setPhotoPreviewUrl(attorney.photoUrl || '')
     setShowForm(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -214,15 +225,34 @@ const AttorneyManagementPage: React.FC = () => {
 
     setIsSubmitting(true)
     try {
+      let result
       if (editingAttorney) {
-        await updateAttorney(editingAttorney.id, formData)
-        toastSuccess('Success', 'Attorney profile updated successfully')
+        result = await updateAttorney(editingAttorney.id, formData)
       } else {
-        await createAttorney(formData)
-        toastSuccess('Success', 'New attorney created successfully')
+        result = await createAttorney(formData)
       }
-      resetForm()
-      fetchAttorneys()
+
+      if (result.success) {
+        // If there's a pending photo and we just created a new attorney, upload it
+        if (pendingPhotoFile && result.data?.id) {
+          try {
+            setUploadingPhoto(true)
+            await uploadPhotoToServer(result.data.id, pendingPhotoFile)
+            toastSuccess('Success', `Attorney created and photo uploaded successfully`)
+          } catch (photoErr) {
+            console.error('Photo upload error after creation:', photoErr)
+            toastSuccess('Success', `Attorney created successfully, but photo upload failed`)
+          } finally {
+            setUploadingPhoto(false)
+          }
+        } else {
+          toastSuccess('Success', `Attorney ${editingAttorney ? 'updated' : 'created'} successfully`)
+        }
+        resetForm()
+        fetchAttorneys()
+      } else {
+        toastError('Error', result.error || 'Failed to save attorney')
+      }
     } catch (error: any) {
       toastError('Error', error.message || 'Failed to save attorney')
     } finally {
@@ -276,9 +306,9 @@ const AttorneyManagementPage: React.FC = () => {
                   Profile Photo
                 </label>
                 <div className="relative group">
-                  {formData.photoUrl ? (
+                  {photoPreviewUrl ? (
                     <img 
-                      src={formData.photoUrl} 
+                      src={photoPreviewUrl} 
                       alt="Preview" 
                       className="w-full aspect-square object-cover rounded-lg shadow-md border-4 border-white dark:border-navy-700"
                     />

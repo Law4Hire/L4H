@@ -56,7 +56,35 @@ public class VisaClassesSeeder : ISeedTask
 
     private List<VisaClassData> GetVisaClassesData()
     {
-        // Try to load from embedded JSON file first
+        // Try to load from external JSON file first (same as VisaTypesSeeder)
+        try
+        {
+            var jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "SpecSQL", "VisaTypes.json");
+            if (File.Exists(jsonFilePath))
+            {
+                var json = File.ReadAllText(jsonFilePath);
+                var visaTypesWrapper = JsonSerializer.Deserialize<VisaTypesWrapper>(json, JsonOptions);
+
+                if (visaTypesWrapper?.Visas != null && visaTypesWrapper.Visas.Count > 0)
+                {
+                    var visaClasses = visaTypesWrapper.Visas.Select(v => new VisaClassData
+                    {
+                        Code = v.VisaName.Length > 10 ? v.VisaName.Substring(0, 10) : v.VisaName,
+                        Name = v.VisaName,
+                        GeneralCategory = ExtractCategory(v.VisaName),
+                        IsActive = v.Status.Equals("Active", StringComparison.OrdinalIgnoreCase)
+                    }).ToList();
+
+                    return visaClasses;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not load visa classes from external JSON, falling back to embedded/sample data");
+        }
+
+        // Try to load from embedded JSON file next
         try
         {
             var assembly = typeof(VisaClassesSeeder).Assembly;
@@ -90,6 +118,29 @@ public class VisaClassesSeeder : ISeedTask
             new() { Code = "F", Name = "Student", GeneralCategory = "Academic Student", IsActive = true },
             new() { Code = "TN", Name = "NAFTA Professional", GeneralCategory = "Temporary Worker", IsActive = true }
         };
+    }
+
+    private string ExtractCategory(string visaName)
+    {
+        if (visaName.StartsWith("EB")) return "Employment-Based Immigrant";
+        if (visaName.StartsWith("FB")) return "Family-Based Immigrant";
+        if (visaName.StartsWith("F-") || visaName.StartsWith("M-")) return "Student";
+        if (visaName.StartsWith("H-") || visaName.StartsWith("L-") || visaName.StartsWith("O-") || visaName.StartsWith("P-")) return "Temporary Worker";
+        if (visaName.StartsWith("B-")) return "Visitor";
+        return "Other";
+    }
+
+    private class VisaTypesWrapper
+    {
+        public List<VisaData> Visas { get; set; } = new List<VisaData>();
+    }
+
+    private class VisaData
+    {
+        public string VisaName { get; set; } = string.Empty;
+        public string VisaDescription { get; set; } = string.Empty;
+        public string VisaAppropriateFor { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
     }
 
     private class VisaClassData

@@ -139,6 +139,12 @@ const AdminUSCISFormsPage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [formToDelete, setFormToDelete] = useState<USCISForm | null>(null)
 
+  // State - File Upload
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [uploadForm, setUploadForm] = useState<USCISForm | null>(null)
+  const [uploadFile, setUploadFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+
   // ============================================================================
   // API Helper Functions
   // ============================================================================
@@ -148,6 +154,13 @@ const AdminUSCISFormsPage: React.FC = () => {
     return {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
+    }
+  }
+
+  const getUploadHeaders = () => {
+    const token = localStorage.getItem('jwt_token')
+    return {
+      'Authorization': `Bearer ${token}`
     }
   }
 
@@ -280,6 +293,48 @@ const AdminUSCISFormsPage: React.FC = () => {
     } catch (err) {
       console.error('Error deleting form:', err)
       error('Failed to delete form')
+    }
+  }
+
+  // ============================================================================
+  // File Upload
+  // ============================================================================
+
+  const handleUploadClick = (form: USCISForm) => {
+    setUploadForm(form)
+    setUploadFile(null)
+    setShowUploadModal(true)
+  }
+
+  const handleUploadFile = async () => {
+    if (!uploadForm || !uploadFile) return
+
+    setIsUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', uploadFile)
+
+      const response = await fetch(`/api/v1/admin/uscis-forms/${uploadForm.id}/file`, {
+        method: 'POST',
+        headers: getUploadHeaders(),
+        body: formData
+      })
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.detail || `Failed to upload file: ${response.status}`)
+      }
+
+      success('File uploaded successfully')
+      setShowUploadModal(false)
+      setUploadForm(null)
+      setUploadFile(null)
+      await loadForms()
+    } catch (err: any) {
+      console.error('Error uploading file:', err)
+      error(err.message || 'Failed to upload file')
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -710,6 +765,12 @@ const AdminUSCISFormsPage: React.FC = () => {
                       className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                     >
                       Edit
+                    </button>
+                    <button
+                      onClick={() => handleUploadClick(form)}
+                      className="text-orange-600 hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-300"
+                    >
+                      Upload
                     </button>
                     <button
                       onClick={() => handleManagePricing(form)}
@@ -1207,6 +1268,54 @@ const AdminUSCISFormsPage: React.FC = () => {
             <div className="flex justify-end gap-2 pt-4">
               <Button onClick={() => setShowDependenciesModal(false)}>
                 Done
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Upload Modal */}
+      {showUploadModal && uploadForm && (
+        <Modal
+          open={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          title={`Upload PDF: ${uploadForm.formNumber}`}
+        >
+          <div className="space-y-4">
+            <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-md">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                Upload the latest PDF version of this USCIS form. Only .pdf files are accepted.
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Select PDF File
+              </label>
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setUploadFile(e.target.files ? e.target.files[0] : null)}
+                className="w-full text-sm text-gray-500 dark:text-gray-400
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100
+                  dark:file:bg-blue-900 dark:file:text-blue-300
+                "
+              />
+            </div>
+            {uploadForm.formUrl && (
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Current file: <a href={uploadForm.formUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View Current PDF</a>
+              </div>
+            )}
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="secondary" onClick={() => setShowUploadModal(false)} disabled={isUploading}>
+                Cancel
+              </Button>
+              <Button onClick={handleUploadFile} disabled={!uploadFile || isUploading}>
+                {isUploading ? 'Uploading...' : 'Upload File'}
               </Button>
             </div>
           </div>

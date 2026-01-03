@@ -18,17 +18,16 @@ public class ContactFormRequestValidator : AbstractValidator<ContactFormRequest>
             .MaximumLength(255).WithMessage("Email must not exceed 255 characters");
 
         RuleFor(x => x.Phone)
-            .NotEmpty().WithMessage("Phone number is required")
             .Matches(@"^[\d\s\-\+\(\)]+$").WithMessage("Phone number contains invalid characters")
-            .Length(10, 20).WithMessage("Phone number must be between 10 and 20 characters");
+            .Length(10, 20).WithMessage("Phone number must be between 10 and 20 characters")
+            .When(x => !string.IsNullOrEmpty(x.Phone));
 
         RuleFor(x => x.Subject)
-            .NotEmpty().WithMessage("Subject is required")
-            .Length(5, 200).WithMessage("Subject must be between 5 and 200 characters");
+            .Length(0, 200).WithMessage("Subject must not exceed 200 characters");
 
         RuleFor(x => x.Message)
             .NotEmpty().WithMessage("Message is required")
-            .Length(20, 5000).WithMessage("Message must be between 20 and 5000 characters");
+            .Length(10, 5000).WithMessage("Message must be between 10 and 5000 characters");
 
         RuleFor(x => x.ConsultationType)
             .NotEmpty().WithMessage("Consultation type is required")
@@ -37,7 +36,7 @@ public class ContactFormRequestValidator : AbstractValidator<ContactFormRequest>
 
     private bool BeValidConsultationType(string consultationType)
     {
-        var validTypes = new[] { "general", "visa", "immigration", "citizenship", "family", "business", "other" };
+        var validTypes = new[] { "general", "visa", "immigration", "citizenship", "family", "business", "employment", "waivers", "other" };
         return validTypes.Contains(consultationType?.ToLowerInvariant());
     }
 }

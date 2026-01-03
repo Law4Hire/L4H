@@ -286,7 +286,14 @@ const VisaLibraryManagementPage: React.FC = () => {
           </p>
 
           <div className="max-h-96 overflow-y-auto border border-gray-200 dark:border-navy-700 rounded-md p-4 space-y-2">
-            {allVisaTypes.map((visaType) => (
+            {[...allVisaTypes]
+              .sort((a, b) => {
+                // Active first
+                if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
+                // Then alphabetical by code
+                return a.code.localeCompare(b.code);
+              })
+              .map((visaType) => (
               <div
                 key={visaType.id}
                 className={`flex items-center gap-3 p-3 rounded border cursor-pointer transition-colors ${
