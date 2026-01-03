@@ -225,186 +225,85 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-        
-
-            - name: Setup Node.js
-
-              uses: actions/setup-node@v4
-
-              with:
-
-                node-version: '18'
-
-                cache: 'npm'
-
-                cache-dependency-path: |
-
-                  web/l4h/package-lock.json
-
-                  web/cannlaw/package-lock.json
-
-                  web/shared-ui/package-lock.json
-
-        
-
-            - name: Build UI artifacts
-
-              run: |
-
-                cd web/shared-ui && npm ci && npm run build
-
-                cd ../l4h && npm ci && npm run build
-
-                cd ../cannlaw && npm ci && npm run build
-
-        
-
-            - name: Deploy to TEST Kubernetes
-
-              continue-on-error: true
-
-              uses: appleboy/scp-action@v0.1.7
-
-              with:
-
-                host: ${{ secrets.DEPLOY_HOST }}
-
-                username: ${{ secrets.DEPLOY_USER }}
-
-                key: ${{ secrets.DEPLOY_KEY }}
-
-                source: "web/l4h/dist/*,web/cannlaw/dist/*,ops/k8s/*"
-
-                target: "/tmp/l4h-deploy-test/"
-
-        
-
-            - name: Apply TEST deployment
-
-              continue-on-error: true
-
-              uses: appleboy/ssh-action@v1.0.3
-
-              with:
-
-                host: ${{ secrets.DEPLOY_HOST }}
-
-                username: ${{ secrets.DEPLOY_USER }}
-
-                key: ${{ secrets.DEPLOY_KEY }}
-
-                script: |
-
-                  set -e
-
-                  echo "🚀 Deploying to TEST environment (namespace: l4h)..."
-
-        
-
-                  # Copy manifests
-
-                  mkdir -p ~/ops/k8s
-
-                  cp -r /tmp/l4h-deploy-test/ops/k8s/* ~/ops/k8s/
-
-        
-
-                  # Create/update namespace
-
-                  kubectl apply -f ~/ops/k8s/base/namespace.yaml
-
-        
-
-                  # Update secrets
-
-                  export SQL_SA_PASSWORD='${{ secrets.SQL_SA_PASSWORD }}'
-
-                  export JWT_SIGNING_KEY='${{ secrets.JWT_SIGNING_KEY }}'
-
-                  export UPLOADS_TOKEN_SIGNING_KEY='${{ secrets.UPLOADS_TOKEN_SIGNING_KEY }}'
-
-                  export ADMIN_SEED_PASSWORD='${{ secrets.ADMIN_SEED_PASSWORD }}'
-
-        
-
-                  cd ~/ops/k8s/scripts
-
-                  chmod +x create-secrets.sh
-
-                  ./create-secrets.sh
-
-        
-
-                  # Apply TEST overlay
-
-                  cd ~/ops/k8s/overlays/test
-
-                  kubectl apply -k .
-
-        
-
-                  # Update images to the SHA we just built
-
-                  GH_ORG_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-
-                  kubectl set image deployment/api api=ghcr.io/${GH_ORG_LOWER}/l4h-api:${{ github.sha }} -n l4h
-
-                  kubectl set image deployment/upload-gateway upload-gateway=ghcr.io/${GH_ORG_LOWER}/l4h-upload-gateway:${{ github.sha }} -n l4h
-
-                  kubectl set image deployment/scraper scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${{ github.sha }} -n l4h
-
-        
-
-                  # Restart web deployment
-
-                  kubectl rollout restart deployment/web -n l4h
-
-        
-
-                  # Wait for rollout (short timeout for test)
-
-                  kubectl wait --for=condition=available --timeout=120s deployment/api deployment/web -n l4h || echo "⚠️ Rollout taking longer than expected"
-
-        
-
-                  # Copy UI artifacts (Best effort)
-
-                  # Note: We rely on the 'copy-l4h' and 'copy-cannlaw' pods logic or PV mounts. 
-
-                  # For robustness in CI, we'll skip the complex pod cp dance here to keep it simple and less prone to timeout errors in CI.
-
-                  # The web container should serve the new assets if the image was updated, but for static files on PVC:
-
-                  # We assume the deployment script on the server handles PVC population or we accept that static assets might need manual sync for now.
-
-                  # (The complex copy logic was often a source of failure).
-
-                  
-
-                  echo "✅ TEST deployment triggers sent!"
-
-        
-
-            - name: Verify TEST deployment
-
-              continue-on-error: true
-
-              uses: appleboy/ssh-action@v1.0.3
-
-              with:
-
-                host: ${{ secrets.DEPLOY_HOST }}
-
-                username: ${{ secrets.DEPLOY_USER }}
-
-                key: ${{ secrets.DEPLOY_KEY }}
-
-                script: |
-
-                  echo "🔍 Verifying TEST deployment..."
-
-                  kubectl get pods -n l4h
-
-        
-
-    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          web/l4h/package-lock.json
+          web/cannlaw/package-lock.json
+          web/shared-ui/package-lock.json
+
+    - name: Build UI artifacts
+      run: |
+        cd web/shared-ui && npm ci && npm run build
+        cd ../l4h && npm ci && npm run build
+        cd ../cannlaw && npm ci && npm run build
+
+    - name: Deploy to TEST Kubernetes
+      continue-on-error: true
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        source: "web/l4h/dist/*,web/cannlaw/dist/*,ops/k8s/*"
+        target: "/tmp/l4h-deploy-test/"
+
+    - name: Apply TEST deployment
+      continue-on-error: true
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          set -e
+          echo "🚀 Deploying to TEST environment (namespace: l4h)..."
+
+          # Copy manifests
+          mkdir -p ~/ops/k8s
+          cp -r /tmp/l4h-deploy-test/ops/k8s/* ~/ops/k8s/
+
+          # Create/update namespace
+          kubectl apply -f ~/ops/k8s/base/namespace.yaml
+
+          # Update secrets
+          export SQL_SA_PASSWORD='${{ secrets.SQL_SA_PASSWORD }}'
+          export JWT_SIGNING_KEY='${{ secrets.JWT_SIGNING_KEY }}'
+          export UPLOADS_TOKEN_SIGNING_KEY='${{ secrets.UPLOADS_TOKEN_SIGNING_KEY }}'
+          export ADMIN_SEED_PASSWORD='${{ secrets.ADMIN_SEED_PASSWORD }}'
+
+          cd ~/ops/k8s/scripts
+          chmod +x create-secrets.sh
+          ./create-secrets.sh
+
+          # Apply TEST overlay
+          cd ~/ops/k8s/overlays/test
+          kubectl apply -k .
+
+          # Update images to the SHA we just built
+          GH_ORG_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          kubectl set image deployment/api api=ghcr.io/${GH_ORG_LOWER}/l4h-api:${{ github.sha }} -n l4h
+          kubectl set image deployment/upload-gateway upload-gateway=ghcr.io/${GH_ORG_LOWER}/l4h-upload-gateway:${{ github.sha }} -n l4h
+          kubectl set image deployment/scraper scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${{ github.sha }} -n l4h
+
+          # Restart web deployment
+          kubectl rollout restart deployment/web -n l4h
+
+          # Wait for rollout (short timeout for test)
+          kubectl wait --for=condition=available --timeout=120s deployment/api deployment/web -n l4h || echo "⚠️ Rollout taking longer than expected"
+
+          echo "✅ TEST deployment triggers sent!"
+
+    - name: Verify TEST deployment
+      continue-on-error: true
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          echo "🔍 Verifying TEST deployment..."
+          kubectl get pods -n l4h
