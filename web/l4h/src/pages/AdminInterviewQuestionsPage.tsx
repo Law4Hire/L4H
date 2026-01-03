@@ -890,8 +890,63 @@ export default function AdminInterviewQuestionsPage() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Question Text *</label>
             <textarea value={formData.text} onChange={(e) => { const newText = e.target.value; setFormData({ ...formData, text: newText, key: editingQuestion ? formData.key : generateKeyFromText(newText) }); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white" rows={3} required />
            </div>
-           {/* ... rest of form ... */}
-           <div className="flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
+
+           {/* Answer Options Section */}
+           {(formData.inputType === 'select' || formData.inputType === 'radio' || formData.inputType === 'checkbox') && (
+             <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+               <div className="flex justify-between items-center mb-2">
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Answer Options</label>
+                 <Button type="button" size="sm" variant="outline" onClick={addOption}>+ Add Option</Button>
+               </div>
+               
+               <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                 {formData.options.map((option, index) => (
+                   <div key={index} className="flex gap-2 items-start bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md">
+                     <div className="flex-1 space-y-2">
+                       <Input
+                         placeholder="Value (internal)"
+                         value={option.value}
+                         onChange={(e) => updateOption(index, 'value', e.target.value)}
+                         className="text-sm"
+                       />
+                       <Input
+                         placeholder="Label (display)"
+                         value={option.label}
+                         onChange={(e) => updateOption(index, 'label', e.target.value)}
+                         className="text-sm"
+                       />
+                     </div>
+                     <div className="flex flex-col gap-2 pt-1">
+                        <button
+                          type="button" 
+                          onClick={() => removeOption(index)}
+                          className="text-red-500 hover:text-red-700 dark:text-red-400 p-1"
+                          title="Remove option"
+                        >
+                          ✕
+                        </button>
+                        <div className="flex flex-col items-center">
+                          <input
+                            type="checkbox"
+                            checked={option.isActive}
+                            onChange={(e) => updateOption(index, 'isActive', e.target.checked)}
+                            className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                            title="Active"
+                          />
+                        </div>
+                     </div>
+                   </div>
+                 ))}
+                 {formData.options.length === 0 && (
+                   <div className="text-center text-sm text-gray-500 dark:text-gray-400 py-4 italic">
+                     No options added. Click "+ Add Option" to add answers.
+                   </div>
+                 )}
+               </div>
+             </div>
+           )}
+
+           <div className="grid grid-cols-2 gap-4">
             <Button type="button" variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
             <Button type="submit">{editingQuestion ? 'Update Question' : 'Create Question'}</Button>
           </div>

@@ -427,7 +427,7 @@ v1.MapGet("/ping", () => Results.Ok(new { message = "pong", timestamp = DateTime
 Console.WriteLine("[STARTUP] API endpoints configured");
 
 Console.WriteLine("[STARTUP] Starting web server...");
-app.Run();
+await app.RunAsync();
 Console.WriteLine("[STARTUP] Web server started successfully");
 
 // Make Program class accessible for testing

@@ -11,6 +11,7 @@ const SiteConfigPage: React.FC = () => {
     firmName: '',
     managingAttorney: '',
     primaryPhone: '',
+    corporatePhone: '',
     email: '',
     primaryFocusStatement: '',
     logoUrl: '',
@@ -25,6 +26,7 @@ const SiteConfigPage: React.FC = () => {
         firmName: siteConfig.firmName || '',
         managingAttorney: siteConfig.managingAttorney || '',
         primaryPhone: siteConfig.primaryPhone || '',
+        corporatePhone: siteConfig.corporatePhone || '',
         email: siteConfig.email || '',
         primaryFocusStatement: siteConfig.primaryFocusStatement || '',
         logoUrl: siteConfig.logoUrl || '',
@@ -132,6 +134,21 @@ const SiteConfigPage: React.FC = () => {
                 type="tel"
                 required
                 value={formData.primaryPhone}
+                onChange={handleInputChange}
+                placeholder="(410) 988-0123"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="corporatePhone" className="block text-sm font-medium text-gray-700 mb-1">
+                Corporate Phone *
+              </label>
+              <Input
+                id="corporatePhone"
+                name="corporatePhone"
+                type="tel"
+                required
+                value={formData.corporatePhone}
                 onChange={handleInputChange}
                 placeholder="(410) 988-0123"
               />

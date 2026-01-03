@@ -440,6 +440,7 @@ public class AdminController : ControllerBase
             PasswordHash = _passwordHasher.HashPassword(request.Password),
             IsAdmin = request.IsAdmin,
             IsStaff = request.IsStaff,
+            IsLegalProfessional = request.isStaff, // Sync with isStaff
             IsActive = true,
             EmailVerified = false,
             CreatedAt = DateTime.UtcNow,
@@ -466,7 +467,7 @@ public class AdminController : ControllerBase
             CreatedAt = user.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
         };
 
-        return CreatedAtAction(nameof(GetAdminUsers), new { id = user.Id.ToString() }, response);
+        return StatusCode(StatusCodes.Status201Created, response);
     }
 
     /// <summary>
@@ -517,6 +518,7 @@ public class AdminController : ControllerBase
         {
             changes.Add(new { field = "IsStaff", oldValue = user.IsStaff, newValue = request.IsStaff });
             user.IsStaff = request.IsStaff;
+            user.IsLegalProfessional = request.IsStaff; // Keep in sync
         }
 
         if (changes.Any())

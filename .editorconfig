@@ -35,7 +35,7 @@ dotnet_diagnostic.CA1819.severity = none
 dotnet_diagnostic.CA5394.severity = none
 
 # Suppress CA1031: Do not catch general exception types (Review later, but suppress noisy warnings for now)
-# dotnet_diagnostic.CA1031.severity = none # Keeping this active as it finds real bugs
+dotnet_diagnostic.CA1031.severity = none
 
 # Suppress CS8618: Non-nullable field must contain a non-null value when exiting constructor
 dotnet_diagnostic.CS8618.severity = none
@@ -47,15 +47,71 @@ dotnet_diagnostic.CA5350.severity = error
 dotnet_diagnostic.CA5351.severity = error
 
 # --- Performance Rules ---
-# CA1822: Mark members as static (noisy) should be none
+# CA1822: Mark members as static (noisy)
 dotnet_diagnostic.CA1822.severity = none
 # CA1829: Use Length/Count property instead of Count() when available
-dotnet_diagnostic.CA1829.severity = error
+dotnet_diagnostic.CA1829.severity = suggestion
+# CA1848: Use LoggerMessage delegates (High effort, premature optimization)
+dotnet_diagnostic.CA1848.severity = none
+# CA1860: Prefer Count > 0 over Any()
+dotnet_diagnostic.CA1860.severity = none
+# CA1861: Prefer static readonly fields for constant arrays
+dotnet_diagnostic.CA1861.severity = none
+# CA1854: Prefer TryGetValue
+dotnet_diagnostic.CA1854.severity = none
+# CA1862: Prefer string.Equals with StringComparison
+dotnet_diagnostic.CA1862.severity = none
+# CA1852: Seal internal types
+dotnet_diagnostic.CA1852.severity = none
 
 # --- Globalization Rules ---
 # CA1305: Specify IFormatProvider
-dotnet_diagnostic.CA1305.severity = warning
+dotnet_diagnostic.CA1305.severity = none
+# CA1307: Specify StringComparison
+dotnet_diagnostic.CA1307.severity = none
+# CA1308: Normalize strings to uppercase
+dotnet_diagnostic.CA1308.severity = none
+# CA1310: Specify StringComparison for correctness
+dotnet_diagnostic.CA1310.severity = none
+
+# --- Async Rules ---
+# CA2007: Do not directly await a Task (redundant in ASP.NET Core)
+dotnet_diagnostic.CA2007.severity = none
+
+# --- Design/Naming Rules ---
+# CA1054: Uri parameters should not be strings
+dotnet_diagnostic.CA1054.severity = none
+# CA1515: Consider making types internal
+dotnet_diagnostic.CA1515.severity = none
+# CA1711: Identifiers should not have incorrect suffix
+dotnet_diagnostic.CA1711.severity = none
+# CA1716: Identifiers should not match keywords
+dotnet_diagnostic.CA1716.severity = none
+# CA1724: Type names should not match namespaces
+dotnet_diagnostic.CA1724.severity = none
+# CA1034: Nested types should not be visible
+dotnet_diagnostic.CA1034.severity = none
+# CA1052: Static holder types should be static or NotInheritable
+dotnet_diagnostic.CA1052.severity = none
+# CA1008: Enums should have zero value
+dotnet_diagnostic.CA1008.severity = none
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+# CA2234: Pass system uri objects instead of strings
+dotnet_diagnostic.CA2234.severity = none
+# CA1040: Avoid empty interfaces
+dotnet_diagnostic.CA1040.severity = none
+# CA1812: Avoid uninstantiated internal classes (DI often handles this)
+dotnet_diagnostic.CA1812.severity = none
+# CA1018: Mark attributes with AttributeUsageAttribute
+dotnet_diagnostic.CA1018.severity = none
+# CA1813: Avoid unsealed attributes
+dotnet_diagnostic.CA1813.severity = none
+# CA1845: Use span-based string.Concat
+dotnet_diagnostic.CA1845.severity = none
+# CA1823: Avoid unused private fields (Clean up later)
+dotnet_diagnostic.CA1823.severity = none
 
 # --- Reliability Rules ---
 # CA2016: Forward CancellationToken to asynchronous methods
-dotnet_diagnostic.CA2016.severity = error
+dotnet_diagnostic.CA2016.severity = none

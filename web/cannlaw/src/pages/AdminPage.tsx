@@ -89,15 +89,6 @@ const AdminPage: React.FC = () => {
           </Button>
         </Card>
 
-        <Card title="Reports & Analytics">
-          <p className="text-gray-600 mb-4">
-            View business metrics and performance data
-          </p>
-          <Button onClick={handleReportsAnalytics}>
-            View Reports
-          </Button>
-        </Card>
-
         <Card title={t('admin.pricing')}>
           <p className="text-gray-600 mb-4">
             Manage pricing plans and service costs
@@ -161,15 +152,6 @@ const AdminPage: React.FC = () => {
           </Button>
         </Card>
 
-        <Card title="Site Configuration">
-          <p className="text-gray-600 mb-4">
-            Configure site settings and branding
-          </p>
-          <Button onClick={handleSiteConfig}>
-            Configure Site
-          </Button>
-        </Card>
-
         <Card title="Appointments">
           <p className="text-gray-600 mb-4">
             View and manage client appointments and staff assignments
@@ -185,6 +167,24 @@ const AdminPage: React.FC = () => {
           </p>
           <Button onClick={handleInterviewEditor}>
             Edit Interview
+          </Button>
+        </Card>
+
+        <Card title="Reports & Analytics">
+          <p className="text-gray-600 mb-4">
+            View business metrics and performance data
+          </p>
+          <Button onClick={handleReportsAnalytics}>
+            View Reports
+          </Button>
+        </Card>
+
+        <Card title="Site Configuration">
+          <p className="text-gray-600 mb-4">
+            Configure site settings and branding
+          </p>
+          <Button onClick={handleSiteConfig}>
+            Configure Site
           </Button>
         </Card>
       </div>

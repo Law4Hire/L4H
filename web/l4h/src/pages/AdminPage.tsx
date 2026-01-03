@@ -1,9 +1,71 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button } from '@l4h/shared-ui'
+import { Card, Button, useToast } from '@l4h/shared-ui'
+
+interface AdminPath {
+  id: string
+  name: string
+  path: string
+  description?: string
+  icon?: string
+  displayOrder: number
+}
 
 const AdminPage: React.FC = () => {
   const navigate = useNavigate()
+  const { error } = useToast()
+  const [paths, setPaths] = useState<AdminPath[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchPaths = async () => {
+      try {
+        const token = localStorage.getItem('jwt_token')
+        const response = await fetch('/api/v1/admin/paths', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          // Sort by displayOrder
+          const sorted = data.sort((a: AdminPath, b: AdminPath) => a.displayOrder - b.displayOrder)
+          setPaths(sorted)
+        } else {
+          // Fallback to static paths if API fails (or for initial setup)
+          console.warn('Failed to fetch admin paths, using fallback')
+        }
+      } catch (err) {
+        console.error('Error fetching admin paths:', err)
+        error('Failed to load admin menu')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPaths()
+  }, [])
+
+  const handleNavigate = (path: string) => {
+    navigate(path)
+  }
+
+  // Static fallback paths in case API is empty or fails, to ensure admin is usable
+  const defaultPaths = [
+    { name: 'User Management', path: '/admin/users', description: 'Manage users, roles, and permissions', displayOrder: 1 },
+    { name: 'Case Management', path: '/admin/cases', description: 'Review and manage immigration cases', displayOrder: 2 },
+    { name: 'Pricing & Packages', path: '/admin/pricing', description: 'Configure service packages and pricing', displayOrder: 3 },
+    { name: 'Interview Questions', path: '/admin/interview-questions', description: 'Manage customer interview questions and flow', displayOrder: 4 },
+    { name: 'USCIS Forms', path: '/admin/uscis-forms', description: 'Manage immigration forms, pricing, and dependencies', displayOrder: 5 },
+    { name: 'Visa Library', path: '/admin/visa-library', description: 'Manage visa library categories and assign visa types', displayOrder: 6 },
+    { name: 'Legal Professionals', path: '/admin/attorneys', description: 'Manage legal professional accounts', displayOrder: 7 },
+    { name: 'Admin Paths', path: '/admin/paths', description: 'Configure admin navigation paths', displayOrder: 8 },
+    { name: 'Reports & Analytics', path: '/admin/reports', description: 'View platform statistics and reports', displayOrder: 1000 },
+    { name: 'System Settings', path: '/admin/system-settings', description: 'Configure platform settings including phone number', displayOrder: 1001 },
+  ]
+
+  const displayPaths = paths.length > 0 ? paths : defaultPaths
 
   return (
     <div className="space-y-6">
@@ -21,167 +83,20 @@ const AdminPage: React.FC = () => {
 
       {/* Admin Quick Actions */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Card title="User Management">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Manage users, roles, and permissions</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('Manage Users button clicked - navigating to /admin/users');
-              navigate('/admin/users');
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Manage Users
-          </Button>
-        </Card>
-
-        <Card title="Case Management">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Review and manage immigration cases</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('Manage Cases button clicked - navigating to /admin/cases')
-              navigate('/admin/cases')
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Manage Cases
-          </Button>
-        </Card>
-
-        <Card title="Pricing & Packages">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Configure service packages and pricing</p>
-          <div className="space-y-2">
+        {displayPaths.map((item) => (
+          <Card key={item.path} title={item.name}>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">{item.description || 'Manage ' + item.name}</p>
             <Button
               variant="primary"
               size="md"
-              onClick={() => {
-                console.log('Manage Pricing button clicked - navigating to /admin/pricing')
-                navigate('/admin/pricing')
-              }}
+              onClick={() => handleNavigate(item.path)}
               className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
               style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
             >
-              Manage Pricing
+              {item.name === 'System Settings' ? 'Configure Settings' : `Manage ${item.name.split(' ')[0]}`}
             </Button>
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={() => {
-                console.log('Manage Packages button clicked - navigating to /admin/packages')
-                navigate('/admin/packages')
-              }}
-              className="w-full"
-            >
-              Manage Packages
-            </Button>
-          </div>
-        </Card>
-
-        <Card title="Interview Questions">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Manage customer interview questions and flow</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('Manage Interview Questions button clicked - navigating to /admin/interview-questions')
-              navigate('/admin/interview-questions')
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Manage Questions
-          </Button>
-        </Card>
-
-        <Card title="Admin Paths">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Configure admin navigation paths and hierarchy</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('Manage Paths button clicked - navigating to /admin/paths')
-              navigate('/admin/paths')
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Manage Paths
-          </Button>
-        </Card>
-
-        <Card title="USCIS Forms">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Manage immigration forms, pricing, and dependencies</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('Manage USCIS Forms button clicked - navigating to /admin/uscis-forms')
-              navigate('/admin/uscis-forms')
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Manage Forms
-          </Button>
-        </Card>
-
-        <Card title="Visa Library">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Manage visa library categories and assign visa types</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('Manage Visa Library button clicked - navigating to /admin/visa-library')
-              navigate('/admin/visa-library')
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Manage Library
-          </Button>
-        </Card>
-
-        <Card title="Legal Professionals">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Manage legal professional accounts</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('Manage Attorneys button clicked - navigating to /admin/attorneys')
-              navigate('/admin/attorneys')
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Manage Attorneys
-          </Button>
-        </Card>
-
-        <Card title="Reports & Analytics">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">View platform statistics and reports</p>
-          <div className="text-sm text-gray-500 dark:text-gray-400">Coming soon...</div>
-        </Card>
-
-        <Card title="System Settings">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Configure platform settings including phone number</p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              console.log('System Settings button clicked - navigating to /admin/system-settings')
-              navigate('/admin/system-settings')
-            }}
-            className="w-full !bg-blue-600 !text-white hover:!bg-blue-700"
-            style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-          >
-            Configure Settings
-          </Button>
-        </Card>
+          </Card>
+        ))}
       </div>
     </div>
   )

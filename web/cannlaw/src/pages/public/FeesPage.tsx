@@ -116,19 +116,25 @@ const FeesPage: React.FC = () => {
                   )}
 
                   <div className="border-t dark:border-navy-700 pt-4 mt-auto">
-                    {typeof pkg.basePrice === 'number' && pkg.basePrice > 0 ? (
-                      <>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Starting from:</p>
-                        <p className="text-3xl font-bold text-blue-600 dark:text-gold-500 mb-4">
-                          ${pkg.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Pricing:</p>
-                        <p className="text-2xl font-bold text-blue-600 dark:text-gold-500 mb-4">Contact for Quote</p>
-                      </>
-                    )}
+                    {(() => {
+                      const hasPrice = typeof pkg.basePrice === 'number' && pkg.basePrice > 0;
+                      if (hasPrice) {
+                        return (
+                          <>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Starting from:</p>
+                            <p className="text-3xl font-bold text-blue-600 dark:text-gold-500 mb-4">
+                              ${(pkg.basePrice as number).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </p>
+                          </>
+                        );
+                      }
+                      return (
+                        <>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Pricing:</p>
+                          <p className="text-2xl font-bold text-blue-600 dark:text-gold-500 mb-4">Contact for Quote</p>
+                        </>
+                      );
+                    })()}
                     <a
                       href="/contact"
                       className="block w-full text-center px-4 py-2 bg-blue-600 dark:bg-gold-600 text-white dark:text-navy-900 font-bold rounded-lg hover:bg-blue-700 dark:hover:bg-gold-500 transition-colors"

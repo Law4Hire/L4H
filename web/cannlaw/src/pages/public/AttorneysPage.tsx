@@ -62,15 +62,14 @@ const AttorneysPage: React.FC = () => {
     setSendStatus('idle')
 
     try {
-      const response = await fetch('/v1/public/contact', {
+      const response = await fetch('/api/v1/public/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          name: contactForm.name,
-          email: contactForm.email,
-          subject: `Message for ${selectedAttorney.name}`,
-          message: contactForm.message,
-          consultationType: 'general' // Default required field
+          ...formData,
+          subject: `Inquiry for ${attorney.name}`
         })
       })
 

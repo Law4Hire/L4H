@@ -207,10 +207,10 @@ public class AuthController : ControllerBase
         }
 
         // If remember me was requested OR to support sliding session for non-remember me, set cookie
-        if (result.Value!.UserId.HasValue)
+        if (result.Value?.UserId.HasValue == true)
         {
             // Pass RememberMe flag to service
-            var rememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value!.UserId!.Value, request.RememberMe).ConfigureAwait(false);
+            var rememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value.UserId.Value, request.RememberMe).ConfigureAwait(false);
             
             var cookieOptions = new CookieOptions
             {
@@ -267,9 +267,9 @@ public class AuthController : ControllerBase
         }
 
         // Set secure cookie logic similar to standard login...
-        if (result.Value!.UserId.HasValue)
+        if (result.Value?.UserId.HasValue == true)
         {
-            var rememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value!.UserId!.Value, request.RememberMe).ConfigureAwait(false);
+            var rememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value.UserId.Value, request.RememberMe).ConfigureAwait(false);
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -318,10 +318,10 @@ public class AuthController : ControllerBase
         }
 
         // The remember token service already rotated the token, so we need to set the new one
-        if (result.Value!.UserId.HasValue)
+        if (result.Value?.UserId.HasValue == true)
         {
             // Create new token preserving persistence from previous token
-            var newRememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value!.UserId!.Value, result.Value.IsPersistent).ConfigureAwait(false);
+            var newRememberToken = await _rememberMeTokenService.CreateRememberMeTokenAsync(result.Value.UserId.Value, result.Value.IsPersistent).ConfigureAwait(false);
             
             var cookieOptions = new CookieOptions
             {

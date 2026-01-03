@@ -169,11 +169,14 @@ export default function AdminVisaLibraryPage() {
   };
 
   const handleToggleVisaType = (visaTypeId: number) => {
-    setSelectedVisaTypeIds(prev =>
-      prev.includes(visaTypeId)
-        ? prev.filter(id => id !== visaTypeId)
-        : [...prev, visaTypeId]
-    );
+    setSelectedVisaTypeIds(prev => {
+      const isSelected = prev.includes(visaTypeId);
+      if (isSelected) {
+        return prev.filter(id => id !== visaTypeId);
+      } else {
+        return [...prev, visaTypeId];
+      }
+    });
   };
 
   const handleSaveAssignments = async () => {

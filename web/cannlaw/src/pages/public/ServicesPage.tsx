@@ -97,7 +97,7 @@ const ServicesPage: React.FC = () => {
               {/* Services Grid */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {category.services?.map((service: any) => (
-                  <Card key={service.id} className="p-6 hover:shadow-lg transition-all dark:bg-navy-800 dark:border-navy-700 border-t-4 border-t-gold-500 dark:border-t-gold-600">
+                  <Card key={service.id} className="p-6 hover:shadow-lg transition-all bg-white dark:bg-navy-800 dark:border-navy-700 border-t-4 border-t-gold-500 dark:border-t-gold-600">
                     <div className="flex items-start space-x-3">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-gold-100 dark:bg-gold-900 rounded-full flex items-center justify-center">

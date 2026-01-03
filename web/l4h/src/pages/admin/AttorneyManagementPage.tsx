@@ -202,6 +202,12 @@ const AttorneyManagementPage: React.FC = () => {
       setPendingPhotoFile(file)
       // Create preview URL
       const previewUrl = URL.createObjectURL(file)
+      
+      // Revoke previous blob URL if exists to prevent memory leaks
+      if (photoPreviewUrl && photoPreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(photoPreviewUrl)
+      }
+      
       setPhotoPreviewUrl(previewUrl)
       success('Photo selected. It will be uploaded when you save the profile.')
     }
@@ -536,7 +542,7 @@ const AttorneyManagementPage: React.FC = () => {
                       label="Internal Direct Phone"
                       value={formData.directPhone}
                       onChange={handleInputChange}
-                      placeholder="(410) 783-XXXX"
+                      placeholder="(410) 988-XXXX"
                       className="bg-white dark:bg-gray-800"
                     />
                   </div>

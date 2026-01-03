@@ -124,7 +124,9 @@ async function fetchJson<T = any>(
       return response as unknown as T
     }
     
-    const data: ApiResponse<T> = await response.json()
+    // Check if body is empty before parsing
+    const text = await response.text()
+    const data: ApiResponse<T> = text ? JSON.parse(text) : {}
     
     if (!response.ok) {
       // Try to refresh token on 401 Unauthorized

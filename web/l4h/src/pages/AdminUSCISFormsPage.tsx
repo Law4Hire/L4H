@@ -751,13 +751,32 @@ const AdminUSCISFormsPage: React.FC = () => {
                     {form.visaTypeMappingCount}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      form.isActive
-                        ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                    }`}>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(`/api/v1/admin/uscis-forms/${form.id}`, {
+                            method: 'PUT',
+                            headers: getAuthHeaders(),
+                            body: JSON.stringify({ ...form, isActive: !form.isActive })
+                          })
+                          if (response.ok) {
+                            success(`Form ${form.isActive ? 'deactivated' : 'activated'} successfully`)
+                            loadForms()
+                          } else {
+                            throw new Error('Failed to update status')
+                          }
+                        } catch (err) {
+                          error('Failed to update form status')
+                        }
+                      }}
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80 transition-opacity ${
+                        form.isActive
+                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                      }`}
+                    >
                       {form.isActive ? 'Active' : 'Inactive'}
-                    </span>
+                    </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button

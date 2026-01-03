@@ -1399,10 +1399,10 @@ public class SchedulingController : ControllerBase
                     {
                         Timestamp = log.CreatedAt,
                         Action = "Initial Assignment",
-                        StaffEmail = details?.ContainsKey("staffEmail") == true
-                            ? details["staffEmail"].ToString()
+                        StaffEmail = details?.ContainsKey("staffEmail") == true && details["staffEmail"] != null
+                            ? details["staffEmail"].ToString() ?? "Unknown"
                             : "Unknown",
-                        PerformedByUserId = log.ActorUserId.Value.Value,
+                        PerformedByUserId = log.ActorUserId.HasValue ? log.ActorUserId.Value.Value : Guid.Empty,
                         Reason = "Appointment created"
                     });
                 }
@@ -1412,14 +1412,14 @@ public class SchedulingController : ControllerBase
                     {
                         Timestamp = log.CreatedAt,
                         Action = "Reassigned",
-                        PreviousStaffEmail = details?.ContainsKey("previousStaffEmail") == true
+                        PreviousStaffEmail = details?.ContainsKey("previousStaffEmail") == true && details["previousStaffEmail"] != null
                             ? details["previousStaffEmail"].ToString()
                             : null,
-                        StaffEmail = details?.ContainsKey("newStaffEmail") == true
-                            ? details["newStaffEmail"].ToString()
+                        StaffEmail = details?.ContainsKey("newStaffEmail") == true && details["newStaffEmail"] != null
+                            ? details["newStaffEmail"].ToString() ?? "Unknown"
                             : "Unknown",
-                        PerformedByUserId = log.ActorUserId.Value.Value,
-                        Reason = details?.ContainsKey("reason") == true
+                        PerformedByUserId = log.ActorUserId.HasValue ? log.ActorUserId.Value.Value : Guid.Empty,
+                        Reason = details?.ContainsKey("reason") == true && details["reason"] != null
                             ? details["reason"].ToString()
                             : null
                     });

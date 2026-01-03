@@ -8,7 +8,6 @@ namespace L4H.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/interview/documents")]
-[AllowAnonymous]  // Must support anonymous users during interview
 [Tags("Interview Documents")]
 public class InterviewDocumentUploadController : ControllerBase
 {
@@ -31,6 +30,7 @@ public class InterviewDocumentUploadController : ControllerBase
     /// to upload documents during the interview process.
     /// </remarks>
     [HttpPost("presign")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(PresignedUploadResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PresignedUploadResponse>> PresignUpload(
@@ -81,6 +81,7 @@ public class InterviewDocumentUploadController : ControllerBase
     /// call this endpoint to confirm the upload and update the record status.
     /// </remarks>
     [HttpPost("confirm")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(InterviewDocumentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<InterviewDocumentResponse>> ConfirmUpload(
@@ -132,6 +133,7 @@ public class InterviewDocumentUploadController : ControllerBase
     /// List all documents uploaded for an interview session
     /// </summary>
     [HttpGet("list/{sessionToken}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(List<InterviewDocumentResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<List<InterviewDocumentResponse>>> ListSessionDocuments(
@@ -181,6 +183,7 @@ public class InterviewDocumentUploadController : ControllerBase
     /// Users can delete documents they've uploaded before completing the interview.
     /// </remarks>
     [HttpDelete("{documentId}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MessageResponse>> DeleteDocument(

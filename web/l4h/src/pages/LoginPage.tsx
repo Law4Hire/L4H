@@ -122,6 +122,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
               type="email"
               autoComplete="email"
               placeholder='Email'
+              className="dark:[&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#374151] dark:[&:-webkit-autofill]:-webkit-text-fill-color-white"
               error={errors.email?.message}
               {...register('email', {
                 required: 'Email is required',
@@ -137,6 +138,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
               type="password"
               autoComplete="current-password"
               placeholder='Password'
+              className="dark:[&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#374151] dark:[&:-webkit-autofill]:-webkit-text-fill-color-white"
               error={errors.password?.message}
               {...register('password', {
                 required: 'Password is required',

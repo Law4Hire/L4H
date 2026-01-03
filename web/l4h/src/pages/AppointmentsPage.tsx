@@ -75,7 +75,10 @@ export default function AppointmentsPage() {
       return
     }
 
-    createAppointmentMutation.mutate(newAppointment)
+    createAppointmentMutation.mutate({
+      ...newAppointment,
+      scheduledAt: scheduledDate.toISOString()
+    })
   }
 
   if (isLoading) {
