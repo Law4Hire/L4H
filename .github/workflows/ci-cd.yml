@@ -209,35 +209,21 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-upload-gateway:${{ github.sha }},${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-upload-gateway:latest
 
-            - name: Build and push Scraper image
+    - name: Build and push Scraper image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: src/scraper/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-scraper:${{ github.sha }},${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-scraper:latest
 
-              uses: docker/build-push-action@v5
-
-              with:
-
-                context: .
-
-                file: src/scraper/Dockerfile
-
-                push: true
-
-                tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-scraper:${{ github.sha }},${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-scraper:latest
-
-        
-
-          deploy-test:
-
-            needs: docker-build-push
-
-            runs-on: ubuntu-latest
-
-            if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-
-            environment: test
-
-            steps:
-
-            - uses: actions/checkout@v4
+  deploy-test:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    environment: test
+    steps:
+    - uses: actions/checkout@v4
 
         
 
