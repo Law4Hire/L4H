@@ -325,13 +325,15 @@ if (runMigrations && (app.Environment.IsDevelopment() || app.Environment.IsEnvir
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[STARTUP] FATAL: Database migration failed - {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"[STARTUP] ERROR: Database migration failed - {ex.GetType().Name}: {ex.Message}");
             Console.WriteLine($"[STARTUP] Stack trace: {ex.StackTrace}");
             if (ex.InnerException != null)
             {
                 Console.WriteLine($"[STARTUP] Inner exception: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
             }
-            throw;
+            Console.WriteLine("[STARTUP] WARNING: Continuing startup despite migration failure. Some features may be unavailable.");
+            // Do not re-throw to allow application to start even if migration fails
+            // throw; 
         }
     }
 }
