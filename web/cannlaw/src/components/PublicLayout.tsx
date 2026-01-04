@@ -48,24 +48,39 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
     if (configPlatforms.length === 0) return defaults
 
     return configPlatforms.map((p: string) => {
-      const name = p.split(':')[0].replace('!', '').trim()
-      const value = p.includes(':') ? p.split(':')[1].trim() : ''
-      const defaultMatch = defaults.find(d => d.name.toLowerCase() === name.toLowerCase())
+      // Split "Name: URL" or just "Name"
+      const parts = p.includes(':') ? p.split(':') : [p]
+      const rawName = parts[0].trim()
+      // If the string was just "Name", value is empty. If "Name: URL", value is the rest.
+      // However, URLs contain ':', so we should join the rest.
+      const value = parts.length > 1 ? parts.slice(1).join(':').trim() : ''
       
-      let url = defaultMatch?.url || '#'
-      if (name.toUpperCase() === 'SKYPE' && value) url = `skype:${value}?chat`
+      // Normalize name for matching (remove punctuation, lowercase)
+      const normalizedName = rawName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
       
-      // Explicitly handle known platforms to ensure correct icons even if not in defaults
+      const defaultMatch = defaults.find(d => d.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() === normalizedName)
+      
+      let url = value || defaultMatch?.url || '#'
+      
+      // Special handling for Skype protocol
+      if (normalizedName === 'skype' && value && !value.startsWith('skype:')) {
+         url = `skype:${value}?chat`
+      }
+      
+      // Determine icon
       let icon = defaultMatch?.icon || 'share-2'
-      if (name.toLowerCase() === 'github') icon = 'github' // Lucide doesn't have 'github' icon in the import list above, need to check if available or map to something else. 
-      // Wait, PublicLayout imports specific icons. 'Github' is NOT imported.
-      // I need to import 'Github' from lucide-react if I want to support it. 
-      // But the user says "have the icon for GitHub, not their actual icons". This implies they DO NOT want GitHub icon for things like Facebook.
-      // The issue is likely that 'share-2' looks like GitHub's fork icon or something?
-      // I will import 'Github' just in case, but more importantly, I will ensure the mapping is robust.
       
+      // Explicit overrides based on normalized name if defaults didn't catch it
+      if (normalizedName === 'facebook') icon = 'facebook'
+      if (normalizedName === 'twitter') icon = 'twitter'
+      if (normalizedName === 'whatsapp') icon = 'whatsapp'
+      if (normalizedName === 'line') icon = 'message-circle'
+      if (normalizedName === 'skype') icon = 'phone'
+      if (normalizedName === 'instagram') icon = 'instagram'
+      if (normalizedName === 'linkedin') icon = 'linkedin'
+
       return {
-        name: p,
+        name: rawName,
         url: url,
         icon: icon
       }

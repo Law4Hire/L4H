@@ -35,9 +35,37 @@ public class PricingController : ControllerBase
     {
         _logger.LogInformation("GetPricing called for Visa: {VisaType}, Country: {Country}", visaType, country);
 
-        // If no parameters provided, return default packages for general display
+        // If no parameters provided, return all packages for general display
         if (string.IsNullOrEmpty(visaType) && string.IsNullOrEmpty(country))
         {
+            var allRules = await _context.PricingRules
+                .Include(pr => pr.Package)
+                .Where(pr => pr.IsActive && pr.Package.IsActive && pr.CountryCode == "US")
+                .OrderBy(pr => pr.Package.SortOrder)
+                .ToListAsync().ConfigureAwait(false);
+
+            if (allRules.Any())
+            {
+                var pkgList = allRules.Select(pr => new PricingPackageResponse
+                {
+                    Id = pr.Package.Code,
+                    PackageCode = pr.Package.Code,
+                    Name = pr.Package.DisplayName,
+                    DisplayName = pr.Package.DisplayName,
+                    Description = pr.Package.Description,
+                    Price = CalculateTotal(pr.BasePrice, pr.TaxRate, pr.FxSurchargeMode),
+                    BasePrice = pr.BasePrice,
+                    TaxRate = pr.TaxRate,
+                    Currency = pr.Currency,
+                    FxSurchargeMode = pr.FxSurchargeMode,
+                    Total = CalculateTotal(pr.BasePrice, pr.TaxRate, pr.FxSurchargeMode),
+                    SortOrder = pr.Package.SortOrder,
+                    Features = GetPackageFeatures(pr.Package.Code)
+                }).ToArray();
+
+                return Ok(new PricingResponse { VisaType = "GENERAL", Country = "US", Packages = pkgList });
+            }
+
             return await GetDefaultPricing().ConfigureAwait(false);
         }
 

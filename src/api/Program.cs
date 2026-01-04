@@ -55,6 +55,7 @@ builder.Services.AddScoped<IValidator<CreateApprovedDoctorRequest>, CreateApprov
 builder.Services.AddScoped<IValidator<CreateWorkflowRequest>, CreateWorkflowRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateWorkflowStepRequest>, CreateWorkflowStepRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateWorkflowDoctorRequest>, CreateWorkflowDoctorRequestValidator>();
+builder.Services.AddScoped<IValidator<ContactFormRequest>, ContactFormRequestValidator>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -283,6 +284,7 @@ builder.Services.AddScoped<ISeedTask, InterviewCategoriesSeeder>();
 builder.Services.AddScoped<ISeedTask, InterviewQuestionsSeeder>();
 builder.Services.AddScoped<ISeedTask, USCISFormsSeeder>();
 builder.Services.AddScoped<ISeedTask, VisaLibraryTilesSeeder>();
+builder.Services.AddScoped<ISeedTask, PackagesSeeder>();
 builder.Services.AddScoped<SeedRunner>();
 
 // Workflow and scraper services (for API endpoints)

@@ -72,7 +72,7 @@ const ServicesPage: React.FC = () => {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-900 to-blue-700 dark:from-navy-900 dark:to-navy-800 text-white py-16">
+      <section className="bg-gradient-to-r from-blue-900 to-blue-700 dark:from-gray-900 dark:to-gray-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Immigration Services</h1>
@@ -84,23 +84,23 @@ const ServicesPage: React.FC = () => {
       </section>
 
       {/* Services Content */}
-      <section className="py-16 bg-white dark:bg-navy-900 transition-colors duration-300">
+      <section className="py-16 bg-white dark:bg-navy-950 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {displayCategories.map((category: any, categoryIndex: number) => (
-            <div key={category.id} className={`${categoryIndex > 0 ? 'mt-16' : ''}`}>
+            <div key={category.id} className={`mb-16 bg-gray-50 dark:bg-navy-900 rounded-xl p-8 border border-gray-100 dark:border-navy-700 shadow-sm`}>
               {/* Category Header */}
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-4">{category.name}</h2>
+              <div className="text-center mb-10 border-b border-gray-200 dark:border-navy-700 pb-6">
+                <h2 className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-3">{category.name}</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">{category.description}</p>
               </div>
 
               {/* Services Grid */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {category.services?.map((service: any) => (
-                  <Card key={service.id} className="p-6 hover:shadow-lg transition-all bg-white dark:bg-navy-800 dark:border-navy-700 border-t-4 border-t-gold-500 dark:border-t-gold-600">
+                  <Card key={service.id} className="p-6 hover:shadow-lg transition-all bg-white dark:bg-navy-800 dark:border-navy-600 border-t-4 border-t-gold-500 dark:border-t-gold-500 h-full flex flex-col">
                     <div className="flex items-start space-x-3">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-gold-100 dark:bg-gold-900 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-gold-100 dark:bg-gold-900/50 rounded-full flex items-center justify-center">
                           <svg className="w-4 h-4 text-gold-600 dark:text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
