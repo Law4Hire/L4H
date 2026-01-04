@@ -217,6 +217,14 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-scraper:${{ github.sha }},${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-scraper:latest
 
+    - name: Build and push Web image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: web/Dockerfile.combined
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-web:${{ github.sha }},${{ env.REGISTRY }}/${{ steps.repo.outputs.repository_lower }}-web:latest
+
   deploy-test:
     needs: docker-build-push
     runs-on: ubuntu-latest
@@ -242,7 +250,6 @@ jobs:
         cd ../cannlaw && npm ci && npm run build
 
     - name: Deploy to TEST Kubernetes
-      continue-on-error: true
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -252,7 +259,6 @@ jobs:
         target: "/tmp/l4h-deploy-test/"
 
     - name: Apply TEST deployment
-      continue-on-error: true
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -284,7 +290,10 @@ jobs:
           
           # Force delete deployments to handle immutable selector changes (fixes "No available server")
           echo "🧹 Cleaning up old deployments to ensure selector updates..."
-          kubectl delete deployment api upload-gateway scraper web sqlserver -n l4h --ignore-not-found=true
+          kubectl delete deployment api upload-gateway scraper web sqlserver -n l4h --ignore-not-found=true --wait=true
+          
+          # Ensure they are gone before applying
+          sleep 5
           
           kubectl apply -k .
 
@@ -293,8 +302,9 @@ jobs:
           kubectl set image deployment/api api=ghcr.io/${GH_ORG_LOWER}/l4h-api:${{ github.sha }} -n l4h
           kubectl set image deployment/upload-gateway upload-gateway=ghcr.io/${GH_ORG_LOWER}/l4h-upload-gateway:${{ github.sha }} -n l4h
           kubectl set image deployment/scraper scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${{ github.sha }} -n l4h
+          kubectl set image deployment/web nginx=ghcr.io/${GH_ORG_LOWER}/l4h-web:${{ github.sha }} -n l4h
 
-          # Restart web deployment
+          # Restart web deployment (redundant now but safe)
           kubectl rollout restart deployment/web -n l4h
 
           # Wait for rollout (short timeout for test)
@@ -303,7 +313,6 @@ jobs:
           echo "✅ TEST deployment triggers sent!"
 
     - name: Verify TEST deployment
-      continue-on-error: true
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.DEPLOY_HOST }}

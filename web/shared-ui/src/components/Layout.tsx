@@ -211,6 +211,11 @@ export const Layout: React.FC<LayoutProps> = ({
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {children}
       </main>
+
+      {/* Version Tag for Deployment Verification */}
+      <div className="fixed bottom-2 left-2 z-[100] bg-black/50 text-white text-[10px] px-2 py-1 rounded-md pointer-events-none backdrop-blur-sm border border-white/10 font-mono">
+        v1.0.3-bf5b634
+      </div>
     </div>
   )
 }

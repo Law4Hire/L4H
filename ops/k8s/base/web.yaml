@@ -57,20 +57,10 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:1.27-alpine
+        image: ghcr.io/law4hire/l4h-web:latest
         ports:
         - containerPort: 80
           name: http
-        volumeMounts:
-        - name: web-l4h
-          mountPath: /usr/share/nginx/html/l4h
-          readOnly: true
-        - name: web-cannlaw
-          mountPath: /usr/share/nginx/html/cannlaw
-          readOnly: true
-        - name: nginx-config
-          mountPath: /etc/nginx/conf.d
-          readOnly: true
         resources:
           requests:
             memory: "64Mi"
@@ -90,16 +80,6 @@ spec:
             port: 80
           initialDelaySeconds: 3
           periodSeconds: 5
-      volumes:
-      - name: web-l4h
-        persistentVolumeClaim:
-          claimName: web-l4h
-      - name: web-cannlaw
-        persistentVolumeClaim:
-          claimName: web-cannlaw
-      - name: nginx-config
-        configMap:
-          name: nginx-config
 ---
 apiVersion: v1
 kind: ConfigMap
