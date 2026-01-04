@@ -281,6 +281,11 @@ jobs:
 
           # Apply TEST overlay
           cd ~/ops/k8s/overlays/test
+          
+          # Force delete deployments to handle immutable selector changes (fixes "No available server")
+          echo "🧹 Cleaning up old deployments to ensure selector updates..."
+          kubectl delete deployment api upload-gateway scraper web sqlserver -n l4h --ignore-not-found=true
+          
           kubectl apply -k .
 
           # Update images to the SHA we just built
