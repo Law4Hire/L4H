@@ -73,6 +73,8 @@ const LegalDashboard: React.FC = () => {
     setSelectedCase(caseId)
     setShowCaseModal(true)
   }
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('jwt_token')
