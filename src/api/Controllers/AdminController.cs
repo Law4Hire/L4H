@@ -179,6 +179,83 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
+    /// Create a new pricing rule for a visa type
+    /// </summary>
+    [HttpPost("pricing/visa-types/{id}/rules")]
+    [ProducesResponseType(typeof(AdminPricingRuleResponse), StatusCodes.Status201Created)]
+    public async Task<ActionResult<AdminPricingRuleResponse>> CreatePricingRule(
+        int id,
+        [FromBody] CreatePricingRuleRequest request)
+    {
+        var visaType = await _context.VisaTypes.FindAsync(id).ConfigureAwait(false);
+        if (visaType == null) return NotFound(new ProblemDetails { Title = "Visa Type Not Found" });
+
+        var package = await _context.Packages.FindAsync(request.PackageId).ConfigureAwait(false);
+        if (package == null) return NotFound(new ProblemDetails { Title = "Package Not Found" });
+
+        // Check if rule already exists
+        var existing = await _context.PricingRules.FirstOrDefaultAsync(r => 
+            r.VisaTypeId == id && 
+            r.PackageId == request.PackageId && 
+            r.CountryCode == request.CountryCode).ConfigureAwait(false);
+
+        if (existing != null) return Conflict(new ProblemDetails { Title = "Pricing Rule Already Exists" });
+
+        var rule = new PricingRule
+        {
+            VisaTypeId = id,
+            PackageId = request.PackageId,
+            CountryCode = request.CountryCode,
+            Currency = request.Currency,
+            BasePrice = request.BasePrice,
+            TaxRate = request.TaxRate,
+            FxSurchargeMode = request.FxSurchargeMode,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.PricingRules.Add(rule);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        await LogAuditAsync("admin", "pricing_rule_create", "PricingRule", rule.Id.ToString(),
+            new { visaTypeId = id, packageId = request.PackageId, country = request.CountryCode }).ConfigureAwait(false);
+
+        return Created("", new AdminPricingRuleResponse
+        {
+            Id = rule.Id,
+            PackageId = rule.PackageId,
+            PackageCode = package.Code,
+            PackageDisplayName = package.DisplayName,
+            BasePrice = rule.BasePrice,
+            Currency = rule.Currency,
+            TaxRate = rule.TaxRate,
+            FxSurchargeMode = rule.FxSurchargeMode,
+            IsActive = rule.IsActive,
+            CreatedAt = rule.CreatedAt,
+            UpdatedAt = rule.UpdatedAt
+        });
+    }
+
+    /// <summary>
+    /// Delete a pricing rule
+    /// </summary>
+    [HttpDelete("pricing/rules/{ruleId}")]
+    public async Task<IActionResult> DeletePricingRule(int ruleId)
+    {
+        var rule = await _context.PricingRules.FindAsync(ruleId).ConfigureAwait(false);
+        if (rule == null) return NotFound();
+
+        _context.PricingRules.Remove(rule);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        await LogAuditAsync("admin", "pricing_rule_delete", "PricingRule", ruleId.ToString(),
+            new { visaTypeId = rule.VisaTypeId, packageId = rule.PackageId }).ConfigureAwait(false);
+
+        return NoContent();
+    }
+
+    /// <summary>
     /// Get all packages for admin management
     /// </summary>
     /// <returns>All packages</returns>
@@ -1660,4 +1737,14 @@ public class AdminPricingEntryRequest
     public string Country { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public string? Description { get; set; }
+}
+
+public class CreatePricingRuleRequest
+{
+    public int PackageId { get; set; }
+    public string CountryCode { get; set; } = "US";
+    public string Currency { get; set; } = "USD";
+    public decimal BasePrice { get; set; }
+    public decimal TaxRate { get; set; }
+    public string? FxSurchargeMode { get; set; }
 }

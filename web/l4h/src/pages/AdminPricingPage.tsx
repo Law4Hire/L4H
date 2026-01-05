@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button, Input, useToast, Modal } from '@l4h/shared-ui'
+import { Trash2, X, Search, Filter } from 'lucide-react'
 
 interface AdminPricingRuleResponse {
   id: number
@@ -40,9 +41,17 @@ const AdminPricingPage: React.FC = () => {
   const [visaTypes, setVisaTypes] = useState<VisaTypePricing[]>([])
   const [packages, setPackages] = useState<AdminPackageResponse[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
   const [showDisabled, setShowDisabled] = useState(false)
+  const [showOnlyUnpriced, setShowOnlyUnpriced] = useState(false)
   const [selectedVisaType, setSelectedVisaType] = useState<VisaTypePricing | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [addingPackage, setAddingPackage] = useState(false)
+  const [newRuleData, setNewRuleData] = useState({
+    packageId: 0,
+    basePrice: '0',
+    taxRate: '0'
+  })
   const [editingPackage, setEditingPackage] = useState<{
     packageCode: string
     basePrice: string
@@ -61,7 +70,7 @@ const AdminPricingPage: React.FC = () => {
       const token = localStorage.getItem('jwt_token')
 
       if (!token) {
-        error('Authentication required', 'Please log in to access admin features')
+        error('Authentication required')
         return
       }
 
@@ -70,420 +79,283 @@ const AdminPricingPage: React.FC = () => {
         'Content-Type': 'application/json'
       }
 
-      // Load visa types with pricing
-      const visaTypesResponse = await fetch('/api/v1/admin/pricing/visa-types', { headers })
-      if (!visaTypesResponse.ok) {
-        throw new Error(`Failed to load visa types: ${visaTypesResponse.status}`)
-      }
-      const visaTypesData = await visaTypesResponse.json()
+      const [vtRes, pkgRes] = await Promise.all([
+        fetch('/api/v1/admin/pricing/visa-types', { headers }),
+        fetch('/api/v1/admin/pricing/packages', { headers })
+      ])
 
-      // Load packages
-      const packagesResponse = await fetch('/api/v1/admin/pricing/packages', { headers })
-      if (!packagesResponse.ok) {
-        throw new Error(`Failed to load packages: ${packagesResponse.status}`)
-      }
-      const packagesData = await packagesResponse.json()
-      setPackages(packagesData)
+      if (!vtRes.ok || !pkgRes.ok) throw new Error('Failed to load data')
 
-      // Transform data: Group by visa type, consolidate pricing across countries
-      const transformedVisaTypes: VisaTypePricing[] = visaTypesData.map((visaType: any) => {
-        const packageMap: { [packageCode: string]: AdminPricingRuleResponse | null } = {}
+      const vtData = await vtRes.json()
+      const pkgData = await pkgRes.json()
+      setPackages(pkgData)
 
-        // Initialize all packages as null
-        packagesData.forEach((pkg: AdminPackageResponse) => {
-          packageMap[pkg.code] = null
-        })
+      const transformed: VisaTypePricing[] = vtData.map((vt: any) => {
+        const pMap: { [code: string]: AdminPricingRuleResponse | null } = {}
+        
+        // Ensure all packages exist in the map
+        pkgData.forEach((p: any) => pMap[p.code] = null)
 
-        // Use pricing from first country as representative (since prices should be consistent)
-        if (visaType.pricingRules && visaType.pricingRules.length > 0) {
-          const firstCountryRules = visaType.pricingRules[0].rules
-          firstCountryRules.forEach((rule: AdminPricingRuleResponse) => {
-            packageMap[rule.packageCode] = rule
+        if (vt.pricingRules?.length > 0) {
+          // Flatten all rules from all countries (taking first found for display)
+          vt.pricingRules.forEach((group: any) => {
+            group.rules.forEach((r: any) => {
+              if (!pMap[r.packageCode]) pMap[r.packageCode] = r
+            })
           })
         }
-
         return {
-          id: visaType.id,
-          code: visaType.code,
-          name: visaType.name,
-          isActive: visaType.isActive,
-          packages: packageMap
+          id: vt.id,
+          code: vt.code,
+          name: vt.name,
+          isActive: vt.isActive,
+          packages: pMap
         }
       })
 
-      setVisaTypes(transformedVisaTypes)
-
+      setVisaTypes(transformed)
     } catch (err) {
-      console.error('Error loading pricing data:', err)
-      error('Failed to load pricing data', err instanceof Error ? err.message : 'Unknown error')
+      error('Failed to load pricing')
     } finally {
       setLoading(false)
     }
   }
 
-  const openVisaTypeModal = (visaType: VisaTypePricing) => {
-    setSelectedVisaType(visaType)
-    setModalOpen(true)
-    setEditingPackage(null)
+  const handleAddRule = async () => {
+    if (!selectedVisaType || !newRuleData.packageId) return
+
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch(`/api/v1/admin/pricing/visa-types/${selectedVisaType.id}/rules`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          packageId: newRuleData.packageId,
+          basePrice: parseFloat(newRuleData.basePrice),
+          taxRate: parseFloat(newRuleData.taxRate) / 100,
+          countryCode: 'US',
+          currency: 'USD'
+        })
+      })
+
+      if (response.ok) {
+        success('Package association created')
+        setAddingPackage(false)
+        setNewRuleData({ packageId: 0, basePrice: '0', taxRate: '0' })
+        await loadData()
+        closeModal()
+      } else {
+        const data = await response.json()
+        error(data.title || 'Failed to add')
+      }
+    } catch (err) {
+      error('Error adding pricing')
+    }
   }
 
-  const closeModal = () => {
-    setModalOpen(false)
-    setSelectedVisaType(null)
-    setEditingPackage(null)
-  }
-
-  const startEditPackage = (packageCode: string, rule: AdminPricingRuleResponse | null) => {
-    setEditingPackage({
-      packageCode,
-      basePrice: rule?.basePrice?.toString() || '0',
-      taxRate: rule?.taxRate ? (rule.taxRate * 100).toString() : '0',
-      isActive: rule?.isActive || false
-    })
-  }
-
-  const cancelEditPackage = () => {
-    setEditingPackage(null)
+  const handleDeleteRule = async (ruleId: number) => {
+    if (!confirm('Remove this package from this visa type?')) return
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const res = await fetch(`/api/v1/admin/pricing/rules/${ruleId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (res.ok) {
+        success('Rule removed')
+        await loadData()
+        closeModal()
+      }
+    } catch (err) { error('Failed to delete') }
   }
 
   const savePackage = async () => {
     if (!editingPackage || !selectedVisaType) return
-
     try {
       const token = localStorage.getItem('jwt_token')
-      if (!token) {
-        error('Authentication required')
-        return
-      }
-
       const rule = selectedVisaType.packages[editingPackage.packageCode]
+      if (!rule) return
 
-      if (rule) {
-        // Update existing rule
-        const updateData = {
+      const response = await fetch(`/api/v1/admin/pricing/visa-types/${selectedVisaType.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
           pricingRuleUpdates: [{
             id: rule.id,
             basePrice: parseFloat(editingPackage.basePrice),
             taxRate: parseFloat(editingPackage.taxRate) / 100,
             isActive: editingPackage.isActive
           }]
-        }
-
-        const response = await fetch(`/api/v1/admin/pricing/visa-types/${selectedVisaType.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(updateData)
         })
-
-        if (!response.ok) {
-          throw new Error(`Failed to update pricing: ${response.status}`)
-        }
-
-        success('Pricing updated successfully')
-      } else {
-        error('Cannot create new pricing rules yet', 'This functionality will be added soon')
-      }
-
-      setEditingPackage(null)
-      await loadData() // Refresh data
-
-      // Update selectedVisaType with refreshed data from the server
-      setVisaTypes(prevVisaTypes => {
-        const updatedVisaType = prevVisaTypes.find(vt => vt.id === selectedVisaType.id)
-        if (updatedVisaType) {
-          setSelectedVisaType(updatedVisaType)
-        }
-        return prevVisaTypes
-      })
-    } catch (err) {
-      console.error('Error updating pricing:', err)
-      error('Failed to update pricing', err instanceof Error ? err.message : 'Unknown error')
-    }
-  }
-
-  const toggleVisaTypeStatus = async (visaTypeId: number, isActive: boolean) => {
-    try {
-      const token = localStorage.getItem('jwt_token')
-      if (!token) {
-        error('Authentication required')
-        return
-      }
-
-      const response = await fetch(`/api/v1/admin/pricing/visa-types/${visaTypeId}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ isActive })
       })
 
-      if (!response.ok) {
-        throw new Error(`Failed to update visa type status: ${response.status}`)
+      if (response.ok) {
+        success('Updated')
+        setEditingPackage(null)
+        await loadData()
+        closeModal()
       }
-
-      success(`Visa type ${isActive ? 'enabled' : 'disabled'} successfully`)
-      loadData() // Refresh data
-    } catch (err) {
-      console.error('Error updating visa type status:', err)
-      error('Failed to update visa type status', err instanceof Error ? err.message : 'Unknown error')
-    }
+    } catch (err) { error('Failed to save') }
   }
 
-  const filteredVisaTypes = visaTypes.filter(vt => showDisabled || vt.isActive)
+  const filteredVisaTypes = visaTypes.filter(vt => {
+    const matchesSearch = vt.code.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         vt.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const hasPricing = Object.values(vt.packages).some(r => r !== null)
+    const matchesUnpriced = !showOnlyUnpriced || !hasPricing
+    return matchesSearch && (showDisabled || vt.isActive) && matchesUnpriced
+  })
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-600 dark:text-gray-400">Loading pricing data...</div>
-      </div>
-    )
+  const openVisaTypeModal = (vt: VisaTypePricing) => {
+    setSelectedVisaType(vt)
+    setModalOpen(true)
   }
+
+  const closeModal = () => {
+    setModalOpen(false)
+    setSelectedVisaType(null)
+    setEditingPackage(null)
+    setAddingPackage(false)
+  }
+
+  const startEditPackage = (code: string, rule: AdminPricingRuleResponse | null) => {
+    if (!rule) return
+    setEditingPackage({
+      packageCode: code,
+      basePrice: rule.basePrice.toString(),
+      taxRate: (rule.taxRate * 100).toString(),
+      isActive: rule.isActive
+    })
+  }
+
+  if (loading) return <div className="p-8 text-center flex flex-col items-center gap-4"><div className="animate-spin h-8 w-8 border-b-2 border-blue-600 rounded-full"></div> Loading 80+ Visa Types...</div>
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Pricing Management
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            Manage visa types and pricing packages. Click on any visa type card to edit its pricing.
-          </p>
-        </div>
+      <div className="bg-white dark:bg-navy-900 rounded-lg p-6 shadow-md border dark:border-navy-800">
+        <h1 className="text-2xl font-bold text-navy-900 dark:text-white mb-2 font-serif">Pricing Management</h1>
+        <p className="text-gray-600 dark:text-gray-400">Configure prices for {visaTypes.length} visa types and associate them with service packages.</p>
       </div>
 
-      {/* Controls */}
-      <Card title="Display Options">
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={showDisabled}
-            onChange={(e) => setShowDisabled(e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
-          />
-          <span className="text-sm text-gray-700 dark:text-gray-300">Show disabled visa types</span>
-        </label>
+      <Card className="p-4 bg-gray-50 dark:bg-navy-950">
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex-1 relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input 
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-navy-700 bg-white dark:bg-navy-900 text-navy-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Search by code (e.g. H-1B) or name..." 
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-6 items-center whitespace-nowrap">
+            <label className="flex items-center text-sm font-medium cursor-pointer"><input type="checkbox" checked={showDisabled} onChange={e => setShowDisabled(e.target.checked)} className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" /> Show Disabled</label>
+            <label className="flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 cursor-pointer"><input type="checkbox" checked={showOnlyUnpriced} onChange={e => setShowOnlyUnpriced(e.target.checked)} className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" /> Missing Price Only</label>
+          </div>
+        </div>
       </Card>
 
-      {/* Visa Types Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredVisaTypes.map(visaType => (
-          <div
-            key={visaType.id}
-            onClick={() => openVisaTypeModal(visaType)}
-            className={`bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer border ${
-              !visaType.isActive 
-                ? 'bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700' 
-                : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500'
-            }`}
-          >
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${!visaType.isActive ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}>
-                  {visaType.code}
-                </h3>
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  visaType.isActive
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                }`}>
-                  {visaType.isActive ? 'Active' : 'Disabled'}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {filteredVisaTypes.map(vt => {
+          const pricedCount = Object.values(vt.packages).filter(r => r !== null).length
+          return (
+            <div 
+              key={vt.id} 
+              onClick={() => openVisaTypeModal(vt)}
+              className={`p-4 rounded-xl border-2 cursor-pointer hover:scale-105 transition-all shadow-sm ${
+                pricedCount > 0 
+                  ? 'bg-white dark:bg-navy-800 border-gray-100 dark:border-navy-700 hover:border-blue-400' 
+                  : 'bg-orange-50 dark:bg-orange-950/20 border-orange-100 dark:border-orange-900/50 hover:border-orange-400'
+              }`}
+            >
+              <div className="flex justify-between items-start mb-2">
+                <span className="font-bold text-lg text-navy-900 dark:text-white leading-none">{vt.code}</span>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full uppercase font-bold ${pricedCount > 0 ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : 'bg-orange-100 text-orange-700'}`}>
+                  {pricedCount} PKGS
                 </span>
               </div>
-
-              <p className={`text-sm mb-4 ${!visaType.isActive ? 'text-gray-400 dark:text-gray-600' : 'text-gray-600 dark:text-gray-300'}`}>
-                {visaType.name}
-              </p>
-
-              <div className="space-y-2">
-                {packages.map(pkg => {
-                  const rule = visaType.packages[pkg.code]
-                  return (
-                    <div key={pkg.code} className="flex justify-between items-center">
-                      <span className={`text-sm ${!visaType.isActive ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-300'}`}>
-                        {pkg.displayName}:
-                      </span>
-                      <span className={`text-sm font-medium ${
-                        !rule || !rule.isActive
-                          ? 'text-gray-400 dark:text-gray-600'
-                          : !visaType.isActive ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'
-                      }`}>
-                        {rule ? `$${rule.basePrice.toFixed(2)}` : 'Not set'}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 h-8 mb-2 leading-tight">{vt.name}</p>
+              {!vt.isActive && <span className="text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded-sm font-bold uppercase">Disabled</span>}
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
-      {/* Count Summary */}
-      <Card title="Summary">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div>
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{visaTypes.length}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Total Visa Types</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{visaTypes.filter(vt => vt.isActive).length}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Active Visa Types</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-red-600 dark:text-red-400">{visaTypes.filter(vt => !vt.isActive).length}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Disabled Visa Types</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{packages.length}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Service Packages</div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Edit Modal */}
-      <Modal open={modalOpen} onClose={closeModal} title={selectedVisaType ? `Edit ${selectedVisaType.code} Pricing` : ''}>
+      <Modal open={modalOpen} onClose={closeModal} title={selectedVisaType ? `${selectedVisaType.code} Pricing` : ''} size="lg">
         {selectedVisaType && (
           <div className="space-y-6">
-            {/* Visa Type Status */}
-            <div className="border-b dark:border-gray-700 pb-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">{selectedVisaType.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Visa Type: {selectedVisaType.code}</p>
-                </div>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedVisaType.isActive}
-                    onChange={(e) => {
-                      if (showDisabled || e.target.checked) {
-                        toggleVisaTypeStatus(selectedVisaType.id, e.target.checked)
-                      } else {
-                        error('Enable "Show disabled visa types" to disable this visa type')
-                      }
-                    }}
-                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Enable visa type</span>
-                </label>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50 dark:bg-navy-950 p-4 rounded-xl gap-4 border border-gray-100 dark:border-navy-800">
+              <div className="flex-1">
+                <div className="text-sm font-bold text-navy-900 dark:text-white mb-1">{selectedVisaType.name}</div>
+                <div className="text-xs text-gray-500">{selectedVisaType.code} - Manage applicable service packages</div>
               </div>
+              <Button size="sm" onClick={() => setAddingPackage(true)} className="bg-blue-600 hover:bg-blue-700">Add New Association</Button>
             </div>
 
-            {/* Package Pricing */}
-            <div className="space-y-4">
-              <h4 className="text-md font-medium text-gray-900 dark:text-white">Package Pricing</h4>
-              {packages.map(pkg => {
-                const rule = selectedVisaType.packages[pkg.code]
-                const isEditing = editingPackage?.packageCode === pkg.code
+            {addingPackage && (
+              <div className="p-5 border-2 border-dashed border-blue-400 dark:border-blue-600 rounded-xl space-y-4 bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-bold text-navy-900 dark:text-white">Associate New Package Deal</h4>
+                  <button onClick={() => setAddingPackage(false)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Target Package</label>
+                    <select 
+                      className="w-full p-2.5 border rounded-lg dark:bg-navy-900 dark:border-navy-700 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                      value={newRuleData.packageId}
+                      onChange={e => setNewRuleData({...newRuleData, packageId: parseInt(e.target.value)})}
+                    >
+                      <option value="0">Select from list...</option>
+                      {packages.filter(p => !selectedVisaType.packages[p.code]).map(p => (
+                        <option key={p.id} value={p.id}>{p.displayName}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Base Price (USD)</label>
+                    <Input type="number" placeholder="0.00" value={newRuleData.basePrice} onChange={e => setNewRuleData({...newRuleData, basePrice: e.target.value})} />
+                  </div>
+                </div>
+                <div className="flex gap-3 justify-end">
+                  <Button size="sm" variant="outline" onClick={() => setAddingPackage(false)}>Cancel</Button>
+                  <Button size="sm" onClick={handleAddRule} disabled={!newRuleData.packageId || parseFloat(newRuleData.basePrice) <= 0}>Create Association</Button>
+                </div>
+              </div>
+            )}
 
+            <div className="grid grid-cols-1 gap-3">
+              {Object.entries(selectedVisaType.packages).filter(([_, r]) => r !== null).map(([code, rule]) => {
+                const pkg = packages.find(p => p.code === code)
                 return (
-                  <div key={pkg.code} className="border dark:border-gray-700 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h5 className="font-medium text-gray-900 dark:text-white">{pkg.displayName}</h5>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{pkg.description}</p>
+                  <div key={code} className="p-4 border dark:border-navy-800 rounded-xl flex justify-between items-center bg-white dark:bg-navy-900 hover:border-gray-300 dark:hover:border-navy-600 transition-colors group">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="font-bold text-navy-900 dark:text-white leading-tight">{pkg?.displayName || code}</div>
+                        {rule?.isActive === false && <span className="text-[8px] bg-red-100 text-red-600 px-1 rounded uppercase font-bold">Inactive</span>}
                       </div>
-                      {!isEditing && (
-                        <Button
-                          onClick={() => startEditPackage(pkg.code, rule)}
-                          size="sm"
-                          variant="outline"
-                          className="!bg-blue-600 !text-white hover:!bg-blue-700 dark:!bg-blue-500 dark:hover:!bg-blue-600"
-                          style={{ backgroundColor: '#2563eb !important', color: '#ffffff !important' }}
-                        >
-                          Edit
-                        </Button>
-                      )}
+                      <div className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-1 mb-2">{pkg?.description}</div>
+                      <div className="text-2xl font-black text-blue-600 dark:text-gold-500 tabular-nums tracking-tighter">${rule?.basePrice.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
                     </div>
-
-                    {isEditing ? (
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Base Price ($)</label>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              value={editingPackage.basePrice}
-                              onChange={(e) => setEditingPackage({
-                                ...editingPackage,
-                                basePrice: e.target.value
-                              })}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tax Rate (%)</label>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              value={editingPackage.taxRate}
-                              onChange={(e) => setEditingPackage({
-                                ...editingPackage,
-                                taxRate: e.target.value
-                              })}
-                            />
-                          </div>
-                        </div>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={editingPackage.isActive}
-                            onChange={(e) => setEditingPackage({
-                              ...editingPackage,
-                              isActive: e.target.checked
-                            })}
-                            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
-                          />
-                          <span className="text-sm text-gray-700 dark:text-gray-300">Enable package</span>
-                        </label>
-                        <div className="flex space-x-2">
-                          <Button
-                            onClick={savePackage}
-                            size="sm"
-                            className="!bg-green-600 !text-white hover:!bg-green-700"
-                            style={{ backgroundColor: '#059669 !important', color: '#ffffff !important' }}
-                          >
-                            Save
-                          </Button>
-                          <Button
-                            onClick={cancelEditPackage}
-                            size="sm"
-                            variant="outline"
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-600 dark:text-gray-400">Price: </span>
-                          <span className="font-medium dark:text-gray-200">{rule ? `$${rule.basePrice.toFixed(2)}` : 'Not set'}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600 dark:text-gray-400">Tax: </span>
-                          <span className="font-medium dark:text-gray-200">{rule ? `${(rule.taxRate * 100).toFixed(2)}%` : 'Not set'}</span>
-                        </div>
-                        <div>
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            rule?.isActive 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                          }`}>
-                            {rule?.isActive ? 'Active' : 'Disabled'}
-                          </span>
-                        </div>
-                      </div>
-                    )}
+                    <div className="flex gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                      <Button size="sm" variant="outline" onClick={() => rule && handleDeleteRule(rule.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 border-red-100 dark:border-red-900/50">
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
                   </div>
                 )
               })}
+              {Object.values(selectedVisaType.packages).every(r => r === null) && (
+                <div className="py-12 text-center text-gray-400 italic border-2 border-dashed border-gray-100 dark:border-navy-800 rounded-xl">
+                  No packages currently associated with this visa type.
+                </div>
+              )}
             </div>
           </div>
         )}

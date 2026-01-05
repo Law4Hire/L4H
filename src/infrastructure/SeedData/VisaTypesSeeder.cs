@@ -26,95 +26,95 @@ public class VisaTypesSeeder : ISeedTask
 
     public async Task ExecuteAsync()
     {
-        var visaTypes = GetVisaTypesData();
+        var visaTypesData = GetVisaTypesData();
         var addedCount = 0;
+        var updatedCount = 0;
 
-        foreach (var visaTypeData in visaTypes)
+        foreach (var data in visaTypesData)
         {
-            var existing = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == visaTypeData.Code).ConfigureAwait(false);
+            var existing = await _context.VisaTypes.FirstOrDefaultAsync(v => v.Code == data.Code).ConfigureAwait(false);
             if (existing == null)
             {
                 _context.VisaTypes.Add(new VisaType
                 {
-                    Code = visaTypeData.Code,
-                    Name = visaTypeData.Name,
-                    IsActive = visaTypeData.IsActive
+                    Code = data.Code,
+                    Name = data.Name,
+                    IsActive = data.IsActive
                 });
                 addedCount++;
             }
+            else
+            {
+                // Update existing if different (ensure they are active if the JSON says so)
+                bool changed = false;
+                if (existing.IsActive != data.IsActive) { existing.IsActive = data.IsActive; changed = true; }
+                if (existing.Name != data.Name) { existing.Name = data.Name; changed = true; }
+                
+                if (changed) updatedCount++;
+            }
         }
 
-        if (addedCount > 0)
+        if (addedCount > 0 || updatedCount > 0)
         {
             await _context.SaveChangesAsync().ConfigureAwait(false);
             var totalCount = await _context.VisaTypes.CountAsync().ConfigureAwait(false);
-            _logger.LogInformation("Added {AddedCount} new visa types. Total visa types in database: {TotalCount}", addedCount, totalCount);
-        }
-        else
-        {
-            _logger.LogDebug("All {Count} visa types already exist in database, no changes needed", visaTypes.Count);
+            _logger.LogInformation("[SEED] Added {AddedCount}, Updated {UpdatedCount}. Total visa types: {TotalCount}", 
+                addedCount, updatedCount, totalCount);
         }
     }
 
     private List<VisaTypeData> GetVisaTypesData()
     {
-        // Try to load from external JSON file first
+        // Try to load from the bundled JSON file
         try
         {
-            var jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "SpecSQL", "VisaTypes.json");
-            if (File.Exists(jsonFilePath))
+            var assembly = typeof(VisaTypesSeeder).Assembly;
+            var resourcePath = Path.Combine(AppContext.BaseDirectory, "SeedData", "Data", "visa_types.json");
+            
+            // Try direct file path first (works in most environments including Docker if copied correctly)
+            if (!File.Exists(resourcePath))
             {
-                var json = File.ReadAllText(jsonFilePath);
+                // Fallback to relative path for development
+                resourcePath = Path.Combine(Directory.GetCurrentDirectory(), "src", "infrastructure", "SeedData", "Data", "visa_types.json");
+            }
+
+            if (File.Exists(resourcePath))
+            {
+                var json = File.ReadAllText(resourcePath);
                 var visaTypesWrapper = JsonSerializer.Deserialize<VisaTypesWrapper>(json, JsonOptions);
 
                 if (visaTypesWrapper?.Visas != null && visaTypesWrapper.Visas.Count > 0)
                 {
                     var visaTypes = visaTypesWrapper.Visas.Select(v => new VisaTypeData
                     {
-                        Code = v.VisaName.Length > 10 ? v.VisaName.Substring(0, 10) : v.VisaName,
-                        Name = v.VisaName,
+                        Code = v.VisaName,
+                        Name = v.VisaName + (string.IsNullOrEmpty(v.VisaDescription) ? "" : $" - {v.VisaDescription}"),
                         IsActive = v.Status.Equals("Active", StringComparison.OrdinalIgnoreCase)
                     }).ToList();
 
-                    _logger.LogInformation("Loaded {Count} visa types from external JSON file", visaTypes.Count);
+                    _logger.LogInformation("[SEED] Loaded {Count} visa types from JSON file", visaTypes.Count);
                     return visaTypes;
                 }
+            }
+            else 
+            {
+                _logger.LogWarning("[SEED] Visa types JSON not found at {Path}", resourcePath);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Could not load visa types from external JSON, falling back to sample data");
+            _logger.LogWarning(ex, "[SEED] Could not load visa types from JSON, using minimal fallback");
         }
 
-        // Fallback to hardcoded sample data
+        // Fallback to hardcoded minimal data if JSON fails
         return new List<VisaTypeData>
         {
             new() { Code = "B-1", Name = "Business Visitor", IsActive = true },
             new() { Code = "B-2", Name = "Tourist Visitor", IsActive = true },
             new() { Code = "F-1", Name = "Academic Student", IsActive = true },
-            new() { Code = "F-2", Name = "Student Dependent", IsActive = true },
             new() { Code = "H-1B", Name = "Specialty Occupation Worker", IsActive = true },
-            new() { Code = "L-1A", Name = "Intracompany Transferee Executive", IsActive = true },
-            new() { Code = "L-1B", Name = "Intracompany Transferee Specialist", IsActive = true },
-            new() { Code = "O-1", Name = "Extraordinary Ability", IsActive = true },
-            new() { Code = "TN", Name = "NAFTA Professional", IsActive = true },
-            new() { Code = "E-2", Name = "Treaty Investor", IsActive = true },
-            new() { Code = "EB-1A", Name = "EB-1A Extraordinary Ability", IsActive = true },
-            new() { Code = "EB-1B", Name = "EB-1B Outstanding Researcher", IsActive = true },
-            new() { Code = "EB-1C", Name = "EB-1C Multinational Manager/Executive", IsActive = true },
-            new() { Code = "EB-2A", Name = "EB-2A Advanced Degree Professional", IsActive = true },
-            new() { Code = "EB-2B", Name = "EB-2B Exceptional Ability", IsActive = true },
-            new() { Code = "EB2-NIW", Name = "EB-2 National Interest Waiver", IsActive = true },
-            new() { Code = "EB-3", Name = "EB-3 Skilled Worker", IsActive = true },
-            new() { Code = "EB-5", Name = "Immigrant Investor", IsActive = true },
-            new() { Code = "FB-1", Name = "Family First Preference", IsActive = true },
-            new() { Code = "FB-2A", Name = "Family Second Preference A", IsActive = true },
-            new() { Code = "FB-2B", Name = "Family Second Preference B", IsActive = true },
-            new() { Code = "FB-3", Name = "Family Third Preference", IsActive = true },
-            new() { Code = "FB-4", Name = "Family Fourth Preference", IsActive = true },
-            new() { Code = "IR", Name = "Immediate Relative", IsActive = true },
-            new() { Code = "IR-3", Name = "Immediate Relative - Adoption Completed Abroad", IsActive = true },
-            new() { Code = "IR-4", Name = "Immediate Relative - Adoption to be Completed in US", IsActive = true }
+            new() { Code = "NATZ", Name = "Naturalization / U.S. Citizenship", IsActive = true },
+            new() { Code = "ADOP", Name = "International Adoption", IsActive = true }
         };
     }
 

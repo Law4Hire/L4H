@@ -30,65 +30,71 @@ public class PackagesSeeder : ISeedTask
         {
             new()
             {
-                Code = "H1B_BASIC",
-                DisplayName = "H-1B Basic Package",
-                Description = "Essential H-1B visa services for skilled workers",
+                Code = "CONSULT",
+                DisplayName = "Initial Consultation",
+                Description = "One-hour strategy session with a legal professional",
                 SortOrder = 1,
                 IsActive = true
             },
             new()
             {
-                Code = "H1B_PREMIUM",
-                DisplayName = "H-1B Premium Package",
-                Description = "Comprehensive H-1B services with priority processing",
+                Code = "BASIC",
+                DisplayName = "Basic Filing",
+                Description = "Essential form preparation and document review",
                 SortOrder = 2,
                 IsActive = true
             },
             new()
             {
-                Code = "EB2_STANDARD",
-                DisplayName = "EB-2 Green Card Package",
-                Description = "Complete EB-2 permanent residence application",
+                Code = "PREMIUM",
+                DisplayName = "Premium Service",
+                Description = "Full-service representation with priority support",
                 SortOrder = 3,
                 IsActive = true
             },
             new()
             {
-                Code = "O1_ARTIST",
-                DisplayName = "O-1 Extraordinary Ability",
-                Description = "O-1 visa for individuals with extraordinary abilities",
+                Code = "PKG_DEAL",
+                DisplayName = "Package Deal",
+                Description = "Bundle multiple services for a discounted flat rate",
                 SortOrder = 4,
                 IsActive = true
             },
             new()
             {
-                Code = "L1_TRANSFER",
-                DisplayName = "L-1 Intracompany Transfer",
-                Description = "For executives and specialized knowledge employees transferring to the US",
-                SortOrder = 5,
+                Code = "H1B_BASIC",
+                DisplayName = "H-1B Basic Package",
+                Description = "Essential H-1B visa services for skilled workers",
+                SortOrder = 10,
                 IsActive = true
             },
             new()
             {
-                Code = "MARRIAGE_GC",
-                DisplayName = "Marriage Green Card",
-                Description = "Spousal sponsorship for permanent residence",
-                SortOrder = 6,
+                Code = "EB2_NIW",
+                DisplayName = "EB-2 NIW Package",
+                Description = "National Interest Waiver petition and green card application",
+                SortOrder = 11,
                 IsActive = true
             }
         };
 
         foreach (var pkg in packages)
         {
-            if (!await _context.Packages.AnyAsync(p => p.Code == pkg.Code).ConfigureAwait(false))
+            var existing = await _context.Packages.FirstOrDefaultAsync(p => p.Code == pkg.Code).ConfigureAwait(false);
+            if (existing == null)
             {
                 await _context.Packages.AddAsync(pkg).ConfigureAwait(false);
+            }
+            else 
+            {
+                existing.DisplayName = pkg.DisplayName;
+                existing.Description = pkg.Description;
+                existing.SortOrder = pkg.SortOrder;
             }
         }
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
-        // Pricing Rules
-        // We need VisaTypes
+        // Pricing Rules - Clear logical defaults
         var visaTypes = await _context.VisaTypes.ToListAsync().ConfigureAwait(false);
         var dbPackages = await _context.Packages.ToListAsync().ConfigureAwait(false);
 
@@ -120,12 +126,17 @@ public class PackagesSeeder : ISeedTask
             }
         }
 
-        AddRule("H1B_BASIC", "H-1B", 2500m);
-        AddRule("H1B_PREMIUM", "H-1B", 3500m);
-        AddRule("EB2_STANDARD", "H-1B", 5000m); // Fallback mapping if EB-2 missing
-        AddRule("O1_ARTIST", "O-1", 4000m);
-        AddRule("L1_TRANSFER", "L-1", 4500m);
-        AddRule("MARRIAGE_GC", "B-2", 3000m); // Mapping to B-2 as placeholder if needed
+        // Logical Defaults
+        AddRule("CONSULT", "B-1", 150m);
+        AddRule("CONSULT", "B-2", 150m);
+        AddRule("CONSULT", "H-1B", 250m);
+        AddRule("BASIC", "B-1", 1200m);
+        AddRule("BASIC", "H-1B", 2500m);
+        AddRule("PREMIUM", "H-1B", 4500m);
+        AddRule("PKG_DEAL", "H-1B", 6000m);
+        AddRule("CONSULT", "NATZ", 200m);
+        AddRule("CONSULT", "ADOP", 300m);
+        AddRule("CONSULT", "IR-4", 250m);
 
         foreach (var rule in pricingRules)
         {
