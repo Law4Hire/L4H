@@ -26,6 +26,7 @@ const ClientManagement = lazy(() => import('./pages/dashboard/ClientManagement')
 const ClientProfilePage = lazy(() => import('./pages/dashboard/ClientProfilePage'))
 const TimeTrackingPage = lazy(() => import('./pages/dashboard/TimeTrackingPage'))
 const ProfilePage = lazy(() => import('./pages/dashboard/ProfilePage'))
+const MessagesPage = lazy(() => import('./pages/dashboard/MessagesPage'))
 
 // Admin billing
 const BillingDashboard = lazy(() => import('./pages/admin/BillingDashboard'))
@@ -148,6 +149,16 @@ function App() {
             <ProtectedRoute requireLegalProfessional>
               <Layout title="Time Tracking">
                 <TimeTrackingPage />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/messages" 
+          element={
+            <ProtectedRoute requireLegalProfessional>
+              <Layout title="Messages">
+                <MessagesPage />
               </Layout>
             </ProtectedRoute>
           } 

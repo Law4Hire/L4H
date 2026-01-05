@@ -38,6 +38,9 @@ const DashboardPage: React.FC = () => {
     queryFn: cases.mine
   })
 
+  const activeCase = casesList.length > 0 ? casesList[0] : undefined
+  const hasQualifiedVisa = !!(activeCase?.visaTypeCode || (activeCase?.visaTypes && activeCase.visaTypes.length > 0))
+
   const handleStartInterview = async () => {
     try {
       if (casesList.length === 0) {
@@ -160,8 +163,9 @@ const DashboardPage: React.FC = () => {
           
           <Button
             variant="outline"
-            className="h-20 flex flex-col items-center justify-center"
-            onClick={() => navigate('/pricing')}
+            className={`h-20 flex flex-col items-center justify-center ${!hasQualifiedVisa ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={() => hasQualifiedVisa ? navigate('/pricing') : showError('Please complete the interview to see qualified visa pricing.')}
+            title={!hasQualifiedVisa ? 'Complete interview first' : 'View Pricing'}
           >
             <div className="text-lg mb-1">💰</div>
             <div className="text-sm">{'View Pricing'}</div>

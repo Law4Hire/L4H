@@ -26,17 +26,18 @@ public class PricingController : ControllerBase
     }
 
     /// <summary>
-    /// Get available packages and pricing for a visa type and country
+    /// Get available packages and pricing for one or more visa types
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<PricingResponse>> GetPricing(
-        [FromQuery] string? visaType,
+        [FromQuery] string[]? visaType,
         [FromQuery] string? country)
     {
-        _logger.LogInformation("GetPricing called for Visa: {VisaType}, Country: {Country}", visaType, country);
+        _logger.LogInformation("GetPricing called for Visas: {VisaTypes}, Country: {Country}", 
+            visaType != null ? string.Join(", ", visaType) : "null", country);
 
-        // If no parameters provided, return all packages for general display
-        if (string.IsNullOrEmpty(visaType) && string.IsNullOrEmpty(country))
+        // If no parameters provided, return all active packages for US
+        if ((visaType == null || visaType.Length == 0) && string.IsNullOrEmpty(country))
         {
             var allRules = await _context.PricingRules
                 .Include(pr => pr.Package)
@@ -46,22 +47,31 @@ public class PricingController : ControllerBase
 
             if (allRules.Any())
             {
-                var pkgList = allRules.Select(pr => new PricingPackageResponse
-                {
-                    Id = pr.Package.Code,
-                    PackageCode = pr.Package.Code,
-                    Name = pr.Package.DisplayName,
-                    DisplayName = pr.Package.DisplayName,
-                    Description = pr.Package.Description,
-                    Price = CalculateTotal(pr.BasePrice, pr.TaxRate, pr.FxSurchargeMode),
-                    BasePrice = pr.BasePrice,
-                    TaxRate = pr.TaxRate,
-                    Currency = pr.Currency,
-                    FxSurchargeMode = pr.FxSurchargeMode,
-                    Total = CalculateTotal(pr.BasePrice, pr.TaxRate, pr.FxSurchargeMode),
-                    SortOrder = pr.Package.SortOrder,
-                    Features = GetPackageFeatures(pr.Package.Code)
-                }).ToArray();
+                // Group by package to handle duplicates if any
+                var pkgList = allRules.GroupBy(r => r.Package.Code)
+                    .Select(g => {
+                        var first = g.First();
+                        var prices = g.Select(r => CalculateTotal(r.BasePrice, r.TaxRate, r.FxSurchargeMode)).ToList();
+                        return new PricingPackageResponse
+                        {
+                            Id = first.Package.Code,
+                            PackageCode = first.Package.Code,
+                            Name = first.Package.DisplayName,
+                            DisplayName = first.Package.DisplayName,
+                            Description = first.Package.Description,
+                            Price = prices.Min(),
+                            MaxPrice = prices.Max() > prices.Min() ? prices.Max() : null,
+                            BasePrice = first.BasePrice,
+                            TaxRate = first.TaxRate,
+                            Currency = first.Currency,
+                            FxSurchargeMode = first.FxSurchargeMode,
+                            Total = prices.Min(),
+                            SortOrder = first.Package.SortOrder,
+                            Features = GetPackageFeatures(first.Package.Code)
+                        };
+                    })
+                    .OrderBy(p => p.SortOrder)
+                    .ToArray();
 
                 return Ok(new PricingResponse { VisaType = "GENERAL", Country = "US", Packages = pkgList });
             }
@@ -69,63 +79,67 @@ public class PricingController : ControllerBase
             return await GetDefaultPricing().ConfigureAwait(false);
         }
 
-        var countryCode = country ?? "US"; // Default to US if not provided
+        var countryCode = country ?? "US";
 
-        // Find the visa type
-        var visaTypeEntity = await _context.VisaTypes
-            .FirstOrDefaultAsync(v => v.Code == visaType && v.IsActive).ConfigureAwait(false);
+        // Find all matching visa type entities
+        var visaTypeEntities = await _context.VisaTypes
+            .Where(v => visaType.Contains(v.Code) && v.IsActive)
+            .ToListAsync().ConfigureAwait(false);
 
-        // If visa type not found, try to find a "GENERAL" fallback or similar
-        if (visaTypeEntity == null)
+        if (!visaTypeEntities.Any())
         {
-            _logger.LogWarning("Visa type {VisaType} not found, trying GENERAL fallback", visaType);
-            visaTypeEntity = await _context.VisaTypes
-                .FirstOrDefaultAsync(v => v.Code == "GENERAL" && v.IsActive).ConfigureAwait(false);
-        }
-
-        if (visaTypeEntity == null)
-        {
-            // Still nothing? return defaults
             return await GetDefaultPricing().ConfigureAwait(false);
         }
 
-        // Get all active pricing rules
+        var visaTypeIds = visaTypeEntities.Select(v => v.Id).ToList();
+
+        // Get all active pricing rules for these visa types
         var pricingRules = await _context.PricingRules
             .Include(pr => pr.Package)
-            .Where(pr => pr.VisaTypeId == visaTypeEntity.Id
+            .Where(pr => visaTypeIds.Contains(pr.VisaTypeId)
                         && pr.CountryCode == countryCode
                         && pr.IsActive
                         && pr.Package.IsActive)
-            .OrderBy(pr => pr.Package.SortOrder)
             .ToListAsync().ConfigureAwait(false);
 
         if (!pricingRules.Any())
         {
-            _logger.LogWarning("No pricing rules found for Visa: {VisaType}, Country: {Country}", visaType, countryCode);
             return await GetDefaultPricing().ConfigureAwait(false);
         }
 
-        var packages = pricingRules.Select(pr => new PricingPackageResponse
-        {
-            Id = pr.Package.Code, // Use code as ID for frontend compatibility
-            PackageCode = pr.Package.Code,
-            Name = pr.Package.DisplayName,
-            DisplayName = pr.Package.DisplayName,
-            Description = pr.Package.Description,
-            Price = CalculateTotal(pr.BasePrice, pr.TaxRate, pr.FxSurchargeMode),
-            BasePrice = pr.BasePrice,
-            TaxRate = pr.TaxRate,
-            Currency = pr.Currency,
-            FxSurchargeMode = pr.FxSurchargeMode,
-            Total = CalculateTotal(pr.BasePrice, pr.TaxRate, pr.FxSurchargeMode),
-            SortOrder = pr.Package.SortOrder,
-            Features = GetPackageFeatures(pr.Package.Code)
-        }).ToArray();
+        // Group by Package to handle multiple visa types per package
+        var packages = pricingRules.GroupBy(pr => pr.Package.Code)
+            .Select(group => {
+                var first = group.First();
+                var prices = group.Select(r => CalculateTotal(r.BasePrice, r.TaxRate, r.FxSurchargeMode)).ToList();
+                var minPrice = prices.Min();
+                var maxPrice = prices.Max();
+
+                return new PricingPackageResponse
+                {
+                    Id = first.Package.Code,
+                    PackageCode = first.Package.Code,
+                    Name = first.Package.DisplayName,
+                    DisplayName = first.Package.DisplayName,
+                    Description = first.Package.Description,
+                    Price = minPrice,
+                    MaxPrice = maxPrice > minPrice ? maxPrice : null,
+                    BasePrice = first.BasePrice,
+                    TaxRate = first.TaxRate,
+                    Currency = first.Currency,
+                    FxSurchargeMode = first.FxSurchargeMode,
+                    Total = minPrice,
+                    SortOrder = first.Package.SortOrder,
+                    Features = GetPackageFeatures(first.Package.Code)
+                };
+            })
+            .OrderBy(p => p.SortOrder)
+            .ToArray();
 
         var response = new PricingResponse
         {
-            VisaType = visaType ?? string.Empty,
-            Country = country ?? string.Empty,
+            VisaType = string.Join(", ", visaTypeEntities.Select(v => v.Code)),
+            Country = countryCode,
             Packages = packages
         };
 
@@ -454,7 +468,8 @@ public class PricingPackageResponse
     public string Name { get; set; } = string.Empty; // Frontend compatibility
     public string DisplayName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public decimal Price { get; set; } // Frontend compatibility
+    public decimal Price { get; set; } // Frontend compatibility (Min price)
+    public decimal? MaxPrice { get; set; }
     public decimal BasePrice { get; set; }
     public decimal TaxRate { get; set; }
     public string Currency { get; set; } = string.Empty;

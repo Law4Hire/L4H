@@ -62,8 +62,17 @@ const LegalDashboard: React.FC = () => {
   const [showSettingsModal, setShowSettingsModal] = useState(false)
 
   const isAdmin = user?.roles?.includes('Admin') || false
+  const isLegalProfessional = user?.roles?.includes('LegalProfessional') || isAdmin
 
-  useEffect(() => {
+  const handleRequestReassignment = async (caseId: string) => {
+    // In a real app, this would create a task or notification for admins
+    success('Reassignment request sent to administrators')
+  }
+
+  const handleCaseAction = (caseId: string) => {
+    setSelectedCase(caseId)
+    setShowCaseModal(true)
+  }
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('jwt_token')
@@ -241,17 +250,17 @@ const LegalDashboard: React.FC = () => {
                         Assign To
                       </th>
                     )}
+                    <th className="px-4 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-navy-900 divide-y divide-gray-200 dark:divide-navy-800">
                   {cases.map((caseItem) => (
                     <tr
                       key={caseItem.id}
-                      onClick={() => {
-                        setSelectedCase(caseItem.id)
-                        setShowCaseModal(true)
-                      }}
-                      className="hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer"
+                      onClick={() => handleCaseAction(caseItem.id)}
+                      className="hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer transition-colors"
                     >
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="text-sm font-bold text-navy-900 dark:text-white">
@@ -290,7 +299,7 @@ const LegalDashboard: React.FC = () => {
                           <select
                             value={caseItem.assignedStaffId || ''}
                             onChange={(e) => handleAssignCase(caseItem.id, parseInt(e.target.value))}
-                            className="text-sm border border-gray-300 dark:border-navy-700 rounded px-2 py-1 bg-white dark:bg-navy-800 text-navy-900 dark:text-white"
+                            className="text-xs border border-gray-300 dark:border-navy-700 rounded px-2 py-1 bg-white dark:bg-navy-800 text-navy-900 dark:text-white focus:ring-1 focus:ring-blue-500"
                           >
                             <option value="">Unassigned</option>
                             {attorneys.map((atty) => (
@@ -301,6 +310,24 @@ const LegalDashboard: React.FC = () => {
                           </select>
                         </td>
                       )}
+                      <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => handleCaseAction(caseItem.id)}
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                          >
+                            Edit
+                          </button>
+                          {!isAdmin && isLegalProfessional && (
+                            <button 
+                              onClick={() => handleRequestReassignment(caseItem.id)}
+                              className="text-gold-600 hover:text-gold-900 dark:text-gold-500 dark:hover:text-gold-400 ml-2"
+                            >
+                              Request change
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

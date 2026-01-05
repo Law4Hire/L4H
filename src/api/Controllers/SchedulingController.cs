@@ -479,7 +479,7 @@ public class SchedulingController : ControllerBase
             }
 
             // Find available staff member
-            var availableStaff = await FindAvailableStaff(request.PreferredStartTime, request.DurationMinutes).ConfigureAwait(false);
+            var availableStaff = await FindAvailableStaff(request.CaseId, request.PreferredStartTime, request.DurationMinutes).ConfigureAwait(false);
 
             if (availableStaff == null)
             {
@@ -1122,15 +1122,58 @@ public class SchedulingController : ControllerBase
 
     // Helper methods
 
-    private async Task<User?> FindAvailableStaff(DateTime startTime, int durationMinutes)
+    private async Task<User?> FindAvailableStaff(CaseId caseId, DateTime startTime, int durationMinutes)
     {
-        // For now, return any admin user as staff
-        // This could be enhanced with proper staff role management
+        // 1. Try to get the assigned staff for the case
+        var caseEntity = await _context.Cases
+            .Where(c => c.Id == caseId)
+            .Select(c => new { c.AssignedStaffId })
+            .FirstOrDefaultAsync().ConfigureAwait(false);
+
+        if (caseEntity?.AssignedStaffId != null)
+        {n            // The AssignedStaffId in Case is an INT (Attorney ID)
+            // We need to find the User associated with this Attorney
+            var attorney = await _context.Attorneys
+                .FirstOrDefaultAsync(a => a.Id == caseEntity.AssignedStaffId.Value).ConfigureAwait(false);
+            
+            if (attorney != null)
+            {n                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == attorney.Email).ConfigureAwait(false);
+                if (user != null) return user;
+            }
+        }
+
+        // 2. Fallback to any admin user
         var staff = await _context.Users
             .Where(u => u.IsAdmin)
+            .OrderBy(u => u.CreatedAt)
             .FirstOrDefaultAsync().ConfigureAwait(false);
 
         return staff;
+    }
+
+    private void LogAudit(string category, string action, string targetType, string targetId, object details)
+    {
+        try 
+        {
+            var userId = GetCurrentUserId();
+            var auditLog = new AuditLog
+            {
+                Category = category,
+                ActorUserId = userId,
+                Action = action,
+                TargetType = targetType,
+                TargetId = targetId,
+                DetailsJson = JsonSerializer.Serialize(details),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.AuditLogs.Add(auditLog);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to log audit event: {Action} on {TargetType}", action, targetType);
+        }
     }
 
     private async Task<bool> HasSchedulingConflict(UserId staffId, DateTime startTime, DateTime endTime, Guid? excludeAppointmentId = null)

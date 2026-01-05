@@ -13,46 +13,13 @@ interface AdminPath {
 
 const AdminPage: React.FC = () => {
   const navigate = useNavigate()
-  const { error } = useToast()
-  const [paths, setPaths] = useState<AdminPath[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchPaths = async () => {
-      try {
-        const token = localStorage.getItem('jwt_token')
-        const response = await fetch('/api/v1/admin/paths', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          // Sort by displayOrder
-          const sorted = data.sort((a: AdminPath, b: AdminPath) => a.displayOrder - b.displayOrder)
-          setPaths(sorted)
-        } else {
-          // Fallback to static paths if API fails (or for initial setup)
-          console.warn('Failed to fetch admin paths, using fallback')
-        }
-      } catch (err) {
-        console.error('Error fetching admin paths:', err)
-        error('Failed to load admin menu')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchPaths()
-  }, [])
 
   const handleNavigate = (path: string) => {
     navigate(path)
   }
 
-  // Static fallback paths in case API is empty or fails, to ensure admin is usable
-  const defaultPaths = [
+  // Static paths for reliability
+  const displayPaths = [
     { name: 'User Management', path: '/admin/users', description: 'Manage users, roles, and permissions', displayOrder: 1 },
     { name: 'Case Management', path: '/admin/cases', description: 'Review and manage immigration cases', displayOrder: 2 },
     { name: 'Pricing & Packages', path: '/admin/pricing', description: 'Configure service packages and pricing', displayOrder: 3 },
@@ -60,12 +27,9 @@ const AdminPage: React.FC = () => {
     { name: 'USCIS Forms', path: '/admin/uscis-forms', description: 'Manage immigration forms, pricing, and dependencies', displayOrder: 5 },
     { name: 'Visa Library', path: '/admin/visa-library', description: 'Manage visa library categories and assign visa types', displayOrder: 6 },
     { name: 'Legal Professionals', path: '/admin/attorneys', description: 'Manage legal professional accounts', displayOrder: 7 },
-    { name: 'Admin Paths', path: '/admin/paths', description: 'Configure admin navigation paths', displayOrder: 8 },
     { name: 'Reports & Analytics', path: '/admin/reports', description: 'View platform statistics and reports', displayOrder: 1000 },
     { name: 'System Settings', path: '/admin/system-settings', description: 'Configure platform settings including phone number', displayOrder: 1001 },
   ]
-
-  const displayPaths = paths.length > 0 ? paths : defaultPaths
 
   return (
     <div className="space-y-6">

@@ -22,7 +22,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
     { name: 'Attorneys/Staff', href: '/attorneys' },
     { name: 'Fees', href: '/fees' },
     { name: 'Law Library', href: '/resources' },
-    { name: 'Contact/Consultation', href: '/contact' }
+    { name: 'Contact us', href: '/contact' }
   ]
 
   // Safely parse JSON with error handling

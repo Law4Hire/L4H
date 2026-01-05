@@ -9,8 +9,16 @@ interface PricingPackage {
   name: string
   description: string
   price: number
+  maxPrice?: number | null
   currency: string
   features: string[]
+}
+
+interface CaseVisaType {
+  visaTypeId: number
+  visaTypeCode: string
+  visaTypeName: string
+  isPrimary: boolean
 }
 
 interface Case {
@@ -18,6 +26,7 @@ interface Case {
   status: string
   createdAt: string
   visaTypeCode?: string
+  visaTypes?: CaseVisaType[]
 }
 
 const PricingPage: React.FC = () => {
@@ -27,19 +36,23 @@ const PricingPage: React.FC = () => {
   const { user } = useAuth()
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null)
 
-  // Fetch user's cases to get case ID
+  // Fetch user's cases to get qualified visa types
   const { data: casesList = [] } = useQuery<Case[]>({
     queryKey: ['cases'],
     queryFn: cases.mine
   })
 
   const activeCase = casesList.length > 0 ? casesList[0] : undefined
+  
+  // Get all qualified visa codes for this user
+  const qualifiedVisaCodes = activeCase?.visaTypes?.map(v => v.visaTypeCode) || 
+                            (activeCase?.visaTypeCode ? [activeCase.visaTypeCode] : [])
 
-  // Fetch pricing data - only if we have an active case
+  // Fetch pricing data - only if we have qualified visas
   const { data: pricingData, isLoading, error } = useQuery({
-    queryKey: ['pricing', activeCase?.visaTypeCode, user?.country],
-    queryFn: () => pricing.get(activeCase?.visaTypeCode, user?.country),
-    enabled: !!activeCase // Only run query if we have an active case
+    queryKey: ['pricing', qualifiedVisaCodes, user?.country],
+    queryFn: () => pricing.get(qualifiedVisaCodes, user?.country),
+    enabled: qualifiedVisaCodes.length > 0
   })
 
   // Select package mutation
@@ -134,7 +147,16 @@ const PricingPage: React.FC = () => {
                     {pkg.description}
                   </p>
                   <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
-                    {formatCurrency(pkg.price, pkg.currency)}
+                    {pkg.maxPrice && pkg.maxPrice > pkg.price ? (
+                      <span className="text-2xl">
+                        {formatCurrency(pkg.price, pkg.currency)} - {formatCurrency(pkg.maxPrice, pkg.currency)}
+                      </span>
+                    ) : (
+                      <>
+                        <span className="text-sm font-normal text-gray-500 mr-1">From</span>
+                        {formatCurrency(pkg.price, pkg.currency)}
+                      </>
+                    )}
                   </div>
                 </div>
 

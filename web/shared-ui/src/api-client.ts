@@ -342,9 +342,15 @@ export const cases = {
 
 // Pricing API methods
 export const pricing = {
-  async get(visaType?: string, country?: string) {
+  async get(visaType?: string | string[], country?: string) {
     const params = new URLSearchParams()
-    if (visaType) params.append('visaType', visaType)
+    if (visaType) {
+      if (Array.isArray(visaType)) {
+        visaType.forEach(v => params.append('visaType', v))
+      } else {
+        params.append('visaType', visaType)
+      }
+    }
     if (country) params.append('country', country)
     
     const query = params.toString()

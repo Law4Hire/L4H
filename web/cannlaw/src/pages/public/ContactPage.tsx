@@ -99,7 +99,7 @@ const ContactPage: React.FC = () => {
             {/* Contact Form */}
             <div>
               <Card className="p-8 bg-white dark:bg-navy-800 border dark:border-navy-700">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Schedule a Consultation</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Contact us</h2>
                 
                 {submitStatus === 'success' && (
                   <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
