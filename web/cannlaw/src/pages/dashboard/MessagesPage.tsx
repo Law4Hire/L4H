@@ -20,17 +20,31 @@ interface Message {
   isMe: boolean
 }
 
+interface Recipient {
+  id: string
+  label: string
+  description: string
+}
+
 const MessagesPage: React.FC = () => {
   const { error, success } = useToast()
   const [threads, setThreads] = useState<MessageThread[]>([])
+  const [recipients, setRecipients] = useState<Recipient[]>([])
   const [selectedThread, setSelectedThread] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
   const [messagesLoading, setMessagesLoading] = useState(false)
+  const [showNewThreadModal, setShowNewThreadModal] = useState(false)
+  const [newThreadData, setNewThreadData] = useState({
+    recipientId: '',
+    subject: '',
+    body: ''
+  })
 
   useEffect(() => {
     fetchThreads()
+    fetchRecipients()
   }, [])
 
   useEffect(() => {
@@ -53,6 +67,55 @@ const MessagesPage: React.FC = () => {
       error('Failed to load message threads')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchRecipients = async () => {
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch('/api/v1/messaging/recipients', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (response.ok) {
+        setRecipients(await response.json())
+      }
+    } catch (err) {
+      console.error('Error fetching recipients:', err)
+    }
+  }
+
+  const handleCreateThread = async () => {
+    if (!newThreadData.recipientId || !newThreadData.subject || !newThreadData.body) return
+
+    try {
+      const token = localStorage.getItem('jwt_token')
+      // We need a caseId to create a thread in the current system. 
+      // For now, let's find the first case for the recipient or use a dummy case if needed.
+      // Better: Update the backend to allow creating threads without explicit case if it's staff-to-staff.
+      // But for now, let's look for a case associated with the recipient if they are a client.
+      
+      const response = await fetch('/api/v1/messaging/threads', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          caseId: '00000000-0000-0000-0000-000000000000', // Backend will need to handle this or find case
+          title: newThreadData.subject,
+          initialMessage: newThreadData.body,
+          recipientUserId: newThreadData.recipientId
+        })
+      })
+
+      if (response.ok) {
+        success('Conversation started')
+        setShowNewThreadModal(false)
+        setNewThreadData({ recipientId: '', subject: '', body: '' })
+        fetchThreads()
+      }
+    } catch (err) {
+      error('Failed to start conversation')
     }
   }
 
@@ -110,11 +173,20 @@ const MessagesPage: React.FC = () => {
     <div className="h-[calc(100vh-12rem)] flex overflow-hidden bg-white dark:bg-navy-900 rounded-lg shadow-lg border border-gray-200 dark:border-navy-800">
       {/* Sidebar - Thread List */}
       <div className="w-full md:w-80 flex flex-col border-r border-gray-200 dark:border-navy-800">
-        <div className="p-4 border-b border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-950">
+        <div className="p-4 border-b border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-950 flex justify-between items-center">
           <h2 className="text-xl font-bold text-navy-900 dark:text-white flex items-center">
             <MessageSquare size={20} className="mr-2 text-blue-600" />
             Messages
           </h2>
+          <Button 
+            variant="primary" 
+            size="sm" 
+            className="rounded-full !p-2" 
+            onClick={() => setShowNewThreadModal(true)}
+            title="New Message"
+          >
+            <Plus size={18} />
+          </Button>
         </div>
         <div className="flex-1 overflow-y-auto">
           {threads.length === 0 ? (
@@ -208,6 +280,65 @@ const MessagesPage: React.FC = () => {
           </div>
         )}
       </div>
+      {/* New Thread Modal */}
+      {showNewThreadModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="max-w-md w-full p-6 dark:bg-navy-900 shadow-2xl border dark:border-navy-700">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-navy-900 dark:text-white">New Message</h3>
+              <button onClick={() => setShowNewThreadModal(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">To</label>
+                <select 
+                  className="w-full p-2 border rounded bg-white dark:bg-navy-950 dark:border-navy-700 dark:text-white"
+                  value={newThreadData.recipientId}
+                  onChange={(e) => setNewThreadData({...newThreadData, recipientId: e.target.value})}
+                >
+                  <option value="">Select recipient...</option>
+                  <option value="">General (All Admins)</option>
+                  {recipients.map(r => (
+                    <option key={r.id} value={r.id}>{r.label} ({r.description})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Subject</label>
+                <input 
+                  type="text"
+                  className="w-full p-2 border rounded bg-white dark:bg-navy-950 dark:border-navy-700 dark:text-white"
+                  placeholder="Case #123 / General Inquiry"
+                  value={newThreadData.subject}
+                  onChange={(e) => setNewThreadData({...newThreadData, subject: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Message</label>
+                <textarea 
+                  rows={4}
+                  className="w-full p-2 border rounded bg-white dark:bg-navy-950 dark:border-navy-700 dark:text-white"
+                  placeholder="How can we help?"
+                  value={newThreadData.body}
+                  onChange={(e) => setNewThreadData({...newThreadData, body: e.target.value})}
+                />
+              </div>
+
+              <Button 
+                variant="primary" 
+                className="w-full mt-4" 
+                disabled={!newThreadData.subject || !newThreadData.body}
+                onClick={handleCreateThread}
+              >
+                Send Message
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

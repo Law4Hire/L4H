@@ -72,6 +72,10 @@ public class SiteConfigurationController : ControllerBase
             existingConfig.SocialMediaPlatforms = config.SocialMediaPlatforms;
             existingConfig.UniqueSellingPoints = config.UniqueSellingPoints;
             existingConfig.LogoUrl = config.LogoUrl;
+            existingConfig.ExchangeTenantId = config.ExchangeTenantId;
+            existingConfig.ExchangeClientId = config.ExchangeClientId;
+            existingConfig.ExchangeClientSecret = config.ExchangeClientSecret;
+            existingConfig.ExchangeSystemEmail = config.ExchangeSystemEmail;
             existingConfig.UpdatedAt = DateTime.UtcNow;
         }
 

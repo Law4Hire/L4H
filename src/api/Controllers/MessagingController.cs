@@ -41,12 +41,20 @@ public class MessagingController : ControllerBase
     {
         var userId = GetCurrentUserId();
 
-        // Parse request JSON
-        var caseId = new CaseId(request.GetProperty("caseId").GetGuid());
-        var title = request.GetProperty("title").GetString() ?? "";
+        // Parse optional caseId
+        CaseId? caseId = null;
+        if (request.TryGetProperty("caseId", out var caseProp) && caseProp.ValueKind == JsonValueKind.String)
+        {
+            if (Guid.TryParse(caseProp.GetString(), out var caseGuid) && caseGuid != Guid.Empty)
+            {
+                caseId = new CaseId(caseGuid);
+            }
+        }
+
+        var title = request.TryGetProperty("title", out var titleProp) ? titleProp.GetString() ?? "New Message" : "New Message";
         var initialMessage = request.TryGetProperty("initialMessage", out var initialMsgProp) ? initialMsgProp.GetString() : null;
 
-        // Parse optional recipientUserId - null means "General" (all admins)
+        // Parse optional recipientUserId
         UserId? recipientUserId = null;
         if (request.TryGetProperty("recipientUserId", out var recipientProp) && recipientProp.ValueKind == JsonValueKind.String)
         {
@@ -57,32 +65,52 @@ public class MessagingController : ControllerBase
             }
         }
 
-        // Verify case exists and user has access
-        var caseEntity = await _context.Cases
-            .FirstOrDefaultAsync(c => c.Id == caseId).ConfigureAwait(false);
-
-        if (caseEntity == null)
+        // If no caseId, but recipient is a client, try to find their case
+        if (caseId == null && recipientUserId != null)
         {
-            return BadRequest(new ProblemDetails
+            var recipientCase = await _context.Cases
+                .Where(c => c.UserId == recipientUserId)
+                .OrderByDescending(c => c.CreatedAt)
+                .Select(c => c.Id)
+                .FirstOrDefaultAsync().ConfigureAwait(false);
+            
+            if (recipientCase.Value != Guid.Empty)
             {
-                Title = "Case Not Found",
-                Detail = "Case not found"
-            });
+                caseId = recipientCase;
+            }
         }
 
-        // Verify case ownership or staff access
-        if (caseEntity.UserId != userId && !IsStaff())
+        // If STILL no caseId, we might need a default/fallback case or allow caseless threads.
+        // For now, let's allow it to be linked to the SENDER'S first case if they have one.
+        if (caseId == null)
         {
-            return StatusCode(403, new ProblemDetails
+            var senderCase = await _context.Cases
+                .Where(c => c.UserId == userId)
+                .OrderByDescending(c => c.CreatedAt)
+                .Select(c => c.Id)
+                .FirstOrDefaultAsync().ConfigureAwait(false);
+            
+            if (senderCase.Value != Guid.Empty)
             {
-                Title = "Forbidden",
-                Detail = "Access denied to this message thread."
-            });
+                caseId = senderCase;
+            }
+        }
+
+        if (caseId == null)
+        {
+            return BadRequest(new ProblemDetails { Title = "Case Required", Detail = "A case must be associated with the thread." });
+        }
+
+        // Fetch case entity to update last activity
+        var caseEntity = await _context.Cases.FindAsync(caseId.Value).ConfigureAwait(false);
+        if (caseEntity == null)
+        {
+            return NotFound(new ProblemDetails { Title = "Case Not Found", Detail = "The associated case could not be found." });
         }
 
         var thread = new MessageThread
         {
-            CaseId = caseId,
+            CaseId = caseId.Value,
             Subject = title,
             RecipientUserId = recipientUserId,
             CreatedAt = DateTime.UtcNow,
@@ -1002,6 +1030,139 @@ public class MessagingController : ControllerBase
             items.Add(digestItem);
             digestQueue.ItemsJson = JsonSerializer.Serialize(items);
         }
+    }
+
+    /// <summary>
+    /// Get all message threads available to the current user (Unified Inbox)
+    /// </summary>
+    /// <returns>List of threads</returns>
+    [HttpGet("threads")]
+    [ProducesResponseType<IEnumerable<object>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetThreads()
+    {
+        var userId = GetCurrentUserId();
+        var isStaff = IsStaff();
+        var isAdmin = User.HasClaim("is_admin", "true") || User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
+
+        var query = _context.MessageThreads
+            .Include(t => t.Case)
+            .ThenInclude(c => c.User)
+            .Include(t => t.Messages.OrderByDescending(m => m.SentAt))
+            .AsQueryable();
+
+        if (isAdmin)
+        {
+            // Admins see everything (General threads and case-specific threads)
+            // No additional filter
+        }
+        else if (isStaff)
+        {
+            // Staff see General threads or threads directed to them
+            query = query.Where(t => t.RecipientUserId == null || t.RecipientUserId == userId);
+        }
+        else
+        {
+            // Regular users see only threads for their own cases
+            query = query.Where(t => t.Case.UserId == userId);
+        }
+
+        var threads = await query
+            .OrderByDescending(t => t.LastMessageAt)
+            .ToListAsync().ConfigureAwait(false);
+
+        var response = threads.Select(t => {
+            var lastMsg = t.Messages.FirstOrDefault();
+            return new {
+                threadId = t.Id.ToString(),
+                caseId = t.CaseId.Value,
+                title = t.Subject,
+                participantName = t.Case.User != null ? $"{t.Case.User.FirstName} {t.Case.User.LastName}" : "Unknown Client",
+                lastMessageSnippet = lastMsg?.Body ?? "No messages",
+                lastMessageTime = t.LastMessageAt.ToString("O"),
+                messageCount = t.Messages.Count(),
+                unreadCount = t.Messages.Count(m => !IsMessageRead(m, userId))
+            };
+        });
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get valid message recipients based on the user's role
+    /// </summary>
+    /// <returns>List of recipients</returns>
+    [HttpGet("recipients")]
+    public async Task<IActionResult> GetRecipients()
+    {
+        var userId = GetCurrentUserId();
+        var isStaff = IsStaff();
+        var isAdmin = User.HasClaim("is_admin", "true") || User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
+
+        if (isAdmin)
+        {
+            // Admins see all users
+            var allUsers = await _context.Users
+                .Where(u => u.Id != userId)
+                .Select(u => new { 
+                    id = u.Id.Value, 
+                    label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
+                    description = u.IsAdmin ? "Administrator" : (u.IsStaff ? "Legal Professional" : "Client")
+                })
+                .OrderBy(u => u.label)
+                .ToListAsync().ConfigureAwait(false);
+            return Ok(allUsers);
+        }
+        
+        if (isStaff)
+        {
+            // Legal Pros see all clients and all admins/staff
+            var recipients = await _context.Users
+                .Where(u => u.Id != userId)
+                .Where(u => u.IsAdmin || u.IsStaff || _context.Cases.Any(c => c.UserId == u.Id))
+                .Select(u => new { 
+                    id = u.Id.Value, 
+                    label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
+                    description = u.IsAdmin ? "Administrator" : (u.IsStaff ? "Legal Professional" : "Client")
+                })
+                .OrderBy(u => u.label)
+                .ToListAsync().ConfigureAwait(false);
+            return Ok(recipients);
+        }
+
+        // Regular users see admins and the specific staff assigned to their case
+        var myCaseStaffIds = await _context.Cases
+            .Where(c => c.UserId == userId && c.AssignedStaffId.HasValue)
+            .Select(c => c.AssignedStaffId!.Value)
+            .ToListAsync().ConfigureAwait(false);
+
+        // We need to map Attorney ID (int) back to User (Guid)
+        var staffEmails = await _context.Attorneys
+            .Where(a => myCaseStaffIds.Contains(a.Id))
+            .Select(a => a.Email)
+            .ToListAsync().ConfigureAwait(false);
+
+        var staffUsers = await _context.Users
+            .Where(u => staffEmails.Contains(u.Email) || u.IsAdmin)
+            .Select(u => new { 
+                id = u.Id.Value, 
+                label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
+                description = u.IsAdmin ? "Administrator" : "Assigned Professional"
+            })
+            .OrderBy(u => u.label)
+            .ToListAsync().ConfigureAwait(false);
+
+        return Ok(staffUsers);
+    }
+
+    private bool IsMessageRead(Message m, UserId userId)
+    {
+        if (string.IsNullOrEmpty(m.ReadByJson)) return false;
+        try 
+        {
+            var readBy = JsonSerializer.Deserialize<Dictionary<string, DateTime>>(m.ReadByJson);
+            return readBy?.ContainsKey(userId.Value.ToString()) ?? false;
+        }
+        catch { return false; }
     }
 
     private UserId GetCurrentUserId()

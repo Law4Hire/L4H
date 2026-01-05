@@ -54,56 +54,49 @@ export default function MessagesPage() {
   const activeCaseId = activeCase?.id || null
   const assignedStaffId = activeCase?.assignedStaffId || null
 
-  // Fetch assigned staff details if there's an assigned staff
-  const { data: assignedStaff } = useQuery({
-    queryKey: ['staff', assignedStaffId],
+  // Fetch recipients list
+  const { data: recipients = [] } = useQuery({
+    queryKey: ['messaging-recipients'],
     queryFn: async () => {
-      if (!assignedStaffId) return null
-      const response = await fetch(`/api/v1/users/${assignedStaffId}`, {
+      const response = await fetch('/api/v1/messaging/recipients', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
         }
       })
-      if (!response.ok) return null
+      if (!response.ok) return []
       return response.json()
-    },
-    enabled: !!assignedStaffId
+    }
   })
 
   // Build recipient options for dropdown
-  const recipientOptions: RecipientOption[] = [
+  const recipientOptions = [
     {
-      id: null,
+      id: '',
       label: 'General (All Admins)',
       description: 'Message visible to all administrators'
-    }
+    },
+    ...recipients.map((r: any) => ({
+      id: r.id,
+      label: r.label,
+      description: r.description
+    }))
   ]
 
-  if (assignedStaff) {
-    recipientOptions.push({
-      id: assignedStaffId,
-      label: `${assignedStaff.firstName} ${assignedStaff.lastName}`,
-      description: 'Message directed to your assigned attorney'
-    })
-  }
-
-  // Fetch message threads for the active case
+  // Fetch all message threads (Unified Inbox)
   const { data: threadsData, isLoading: threadsLoading } = useQuery({
-    queryKey: ['message-threads', activeCaseId],
+    queryKey: ['message-threads-unified'],
     queryFn: async () => {
-      if (!activeCaseId) return { threads: [] }
-      const response = await fetch(`/api/v1/messaging/cases/${activeCaseId}/threads`, {
+      const response = await fetch('/api/v1/messaging/threads', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
         }
       })
       if (!response.ok) throw new Error('Failed to fetch threads')
       return response.json()
-    },
-    enabled: !!activeCaseId
+    }
   })
 
-  const threads = threadsData?.threads || []
+  const threads = Array.isArray(threadsData) ? threadsData : (threadsData?.threads || [])
 
   // Fetch messages for selected thread
   const { data: messagesData, isLoading: messagesLoading, refetch: refetchMessages } = useQuery({

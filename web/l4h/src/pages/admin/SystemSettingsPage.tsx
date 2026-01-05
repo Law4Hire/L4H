@@ -18,7 +18,11 @@ const SystemSettingsPage: React.FC = () => {
     logoUrl: '',
     locations: '',
     socialMediaPlatforms: '',
-    uniqueSellingPoints: ''
+    uniqueSellingPoints: '',
+    exchangeTenantId: '',
+    exchangeClientId: '',
+    exchangeClientSecret: '',
+    exchangeSystemEmail: ''
   })
 
   useEffect(() => {
@@ -33,7 +37,11 @@ const SystemSettingsPage: React.FC = () => {
         logoUrl: siteConfig.logoUrl || '',
         locations: siteConfig.locations || '',
         socialMediaPlatforms: siteConfig.socialMediaPlatforms || '',
-        uniqueSellingPoints: siteConfig.uniqueSellingPoints || ''
+        uniqueSellingPoints: siteConfig.uniqueSellingPoints || '',
+        exchangeTenantId: siteConfig.exchangeTenantId || '',
+        exchangeClientId: siteConfig.exchangeClientId || '',
+        exchangeClientSecret: siteConfig.exchangeClientSecret || '',
+        exchangeSystemEmail: siteConfig.exchangeSystemEmail || ''
       })
     }
   }, [siteConfig])
@@ -256,6 +264,75 @@ const SystemSettingsPage: React.FC = () => {
               Enter social media platforms and communication methods in JSON array format.
             </p>
           </div>
+        </Card>
+
+        {/* Microsoft Exchange / Calendar Integration */}
+        <Card className="p-6 dark:bg-gray-800 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Exchange / Calendar Integration</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="exchangeTenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Directory (Tenant) ID
+              </label>
+              <Input
+                id="exchangeTenantId"
+                name="exchangeTenantId"
+                type="text"
+                value={formData.exchangeTenantId}
+                onChange={handleInputChange}
+                placeholder="00000000-0000-0000-0000-000000000000"
+                className="dark:bg-gray-700 dark:border-gray-600 font-mono text-xs"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="exchangeClientId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Application (Client) ID
+              </label>
+              <Input
+                id="exchangeClientId"
+                name="exchangeClientId"
+                type="text"
+                value={formData.exchangeClientId}
+                onChange={handleInputChange}
+                placeholder="00000000-0000-0000-0000-000000000000"
+                className="dark:bg-gray-700 dark:border-gray-600 font-mono text-xs"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="exchangeClientSecret" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Client Secret
+              </label>
+              <Input
+                id="exchangeClientSecret"
+                name="exchangeClientSecret"
+                type="password"
+                value={formData.exchangeClientSecret}
+                onChange={handleInputChange}
+                placeholder="••••••••••••••••"
+                className="dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="exchangeSystemEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                System Calendar Email
+              </label>
+              <Input
+                id="exchangeSystemEmail"
+                name="exchangeSystemEmail"
+                type="email"
+                value={formData.exchangeSystemEmail}
+                onChange={handleInputChange}
+                placeholder="calendar@cannlaw.com"
+                className="dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">
+            Note: These settings are used to connect to Microsoft Graph for automated scheduling and calendar visibility.
+          </p>
         </Card>
 
         {/* Unique Selling Points */}
