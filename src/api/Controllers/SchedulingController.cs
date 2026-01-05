@@ -1232,24 +1232,6 @@ public class SchedulingController : ControllerBase
         return User.HasClaim("IsAdmin", "true") || User.IsInRole("Admin") || User.IsInRole("Staff");
     }
 
-    private void LogAudit(string category, string action, string targetType, string targetId, object details)
-    {
-        var userId = GetCurrentUserId();
-        var auditLog = new AuditLog
-        {
-            Category = category,
-            ActorUserId = userId,
-            Action = action,
-            TargetType = targetType,
-            TargetId = targetId,
-            DetailsJson = JsonSerializer.Serialize(details),
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.AuditLogs.Add(auditLog);
-        // Note: SaveChangesAsync will be called by the calling method
-    }
-
     /// <summary>
     /// Get all appointments for admin review (Admin only)
     /// </summary>
