@@ -257,7 +257,7 @@ public class AuthController : ControllerBase
         }
 
         // RBAC Check: Must be Legal Professional (Staff) or Admin
-        if (!result.Value.IsStaff && !result.Value.IsAdmin)
+        if (result.Value == null || (!result.Value.IsStaff && !result.Value.IsAdmin))
         {
             return StatusCode(403, new ProblemDetails
             {
