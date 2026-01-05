@@ -1131,13 +1131,15 @@ public class SchedulingController : ControllerBase
             .FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (caseEntity?.AssignedStaffId != null)
-        {n            // The AssignedStaffId in Case is an INT (Attorney ID)
+        {
+            // The AssignedStaffId in Case is an INT (Attorney ID)
             // We need to find the User associated with this Attorney
             var attorney = await _context.Attorneys
                 .FirstOrDefaultAsync(a => a.Id == caseEntity.AssignedStaffId.Value).ConfigureAwait(false);
             
             if (attorney != null)
-            {n                var user = await _context.Users
+            {
+                var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Email == attorney.Email).ConfigureAwait(false);
                 if (user != null) return user;
             }
