@@ -13,6 +13,10 @@ interface QuestionOption {
   isActive: boolean;
   icon?: string;
   description?: string;
+  actionType?: string;
+  targetQuestionId?: string;
+  targetPagePath?: string;
+  qualifiedVisaCodes?: string;
 }
 
 interface InterviewQuestion {
@@ -28,6 +32,7 @@ interface InterviewQuestion {
   discriminatesVisaCodes?: string;
   selectionWeight: number;
   parentId?: string;
+  parentOptionValue?: string;
   pageConfig?: string;
   createdAt: string;
   updatedAt: string;
@@ -48,6 +53,7 @@ interface QuestionFormData {
   discriminatesVisaCodes: string;
   selectionWeight: number;
   parentId: string | null;
+  parentOptionValue: string | null;
   pageConfig: string;
   options: QuestionOption[];
 }
@@ -72,6 +78,23 @@ const INPUT_TYPES = [
   { value: 'textarea', label: 'Text Area' },
   { value: 'document_upload', label: 'Document Upload' },
   { value: 'attorney_question', label: 'Attorney Question Page' }
+];
+
+const ACTION_TYPES = [
+  { value: 'question', label: 'Go to specific question' },
+  { value: 'page', label: 'Forward to specific page' },
+  { value: 'upload', label: 'Request document upload' },
+  { value: 'multi-choice', label: 'Show multi-choice sub-options' },
+  { value: 'complete', label: 'Complete interview' }
+];
+
+const AVAILABLE_PAGES = [
+  { value: '/', label: 'Home Page' },
+  { value: '/dashboard', label: 'Dashboard' },
+  { value: '/pricing', label: 'Pricing Page' },
+  { value: '/scheduling', label: 'Scheduling Page' },
+  { value: '/admin/uscis-forms', label: 'USCIS Files (Forms list)' },
+  { value: '/visa-library', label: 'Visa Library' }
 ];
 
 interface SortableQuestionItemProps {
@@ -195,6 +218,7 @@ export default function AdminInterviewQuestionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categories, setCategories] = useState<{id?: string, value: string, label: string, displayOrder: number, isActive: boolean}[]>([]);
+  const [visaTypes, setVisaTypes] = useState<{id: number, code: string, name: string}[]>([]);
   const [modalKey, setModalKey] = useState(0);
   
   // New State for Item 8 & 9
@@ -215,6 +239,7 @@ export default function AdminInterviewQuestionsPage() {
     discriminatesVisaCodes: '',
     selectionWeight: 50,
     parentId: null,
+    parentOptionValue: null,
     pageConfig: '',
     options: []
   });
@@ -222,7 +247,19 @@ export default function AdminInterviewQuestionsPage() {
   useEffect(() => {
     loadQuestions();
     loadCategories();
+    loadVisaTypes();
   }, []);
+
+  const loadVisaTypes = async () => {
+    try {
+      const response = await fetch('/api/v1/public/visa-list');
+      if (response.ok) {
+        setVisaTypes(await response.json());
+      }
+    } catch (err) {
+      console.error('Failed to load visa types');
+    }
+  };
 
   const loadCategories = async () => {
     try {
@@ -260,6 +297,7 @@ export default function AdminInterviewQuestionsPage() {
         discriminatesVisaCodes: '',
         selectionWeight: 100,
         parentId: null,
+        parentOptionValue: null,
         pageConfig: '',
         options: []
       });
@@ -314,6 +352,7 @@ export default function AdminInterviewQuestionsPage() {
       discriminatesVisaCodes: '',
       selectionWeight: 50,
       parentId: null,
+      parentOptionValue: null,
       pageConfig: '',
       options: []
     });
@@ -334,6 +373,7 @@ export default function AdminInterviewQuestionsPage() {
       discriminatesVisaCodes: question.discriminatesVisaCodes || '',
       selectionWeight: question.selectionWeight,
       parentId: question.parentId || null,
+      parentOptionValue: question.parentOptionValue || null,
       pageConfig: question.pageConfig || '',
       options: question.options.map(o => ({ ...o }))
     });
@@ -357,6 +397,7 @@ export default function AdminInterviewQuestionsPage() {
       discriminatesVisaCodes: parentQuestion.discriminatesVisaCodes || '', // Inherit discrimination codes
       selectionWeight: parentQuestion.selectionWeight, // Inherit weight
       parentId: parentQuestion.id, // Set parent
+      parentOptionValue: null,
       pageConfig: '',
       options: []
     });
@@ -381,7 +422,11 @@ export default function AdminInterviewQuestionsPage() {
         displayOrder: opt.displayOrder,
         isActive: opt.isActive,
         icon: opt.icon || null,
-        description: opt.description || null
+        description: opt.description || null,
+        actionType: opt.actionType || null,
+        targetQuestionId: opt.targetQuestionId || null,
+        targetPagePath: opt.targetPagePath || null,
+        qualifiedVisaCodes: opt.qualifiedVisaCodes || null
       }));
 
       const payload = {
@@ -396,6 +441,7 @@ export default function AdminInterviewQuestionsPage() {
         discriminatesVisaCodes: formData.discriminatesVisaCodes || null,
         selectionWeight: formData.selectionWeight,
         parentId: formData.parentId || null,
+        parentOptionValue: formData.parentOptionValue || null,
         pageConfig: formData.pageConfig || null,
         options: formattedOptions
       };
@@ -508,6 +554,22 @@ export default function AdminInterviewQuestionsPage() {
       },
     })
   );
+
+  const getInheritedVisas = (parentId: string | null, parentOptionValue: string | null): string[] => {
+    if (!parentId) return visaTypes.map(v => v.code);
+    
+    const parent = questions.find(q => q.id === parentId);
+    if (!parent) return visaTypes.map(v => v.code);
+
+    if (parentOptionValue) {
+      const option = parent.options.find(o => o.value === parentOptionValue);
+      if (option?.qualifiedVisaCodes) {
+        return option.qualifiedVisaCodes.split(',').map(v => v.trim());
+      }
+    }
+
+    return parent.discriminatesVisaCodes ? parent.discriminatesVisaCodes.split(',').map(v => v.trim()) : visaTypes.map(v => v.code);
+  };
 
   const reorderQuestions = async (updates: { questionId: string; displayOrder: number }[]) => {
     try {
@@ -834,7 +896,31 @@ export default function AdminInterviewQuestionsPage() {
                 ))}
               </select>
             </div>
-            {/* ... (other filters same) ... */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Status
+              </label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active Only</option>
+                <option value="inactive">Inactive Only</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Search
+              </label>
+              <Input
+                placeholder="Search key, text, or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="dark:bg-gray-700"
+              />
+            </div>
           </div>
         </div>
       </Card>
@@ -884,62 +970,194 @@ export default function AdminInterviewQuestionsPage() {
       
       {/* Create/Edit Modal */}
       <Modal open={showModal} onClose={() => setShowModal(false)} title={editingQuestion ? 'Edit Interview Question' : 'Create Interview Question'} size="xl">
-        <form onSubmit={handleSubmit} className="space-y-4">
-           {/* ... Form Content (same as previous, just ensure dark mode) ... */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 dark:bg-navy-950 p-4 rounded-xl border border-gray-100 dark:border-navy-800">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1 uppercase tracking-wider">Parent Question</label>
+                <select 
+                  className="w-full p-2 border rounded-lg bg-white dark:bg-navy-900 dark:text-white"
+                  value={formData.parentId || ''}
+                  onChange={(e) => setFormData({ ...formData, parentId: e.target.value || null, parentOptionValue: null })}
+                >
+                  <option value="">Top-level (Starting Question)</option>
+                  {questions.filter(q => q.id !== editingQuestion?.id).map(q => (
+                    <option key={q.id} value={q.id}>{q.key} - {q.text.substring(0, 40)}...</option>
+                  ))}
+                </select>
+              </div>
+
+              {formData.parentId && (
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1 uppercase tracking-wider">Trigger Answer</label>
+                  <select 
+                    className="w-full p-2 border rounded-lg bg-white dark:bg-navy-900 dark:text-white"
+                    value={formData.parentOptionValue || ''}
+                    onChange={(e) => setFormData({ ...formData, parentOptionValue: e.target.value || null })}
+                  >
+                    <option value="">Any answer (Direct Child)</option>
+                    {questions.find(q => q.id === formData.parentId)?.options.map(o => (
+                      <option key={o.value} value={o.value}>{o.label} ({o.value})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Question Key (Unique ID) *</label>
+                <Input value={formData.key} onChange={(e) => setFormData({ ...formData, key: e.target.value })} required className="font-mono" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                <select 
+                  value={formData.category} 
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })} 
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  {categories.map(cat => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
+                </select>
+              </div>
+           </div>
+
            <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Question Text *</label>
             <textarea value={formData.text} onChange={(e) => { const newText = e.target.value; setFormData({ ...formData, text: newText, key: editingQuestion ? formData.key : generateKeyFromText(newText) }); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white" rows={3} required />
            </div>
 
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Input Type</label>
+                <select 
+                  value={formData.inputType} 
+                  onChange={(e) => setFormData({ ...formData, inputType: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  {INPUT_TYPES.map(type => <option key={type.value} value={type.value}>{type.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Discriminated Visa Codes (Comma separated)</label>
+                <Input value={formData.discriminatesVisaCodes} onChange={(e) => setFormData({ ...formData, discriminatesVisaCodes: e.target.value })} placeholder="H-1B, L-1, O-1..." />
+              </div>
+           </div>
+
            {/* Answer Options Section */}
            {(formData.inputType === 'select' || formData.inputType === 'radio' || formData.inputType === 'checkbox') && (
-             <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-               <div className="flex justify-between items-center mb-2">
-                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Answer Options</label>
-                 <Button type="button" size="sm" variant="outline" onClick={addOption}>+ Add Option</Button>
+             <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+               <div className="flex justify-between items-center mb-4">
+                 <label className="block text-lg font-bold text-navy-900 dark:text-white">Answer Options & Dynamic Actions</label>
+                 <Button type="button" size="sm" variant="outline" onClick={addOption}>+ Add New Answer Option</Button>
                </div>
                
-               <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+               <div className="space-y-4 pr-2">
                  {formData.options.map((option, index) => (
-                   <div key={index} className="flex gap-2 items-start bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md">
-                     <div className="flex-1 space-y-2">
-                       <Input
-                         placeholder="Value (internal)"
-                         value={option.value}
-                         onChange={(e) => updateOption(index, 'value', e.target.value)}
-                         className="text-sm"
-                       />
-                       <Input
-                         placeholder="Label (display)"
-                         value={option.label}
-                         onChange={(e) => updateOption(index, 'label', e.target.value)}
-                         className="text-sm"
-                       />
+                   <Card key={index} className="p-4 border-2 border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-900">
+                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+                       <div className="space-y-2">
+                         <label className="block text-xs font-bold uppercase text-gray-500">Label (What User Sees)</label>
+                         <Input
+                           placeholder="Label"
+                           value={option.label}
+                           onChange={(e) => updateOption(index, 'label', e.target.value)}
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <label className="block text-xs font-bold uppercase text-gray-500">Value (Internal ID)</label>
+                         <Input
+                           placeholder="Value"
+                           value={option.value}
+                           onChange={(e) => updateOption(index, 'value', e.target.value)}
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <label className="block text-xs font-bold uppercase text-gray-500">Action Type</label>
+                         <select 
+                           className="w-full p-2 border rounded-md dark:bg-navy-950 dark:text-white"
+                           value={option.actionType || ''}
+                           onChange={(e) => updateOption(index, 'actionType', e.target.value)}
+                         >
+                           <option value="">Next Question (Automatic)</option>
+                           {ACTION_TYPES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
+                         </select>
+                       </div>
                      </div>
-                     <div className="flex flex-col gap-2 pt-1">
-                        <button
-                          type="button" 
-                          onClick={() => removeOption(index)}
-                          className="text-red-500 hover:text-red-700 dark:text-red-400 p-1"
-                          title="Remove option"
-                        >
-                          ✕
-                        </button>
-                        <div className="flex flex-col items-center">
-                          <input
-                            type="checkbox"
-                            checked={option.isActive}
-                            onChange={(e) => updateOption(index, 'isActive', e.target.checked)}
-                            className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 h-4 w-4"
-                            title="Active"
-                          />
+
+                     {/* Action Specific Fields */}
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-gray-50 dark:bg-navy-950 rounded-lg mb-4">
+                        {option.actionType === 'question' && (
+                          <div className="space-y-2">
+                            <label className="block text-xs font-bold uppercase text-blue-600">Target Question</label>
+                            <select 
+                              className="w-full p-2 border rounded-md dark:bg-navy-900 dark:text-white"
+                              value={option.targetQuestionId || ''}
+                              onChange={(e) => updateOption(index, 'targetQuestionId', e.target.value)}
+                            >
+                              <option value="">Select Question...</option>
+                              {questions.filter(q => q.id !== editingQuestion?.id).map(q => (
+                                <option key={q.id} value={q.id}>{q.key}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
+                        {option.actionType === 'page' && (
+                          <div className="space-y-2">
+                            <label className="block text-xs font-bold uppercase text-blue-600">Target Page</label>
+                            <select 
+                              className="w-full p-2 border rounded-md dark:bg-navy-900 dark:text-white"
+                              value={option.targetPagePath || ''}
+                              onChange={(e) => updateOption(index, 'targetPagePath', e.target.value)}
+                            >
+                              <option value="">Select Page...</option>
+                              {AVAILABLE_PAGES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+                            </select>
+                          </div>
+                        )}
+
+                        <div className="space-y-2 md:col-span-2">
+                          <label className="block text-xs font-bold uppercase text-purple-600 mb-2">Qualified Visas if this answer picked</label>
+                          <div className="flex flex-wrap gap-2 p-3 bg-white dark:bg-navy-900 border border-purple-100 dark:border-purple-900/30 rounded-lg max-h-40 overflow-y-auto">
+                            {getInheritedVisas(formData.parentId, formData.parentOptionValue).map(code => {
+                              const isSelected = (option.qualifiedVisaCodes || '').split(',').map(v => v.trim()).includes(code);
+                              return (
+                                <label key={code} className={`flex items-center px-2 py-1 rounded-md text-[10px] cursor-pointer transition-colors ${isSelected ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 font-bold' : 'bg-gray-100 text-gray-500 dark:bg-navy-800 dark:text-gray-400 hover:bg-gray-200'}`}>
+                                  <input 
+                                    type="checkbox" 
+                                    className="hidden" 
+                                    checked={isSelected}
+                                    onChange={(e) => {
+                                      const current = (option.qualifiedVisaCodes || '').split(',').map(v => v.trim()).filter(v => v);
+                                      const next = e.target.checked ? [...current, code] : current.filter(v => v !== code);
+                                      updateOption(index, 'qualifiedVisaCodes', next.join(', '));
+                                    }}
+                                  />
+                                  {code}
+                                </label>
+                              );
+                            })}
+                          </div>
+                          <p className="text-[9px] text-gray-400 italic">Select which visa types remain available. List is inherited from parent question/answer.</p>
                         </div>
                      </div>
-                   </div>
+
+                     <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-navy-800">
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center text-xs cursor-pointer">
+                            <input type="checkbox" checked={option.isActive} onChange={e => updateOption(index, 'isActive', e.target.checked)} className="mr-2" /> 
+                            Active
+                          </label>
+                          <span className="text-[10px] text-gray-400">Order: {option.displayOrder}</span>
+                        </div>
+                        <button type="button" onClick={() => removeOption(index)} className="text-red-500 hover:text-red-700 font-bold text-xs flex items-center gap-1">
+                          <Trash2 size={12} /> Remove Answer
+                        </button>
+                     </div>
+                   </Card>
                  ))}
                  {formData.options.length === 0 && (
-                   <div className="text-center text-sm text-gray-500 dark:text-gray-400 py-4 italic">
-                     No options added. Click "+ Add Option" to add answers.
+                   <div className="text-center text-sm text-gray-500 dark:text-gray-400 py-8 italic border-2 border-dashed rounded-lg">
+                     No answer options added yet.
                    </div>
                  )}
                </div>

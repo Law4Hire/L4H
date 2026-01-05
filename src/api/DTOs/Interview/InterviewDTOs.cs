@@ -125,6 +125,8 @@ public class QuestionDTO
     public List<QuestionOptionDTO> Options { get; set; } = new();
     public bool IsRequired { get; set; } = true;
     public int Order { get; set; }
+    public Guid? ParentId { get; set; }
+    public string? ParentOptionValue { get; set; }
 }
 
 /// <summary>
@@ -134,6 +136,10 @@ public class QuestionOptionDTO
 {
     public string Value { get; set; } = string.Empty;
     public string Label { get; set; } = string.Empty;
+    public string? ActionType { get; set; }
+    public Guid? TargetQuestionId { get; set; }
+    public string? TargetPagePath { get; set; }
+    public string? QualifiedVisaCodes { get; set; }
 }
 
 /// <summary>

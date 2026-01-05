@@ -73,6 +73,12 @@ public class InterviewQuestionEntity
     public Guid? ParentId { get; set; }
 
     /// <summary>
+    /// The value of the option in the parent question that triggers this child question.
+    /// If null, any answer to the parent might trigger this (or it's a direct child).
+    /// </summary>
+    public string? ParentOptionValue { get; set; }
+
+    /// <summary>
     /// JSON configuration for special page types (document_upload, attorney_question, etc.)
     /// Example for document_upload: { "instructionText": "Upload passport", "allowedFileTypes": ["pdf", "jpg"], "maxFiles": 5 }
     /// Example for attorney_question: { "summaryText": "Your visa options", "ctaText": "Get started" }

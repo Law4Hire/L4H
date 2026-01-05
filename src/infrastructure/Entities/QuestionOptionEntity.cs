@@ -45,6 +45,28 @@ public class QuestionOptionEntity
     /// </summary>
     public string? Description { get; set; }
 
+    /// <summary>
+    /// The type of action to take when this option is selected.
+    /// Values: "question", "page", "upload", "multi-choice", "complete"
+    /// </summary>
+    public string? ActionType { get; set; }
+
+    /// <summary>
+    /// If ActionType is "question", this is the ID of the next question.
+    /// </summary>
+    public Guid? TargetQuestionId { get; set; }
+
+    /// <summary>
+    /// If ActionType is "page", this is the relative path to redirect to.
+    /// </summary>
+    public string? TargetPagePath { get; set; }
+
+    /// <summary>
+    /// Comma-separated list of visa codes that remain qualified if this option is chosen.
+    /// Overrides/refines the parent's qualified list.
+    /// </summary>
+    public string? QualifiedVisaCodes { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

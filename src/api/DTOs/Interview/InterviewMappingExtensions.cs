@@ -18,7 +18,9 @@ public static class InterviewMappingExtensions
             InputType = question.InputType,
             Options = question.Options.Select(o => o.ToDTO()).ToList(),
             IsRequired = question.IsRequired,
-            Order = question.Order
+            Order = question.Order,
+            ParentId = question.ParentId,
+            ParentOptionValue = question.ParentOptionValue
         };
     }
 
@@ -27,7 +29,11 @@ public static class InterviewMappingExtensions
         return new QuestionOptionDTO
         {
             Value = option.Value,
-            Label = option.Label
+            Label = option.Label,
+            ActionType = option.ActionType,
+            TargetQuestionId = option.TargetQuestionId,
+            TargetPagePath = option.TargetPagePath,
+            QualifiedVisaCodes = option.QualifiedVisaCodes
         };
     }
 

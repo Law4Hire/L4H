@@ -109,6 +109,7 @@ public class AdminInterviewQuestionsController : ControllerBase
             SelectionWeight = request.SelectionWeight,
             PageConfig = request.PageConfig,
             ParentId = request.ParentId,
+            ParentOptionValue = request.ParentOptionValue,
             CreatedByUserId = userId,
             UpdatedByUserId = userId,
             CreatedAt = DateTime.UtcNow,
@@ -131,6 +132,10 @@ public class AdminInterviewQuestionsController : ControllerBase
                     IsActive = optionRequest.IsActive,
                     Icon = optionRequest.Icon,
                     Description = optionRequest.Description,
+                    ActionType = optionRequest.ActionType,
+                    TargetQuestionId = optionRequest.TargetQuestionId,
+                    TargetPagePath = optionRequest.TargetPagePath,
+                    QualifiedVisaCodes = optionRequest.QualifiedVisaCodes,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -209,6 +214,7 @@ public class AdminInterviewQuestionsController : ControllerBase
         question.SelectionWeight = request.SelectionWeight;
         question.PageConfig = request.PageConfig;
         question.ParentId = request.ParentId;
+        question.ParentOptionValue = request.ParentOptionValue;
         question.UpdatedByUserId = userId;
         question.UpdatedAt = DateTime.UtcNow;
 
@@ -245,6 +251,10 @@ public class AdminInterviewQuestionsController : ControllerBase
                         existingOption.IsActive = optionRequest.IsActive;
                         existingOption.Icon = optionRequest.Icon;
                         existingOption.Description = optionRequest.Description;
+                        existingOption.ActionType = optionRequest.ActionType;
+                        existingOption.TargetQuestionId = optionRequest.TargetQuestionId;
+                        existingOption.TargetPagePath = optionRequest.TargetPagePath;
+                        existingOption.QualifiedVisaCodes = optionRequest.QualifiedVisaCodes;
                         existingOption.UpdatedAt = DateTime.UtcNow;
                     }
                 }
@@ -260,6 +270,10 @@ public class AdminInterviewQuestionsController : ControllerBase
                         IsActive = optionRequest.IsActive,
                         Icon = optionRequest.Icon,
                         Description = optionRequest.Description,
+                        ActionType = optionRequest.ActionType,
+                        TargetQuestionId = optionRequest.TargetQuestionId,
+                        TargetPagePath = optionRequest.TargetPagePath,
+                        QualifiedVisaCodes = optionRequest.QualifiedVisaCodes,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
                     };
@@ -378,6 +392,7 @@ public class AdminInterviewQuestionsController : ControllerBase
             DiscriminatesVisaCodes = question.DiscriminatesVisaCodes,
             SelectionWeight = question.SelectionWeight,
             ParentId = question.ParentId,
+            ParentOptionValue = question.ParentOptionValue,
             PageConfig = question.PageConfig,
             CreatedAt = question.CreatedAt,
             UpdatedAt = question.UpdatedAt,
@@ -391,7 +406,11 @@ public class AdminInterviewQuestionsController : ControllerBase
                 DisplayOrder = o.DisplayOrder,
                 IsActive = o.IsActive,
                 Icon = o.Icon,
-                Description = o.Description
+                Description = o.Description,
+                ActionType = o.ActionType,
+                TargetQuestionId = o.TargetQuestionId,
+                TargetPagePath = o.TargetPagePath,
+                QualifiedVisaCodes = o.QualifiedVisaCodes
             }).ToArray()
         };
     }
@@ -440,6 +459,7 @@ public record InterviewQuestionResponse
     public string? DiscriminatesVisaCodes { get; init; }
     public int SelectionWeight { get; init; }
     public Guid? ParentId { get; init; }
+    public string? ParentOptionValue { get; init; }
     public string? PageConfig { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
@@ -457,6 +477,10 @@ public record QuestionOptionResponse
     public bool IsActive { get; init; }
     public string? Icon { get; init; }
     public string? Description { get; init; }
+    public string? ActionType { get; init; }
+    public Guid? TargetQuestionId { get; init; }
+    public string? TargetPagePath { get; init; }
+    public string? QualifiedVisaCodes { get; init; }
 }
 
 public record CreateQuestionRequest
@@ -473,6 +497,7 @@ public record CreateQuestionRequest
     public int SelectionWeight { get; init; } = 50;
     public string? PageConfig { get; init; }
     public Guid? ParentId { get; init; }
+    public string? ParentOptionValue { get; init; }
     public CreateOptionRequest[]? Options { get; init; }
 }
 
@@ -484,6 +509,10 @@ public record CreateOptionRequest
     public bool IsActive { get; init; } = true;
     public string? Icon { get; init; }
     public string? Description { get; init; }
+    public string? ActionType { get; init; }
+    public Guid? TargetQuestionId { get; init; }
+    public string? TargetPagePath { get; init; }
+    public string? QualifiedVisaCodes { get; init; }
 }
 
 public record UpdateQuestionRequest
@@ -500,6 +529,7 @@ public record UpdateQuestionRequest
     public int SelectionWeight { get; init; }
     public string? PageConfig { get; init; }
     public Guid? ParentId { get; init; }
+    public string? ParentOptionValue { get; init; }
     public UpdateOptionRequest[]? Options { get; init; }
 }
 
@@ -512,6 +542,10 @@ public record UpdateOptionRequest
     public bool IsActive { get; init; }
     public string? Icon { get; init; }
     public string? Description { get; init; }
+    public string? ActionType { get; init; }
+    public Guid? TargetQuestionId { get; init; }
+    public string? TargetPagePath { get; init; }
+    public string? QualifiedVisaCodes { get; init; }
 }
 
 public record ReorderQuestionsRequest
