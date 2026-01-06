@@ -105,7 +105,7 @@ public class MessagingController : ControllerBase
         var caseEntity = await _context.Cases.FindAsync(caseId.Value).ConfigureAwait(false);
         if (caseEntity == null)
         {
-            return NotFound(new ProblemDetails { Title = "Case Not Found", Detail = "The associated case could not be found." });
+            return BadRequest(new ProblemDetails { Title = "Case Not Found", Detail = "The associated case could not be found." });
         }
 
         var thread = new MessageThread
