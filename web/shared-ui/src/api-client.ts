@@ -199,12 +199,14 @@ async function fetchJson<T = any>(
         }
       }
 
-      const error = data.error || {
+      // Check if the response body itself is a ProblemDetails object
+      // or if it follows the { error: ... } envelope pattern
+      const errorData = data.error || (data.title ? data : undefined) || {
         title: `HTTP ${response.status}`,
         detail: response.statusText,
         status: response.status
       }
-      throw new ApiError(error.title, error.detail, error.status)
+      throw new ApiError(errorData.title, errorData.detail, errorData.status)
     }
     
     return data.data || data as T

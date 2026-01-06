@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button, useToast } from '@l4h/shared-ui'
-import { MessageSquare, Send, User, Search, Clock, ChevronRight } from 'lucide-react'
+import { MessageSquare, Send, User, Search, Clock, ChevronRight, Plus, X } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 interface MessageThread {

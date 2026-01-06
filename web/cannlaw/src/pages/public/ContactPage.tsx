@@ -15,6 +15,7 @@ const ContactPage: React.FC = () => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -25,6 +26,7 @@ const ContactPage: React.FC = () => {
     e.preventDefault()
     setIsSubmitting(true)
     setSubmitStatus('idle')
+    setErrorMessage('')
 
     try {
       const response = await fetch('/api/v1/public/contact', {
@@ -46,10 +48,13 @@ const ContactPage: React.FC = () => {
           consultationType: 'general'
         })
       } else {
+        const data = await response.json().catch(() => ({}))
         setSubmitStatus('error')
+        setErrorMessage(data.detail || data.title || 'There was an error sending your message. Please try again or call us directly.')
       }
     } catch (error) {
       setSubmitStatus('error')
+      setErrorMessage('There was a network error sending your message. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -112,7 +117,7 @@ const ContactPage: React.FC = () => {
                 {submitStatus === 'error' && (
                   <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                     <p className="text-red-800 dark:text-red-400">
-                      There was an error sending your message. Please try again or call us directly.
+                      {errorMessage}
                     </p>
                   </div>
                 )}
