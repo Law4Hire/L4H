@@ -201,7 +201,8 @@ async function fetchJson<T = any>(
 
       // Check if the response body itself is a ProblemDetails object
       // or if it follows the { error: ... } envelope pattern
-      const errorData = data.error || (data.title ? data : undefined) || {
+      const responseData = data as any
+      const errorData = data.error || (responseData.title ? responseData : undefined) || {
         title: `HTTP ${response.status}`,
         detail: response.statusText,
         status: response.status
