@@ -90,7 +90,7 @@ public sealed class MessagingControllerTests : BaseIntegrationTest
         // Assert
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Case not found");
+        content.Should().Contain("Case Not Found");
     }
 
     [Fact]
