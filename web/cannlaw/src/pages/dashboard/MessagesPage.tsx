@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Card, Button, useToast, fetchJson } from '@l4h/shared-ui'
 import { MessageSquare, Send, User, Search, Clock, ChevronRight, Plus, X, Check } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import { useAuth } from '../../hooks/useAuth'
 
 interface MessageThread {
   id: string
@@ -20,6 +21,13 @@ interface Message {
   isMe: boolean
 }
 
+interface ApiMessage {
+  id: string
+  content: string
+  sender: string
+  timestamp: string
+}
+
 interface Recipient {
   id: string
   label: string
@@ -27,6 +35,7 @@ interface Recipient {
 }
 
 const MessagesPage: React.FC = () => {
+  const { user } = useAuth()
   const { error, success } = useToast()
   const [threads, setThreads] = useState<MessageThread[]>([])
   const [recipients, setRecipients] = useState<Recipient[]>([])
@@ -124,8 +133,17 @@ const MessagesPage: React.FC = () => {
   const fetchMessages = async (threadId: string) => {
     try {
       setMessagesLoading(true)
-      const data = await fetchJson<{ messages: Message[] }>(`/v1/messaging/threads/${threadId}`)
-      setMessages(data.messages || [])
+      const data = await fetchJson<{ messages: ApiMessage[] }>(`/v1/messaging/threads/${threadId}`)
+      
+      const mappedMessages: Message[] = (data.messages || []).map(m => ({
+        id: m.id,
+        body: m.content,
+        sentAt: m.timestamp,
+        senderName: m.sender,
+        isMe: m.sender === user?.email || m.sender === user?.name || m.sender === 'user' // Simple check
+      }))
+      
+      setMessages(mappedMessages)
     } catch (err) {
       console.error('Error fetching messages:', err)
       error('Failed to load messages')
@@ -140,7 +158,7 @@ const MessagesPage: React.FC = () => {
     try {
       await fetchJson(`/v1/messaging/threads/${selectedThread}/messages`, {
         method: 'POST',
-        body: JSON.stringify({ body: newMessage })
+        body: JSON.stringify({ content: newMessage }) // Send 'content' as expected by backend
       })
 
       setNewMessage('')

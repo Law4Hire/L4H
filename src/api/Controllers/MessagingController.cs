@@ -1115,10 +1115,23 @@ public class MessagingController : ControllerBase
         
         if (isStaff)
         {
-            // Legal Pros see all clients and all admins/staff
+            var currentUser = await _context.Users.FindAsync(userId);
+            var attorneyId = currentUser?.AttorneyId;
+
+            // Get IDs of clients assigned to this staff member
+            var assignedClientIds = new List<UserId>();
+            if (attorneyId.HasValue)
+            {
+                assignedClientIds = await _context.Cases
+                    .Where(c => c.AssignedStaffId == attorneyId.Value)
+                    .Select(c => c.UserId)
+                    .ToListAsync().ConfigureAwait(false);
+            }
+
+            // Legal Pros see assigned clients and all admins/staff
             var recipients = await _context.Users
                 .Where(u => u.Id != userId)
-                .Where(u => u.IsAdmin || u.IsStaff || _context.Cases.Any(c => c.UserId == u.Id))
+                .Where(u => u.IsAdmin || u.IsStaff || assignedClientIds.Contains(u.Id))
                 .Select(u => new { 
                     id = u.Id.Value, 
                     label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
