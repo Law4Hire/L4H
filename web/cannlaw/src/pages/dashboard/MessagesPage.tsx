@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button, useToast, fetchJson } from '@l4h/shared-ui'
-import { MessageSquare, Send, User, Search, Clock, ChevronRight, Plus, X } from 'lucide-react'
+import { MessageSquare, Send, User, Search, Clock, ChevronRight, Plus, X, Check } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 interface MessageThread {
@@ -36,11 +36,11 @@ const MessagesPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [messagesLoading, setMessagesLoading] = useState(false)
   const [showNewThreadModal, setShowNewThreadModal] = useState(false)
-  const [newThreadData, setNewThreadData] = useState({
-    recipientId: '',
-    subject: '',
-    body: ''
-  })
+  
+  // New thread state
+  const [selectedRecipients, setSelectedRecipients] = useState<string[]>([])
+  const [newSubject, setNewSubject] = useState('')
+  const [newBody, setNewBody] = useState('')
 
   useEffect(() => {
     fetchThreads()
@@ -56,7 +56,9 @@ const MessagesPage: React.FC = () => {
   const fetchThreads = async () => {
     try {
       const data = await fetchJson<MessageThread[]>('/v1/messaging/threads')
-      setThreads(data)
+      // Ensure IDs are valid to prevent selection bugs
+      const validThreads = data.filter(t => t && t.id)
+      setThreads(validThreads)
     } catch (err) {
       console.error('Error fetching threads:', err)
       error('Failed to load message threads')
@@ -74,26 +76,48 @@ const MessagesPage: React.FC = () => {
     }
   }
 
+  const handleRecipientToggle = (id: string) => {
+    setSelectedRecipients(prev => 
+      prev.includes(id) 
+        ? prev.filter(rid => rid !== id)
+        : [...prev, id]
+    )
+  }
+
+  const handleSelectAllRecipients = () => {
+    if (selectedRecipients.length === recipients.length) {
+      setSelectedRecipients([])
+    } else {
+      setSelectedRecipients(recipients.map(r => r.id))
+    }
+  }
+
   const handleCreateThread = async () => {
-    if (!newThreadData.recipientId || !newThreadData.subject || !newThreadData.body) return
+    if (selectedRecipients.length === 0 || !newSubject || !newBody) return
 
     try {
-      await fetchJson('/v1/messaging/threads', {
-        method: 'POST',
-        body: JSON.stringify({
-          caseId: '00000000-0000-0000-0000-000000000000', // Backend will need to handle this or find case
-          title: newThreadData.subject,
-          initialMessage: newThreadData.body,
-          recipientUserId: newThreadData.recipientId
+      // Send a message to each selected recipient
+      // This creates individual threads for each recipient
+      await Promise.all(selectedRecipients.map(recipientId => 
+        fetchJson('/v1/messaging/threads', {
+          method: 'POST',
+          body: JSON.stringify({
+            caseId: '00000000-0000-0000-0000-000000000000',
+            title: newSubject,
+            initialMessage: newBody,
+            recipientUserId: recipientId
+          })
         })
-      })
+      ))
 
-      success('Conversation started')
+      success(`Sent message to ${selectedRecipients.length} recipient(s)`)
       setShowNewThreadModal(false)
-      setNewThreadData({ recipientId: '', subject: '', body: '' })
+      setSelectedRecipients([])
+      setNewSubject('')
+      setNewBody('')
       fetchThreads()
     } catch (err) {
-      error('Failed to start conversation')
+      error('Failed to send messages')
     }
   }
 
@@ -246,26 +270,47 @@ const MessagesPage: React.FC = () => {
       {/* New Thread Modal */}
       {showNewThreadModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="max-w-md w-full p-6 dark:bg-navy-900 shadow-2xl border dark:border-navy-700">
+          <Card className="max-w-md w-full p-6 dark:bg-navy-900 shadow-2xl border dark:border-navy-700 max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-navy-900 dark:text-white">New Message</h3>
               <button onClick={() => setShowNewThreadModal(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-4 flex-1 overflow-y-auto">
               <div>
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">To</label>
-                <select 
-                  className="w-full p-2 border rounded bg-white dark:bg-navy-950 dark:border-navy-700 dark:text-white"
-                  value={newThreadData.recipientId}
-                  onChange={(e) => setNewThreadData({...newThreadData, recipientId: e.target.value})}
-                >
-                  <option value="">Select recipient...</option>
-                  <option value="">General (All Admins)</option>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Recipients</label>
+                  <button 
+                    onClick={handleSelectAllRecipients}
+                    className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                  >
+                    {selectedRecipients.length === recipients.length ? 'Deselect All' : 'Select All'}
+                  </button>
+                </div>
+                <div className="border rounded-lg max-h-48 overflow-y-auto bg-white dark:bg-navy-950 dark:border-navy-700">
                   {recipients.map(r => (
-                    <option key={r.id} value={r.id}>{r.label} ({r.description})</option>
+                    <div 
+                      key={r.id} 
+                      onClick={() => handleRecipientToggle(r.id)}
+                      className="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer border-b last:border-b-0 border-gray-100 dark:border-navy-800"
+                    >
+                      <div className={`w-4 h-4 mr-3 rounded border flex items-center justify-center ${
+                        selectedRecipients.includes(r.id) 
+                          ? 'bg-blue-600 border-blue-600' 
+                          : 'border-gray-300 dark:border-gray-600'
+                      }`}>
+                        {selectedRecipients.includes(r.id) && <Check size={12} className="text-white" />}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">{r.label}</div>
+                        <div className="text-xs text-gray-500">{r.description}</div>
+                      </div>
+                    </div>
                   ))}
-                </select>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {selectedRecipients.length} recipient(s) selected
+                </p>
               </div>
 
               <div>
@@ -274,8 +319,8 @@ const MessagesPage: React.FC = () => {
                   type="text"
                   className="w-full p-2 border rounded bg-white dark:bg-navy-950 dark:border-navy-700 dark:text-white"
                   placeholder="Case #123 / General Inquiry"
-                  value={newThreadData.subject}
-                  onChange={(e) => setNewThreadData({...newThreadData, subject: e.target.value})}
+                  value={newSubject}
+                  onChange={(e) => setNewSubject(e.target.value)}
                 />
               </div>
 
@@ -285,15 +330,15 @@ const MessagesPage: React.FC = () => {
                   rows={4}
                   className="w-full p-2 border rounded bg-white dark:bg-navy-950 dark:border-navy-700 dark:text-white"
                   placeholder="How can we help?"
-                  value={newThreadData.body}
-                  onChange={(e) => setNewThreadData({...newThreadData, body: e.target.value})}
+                  value={newBody}
+                  onChange={(e) => setNewBody(e.target.value)}
                 />
               </div>
 
               <Button 
                 variant="primary" 
                 className="w-full mt-4" 
-                disabled={!newThreadData.subject || !newThreadData.body}
+                disabled={selectedRecipients.length === 0 || !newSubject || !newBody}
                 onClick={handleCreateThread}
               >
                 Send Message
