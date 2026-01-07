@@ -17,7 +17,8 @@ const SiteConfigPage: React.FC = () => {
     logoUrl: '',
     locations: '',
     socialMediaPlatforms: '',
-    uniqueSellingPoints: ''
+    uniqueSellingPoints: '',
+    roundBillingUp: false
   })
 
   useEffect(() => {
@@ -32,14 +33,19 @@ const SiteConfigPage: React.FC = () => {
         logoUrl: siteConfig.logoUrl || '',
         locations: siteConfig.locations || '',
         socialMediaPlatforms: siteConfig.socialMediaPlatforms || '',
-        uniqueSellingPoints: siteConfig.uniqueSellingPoints || ''
+        uniqueSellingPoints: siteConfig.uniqueSellingPoints || '',
+        roundBillingUp: siteConfig.roundBillingUp || false
       })
     }
   }, [siteConfig])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    const checked = (e.target as HTMLInputElement).checked
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -181,6 +187,22 @@ const SiteConfigPage: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder="https://example.com/logo.png"
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  name="roundBillingUp"
+                  checked={formData.roundBillingUp}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">Round Billing Up (17 mins = 0.3 hrs instead of 0.2 hrs)</span>
+              </label>
+              <p className="text-xs text-gray-500 mt-1 ml-7">
+                If enabled, billing will round up to the next 6-minute increment (ceiling). Otherwise, it follows standard rounding (floor/nearest).
+              </p>
             </div>
           </div>
         </Card>

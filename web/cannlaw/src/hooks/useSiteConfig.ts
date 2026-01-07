@@ -12,6 +12,7 @@ interface SiteConfiguration {
   socialMediaPlatforms: string // JSON
   uniqueSellingPoints: string // JSON
   logoUrl: string
+  roundBillingUp?: boolean
   createdAt: string
   updatedAt: string
 }

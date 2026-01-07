@@ -12,6 +12,8 @@ interface TimeEntry {
   caseTitle: string
   description: string
   hours: number
+  startTime: string
+  endTime: string
   date: string
   status: 'pending' | 'approved' | 'rejected'
   submittedAt: string
@@ -141,7 +143,11 @@ export default function AdminTimeEntriesPage() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Clock className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-600">{entry.hours} {t('admin.hours')}</span>
+                      <span className="text-gray-600">
+                        {new Date(entry.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                        {new Date(entry.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        {' '}({entry.hours} {t('admin.hours')})
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-gray-400" />

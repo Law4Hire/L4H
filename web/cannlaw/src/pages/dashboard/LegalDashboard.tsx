@@ -5,7 +5,8 @@ import { useAuth } from '../../hooks/useAuth'
 import { useCases } from '../../hooks/useCases'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import { formatDistanceToNow, format } from 'date-fns'
-import { MessageSquare, Calendar, User, Clock, Video, ExternalLink, Settings, Search, ArrowUpDown, ChevronDown, X } from 'lucide-react'
+import { MessageSquare, Calendar, User, Clock, Video, ExternalLink, Settings, Search, ArrowUpDown, ChevronDown, X, Edit, Save } from 'lucide-react'
+import { TimeTracker } from '../../components/TimeTracker'
 
 interface DashboardStats {
   activeCases: number
@@ -60,6 +61,7 @@ const LegalDashboard: React.FC = () => {
   const [selectedCase, setSelectedCase] = useState<string | null>(null)
   const [showCaseModal, setShowCaseModal] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [isEditingCase, setIsEditingCase] = useState(false)
 
   const isAdmin = user?.roles?.includes('Admin') || false
   const isLegalProfessional = user?.roles?.includes('LegalProfessional') || isAdmin
@@ -127,7 +129,7 @@ const LegalDashboard: React.FC = () => {
     ? ((stats.monthlyRevenue - stats.lastMonthRevenue) / (stats.lastMonthRevenue || 1)) * 100
     : 0
 
-  const handleAssignCase = async (caseId: string, staffId: number) => {
+  const handleAssignCase = async (caseId: string, staffId: number | null) => {
     const result = await assignCase(caseId, staffId)
     if (result.success) {
       await fetchCases({ showAssigned, search: searchTerm, sortBy, sortDesc })
@@ -419,69 +421,109 @@ const LegalDashboard: React.FC = () => {
       {showCaseModal && selectedCase && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-navy-900 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 dark:border-navy-800 flex justify-between items-center sticky top-0 bg-white dark:bg-navy-900">
+            <div className="p-6 border-b border-gray-200 dark:border-navy-800 flex justify-between items-center sticky top-0 bg-white dark:bg-navy-900 z-10">
               <h2 className="text-2xl font-bold text-navy-900 dark:text-white">Case Details</h2>
-              <button
-                onClick={() => setShowCaseModal(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                <X size={24} />
-              </button>
+              <div className="flex items-center gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={() => setIsEditingCase(!isEditingCase)}
+                >
+                  {isEditingCase ? <Save size={18} className="mr-2" /> : <Edit size={18} className="mr-2" />}
+                  {isEditingCase ? 'Save' : 'Edit'}
+                </Button>
+                <button
+                  onClick={() => setShowCaseModal(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <X size={24} />
+                </button>
+              </div>
             </div>
             <div className="p-6">
               {(() => {
                 const caseData = cases.find(c => c.id === selectedCase)
                 if (!caseData) return <p>Case not found</p>
                 return (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-bold text-gray-500 uppercase">Client Name</label>
-                      <p className="text-lg text-navy-900 dark:text-white">{caseData.clientFirstName} {caseData.clientLastName}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-bold text-gray-500 uppercase">Email</label>
-                      <p className="text-lg text-navy-900 dark:text-white">{caseData.clientEmail}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-bold text-gray-500 uppercase">Status</label>
-                      <p className="text-lg text-navy-900 dark:text-white">{caseData.status}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-bold text-gray-500 uppercase">Visa Types</label>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {caseData.visaTypes.map((vt) => (
-                          <span
-                            key={vt.visaTypeId}
-                            className={`px-3 py-1 text-sm rounded ${
-                              vt.isPrimary
-                                ? 'bg-gold-100 text-gold-800 dark:bg-gold-900 dark:text-gold-200 font-bold'
-                                : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-                            }`}
-                          >
-                            {vt.visaTypeName} ({vt.visaTypeCode})
-                            {vt.isPrimary && ' - Primary'}
-                          </span>
-                        ))}
+                  <div className="space-y-6">
+                    <TimeTracker 
+                      caseId={caseData.id} 
+                      clientName={`${caseData.clientFirstName} ${caseData.clientLastName}`} 
+                    />
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-bold text-gray-500 uppercase">Client Name</label>
+                        <p className="text-lg text-navy-900 dark:text-white">{caseData.clientFirstName} {caseData.clientLastName}</p>
                       </div>
-                    </div>
-                    <div>
-                      <label className="text-sm font-bold text-gray-500 uppercase">Assigned Staff</label>
-                      <p className="text-lg text-navy-900 dark:text-white">{caseData.assignedStaffName || 'Unassigned'}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-bold text-gray-500 uppercase">Created</label>
-                      <p className="text-lg text-navy-900 dark:text-white">{format(new Date(caseData.createdAt), 'PPP')}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-bold text-gray-500 uppercase">Last Activity</label>
-                      <p className="text-lg text-navy-900 dark:text-white">{formatDistanceToNow(new Date(caseData.lastActivityAt))} ago</p>
+                      <div>
+                        <label className="text-sm font-bold text-gray-500 uppercase">Email</label>
+                        <p className="text-lg text-navy-900 dark:text-white">{caseData.clientEmail}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-bold text-gray-500 uppercase">Status</label>
+                        {isEditingCase ? (
+                          <input 
+                            type="text" 
+                            className="w-full p-2 border rounded" 
+                            defaultValue={caseData.status} 
+                          />
+                        ) : (
+                          <p className="text-lg text-navy-900 dark:text-white">{caseData.status}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="text-sm font-bold text-gray-500 uppercase">Visa Types</label>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {caseData.visaTypes.map((vt) => (
+                            <span
+                              key={vt.visaTypeId}
+                              className={`px-3 py-1 text-sm rounded ${
+                                vt.isPrimary
+                                  ? 'bg-gold-100 text-gold-800 dark:bg-gold-900 dark:text-gold-200 font-bold'
+                                  : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                              }`}
+                            >
+                              {vt.visaTypeName} ({vt.visaTypeCode})
+                              {vt.isPrimary && ' - Primary'}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-bold text-gray-500 uppercase">Assigned Staff</label>
+                        <p className="text-lg text-navy-900 dark:text-white">{caseData.assignedStaffName || 'Unassigned'}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-bold text-gray-500 uppercase">Created</label>
+                        <p className="text-lg text-navy-900 dark:text-white">{format(new Date(caseData.createdAt), 'PPP')}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-bold text-gray-500 uppercase">Last Activity</label>
+                        <p className="text-lg text-navy-900 dark:text-white">{formatDistanceToNow(new Date(caseData.lastActivityAt))} ago</p>
+                      </div>
                     </div>
                   </div>
                 )
               })()}
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-800">
-              <Button onClick={() => setShowCaseModal(false)} className="w-full">Close</Button>
+            <div className="p-6 border-t border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-800 flex justify-between gap-4">
+              {(() => {
+                 const caseData = cases.find(c => c.id === selectedCase)
+                 if (caseData && caseData.assignedStaffId) {
+                   return (
+                     <Button 
+                       onClick={() => handleAssignCase(caseData.id, null)} 
+                       variant="danger"
+                       className="bg-red-600 hover:bg-red-700 text-white"
+                     >
+                       Unassign / Return to Queue
+                     </Button>
+                   )
+                 }
+                 return <div></div> // Spacer
+              })()}
+              <Button onClick={() => setShowCaseModal(false)}>Close</Button>
             </div>
           </div>
         </div>

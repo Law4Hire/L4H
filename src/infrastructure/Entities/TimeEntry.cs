@@ -44,11 +44,25 @@ public class TimeEntry
     /// <summary>
     /// Validates and rounds duration to 6-minute increments (0.1 hour)
     /// </summary>
-    public void RoundDurationToSixMinuteIncrements()
+    public void RoundDurationToSixMinuteIncrements(bool roundUp = false)
     {
         // Convert to 6-minute increments (0.1 hour units)
         var totalMinutes = (EndTime - StartTime).TotalMinutes;
-        var sixMinuteIncrements = Math.Ceiling(totalMinutes / 6.0);
+        
+        // If duration is less than 6 minutes and not rounding up, it might be 0
+        // User requirement: "Billing does not begin until ... 5 minutes 59 is passed." 
+        // 5m 59s = 5.98 mins. Floor(5.98/6) = 0. Correct.
+        
+        double sixMinuteIncrements;
+        if (roundUp)
+        {
+            sixMinuteIncrements = Math.Ceiling(totalMinutes / 6.0);
+        }
+        else
+        {
+            sixMinuteIncrements = Math.Floor(totalMinutes / 6.0);
+        }
+
         Duration = (decimal)(sixMinuteIncrements * 0.1);
         
         // Calculate billable amount

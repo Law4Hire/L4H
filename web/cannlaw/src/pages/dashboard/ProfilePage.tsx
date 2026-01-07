@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Card, Button, Input, useToast } from '@l4h/shared-ui'
+import { Card, Button, Input, useToast, fetchJson } from '@l4h/shared-ui'
 import { User, Mail, Phone, MapPin, Camera } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -32,19 +32,11 @@ const ProfilePage: React.FC = () => {
   const fetchProfile = async () => {
     try {
       setIsLoading(true)
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch('/api/v1/attorneys/me', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setProfile(data)
-      } else {
-        error('Failed to load profile')
-      }
+      const data = await fetchJson<AttorneyProfile>('/v1/attorneys/me')
+      setProfile(data)
     } catch (err) {
       console.error('Error fetching profile:', err)
+      error('Failed to load profile')
     } finally {
       setIsLoading(false)
     }
@@ -63,21 +55,11 @@ const ProfilePage: React.FC = () => {
 
     try {
       setIsSubmitting(true)
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch('/api/v1/attorneys/me', {
+      await fetchJson('/v1/attorneys/me', {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(profile)
       })
-
-      if (response.ok) {
-        success('Profile updated successfully')
-      } else {
-        error('Failed to update profile')
-      }
+      success('Profile updated successfully')
     } catch (err) {
       error('An error occurred while saving')
     } finally {
@@ -93,10 +75,17 @@ const ProfilePage: React.FC = () => {
 
       try {
         setUploadingPhoto(true)
+        // Note: fetchJson handles JSON, but for FormData we might need to handle headers differently 
+        // or let the browser set Content-Type. fetchJson forces Content-Type: application/json.
+        // So we fallback to raw fetch for file upload but use getJwtToken logic if needed, 
+        // or ideally update fetchJson. For now, let's use a small helper or manual fetch 
+        // but with the token retrieval logic from a shared place if possible.
+        // Actually, api-client.ts forces application/json. We should skip fetchJson for uploads.
+        
         const token = localStorage.getItem('jwt_token')
         const response = await fetch(`/api/v1/attorneys/${profile.id}/photo`, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` },
+          headers: { 'Authorization': `Bearer ${token}` }, // FormData sets its own Content-Type
           body: formData
         })
 

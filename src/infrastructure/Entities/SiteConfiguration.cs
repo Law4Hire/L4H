@@ -41,6 +41,9 @@ public class SiteConfiguration
     public string? ExchangeClientSecret { get; set; }
     [MaxLength(255)]
     public string? ExchangeSystemEmail { get; set; }
+
+    // Billing Settings
+    public bool RoundBillingUp { get; set; } = false;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

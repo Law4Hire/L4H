@@ -144,8 +144,12 @@ public class TimeTrackingController : ControllerBase
             }
         }
 
-        // Calculate duration and billing amount with 6-minute increment rounding
-        timeEntry.RoundDurationToSixMinuteIncrements();
+        // Get site configuration for billing rules
+        var config = await _context.SiteConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync();
+        var roundUp = config?.RoundBillingUp ?? false;
+
+        // Calculate duration and billing amount with rounding preference
+        timeEntry.RoundDurationToSixMinuteIncrements(roundUp);
 
         await _context.SaveChangesAsync();
 
@@ -351,8 +355,12 @@ public class TimeTrackingController : ControllerBase
             timeEntry.StartTime = request.StartTime.Value;
             timeEntry.EndTime = request.EndTime.Value;
             
+            // Get site configuration for billing rules
+            var config = await _context.SiteConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync();
+            var roundUp = config?.RoundBillingUp ?? false;
+
             // Recalculate duration and billing
-            timeEntry.RoundDurationToSixMinuteIncrements();
+            timeEntry.RoundDurationToSixMinuteIncrements(roundUp);
         }
 
         await _context.SaveChangesAsync();

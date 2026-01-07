@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button, useToast } from '@l4h/shared-ui'
+import { Card, Button, useToast, fetchJson } from '@l4h/shared-ui'
 import { MessageSquare, Send, User, Search, Clock, ChevronRight, Plus, X } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -55,13 +55,8 @@ const MessagesPage: React.FC = () => {
 
   const fetchThreads = async () => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch('/api/v1/messaging/threads', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (response.ok) {
-        setThreads(await response.json())
-      }
+      const data = await fetchJson<MessageThread[]>('/v1/messaging/threads')
+      setThreads(data)
     } catch (err) {
       console.error('Error fetching threads:', err)
       error('Failed to load message threads')
@@ -72,13 +67,8 @@ const MessagesPage: React.FC = () => {
 
   const fetchRecipients = async () => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch('/api/v1/messaging/recipients', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (response.ok) {
-        setRecipients(await response.json())
-      }
+      const data = await fetchJson<Recipient[]>('/v1/messaging/recipients')
+      setRecipients(data)
     } catch (err) {
       console.error('Error fetching recipients:', err)
     }
@@ -88,18 +78,8 @@ const MessagesPage: React.FC = () => {
     if (!newThreadData.recipientId || !newThreadData.subject || !newThreadData.body) return
 
     try {
-      const token = localStorage.getItem('jwt_token')
-      // We need a caseId to create a thread in the current system. 
-      // For now, let's find the first case for the recipient or use a dummy case if needed.
-      // Better: Update the backend to allow creating threads without explicit case if it's staff-to-staff.
-      // But for now, let's look for a case associated with the recipient if they are a client.
-      
-      const response = await fetch('/api/v1/messaging/threads', {
+      await fetchJson('/v1/messaging/threads', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           caseId: '00000000-0000-0000-0000-000000000000', // Backend will need to handle this or find case
           title: newThreadData.subject,
@@ -108,12 +88,10 @@ const MessagesPage: React.FC = () => {
         })
       })
 
-      if (response.ok) {
-        success('Conversation started')
-        setShowNewThreadModal(false)
-        setNewThreadData({ recipientId: '', subject: '', body: '' })
-        fetchThreads()
-      }
+      success('Conversation started')
+      setShowNewThreadModal(false)
+      setNewThreadData({ recipientId: '', subject: '', body: '' })
+      fetchThreads()
     } catch (err) {
       error('Failed to start conversation')
     }
@@ -122,14 +100,8 @@ const MessagesPage: React.FC = () => {
   const fetchMessages = async (threadId: string) => {
     try {
       setMessagesLoading(true)
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/messaging/threads/${threadId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setMessages(data.messages || [])
-      }
+      const data = await fetchJson<{ messages: Message[] }>(`/v1/messaging/threads/${threadId}`)
+      setMessages(data.messages || [])
     } catch (err) {
       console.error('Error fetching messages:', err)
       error('Failed to load messages')
@@ -142,23 +114,14 @@ const MessagesPage: React.FC = () => {
     if (!selectedThread || !newMessage.trim()) return
 
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/messaging/threads/${selectedThread}/messages`, {
+      await fetchJson(`/v1/messaging/threads/${selectedThread}/messages`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ body: newMessage })
       })
 
-      if (response.ok) {
-        setNewMessage('')
-        fetchMessages(selectedThread)
-        fetchThreads() // Update snippets
-      } else {
-        error('Failed to send message')
-      }
+      setNewMessage('')
+      fetchMessages(selectedThread)
+      fetchThreads() // Update snippets
     } catch (err) {
       console.error('Error sending message:', err)
       error('Error sending message')

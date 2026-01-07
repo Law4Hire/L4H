@@ -74,7 +74,7 @@ export function useCases() {
     }
   }
 
-  const assignCase = async (caseId: string, staffId: number) => {
+  const assignCase = async (caseId: string, staffId: number | null) => {
     try {
       const token = localStorage.getItem('jwt_token')
       const response = await fetch(`/api/v1/cases/${caseId}/assign`, {
