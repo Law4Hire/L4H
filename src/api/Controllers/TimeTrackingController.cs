@@ -42,8 +42,32 @@ public class TimeTrackingController : ControllerBase
             return BadRequest("Attorney not found or inactive");
         }
 
-        // Verify client exists and is assigned to this attorney (unless admin)
-        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == request.ClientId);
+        // Resolve Case and Client
+        Case? caseEntity = null;
+        Client? client = null;
+
+        if (request.CaseId.HasValue)
+        {
+            var caseIdTyped = new CaseId(request.CaseId.Value);
+            caseEntity = await _context.Cases
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == caseIdTyped);
+
+            if (caseEntity == null)
+            {
+                return BadRequest("Case not found");
+            }
+
+            // Find client by matching user email (Cannlaw specific mapping)
+            client = await _context.Clients.FirstOrDefaultAsync(c => c.Email == caseEntity.User.Email);
+        }
+        else if (request.ClientId.HasValue)
+        {
+            // Legacy support or direct client billing without case (if needed)
+            // But we prefer CaseId now.
+            client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == request.ClientId.Value);
+        }
+
         if (client == null)
         {
             return BadRequest("Client not found");
@@ -67,7 +91,13 @@ public class TimeTrackingController : ControllerBase
         // Create new time entry
         var timeEntry = new TimeEntry
         {
-            ClientId = request.ClientId,
+            CaseId = caseEntity?.Id ?? default, // Should ideally be nullable or required. We made it required in entity but context allows if we fix it.
+            // Wait, if CaseId is required in TimeEntry, we MUST have a case.
+            // If request.ClientId was used, we might not have a case.
+            // Let's require CaseId effectively or handle the migration properly.
+            // For now, let's assume CaseId is provided or found.
+            
+            ClientId = client.Id,
             AttorneyId = attorneyId,
             StartTime = DateTime.UtcNow,
             Description = request.Description ?? string.Empty,
@@ -75,6 +105,19 @@ public class TimeTrackingController : ControllerBase
             HourlyRate = attorney.DefaultHourlyRate,
             CreatedAt = DateTime.UtcNow
         };
+        
+        // If we strictly require CaseId now due to entity change:
+        if (caseEntity != null)
+        {
+            timeEntry.CaseId = caseEntity.Id;
+        }
+        else
+        {
+            // If we support Client-only billing, we need to handle this.
+            // But user requirement is "I work on case...".
+            // Let's enforce CaseId for now as per user flow.
+            return BadRequest("Case ID is required for time tracking.");
+        }
 
         _context.TimeEntries.Add(timeEntry);
         await _context.SaveChangesAsync();
@@ -457,11 +500,11 @@ public class TimeTrackingStats
         // Request/Response Models
         public class StartTimeTrackingRequest
         {
-            public int ClientId { get; set; }
+            public int? ClientId { get; set; }
+            public Guid? CaseId { get; set; }
             public string? Description { get; set; }
             public string? Notes { get; set; }
-        }
-public class StopTimeTrackingRequest
+        }public class StopTimeTrackingRequest
 {
     public string? Description { get; set; }
     public string? Notes { get; set; }

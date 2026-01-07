@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using L4H.Shared.Models;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -7,6 +8,9 @@ public class TimeEntry
 {
     public int Id { get; set; }
     
+    public CaseId CaseId { get; set; }
+    public Case Case { get; set; } = null!;
+
     public int ClientId { get; set; }
     public Client Client { get; set; } = null!;
     

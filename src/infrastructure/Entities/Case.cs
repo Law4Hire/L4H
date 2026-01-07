@@ -68,5 +68,8 @@ public class Case
     public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
     [JsonIgnore]
 
+    public ICollection<TimeEntry> TimeEntries { get; set; } = new List<TimeEntry>();
+    [JsonIgnore]
+
     public ICollection<CaseVisaType> CaseVisaTypes { get; set; } = new List<CaseVisaType>();
 }

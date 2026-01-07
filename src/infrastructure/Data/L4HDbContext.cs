@@ -1594,22 +1594,34 @@ public class L4HDbContext : DbContext
         modelBuilder.Entity<TimeEntry>(entity =>
         {
             entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.CaseId)
+                .HasConversion(
+                    v => v.Value,
+                    v => new CaseId(v));
+
             entity.Property(e => e.Duration).HasColumnType("decimal(5,2)");
             entity.Property(e => e.Description).HasMaxLength(500).IsRequired();
             entity.Property(e => e.Notes).HasMaxLength(1000);
             entity.Property(e => e.HourlyRate).HasColumnType("decimal(10,2)");
             entity.Property(e => e.BillableAmount).HasColumnType("decimal(10,2)");
 
+            entity.HasOne(e => e.Case)
+                .WithMany(e => e.TimeEntries) // Ensure Case has TimeEntries collection
+                .HasForeignKey(e => e.CaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.HasOne(e => e.Client)
                 .WithMany(e => e.TimeEntries)
                 .HasForeignKey(e => e.ClientId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction); // Change to NoAction to avoid cycles if Case deletes Client
 
             entity.HasOne(e => e.Attorney)
                 .WithMany(e => e.TimeEntries)
                 .HasForeignKey(e => e.AttorneyId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasIndex(e => e.CaseId);
             entity.HasIndex(e => e.ClientId);
             entity.HasIndex(e => e.AttorneyId);
             entity.HasIndex(e => e.StartTime);
