@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
+using L4H.Shared.Models;
 using System.Security.Claims;
 
 namespace L4H.Api.Controllers;
