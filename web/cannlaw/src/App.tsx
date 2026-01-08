@@ -1,8 +1,9 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Layout, RouteGuard, ToastProvider } from '@l4h/shared-ui'
+import { RouteGuard, ToastProvider } from '@l4h/shared-ui'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ClientProtectedRoute } from './components/ClientProtectedRoute'
+import DashboardLayout from './components/DashboardLayout'
 
 // Lazy load page components for code-splitting
 // Public pages
@@ -56,23 +57,6 @@ const LoadingFallback = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
   </div>
 )
-
-// Layout Configuration
-const cannlawLogo = (
-  <div className="flex-shrink-0 mr-2">
-    <img 
-      src="https://cannlaw.com/images/logo.gif" 
-      alt="Cann Legal Group"
-      className="h-8 w-auto object-contain dark:brightness-110"
-    />
-  </div>
-)
-
-const layoutProps = {
-  brandName: "Cann Legal Group",
-  brandSubtitle: "Immigration Law Specialists",
-  brandLogo: cannlawLogo
-}
 
 function App() {
   // Item 11: Automatic Cache Clearing on New Build
@@ -134,9 +118,9 @@ function App() {
           path="/dashboard" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="Legal Dashboard" {...layoutProps}>
+              <DashboardLayout title="Legal Dashboard">
                 <LegalDashboard />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -144,9 +128,9 @@ function App() {
           path="/clients" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="Client Management" {...layoutProps}>
+              <DashboardLayout title="Client Management">
                 <ClientManagement />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -154,9 +138,9 @@ function App() {
           path="/clients/:id" 
           element={
             <ClientProtectedRoute>
-              <Layout title="Client Profile" {...layoutProps}>
+              <DashboardLayout title="Client Profile">
                 <ClientProfilePage />
-              </Layout>
+              </DashboardLayout>
             </ClientProtectedRoute>
           } 
         />
@@ -164,9 +148,9 @@ function App() {
           path="/time-tracking" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="Time Tracking" {...layoutProps}>
+              <DashboardLayout title="Time Tracking">
                 <TimeTrackingPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -174,9 +158,9 @@ function App() {
           path="/messages" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="Messages" {...layoutProps}>
+              <DashboardLayout title="Messages">
                 <MessagesPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -184,9 +168,9 @@ function App() {
           path="/profile" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="My Profile" {...layoutProps}>
+              <DashboardLayout title="My Profile">
                 <ProfilePage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -196,9 +180,9 @@ function App() {
           path="/schedule" 
           element={
             <RouteGuard>
-              <Layout title={'Schedule'} {...layoutProps}>
+              <DashboardLayout title={'Schedule'}>
                 <SchedulePage />
-              </Layout>
+              </DashboardLayout>
             </RouteGuard>
           } 
         />
@@ -206,9 +190,9 @@ function App() {
           path="/cases" 
           element={
             <RouteGuard>
-              <Layout title={'Cases'} {...layoutProps}>
+              <DashboardLayout title={'Cases'}>
                 <CasesPage />
-              </Layout>
+              </DashboardLayout>
             </RouteGuard>
           } 
         />
@@ -218,9 +202,9 @@ function App() {
           path="/admin" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Admin'} {...layoutProps}>
+              <DashboardLayout title={'Admin'}>
                 <AdminPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -228,9 +212,9 @@ function App() {
           path="/admin/site-config" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Site Configuration" {...layoutProps}>
+              <DashboardLayout title="Site Configuration">
                 <SiteConfigPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -238,9 +222,9 @@ function App() {
           path="/admin/attorneys"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Attorney Management" {...layoutProps}>
+              <DashboardLayout title="Attorney Management">
                 <AttorneyManagementPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -248,9 +232,9 @@ function App() {
           path="/admin/services"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Services Management" {...layoutProps}>
+              <DashboardLayout title="Services Management">
                 <ServicesManagementPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -258,9 +242,9 @@ function App() {
           path="/admin/visa-library"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Visa Library Management" {...layoutProps}>
+              <DashboardLayout title="Visa Library Management">
                 <VisaLibraryManagementPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -268,9 +252,9 @@ function App() {
           path="/admin/alerts"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Alerts Management" {...layoutProps}>
+              <DashboardLayout title="Alerts Management">
                 <AlertsManagementPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -278,9 +262,9 @@ function App() {
           path="/admin/content"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Content Management" {...layoutProps}>
+              <DashboardLayout title="Content Management">
                 <AdminContentManagementPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -288,9 +272,9 @@ function App() {
           path="/admin/appointments"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Appointment Management" {...layoutProps}>
+              <DashboardLayout title="Appointment Management">
                 <AdminAppointmentsPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -298,9 +282,9 @@ function App() {
           path="/admin/interview"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Interview Editor" {...layoutProps}>
+              <DashboardLayout title="Interview Editor">
                 <AdminInterviewEditor />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -308,9 +292,9 @@ function App() {
           path="/admin/billing" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Billing Dashboard" {...layoutProps}>
+              <DashboardLayout title="Billing Dashboard">
                 <BillingDashboard />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -318,9 +302,9 @@ function App() {
           path="/admin/pricing" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Pricing'} {...layoutProps}>
+              <DashboardLayout title={'Pricing'}>
                 <AdminPricingPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -328,9 +312,9 @@ function App() {
           path="/admin/workflows" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Workflows'} {...layoutProps}>
+              <DashboardLayout title={'Workflows'}>
                 <AdminWorkflowsPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -338,9 +322,9 @@ function App() {
           path="/admin/time-entries" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Time Entries'} {...layoutProps}>
+              <DashboardLayout title={'Time Entries'}>
                 <AdminTimeEntriesPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
@@ -348,22 +332,24 @@ function App() {
           path="/admin/reports" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Reports'} {...layoutProps}>
+              <DashboardLayout title={'Reports'}>
                 <AdminReportsPage />
-              </Layout>
+              </DashboardLayout>
             </ProtectedRoute>
           } 
         />
         
         {/* Unauthorized page */}
         <Route path="/unauthorized" element={
-          <Layout title="Unauthorized">
+          <DashboardLayout title="Unauthorized">
             <div className="text-center py-12">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
               <p className="text-gray-600 mb-8">You don't have permission to access this page.</p>
-              <Navigate to="/" replace />
+              <Link to="/">
+                <Button variant="primary">Return Home</Button>
+              </Link>
             </div>
-          </Layout>
+          </DashboardLayout>
         } />
         
         {/* Fallback for authenticated users */}

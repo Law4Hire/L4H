@@ -90,19 +90,38 @@ const LegalDashboard: React.FC = () => {
   const handleSaveCase = async () => {
     if (!selectedCase) return
     
-    // Save Assignments
-    if (editFormData.assignedStaffId !== undefined) {
-       await assignCase(selectedCase, editFormData.assignedStaffId ? parseInt(editFormData.assignedStaffId) : null)
+    try {
+      // Save Assignments (Admin only)
+      if (isAdmin && editFormData.assignedStaffId !== undefined) {
+         const staffId = editFormData.assignedStaffId ? parseInt(editFormData.assignedStaffId) : null
+         await assignCase(selectedCase, staffId)
+      }
+
+      // Save Status (Legal Professional or Admin)
+      if (editFormData.status) {
+        const token = localStorage.getItem('jwt_token')
+        const response = await fetch(`/api/v1/cases/${selectedCase}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: editFormData.status })
+        })
+
+        if (!response.ok) {
+          const errData = await response.json()
+          throw new Error(errData.detail || 'Failed to update status')
+        }
+      }
+
+      await fetchCases({ showAssigned, search: searchTerm, sortBy, sortDesc })
+      setIsEditingCase(false)
+      // alert('Case updated successfully')
+    } catch (err) {
+      console.error('Error saving case:', err)
+      alert(err instanceof Error ? err.message : 'Failed to save changes')
     }
-
-    // Save Status / Other fields
-    await updateCase(selectedCase, {
-      status: editFormData.status
-    })
-
-    await fetchCases({ showAssigned, search: searchTerm, sortBy, sortDesc })
-    setIsEditingCase(false)
-    // Update local selected case data if needed or just refetch
   }
 
   useEffect(() => {
