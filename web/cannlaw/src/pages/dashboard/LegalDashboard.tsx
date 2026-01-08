@@ -52,7 +52,7 @@ const LegalDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   // Cases management
-  const { cases, isLoading: casesLoading, error: casesError, fetchCases, assignCase, updateVisaTypes } = useCases()
+  const { cases, isLoading: casesLoading, error: casesError, fetchCases, assignCase, updateVisaTypes, updateCase } = useCases()
   const { attorneys, fetchAttorneys } = useAttorneys()
   const [searchTerm, setSearchTerm] = useState('')
   const [showAssigned, setShowAssigned] = useState(false)
@@ -62,18 +62,47 @@ const LegalDashboard: React.FC = () => {
   const [showCaseModal, setShowCaseModal] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [isEditingCase, setIsEditingCase] = useState(false)
+  const [editFormData, setEditFormData] = useState<any>({}) // Generic object for case edits
 
   const isAdmin = user?.roles?.includes('Admin') || false
   const isLegalProfessional = user?.roles?.includes('LegalProfessional') || isAdmin
 
   const handleRequestReassignment = async (caseId: string) => {
     // In a real app, this would create a task or notification for admins
-    success('Reassignment request sent to administrators')
+    // success('Reassignment request sent to administrators') // alert for now
+    alert('Reassignment request sent to administrators')
   }
 
   const handleCaseAction = (caseId: string) => {
     setSelectedCase(caseId)
+    const caseData = cases.find(c => c.id === caseId)
+    if (caseData) {
+      setEditFormData({
+        status: caseData.status,
+        assignedStaffId: caseData.assignedStaffId || '',
+        // Add other fields as needed
+      })
+    }
     setShowCaseModal(true)
+    setIsEditingCase(false)
+  }
+
+  const handleSaveCase = async () => {
+    if (!selectedCase) return
+    
+    // Save Assignments
+    if (editFormData.assignedStaffId !== undefined) {
+       await assignCase(selectedCase, editFormData.assignedStaffId ? parseInt(editFormData.assignedStaffId) : null)
+    }
+
+    // Save Status / Other fields
+    await updateCase(selectedCase, {
+      status: editFormData.status
+    })
+
+    await fetchCases({ showAssigned, search: searchTerm, sortBy, sortDesc })
+    setIsEditingCase(false)
+    // Update local selected case data if needed or just refetch
   }
 
   useEffect(() => {
@@ -427,7 +456,7 @@ const LegalDashboard: React.FC = () => {
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  onClick={() => setIsEditingCase(!isEditingCase)}
+                  onClick={() => isEditingCase ? handleSaveCase() : setIsEditingCase(true)}
                 >
                   {isEditingCase ? <Save size={18} className="mr-2" /> : <Edit size={18} className="mr-2" />}
                   {isEditingCase ? 'Save' : 'Edit'}
@@ -460,18 +489,44 @@ const LegalDashboard: React.FC = () => {
                         <label className="text-sm font-bold text-gray-500 uppercase">Email</label>
                         <p className="text-lg text-navy-900 dark:text-white">{caseData.clientEmail}</p>
                       </div>
+                      
                       <div>
-                        <label className="text-sm font-bold text-gray-500 uppercase">Status</label>
+                        <label className="text-sm font-bold text-gray-500 uppercase block mb-1">Status</label>
                         {isEditingCase ? (
-                          <input 
-                            type="text" 
-                            className="w-full p-2 border rounded" 
-                            defaultValue={caseData.status} 
-                          />
+                          <select 
+                            className="w-full p-2 border rounded bg-white dark:bg-navy-800 dark:text-white dark:border-navy-700" 
+                            value={editFormData.status}
+                            onChange={(e) => setEditFormData({...editFormData, status: e.target.value})}
+                          >
+                            {['Inquiry', 'Consultation', 'Retainer Agreement', 'Case In Progress', 'Review', 'Filing', 'Completed', 'Closed'].map(s => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
                         ) : (
-                          <p className="text-lg text-navy-900 dark:text-white">{caseData.status}</p>
+                          <span className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200`}>
+                            {caseData.status}
+                          </span>
                         )}
                       </div>
+
+                      <div>
+                        <label className="text-sm font-bold text-gray-500 uppercase block mb-1">Assigned Staff</label>
+                        {isEditingCase && isAdmin ? (
+                          <select
+                            className="w-full p-2 border rounded bg-white dark:bg-navy-800 dark:text-white dark:border-navy-700"
+                            value={editFormData.assignedStaffId}
+                            onChange={(e) => setEditFormData({...editFormData, assignedStaffId: e.target.value})}
+                          >
+                            <option value="">Unassigned</option>
+                            {attorneys.map(atty => (
+                              <option key={atty.id} value={atty.id}>{atty.name}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <p className="text-lg text-navy-900 dark:text-white">{caseData.assignedStaffName || 'Unassigned'}</p>
+                        )}
+                      </div>
+
                       <div>
                         <label className="text-sm font-bold text-gray-500 uppercase">Visa Types</label>
                         <div className="flex flex-wrap gap-2 mt-2">
@@ -490,10 +545,7 @@ const LegalDashboard: React.FC = () => {
                           ))}
                         </div>
                       </div>
-                      <div>
-                        <label className="text-sm font-bold text-gray-500 uppercase">Assigned Staff</label>
-                        <p className="text-lg text-navy-900 dark:text-white">{caseData.assignedStaffName || 'Unassigned'}</p>
-                      </div>
+                      
                       <div>
                         <label className="text-sm font-bold text-gray-500 uppercase">Created</label>
                         <p className="text-lg text-navy-900 dark:text-white">{format(new Date(caseData.createdAt), 'PPP')}</p>
@@ -510,7 +562,8 @@ const LegalDashboard: React.FC = () => {
             <div className="p-6 border-t border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-800 flex justify-between gap-4">
               {(() => {
                  const caseData = cases.find(c => c.id === selectedCase)
-                 if (caseData && caseData.assignedStaffId) {
+                 // Show unassign button if assigned and NOT in edit mode (edit mode has dropdown)
+                 if (caseData && caseData.assignedStaffId && !isEditingCase) {
                    return (
                      <Button 
                        onClick={() => handleAssignCase(caseData.id, null)} 

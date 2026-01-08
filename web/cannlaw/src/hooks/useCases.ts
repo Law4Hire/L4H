@@ -135,6 +135,28 @@ export function useCases() {
     }
   }
 
+  const updateCase = async (caseId: string, data: any) => {
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch(`/api/v1/cases/${caseId}`, {
+        method: 'PATCH', // Using PATCH for partial updates
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update case')
+      }
+      return { success: true }
+    } catch (err) {
+      console.error('Error updating case:', err)
+      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+    }
+  }
+
   return {
     cases,
     isLoading,
@@ -142,6 +164,7 @@ export function useCases() {
     fetchCases,
     assignCase,
     updateVisaTypes,
+    updateCase,
     refetch: fetchCases
   }
 }
