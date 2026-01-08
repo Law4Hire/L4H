@@ -144,12 +144,30 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
               <ThemeToggle />
             </nav>
 
-            {/* Associate Login Button */}
-            <div className="hidden md:flex items-center pl-4">
-              {isAuthenticated ? (
-                <Link to="/dashboard">
-                  <Button variant="outline" size="sm" className="dark:text-white dark:border-navy-600 dark:hover:bg-navy-800">Dashboard</Button>
-                </Link>
+            {/* Associate Login Button / User Menu */}
+            <div className="hidden md:flex items-center pl-4 space-x-4">
+              {isAuthenticated && user ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Hello, {user.name}
+                  </span>
+                  <Link to="/dashboard">
+                    <Button variant="outline" size="sm" className="dark:text-white dark:border-navy-600 dark:hover:bg-navy-800">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      localStorage.removeItem('jwt_token')
+                      window.location.href = '/'
+                    }}
+                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                  >
+                    Logout
+                  </Button>
+                </div>
               ) : (
                 <Link to="/login">
                   <Button variant="primary" size="sm" className="bg-blue-900 dark:bg-gold-600 dark:hover:bg-gold-500 hover:bg-blue-800 shadow-md border-none dark:text-navy-900 font-bold">
@@ -199,12 +217,28 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
             ))}
             {/* Associate Login Button */}
             <div className="pt-2 border-t border-gray-200 dark:border-navy-700">
-              {isAuthenticated ? (
-                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" size="sm" className="w-full dark:text-white dark:border-navy-600">
-                    Dashboard
+              {isAuthenticated && user ? (
+                <div className="space-y-2">
+                  <div className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Hello, {user.name}
+                  </div>
+                  <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="outline" size="sm" className="w-full dark:text-white dark:border-navy-600">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full text-red-600 dark:text-red-400"
+                    onClick={() => {
+                      localStorage.removeItem('jwt_token')
+                      window.location.href = '/'
+                    }}
+                  >
+                    Logout
                   </Button>
-                </Link>
+                </div>
               ) : (
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="primary" size="sm" className="w-full bg-blue-900 dark:bg-gold-600 hover:bg-blue-800 dark:hover:bg-gold-500 dark:text-navy-900 font-bold">

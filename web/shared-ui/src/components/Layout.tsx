@@ -18,6 +18,9 @@ interface LayoutProps {
   showUserMenu?: boolean
   user?: User | null
   isAuthenticated?: boolean
+  brandName?: string
+  brandLogo?: React.ReactNode
+  brandSubtitle?: string
 }
 
 function getUserDisplayName(user: User): string {
@@ -36,7 +39,14 @@ export const Layout: React.FC<LayoutProps> = ({
   title: _title,
   showUserMenu = true,
   user,
-  isAuthenticated = false
+  isAuthenticated = false,
+  brandName = "US Immigration Help",
+  brandSubtitle = "Powered by Law4Hire",
+  brandLogo = (
+    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+      <span className="text-white font-bold text-lg">🇺🇸</span>
+    </div>
+  )
 }) => {
   const { theme, toggleTheme } = useTheme()
   const [showUserDropdown, setShowUserDropdown] = useState(false)
@@ -109,12 +119,10 @@ export const Layout: React.FC<LayoutProps> = ({
                 className="flex items-center space-x-3 cursor-pointer"
                 onClick={() => navigate('/')}
               >
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">🇺🇸</span>
-                </div>
+                {brandLogo}
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">US Immigration Help</h1>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">Powered by Law4Hire</p>
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">{brandName}</h1>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{brandSubtitle}</p>
                 </div>
               </div>
             </div>

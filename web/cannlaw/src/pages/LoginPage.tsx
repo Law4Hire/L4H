@@ -17,9 +17,15 @@ const LoginPage: React.FC = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      // @ts-ignore
-      const from = location.state?.from?.pathname || '/dashboard'
-      navigate(from, { replace: true })
+      // Ensure we redirect to dashboard for staff, even if they came from public page
+      const from = location.state?.from?.pathname
+      
+      // If no specific redirect, or if redirect is to login page itself
+      if (!from || from === '/login' || from === '/') {
+         navigate('/dashboard', { replace: true })
+      } else {
+         navigate(from, { replace: true })
+      }
     }
   }, [isAuthenticated, navigate, location])
 

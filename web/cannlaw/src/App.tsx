@@ -57,6 +57,23 @@ const LoadingFallback = () => (
   </div>
 )
 
+// Layout Configuration
+const cannlawLogo = (
+  <div className="flex-shrink-0 mr-2">
+    <img 
+      src="https://cannlaw.com/images/logo.gif" 
+      alt="Cann Legal Group"
+      className="h-8 w-auto object-contain dark:brightness-110"
+    />
+  </div>
+)
+
+const layoutProps = {
+  brandName: "Cann Legal Group",
+  brandSubtitle: "Immigration Law Specialists",
+  brandLogo: cannlawLogo
+}
+
 function App() {
   // Item 11: Automatic Cache Clearing on New Build
   React.useEffect(() => {
@@ -117,7 +134,7 @@ function App() {
           path="/dashboard" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="Legal Dashboard">
+              <Layout title="Legal Dashboard" {...layoutProps}>
                 <LegalDashboard />
               </Layout>
             </ProtectedRoute>
@@ -127,7 +144,7 @@ function App() {
           path="/clients" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="Client Management">
+              <Layout title="Client Management" {...layoutProps}>
                 <ClientManagement />
               </Layout>
             </ProtectedRoute>
@@ -137,7 +154,7 @@ function App() {
           path="/clients/:id" 
           element={
             <ClientProtectedRoute>
-              <Layout title="Client Profile">
+              <Layout title="Client Profile" {...layoutProps}>
                 <ClientProfilePage />
               </Layout>
             </ClientProtectedRoute>
@@ -147,7 +164,7 @@ function App() {
           path="/time-tracking" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="Time Tracking">
+              <Layout title="Time Tracking" {...layoutProps}>
                 <TimeTrackingPage />
               </Layout>
             </ProtectedRoute>
@@ -157,7 +174,7 @@ function App() {
           path="/messages" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="Messages">
+              <Layout title="Messages" {...layoutProps}>
                 <MessagesPage />
               </Layout>
             </ProtectedRoute>
@@ -167,7 +184,7 @@ function App() {
           path="/profile" 
           element={
             <ProtectedRoute requireLegalProfessional>
-              <Layout title="My Profile">
+              <Layout title="My Profile" {...layoutProps}>
                 <ProfilePage />
               </Layout>
             </ProtectedRoute>
@@ -179,7 +196,7 @@ function App() {
           path="/schedule" 
           element={
             <RouteGuard>
-              <Layout title={'Schedule'}>
+              <Layout title={'Schedule'} {...layoutProps}>
                 <SchedulePage />
               </Layout>
             </RouteGuard>
@@ -189,7 +206,7 @@ function App() {
           path="/cases" 
           element={
             <RouteGuard>
-              <Layout title={'Cases'}>
+              <Layout title={'Cases'} {...layoutProps}>
                 <CasesPage />
               </Layout>
             </RouteGuard>
@@ -201,7 +218,7 @@ function App() {
           path="/admin" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Admin'}>
+              <Layout title={'Admin'} {...layoutProps}>
                 <AdminPage />
               </Layout>
             </ProtectedRoute>
@@ -211,7 +228,7 @@ function App() {
           path="/admin/site-config" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Site Configuration">
+              <Layout title="Site Configuration" {...layoutProps}>
                 <SiteConfigPage />
               </Layout>
             </ProtectedRoute>
@@ -221,7 +238,7 @@ function App() {
           path="/admin/attorneys"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Attorney Management">
+              <Layout title="Attorney Management" {...layoutProps}>
                 <AttorneyManagementPage />
               </Layout>
             </ProtectedRoute>
@@ -231,7 +248,7 @@ function App() {
           path="/admin/services"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Services Management">
+              <Layout title="Services Management" {...layoutProps}>
                 <ServicesManagementPage />
               </Layout>
             </ProtectedRoute>
@@ -241,7 +258,7 @@ function App() {
           path="/admin/visa-library"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Visa Library Management">
+              <Layout title="Visa Library Management" {...layoutProps}>
                 <VisaLibraryManagementPage />
               </Layout>
             </ProtectedRoute>
@@ -251,7 +268,7 @@ function App() {
           path="/admin/alerts"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Alerts Management">
+              <Layout title="Alerts Management" {...layoutProps}>
                 <AlertsManagementPage />
               </Layout>
             </ProtectedRoute>
@@ -261,7 +278,7 @@ function App() {
           path="/admin/content"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Content Management">
+              <Layout title="Content Management" {...layoutProps}>
                 <AdminContentManagementPage />
               </Layout>
             </ProtectedRoute>
@@ -271,7 +288,7 @@ function App() {
           path="/admin/appointments"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Appointment Management">
+              <Layout title="Appointment Management" {...layoutProps}>
                 <AdminAppointmentsPage />
               </Layout>
             </ProtectedRoute>
@@ -281,7 +298,7 @@ function App() {
           path="/admin/interview"
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Interview Editor">
+              <Layout title="Interview Editor" {...layoutProps}>
                 <AdminInterviewEditor />
               </Layout>
             </ProtectedRoute>
@@ -291,7 +308,7 @@ function App() {
           path="/admin/billing" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title="Billing Dashboard">
+              <Layout title="Billing Dashboard" {...layoutProps}>
                 <BillingDashboard />
               </Layout>
             </ProtectedRoute>
@@ -301,7 +318,7 @@ function App() {
           path="/admin/pricing" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Pricing'}>
+              <Layout title={'Pricing'} {...layoutProps}>
                 <AdminPricingPage />
               </Layout>
             </ProtectedRoute>
@@ -311,7 +328,7 @@ function App() {
           path="/admin/workflows" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Workflows'}>
+              <Layout title={'Workflows'} {...layoutProps}>
                 <AdminWorkflowsPage />
               </Layout>
             </ProtectedRoute>
@@ -321,7 +338,7 @@ function App() {
           path="/admin/time-entries" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Time Entries'}>
+              <Layout title={'Time Entries'} {...layoutProps}>
                 <AdminTimeEntriesPage />
               </Layout>
             </ProtectedRoute>
@@ -331,7 +348,7 @@ function App() {
           path="/admin/reports" 
           element={
             <ProtectedRoute requireAdmin>
-              <Layout title={'Reports'}>
+              <Layout title={'Reports'} {...layoutProps}>
                 <AdminReportsPage />
               </Layout>
             </ProtectedRoute>
