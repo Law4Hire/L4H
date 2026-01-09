@@ -66,20 +66,34 @@ export const TimeTracker: React.FC<TimeTrackerProps> = ({ caseId, clientName }) 
   }
 
   const handleStart = async () => {
+    if (!caseId) {
+      error('No case selected')
+      return
+    }
+
     try {
       setIsLoading(true)
+      console.log('Starting timer for case:', caseId)
+      
       const entry = await fetchJson<TimeEntry>('/v1/time-tracking/start', {
         method: 'POST',
         body: JSON.stringify({
-          caseId, // We will need to update backend to accept caseId
+          caseId: caseId, 
           description: `Working on case for ${clientName}`
         })
       })
       setActiveEntry(entry)
       success('Time tracking started')
-    } catch (err) {
-      console.error(err)
-      error('Failed to start timer')
+    } catch (err: any) {
+      console.error('Timer start failed:', err)
+      // Check if it's a "Timer already running" error
+      if (err.message && err.message.includes('already running')) {
+         error('A timer is already running. Stop it first.')
+         // Optionally fetch the active timer to show it
+         checkActiveTimer()
+      } else {
+         error(err.message || 'Failed to start timer')
+      }
     } finally {
       setIsLoading(false)
     }

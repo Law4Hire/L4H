@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Card, Button, Input } from '@l4h/shared-ui'
 import { User, Mail, Phone, Calendar, Edit, Save, X, Plus, Download, Clock, CheckCircle, AlertCircle } from '@l4h/shared-ui'
 import { useClients } from '../../hooks/useClients'
+import { useAttorneys } from '../../hooks/useAttorneys'
 import { useAuth } from '../../hooks/useAuth'
 
 interface ClientProfilePageProps {}
@@ -55,25 +56,37 @@ interface Client {
   state?: string
   zipCode?: string
   country?: string
+  countryOfOrigin?: string
   status: string
+  assignedAttorneyId?: number
+  assignedAttorney?: {
+    id: number
+    name: string
+    email: string
+  }
   createdAt: string
   updatedAt: string
+  cases?: Case[]
 }
 
 interface Case {
-  id: string
+  id: number
   clientId: number
   caseType: string
   status: string
   description?: string
+  startDate: string
+  completionDate?: string
+  governmentCaseNumber?: string
   createdAt: string
 }
 
 const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  useAuth() // For future authentication checks
+  const { user, isAdmin } = useAuth() // Need isAdmin for assignment permission
   const { getClient } = useClients()
+  const { attorneys } = useAttorneys()
 
   const [client, setClient] = useState<Client | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -141,7 +154,11 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
 
   const handleSaveClient = async () => {
     try {
+      if (!editedClient) return
+      
       const token = localStorage.getItem('jwt_token')
+      
+      // Update basic info
       const response = await fetch(`/api/v1/clients/${id}`, {
         method: 'PUT',
         headers: {
@@ -151,12 +168,28 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
         body: JSON.stringify(editedClient)
       })
 
-      if (response.ok) {
-        setClient(editedClient)
-        setIsEditing(false)
-      } else {
-        alert('Failed to update client')
+      if (!response.ok) {
+        throw new Error('Failed to update client details')
       }
+
+      // Update assignment if changed (and user is admin)
+      if (isAdmin && editedClient.assignedAttorneyId !== client?.assignedAttorneyId) {
+         if (editedClient.assignedAttorneyId) {
+            await fetch(`/api/v1/clients/${id}/assign`, {
+              method: 'PUT', // or POST depending on backend
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ attorneyId: editedClient.assignedAttorneyId })
+            })
+         }
+      }
+
+      setClient(editedClient)
+      setIsEditing(false)
+      // Refetch to get populated fields (like attorney name)
+      fetchClientData()
     } catch (error) {
       console.error('Error updating client:', error)
       alert('Failed to update client')
@@ -374,6 +407,21 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
                       onChange={(e) => setEditedClient({...editedClient, countryOfOrigin: e.target.value})}
                     />
                   </div>
+                  {isAdmin && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Attorney</label>
+                      <select
+                        value={editedClient.assignedAttorneyId || ''}
+                        onChange={(e) => setEditedClient({...editedClient, assignedAttorneyId: e.target.value ? parseInt(e.target.value) : undefined})}
+                        className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500 bg-white"
+                      >
+                        <option value="">Unassigned</option>
+                        {attorneys.map(atty => (
+                          <option key={atty.id} value={atty.id}>{atty.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -444,9 +492,9 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
             </Card>
 
             {/* Assigned Attorney */}
-            {client.assignedAttorney && (
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Assigned Attorney</h3>
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Assigned Attorney</h3>
+              {client.assignedAttorney ? (
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                     <User className="w-5 h-5 text-blue-600" />
@@ -456,8 +504,13 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
                     <p className="text-xs text-gray-500">{client.assignedAttorney.email}</p>
                   </div>
                 </div>
-              </Card>
-            )}
+              ) : (
+                <div className="flex items-center space-x-3 text-gray-500">
+                  <AlertCircle className="w-5 h-5" />
+                  <p className="text-sm">Unassigned</p>
+                </div>
+              )}
+            </Card>
           </div>
         </div>
       )}   
