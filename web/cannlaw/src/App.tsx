@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { RouteGuard, ToastProvider } from '@l4h/shared-ui'
+import { Routes, Route, Navigate, Link } from 'react-router-dom'
+import { RouteGuard, ToastProvider, Button } from '@l4h/shared-ui'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ClientProtectedRoute } from './components/ClientProtectedRoute'
 import DashboardLayout from './components/DashboardLayout'
