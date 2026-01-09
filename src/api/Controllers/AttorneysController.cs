@@ -92,15 +92,8 @@ public class AttorneysController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Attorney>> GetMyProfile()
     {
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        if (string.IsNullOrEmpty(email)) return Unauthorized();
-
-        var attorney = await _context.Attorneys
-            .FirstOrDefaultAsync(a => a.Email.Equals(email, StringComparison.OrdinalIgnoreCase))
-            .ConfigureAwait(false);
-
+        var attorney = await GetCurrentAttorneyAsync();
         if (attorney == null) return NotFound("Attorney profile not found for this user.");
-
         return Ok(attorney);
     }
 
@@ -111,13 +104,7 @@ public class AttorneysController : ControllerBase
     [Authorize]
     public async Task<ActionResult> UpdateMyProfile([FromBody] AttorneyUpdateDto request)
     {
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        if (string.IsNullOrEmpty(email)) return Unauthorized();
-
-        var attorney = await _context.Attorneys
-            .FirstOrDefaultAsync(a => a.Email.Equals(email, StringComparison.OrdinalIgnoreCase))
-            .ConfigureAwait(false);
-
+        var attorney = await GetCurrentAttorneyAsync();
         if (attorney == null) return NotFound("Attorney profile not found.");
 
         attorney.Bio = request.Bio ?? attorney.Bio;
@@ -139,6 +126,27 @@ public class AttorneysController : ControllerBase
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok(attorney);
+    }
+
+    private async Task<Attorney?> GetCurrentAttorneyAsync()
+    {
+        // Try to get by AttorneyId claim first (most reliable)
+        var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
+        if (int.TryParse(attorneyIdClaim, out var attorneyId))
+        {
+            return await _context.Attorneys.FindAsync(attorneyId).ConfigureAwait(false);
+        }
+
+        // Fallback to Email
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        if (!string.IsNullOrEmpty(email))
+        {
+            return await _context.Attorneys
+                .FirstOrDefaultAsync(a => a.Email == email) // EF Core is case-insensitive by default in SQL usually
+                .ConfigureAwait(false);
+        }
+
+        return null;
     }
 
     /// <summary>

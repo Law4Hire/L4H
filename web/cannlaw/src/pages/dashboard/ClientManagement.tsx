@@ -77,13 +77,14 @@ const ClientManagement: React.FC = () => {
     // Initial load with role-based filtering
     const initialFilters: SearchFilters = {
       searchTerm: '',
-      assignedAttorney: isLegalProfessional && user?.attorneyId ? user.attorneyId.toString() : '',
+      // Only filter by attorney if user is LegalProfessional AND NOT Admin
+      assignedAttorney: (isLegalProfessional && !isAdmin && user?.attorneyId) ? user.attorneyId.toString() : '',
       caseStatus: '',
       caseType: '',
       dateRange: ''
     }
     searchClients(initialFilters)
-  }, [user, isLegalProfessional])
+  }, [user, isLegalProfessional, isAdmin])
 
   const handleFilterChange = (key: keyof SearchFilters, value: string) => {
     const newFilters = { ...filters, [key]: value }
@@ -125,7 +126,8 @@ const ClientManagement: React.FC = () => {
   const clearFilters = () => {
     const clearedFilters: SearchFilters = {
       searchTerm: '',
-      assignedAttorney: isLegalProfessional && user?.attorneyId ? user.attorneyId.toString() : '',
+      // Only filter by attorney if user is LegalProfessional AND NOT Admin
+      assignedAttorney: (isLegalProfessional && !isAdmin && user?.attorneyId) ? user.attorneyId.toString() : '',
       caseStatus: '',
       caseType: '',
       dateRange: ''

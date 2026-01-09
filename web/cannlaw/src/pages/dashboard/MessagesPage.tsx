@@ -64,10 +64,17 @@ const MessagesPage: React.FC = () => {
 
   const fetchThreads = async () => {
     try {
-      const data = await fetchJson<MessageThread[]>('/v1/messaging/threads')
-      // Ensure IDs are valid to prevent selection bugs
-      const validThreads = data.filter(t => t && t.id)
-      setThreads(validThreads)
+      const data = await fetchJson<any[]>('/v1/messaging/threads')
+      // Map API response (threadId, title) to frontend model (id, subject)
+      const mappedThreads = data.map(t => ({
+        id: t.threadId,
+        subject: t.title,
+        lastMessageSnippet: t.lastMessageSnippet,
+        lastMessageTime: t.lastMessageTime,
+        participantName: t.participantName,
+        unreadCount: t.unreadCount
+      }))
+      setThreads(mappedThreads)
     } catch (err) {
       console.error('Error fetching threads:', err)
       error('Failed to load message threads')
