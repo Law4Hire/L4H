@@ -10,6 +10,7 @@ export interface CaseVisaType {
 
 export interface DashboardCase {
   id: string
+  clientId?: number
   clientFirstName: string
   clientLastName: string
   clientEmail: string

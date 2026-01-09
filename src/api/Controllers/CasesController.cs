@@ -135,6 +135,7 @@ public class CasesController : ControllerBase
         var response = cases.Select(c => new CaseDashboardResponse
         {
             Id = c.Id.Value,
+            ClientId = _context.Clients.Where(cl => cl.Email == c.User.Email).Select(cl => (int?)cl.Id).FirstOrDefault(),
             ClientFirstName = c.User.FirstName ?? "",
             ClientLastName = c.User.LastName ?? "",
             ClientEmail = c.User.Email,
@@ -361,7 +362,7 @@ public class CasesController : ControllerBase
         }
 
         // Validate transition
-        if (!IsValidTransition(caseEntity.Status, request.Status))
+        if (!isAdmin && !IsValidTransition(caseEntity.Status, request.Status))
         {
             return StatusCode(409, new ProblemDetails
             {
@@ -700,6 +701,7 @@ public class SetPackageRequest
 public class CaseDashboardResponse
 {
     public Guid Id { get; set; }
+    public int? ClientId { get; set; }
     public string ClientFirstName { get; set; } = string.Empty;
     public string ClientLastName { get; set; } = string.Empty;
     public string ClientEmail { get; set; } = string.Empty;

@@ -79,7 +79,7 @@ const LegalDashboard: React.FC = () => {
     if (caseData) {
       setEditFormData({
         status: caseData.status,
-        assignedStaffId: caseData.assignedStaffId || '',
+        assignedStaffId: caseData.assignedStaffId !== undefined && caseData.assignedStaffId !== null ? caseData.assignedStaffId.toString() : '',
         // Add other fields as needed
       })
     }
@@ -500,9 +500,21 @@ const LegalDashboard: React.FC = () => {
                     />
 
                     <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-bold text-gray-500 uppercase">Client Name</label>
-                        <p className="text-lg text-navy-900 dark:text-white">{caseData.clientFirstName} {caseData.clientLastName}</p>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <label className="text-sm font-bold text-gray-500 uppercase">Client Name</label>
+                          <p className="text-lg text-navy-900 dark:text-white">{caseData.clientFirstName} {caseData.clientLastName}</p>
+                        </div>
+                        {caseData.clientId && (
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            onClick={() => navigate(`/clients/${caseData.clientId}`)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            View Profile
+                          </Button>
+                        )}
                       </div>
                       <div>
                         <label className="text-sm font-bold text-gray-500 uppercase">Email</label>

@@ -61,6 +61,23 @@ public class TimeTrackingController : ControllerBase
 
             // Find client by matching user email (Cannlaw specific mapping)
             client = await _context.Clients.FirstOrDefaultAsync(c => c.Email == caseEntity.User.Email);
+
+            // Auto-create Client if missing but User exists
+            if (client == null && caseEntity.User != null)
+            {
+                client = new Client
+                {
+                    FirstName = caseEntity.User.FirstName ?? "Unknown",
+                    LastName = caseEntity.User.LastName ?? "Unknown",
+                    Email = caseEntity.User.Email,
+                    Phone = caseEntity.User.PhoneNumber ?? "",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    CreatedBy = "System (TimeTracking)"
+                };
+                _context.Clients.Add(client);
+                await _context.SaveChangesAsync();
+            }
         }
         else if (request.ClientId.HasValue)
         {
