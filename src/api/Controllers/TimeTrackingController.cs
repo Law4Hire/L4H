@@ -30,14 +30,14 @@ public class TimeTrackingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<TimeEntry>> StartTimeTracking([FromBody] StartTimeTrackingRequest request)
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyId))
+        var attorneyId = await GetCurrentAttorneyId();
+        if (attorneyId == null)
         {
-            return BadRequest("Invalid user ID");
+            return BadRequest("Current user is not a registered attorney/staff member");
         }
 
         // Verify attorney exists and is active
-        var attorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Id == attorneyId && a.IsActive);
+        var attorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Id == attorneyId.Value && a.IsActive);
         if (attorney == null)
         {
             return BadRequest("Attorney not found or inactive");
@@ -82,7 +82,6 @@ public class TimeTrackingController : ControllerBase
         else if (request.ClientId.HasValue)
         {
             // Legacy support or direct client billing without case (if needed)
-            // But we prefer CaseId now.
             client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == request.ClientId.Value);
         }
 
@@ -109,14 +108,9 @@ public class TimeTrackingController : ControllerBase
         // Create new time entry
         var timeEntry = new TimeEntry
         {
-            CaseId = caseEntity?.Id ?? default, // Should ideally be nullable or required. We made it required in entity but context allows if we fix it.
-            // Wait, if CaseId is required in TimeEntry, we MUST have a case.
-            // If request.ClientId was used, we might not have a case.
-            // Let's require CaseId effectively or handle the migration properly.
-            // For now, let's assume CaseId is provided or found.
-            
+            CaseId = caseEntity?.Id ?? default, 
             ClientId = client.Id,
-            AttorneyId = attorneyId,
+            AttorneyId = attorneyId.Value,
             StartTime = DateTime.UtcNow,
             Description = request.Description ?? string.Empty,
             Notes = request.Notes ?? string.Empty,
@@ -124,16 +118,12 @@ public class TimeTrackingController : ControllerBase
             CreatedAt = DateTime.UtcNow
         };
         
-        // If we strictly require CaseId now due to entity change:
         if (caseEntity != null)
         {
             timeEntry.CaseId = caseEntity.Id;
         }
         else
         {
-            // If we support Client-only billing, we need to handle this.
-            // But user requirement is "I work on case...".
-            // Let's enforce CaseId for now as per user flow.
             return BadRequest("Case ID is required for time tracking.");
         }
 
@@ -161,11 +151,8 @@ public class TimeTrackingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<TimeEntry>> StopTimeTracking(int id, [FromBody] StopTimeTrackingRequest? request = null)
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyId))
-        {
-            return BadRequest("Invalid user ID");
-        }
+        var attorneyId = await GetCurrentAttorneyId();
+        if (attorneyId == null) return BadRequest("Invalid user");
 
         var timeEntry = await _context.TimeEntries
             .Include(te => te.Client)
@@ -225,11 +212,8 @@ public class TimeTrackingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TimeEntry>> GetActiveTimeTracking()
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyId))
-        {
-            return BadRequest("Invalid user ID");
-        }
+        var attorneyId = await GetCurrentAttorneyId();
+        if (attorneyId == null) return BadRequest("Invalid user");
 
         var activeSession = await _context.TimeEntries
             .Include(te => te.Client)
@@ -253,11 +237,8 @@ public class TimeTrackingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<TimeEntry>> GetTimeEntry(int id)
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyId))
-        {
-            return BadRequest("Invalid user ID");
-        }
+        var attorneyId = await GetCurrentAttorneyId();
+        if (attorneyId == null) return BadRequest("Invalid user");
 
         var query = _context.TimeEntries
             .Include(te => te.Client)
@@ -295,11 +276,8 @@ public class TimeTrackingController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var currentAttorneyId))
-        {
-            return BadRequest("Invalid user ID");
-        }
+        var currentAttorneyId = await GetCurrentAttorneyId();
+        if (currentAttorneyId == null) return BadRequest("Invalid user");
 
         var query = _context.TimeEntries
             .Include(te => te.Client)
@@ -364,11 +342,8 @@ public class TimeTrackingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> UpdateTimeEntry(int id, [FromBody] UpdateTimeEntryRequest request)
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyId))
-        {
-            return BadRequest("Invalid user ID");
-        }
+        var attorneyId = await GetCurrentAttorneyId();
+        if (attorneyId == null) return BadRequest("Invalid user");
 
         var timeEntry = await _context.TimeEntries.FirstOrDefaultAsync(te => te.Id == id);
         if (timeEntry == null)
@@ -438,11 +413,8 @@ public class TimeTrackingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> DeleteTimeEntry(int id)
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyId))
-        {
-            return BadRequest("Invalid user ID");
-        }
+        var attorneyId = await GetCurrentAttorneyId();
+        if (attorneyId == null) return BadRequest("Invalid user");
 
         var timeEntry = await _context.TimeEntries.FirstOrDefaultAsync(te => te.Id == id);
         if (timeEntry == null)
@@ -475,11 +447,8 @@ public class TimeTrackingController : ControllerBase
     [ProducesResponseType(typeof(TimeTrackingStats), StatusCodes.Status200OK)]
     public async Task<ActionResult<TimeTrackingStats>> GetStats()
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyId))
-        {
-            return BadRequest("Invalid user ID");
-        }
+        var attorneyId = await GetCurrentAttorneyId();
+        if (attorneyId == null) return BadRequest("Invalid user");
 
         var now = DateTime.UtcNow;
         var today = now.Date;
@@ -505,6 +474,18 @@ public class TimeTrackingController : ControllerBase
             HoursThisWeek = hoursThisWeek,
             UnbilledAmount = unbilledAmount
         });
+    }
+
+    private async Task<int?> GetCurrentAttorneyId()
+    {
+        var userIdClaim = User.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return null;
+        }
+
+        var user = await _context.Users.FindAsync(new UserId(userId));
+        return user?.AttorneyId;
     }
 }
 
