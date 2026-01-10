@@ -16,54 +16,59 @@ public class DashboardController : ControllerBase
 {
     private readonly L4HDbContext _context;
 
-    public DashboardController(L4HDbContext context)
+    private readonly ILogger<DashboardController> _logger;
+
+    public DashboardController(L4HDbContext context, ILogger<DashboardController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     [HttpGet("stats")]
     public async Task<ActionResult<DashboardStats>> GetStats()
     {
         var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyIdInt))
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             return BadRequest("Invalid user ID");
         }
 
-        var isAdmin = User.HasClaim("is_admin", "true");
+        var user = await _context.Users.FindAsync(new UserId(userId));
+        var isAdmin = User.HasClaim("is_admin", "true") || (user?.IsAdmin ?? false);
+        var attorneyId = user?.AttorneyId;
+
+        if (!isAdmin && attorneyId == null)
+        {
+            // If not admin and not linked to attorney, they can't see legal dashboard stats
+            // But if they are just a client, they shouldn't be here anyway due to Policy.
+            // Policy "IsLegalProfessional" checks claim.
+            return Forbid("User is not associated with an attorney profile.");
+        }
+
         var now = DateTime.UtcNow;
         var startOfMonth = new DateTime(now.Year, now.Month, 1);
         var startOfLastMonth = startOfMonth.AddMonths(-1);
 
-        // Define the current attorney's UserId (Guid) if not admin
-        Guid? currentAttorneyUserIdGuid = null; 
-        if (!isAdmin)
-        {
-            var user = await _context.Users
-                .Where(u => u.AttorneyId == attorneyIdInt)
-                .Select(u => u.Id.Value) // Select the underlying Guid value
-                .FirstOrDefaultAsync();
-
-            if (user == Guid.Empty) // Check if user.Id was found
-            {
-                return Forbid("No associated user found for this attorney.");
-            }
-            currentAttorneyUserIdGuid = user; // Assign the Guid
-        }
-
         // Base queries
         var clientsQuery = _context.Clients.AsQueryable();
-        var casesQuery = _context.Cases.Include(c => c.User).AsQueryable(); // Include User for filtering
+        var casesQuery = _context.Cases.Include(c => c.User).AsQueryable(); 
         var appointmentsQuery = _context.Appointments.AsQueryable();
         var timeEntriesQuery = _context.TimeEntries.AsQueryable();
 
         // Apply filters for non-admins
-        if (!isAdmin && currentAttorneyUserIdGuid.HasValue)
+        if (!isAdmin)
         {
-            clientsQuery = clientsQuery.Where(c => c.AssignedAttorneyId == attorneyIdInt);
-            casesQuery = casesQuery.Where(c => c.User != null && c.User.AttorneyId == attorneyIdInt);
-            appointmentsQuery = appointmentsQuery.Where(a => a.StaffUserId.Value == currentAttorneyUserIdGuid.Value); // Compare Guid values
-            timeEntriesQuery = timeEntriesQuery.Where(t => t.AttorneyId == attorneyIdInt);
+            if (attorneyId.HasValue)
+            {
+                clientsQuery = clientsQuery.Where(c => c.AssignedAttorneyId == attorneyId.Value);
+                casesQuery = casesQuery.Where(c => c.AssignedStaffId == attorneyId.Value); 
+                // Note: Case entity uses AssignedStaffId (int), NOT User relationship for assignment usually.
+                // Previously it checked c.User.AttorneyId, which means "cases owned by clients who are assigned to me".
+                // But usually we assign cases directly. Let's use AssignedStaffId if available.
+                
+                appointmentsQuery = appointmentsQuery.Where(a => a.StaffUserId == new UserId(userId)); 
+                timeEntriesQuery = timeEntriesQuery.Where(t => t.AttorneyId == attorneyId.Value);
+            }
         }
 
         // 1. Active Cases
@@ -109,36 +114,26 @@ public class DashboardController : ControllerBase
     public async Task<ActionResult<IEnumerable<ActivityItem>>> GetRecentActivity()
     {
         var userIdClaim = User.FindFirst("sub")?.Value;
-        if (!int.TryParse(userIdClaim, out var attorneyIdInt))
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
             return BadRequest("Invalid user ID");
         }
 
-        var isAdmin = User.HasClaim("is_admin", "true");
-        var activityLimit = 10;
+        var user = await _context.Users.FindAsync(new UserId(userId));
+        var isAdmin = User.HasClaim("is_admin", "true") || (user?.IsAdmin ?? false);
+        var attorneyId = user?.AttorneyId;
 
-        // Define the current attorney's UserId if not admin
-        Guid? currentAttorneyUserIdGuid = null; // Declare as Guid?
-        if (!isAdmin)
+        if (!isAdmin && attorneyId == null)
         {
-            var user = await _context.Users
-                .Where(u => u.AttorneyId == attorneyIdInt)
-                .Select(u => u.Id.Value) // Select the underlying Guid value
-                .FirstOrDefaultAsync();
-
-            if (user == Guid.Empty) // Check if user.Id was found
-            {
-                return Forbid("No associated user found for this attorney.");
-            }
-            currentAttorneyUserIdGuid = user; // Assign the Guid
+            return Forbid("User is not associated with an attorney profile.");
         }
 
-        // Fetch recent items from different tables
-        // We'll fetch top 5 from each and merge/sort in memory for simplicity
-        
+        var activityLimit = 10;
+
         // 1. New Clients
         var clientsQuery = _context.Clients.AsQueryable();
-        if (!isAdmin) clientsQuery = clientsQuery.Where(c => c.AssignedAttorneyId == attorneyIdInt);
+        if (!isAdmin && attorneyId.HasValue) 
+            clientsQuery = clientsQuery.Where(c => c.AssignedAttorneyId == attorneyId.Value);
         
         var recentClients = await clientsQuery
             .OrderByDescending(c => c.CreatedAt)
@@ -156,8 +151,9 @@ public class DashboardController : ControllerBase
             .Include(a => a.Case)
             .ThenInclude(c => c.User)
             .AsQueryable();
-        if (!isAdmin && currentAttorneyUserIdGuid.HasValue) 
-            appointmentsQuery = appointmentsQuery.Where(a => a.StaffUserId.Value == currentAttorneyUserIdGuid.Value);
+            
+        if (!isAdmin) 
+            appointmentsQuery = appointmentsQuery.Where(a => a.StaffUserId == new UserId(userId));
 
         var recentAppointments = await appointmentsQuery
             .OrderByDescending(a => a.CreatedAt)
@@ -165,7 +161,7 @@ public class DashboardController : ControllerBase
             .Select(a => new ActivityItem
             {
                 Type = "appointment",
-                Message = $"Appointment scheduled with {a.Case.User.FirstName} {a.Case.User.LastName}", // Access via Case.User
+                Message = $"Appointment scheduled with {a.Case.User.FirstName} {a.Case.User.LastName}", 
                 Time = a.CreatedAt.ToString("o")
             })
             .ToListAsync();
@@ -174,7 +170,8 @@ public class DashboardController : ControllerBase
         var timeEntriesQuery = _context.TimeEntries
             .Include(t => t.Client)
             .AsQueryable();
-        if (!isAdmin) timeEntriesQuery = timeEntriesQuery.Where(t => t.AttorneyId == attorneyIdInt);
+        if (!isAdmin && attorneyId.HasValue) 
+            timeEntriesQuery = timeEntriesQuery.Where(t => t.AttorneyId == attorneyId.Value);
 
         var recentTime = await timeEntriesQuery
             .OrderByDescending(t => t.CreatedAt)
@@ -191,7 +188,7 @@ public class DashboardController : ControllerBase
         var allActivity = recentClients
             .Concat(recentAppointments)
             .Concat(recentTime)
-            .OrderByDescending(x => x.Time) // Order by string representation of ISO time for simplicity here
+            .OrderByDescending(x => x.Time) 
             .Take(activityLimit)
             .ToList();
 
