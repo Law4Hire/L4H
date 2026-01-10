@@ -224,7 +224,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {/* Version Tag for Deployment Verification */}
       <div className="fixed bottom-2 left-2 z-[100] bg-black/50 text-white text-[10px] px-2 py-1 rounded-md pointer-events-none backdrop-blur-sm border border-white/10 font-mono">
-        v1.0.10-dashboard-auth
+        v1.0.11-stable
       </div>
     </div>
   )

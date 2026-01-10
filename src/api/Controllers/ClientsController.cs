@@ -34,8 +34,8 @@ public class ClientsController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
-        // Lazy Sync: Ensure all non-staff users exist in Clients table
-        await SyncUsersToClients();
+        // Sync removed for stability
+        // await SyncUsersToClients();
 
         var query = _context.Clients
             .Include(c => c.AssignedAttorney)
