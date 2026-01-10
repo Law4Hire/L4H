@@ -64,8 +64,9 @@ const LegalDashboard: React.FC = () => {
   const [isEditingCase, setIsEditingCase] = useState(false)
   const [editFormData, setEditFormData] = useState<any>({}) // Generic object for case edits
 
-  const isAdmin = user?.isAdmin || user?.roles?.includes('Admin') || false
-  const isLegalProfessional = user?.roles?.includes('LegalProfessional') || isAdmin
+  // Use properties from User interface directly, avoiding potential 'roles' undefined access if interface changed
+  const isAdmin = user?.isAdmin || user?.role === 'Admin' || false
+  const isLegalProfessional = user?.isLegalProfessional || user?.role === 'LegalProfessional' || isAdmin
 
   const handleRequestReassignment = async (caseId: string) => {
     // In a real app, this would create a task or notification for admins
