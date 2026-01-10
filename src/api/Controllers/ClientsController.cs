@@ -98,39 +98,25 @@ public class ClientsController : ControllerBase
     {
         try
         {
-            // Get potential clients (Users who are not staff/admin)
-            var users = await _context.Users
+            // Optimize: Use DB-side filtering to find missing clients
+            var missingUsers = await _context.Users
                 .Where(u => !u.IsStaff && !u.IsAdmin)
-                .Select(u => new { u.Email, u.FirstName, u.LastName, u.PhoneNumber })
+                .Where(u => !_context.Clients.Any(c => c.Email == u.Email))
                 .ToListAsync();
 
-            // Get existing client emails
-            var existingEmails = await _context.Clients
-                .Select(c => c.Email.ToLower())
-                .ToListAsync();
-            var existingEmailSet = new HashSet<string>(existingEmails);
-
-            var newClients = new List<Client>();
-            foreach (var user in users)
+            if (missingUsers.Any())
             {
-                if (!string.IsNullOrEmpty(user.Email) && !existingEmailSet.Contains(user.Email.ToLower()))
+                var newClients = missingUsers.Select(u => new Client
                 {
-                    newClients.Add(new Client
-                    {
-                        FirstName = user.FirstName ?? "Unknown",
-                        LastName = user.LastName ?? "Unknown",
-                        Email = user.Email,
-                        Phone = user.PhoneNumber ?? "",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow,
-                        CreatedBy = "System (Sync)"
-                    });
-                    existingEmailSet.Add(user.Email.ToLower()); // Prevent duplicates in batch
-                }
-            }
+                    FirstName = u.FirstName ?? "Unknown",
+                    LastName = u.LastName ?? "Unknown",
+                    Email = u.Email,
+                    Phone = u.PhoneNumber ?? "",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    CreatedBy = "System (Sync)"
+                }).ToList();
 
-            if (newClients.Any())
-            {
                 _context.Clients.AddRange(newClients);
                 await _context.SaveChangesAsync();
             }
