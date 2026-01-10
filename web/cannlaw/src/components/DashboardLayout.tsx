@@ -32,6 +32,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, titl
       title={title} 
       user={user} 
       isAuthenticated={isAuthenticated} 
+      showAdminLink={false}
       {...layoutProps}
     >
       {children}

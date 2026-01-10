@@ -21,6 +21,7 @@ interface LayoutProps {
   brandName?: string
   brandLogo?: React.ReactNode
   brandSubtitle?: string
+  showAdminLink?: boolean
 }
 
 function getUserDisplayName(user: User): string {
@@ -46,7 +47,8 @@ export const Layout: React.FC<LayoutProps> = ({
     <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
       <span className="text-white font-bold text-lg">🇺🇸</span>
     </div>
-  )
+  ),
+  showAdminLink = true
 }) => {
   const { theme, toggleTheme } = useTheme()
   const [showUserDropdown, setShowUserDropdown] = useState(false)
@@ -169,7 +171,7 @@ export const Layout: React.FC<LayoutProps> = ({
                       >
                         Dashboard
                       </button>
-                      {user?.isAdmin && (
+                      {user?.isAdmin && showAdminLink && (
                         <button
                           onClick={() => {
                             setShowUserDropdown(false)

@@ -64,7 +64,7 @@ const LegalDashboard: React.FC = () => {
   const [isEditingCase, setIsEditingCase] = useState(false)
   const [editFormData, setEditFormData] = useState<any>({}) // Generic object for case edits
 
-  const isAdmin = user?.roles?.includes('Admin') || false
+  const isAdmin = user?.isAdmin || user?.roles?.includes('Admin') || false
   const isLegalProfessional = user?.roles?.includes('LegalProfessional') || isAdmin
 
   const handleRequestReassignment = async (caseId: string) => {

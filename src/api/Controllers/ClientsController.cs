@@ -34,6 +34,9 @@ public class ClientsController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
+        // Lazy Sync: Ensure all non-staff users exist in Clients table
+        await SyncUsersToClients();
+
         var query = _context.Clients
             .Include(c => c.AssignedAttorney)
             .Include(c => c.Cases)
@@ -89,6 +92,54 @@ public class ClientsController : ControllerBase
         Response.Headers.Append("X-Page-Size", pageSize.ToString());
 
         return Ok(clients);
+    }
+
+    private async Task SyncUsersToClients()
+    {
+        try
+        {
+            // Get potential clients (Users who are not staff/admin)
+            var users = await _context.Users
+                .Where(u => !u.IsStaff && !u.IsAdmin)
+                .Select(u => new { u.Email, u.FirstName, u.LastName, u.PhoneNumber })
+                .ToListAsync();
+
+            // Get existing client emails
+            var existingEmails = await _context.Clients
+                .Select(c => c.Email.ToLower())
+                .ToListAsync();
+            var existingEmailSet = new HashSet<string>(existingEmails);
+
+            var newClients = new List<Client>();
+            foreach (var user in users)
+            {
+                if (!string.IsNullOrEmpty(user.Email) && !existingEmailSet.Contains(user.Email.ToLower()))
+                {
+                    newClients.Add(new Client
+                    {
+                        FirstName = user.FirstName ?? "Unknown",
+                        LastName = user.LastName ?? "Unknown",
+                        Email = user.Email,
+                        Phone = user.PhoneNumber ?? "",
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        CreatedBy = "System (Sync)"
+                    });
+                    existingEmailSet.Add(user.Email.ToLower()); // Prevent duplicates in batch
+                }
+            }
+
+            if (newClients.Any())
+            {
+                _context.Clients.AddRange(newClients);
+                await _context.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't fail the request
+            Console.WriteLine($"Error syncing clients: {ex.Message}");
+        }
     }    
 /// <summary>
     /// Get a specific client by ID with role-based access
