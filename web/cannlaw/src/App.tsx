@@ -28,6 +28,7 @@ const ClientProfilePage = lazy(() => import('./pages/dashboard/ClientProfilePage
 const TimeTrackingPage = lazy(() => import('./pages/dashboard/TimeTrackingPage'))
 const ProfilePage = lazy(() => import('./pages/dashboard/ProfilePage'))
 const MessagesPage = lazy(() => import('./pages/dashboard/MessagesPage'))
+const NotificationPreferences = lazy(() => import('./pages/settings/NotificationPreferences'))
 
 // Admin billing
 const BillingDashboard = lazy(() => import('./pages/admin/BillingDashboard'))
@@ -170,6 +171,16 @@ function App() {
             <ProtectedRoute requireLegalProfessional>
               <DashboardLayout title="My Profile">
                 <ProfilePage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/settings/notifications" 
+          element={
+            <ProtectedRoute requireLegalProfessional>
+              <DashboardLayout title="Notification Preferences">
+                <NotificationPreferences />
               </DashboardLayout>
             </ProtectedRoute>
           } 

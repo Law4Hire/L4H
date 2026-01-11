@@ -46,7 +46,7 @@ const AdminPage: React.FC = () => {
   }
 
   const handleSiteConfig = () => {
-    navigate('/admin/config')
+    navigate('/admin/site-config')
   }
 
   const handleAppointmentsManagement = () => {

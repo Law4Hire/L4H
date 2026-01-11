@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button, fetchJson } from '@l4h/shared-ui'
+import { Card, Button, fetchJson, useTheme } from '@l4h/shared-ui'
 import { useAuth } from '../../hooks/useAuth'
 import { useCases } from '../../hooks/useCases'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import { formatDistanceToNow, format } from 'date-fns'
-import { MessageSquare, Calendar, User, Clock, Video, ExternalLink, Settings, Search, ArrowUpDown, ChevronDown, X, Edit, Save } from 'lucide-react'
+import { MessageSquare, Calendar, User, Clock, Video, ExternalLink, Settings, Search, ArrowUpDown, ChevronDown, X, Edit, Save, Bell, Moon, Sun, Shield } from 'lucide-react'
 import { TimeTracker } from '../../components/TimeTracker'
 
 interface DashboardStats {
@@ -44,6 +44,7 @@ interface MessagePreview {
 
 const LegalDashboard: React.FC = () => {
   const { user } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activity, setActivity] = useState<ActivityItem[]>([])
@@ -674,7 +675,7 @@ const LegalDashboard: React.FC = () => {
       {/* Settings Modal */}
       {showSettingsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-navy-900 rounded-lg shadow-xl max-w-2xl w-full">
+          <div className="bg-white dark:bg-navy-900 rounded-lg shadow-xl max-w-lg w-full">
             <div className="p-6 border-b border-gray-200 dark:border-navy-800 flex justify-between items-center">
               <h2 className="text-2xl font-bold text-navy-900 dark:text-white">Settings</h2>
               <button
@@ -684,8 +685,66 @@ const LegalDashboard: React.FC = () => {
                 <X size={24} />
               </button>
             </div>
-            <div className="p-6">
-              <p className="text-gray-500 italic">Settings functionality coming soon. You can update your profile from the Attorneys/Staff admin panel.</p>
+            <div className="p-6 space-y-4">
+              <button
+                onClick={() => navigate('/settings/notifications')}
+                className="flex items-center w-full p-4 bg-gray-50 dark:bg-navy-800 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors text-left"
+              >
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full mr-4">
+                  <Bell size={20} className="text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-navy-900 dark:text-white">Notification Preferences</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Manage your email and in-app alerts</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => navigate('/profile')}
+                className="flex items-center w-full p-4 bg-gray-50 dark:bg-navy-800 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors text-left"
+              >
+                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-full mr-4">
+                  <User size={20} className="text-purple-600 dark:text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-navy-900 dark:text-white">My Profile</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Update your personal information</p>
+                </div>
+              </button>
+
+              <button
+                onClick={toggleTheme}
+                className="flex items-center w-full p-4 bg-gray-50 dark:bg-navy-800 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors text-left"
+              >
+                <div className="p-2 bg-gold-100 dark:bg-gold-900/30 rounded-full mr-4">
+                  {theme === 'dark' ? (
+                    <Sun size={20} className="text-gold-600 dark:text-gold-400" />
+                  ) : (
+                    <Moon size={20} className="text-gold-600 dark:text-gold-400" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-bold text-navy-900 dark:text-white">Appearance</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Switch to {theme === 'dark' ? 'light' : 'dark'} mode
+                  </p>
+                </div>
+              </button>
+
+              {isAdmin && (
+                <button
+                  onClick={() => navigate('/admin/site-config')}
+                  className="flex items-center w-full p-4 bg-gray-50 dark:bg-navy-800 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors text-left"
+                >
+                  <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full mr-4">
+                    <Shield size={20} className="text-red-600 dark:text-red-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-navy-900 dark:text-white">Site Configuration</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Manage system-wide settings</p>
+                  </div>
+                </button>
+              )}
             </div>
             <div className="p-6 border-t border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-800">
               <Button onClick={() => setShowSettingsModal(false)} className="w-full">Close</Button>
