@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button } from '@l4h/shared-ui'
+import { Card, Button, fetchJson } from '@l4h/shared-ui'
 import { useAuth } from '../../hooks/useAuth'
 import { useCases } from '../../hooks/useCases'
 import { useAttorneys } from '../../hooks/useAttorneys'
@@ -126,40 +126,6 @@ const LegalDashboard: React.FC = () => {
           editFormData.clientEmail !== caseData.clientEmail
       )) {
           const token = localStorage.getItem('jwt_token')
-          const response = await fetch(`/api/v1/clients/${caseData.clientId}`, {
-            method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              firstName: editFormData.clientFirstName,
-              lastName: editFormData.clientLastName,
-              email: editFormData.clientEmail,
-              // We need to preserve other fields, ideally fetch client first, but PUT usually requires full object or PATCH.
-              // ClientsController.UpdateClient is a PUT and updates specific fields.
-              // It requires a Client object.
-              // Let's assume partial update is NOT supported by `UpdateClient` (it replaces fields).
-              // We should fetch the client first or rely on backend to handle nulls?
-              // ClientsController.UpdateClient: existingClient.FirstName = clientUpdate.FirstName;
-              // It blindly assigns.
-              // So we MUST send all fields or at least the required ones.
-              // Since we don't have phone/address here, we might overwrite them with null/empty if we aren't careful.
-              // BUT, `LegalDashboard` modal is a simplified view.
-              // To safely update, we should fetch the full client, merge, and put.
-              // Or better: Use the "View Profile" link I added for full editing.
-              // However, the user EXPLICITLY asked "I need to be able to edit the customer's e-mail address and their name".
-              // So I will implement a fetch-merge-put logic here.
-            })
-          })
-          
-          // Actually, let's defer complex client editing to the Profile page as I added the link.
-          // BUT if I MUST do it here:
-          // fetch client -> merge -> put.
-          // For now, I'll stick to the "View Profile" link as the primary way to edit deep details,
-          // AND implement name/email editing here because the user asked for it.
-          // I will do a fetch inside this block.
-          
           const clientRes = await fetch(`/api/v1/clients/${caseData.clientId}`, {
              headers: { 'Authorization': `Bearer ${token}` }
           })
@@ -190,20 +156,24 @@ const LegalDashboard: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('jwt_token')
-        const headers = { 'Authorization': `Bearer ${token}` }
-
-        const [statsRes, activityRes, appointRes, msgRes] = await Promise.all([
-          fetch('/api/v1/dashboard/stats', { headers }),
-          fetch('/api/v1/dashboard/activity', { headers }),
-          fetch('/api/v1/meetings/my-appointments', { headers }),
-          fetch('/api/v1/messaging/previews', { headers })
+        const [statsData, activityData, appointData, msgData] = await Promise.allSettled([
+          fetchJson<DashboardStats>('/api/v1/dashboard/stats'),
+          fetchJson<ActivityItem[]>('/api/v1/dashboard/activity'),
+          fetchJson<Appointment[]>('/api/v1/meetings/my-appointments'),
+          fetchJson<MessagePreview[]>('/api/v1/messaging/previews')
         ])
 
-        if (statsRes.ok) setStats(await statsRes.json())
-        if (activityRes.ok) setActivity(await activityRes.json())
-        if (appointRes.ok) setAppointments(await appointRes.json())
-        if (msgRes.ok) setMessages(await msgRes.json())
+        if (statsData.status === 'fulfilled') setStats(statsData.value)
+        else console.warn('Failed to load stats', statsData.reason)
+
+        if (activityData.status === 'fulfilled') setActivity(activityData.value)
+        else console.warn('Failed to load activity', activityData.reason)
+
+        if (appointData.status === 'fulfilled') setAppointments(appointData.value)
+        else console.warn('Failed to load appointments', appointData.reason)
+
+        if (msgData.status === 'fulfilled') setMessages(msgData.value)
+        else console.warn('Failed to load messages', msgData.reason)
 
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
