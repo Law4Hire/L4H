@@ -349,7 +349,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
 
       {/* Version Tag for Deployment Verification */}
       <div className="fixed bottom-2 left-2 z-[100] bg-black/50 text-white text-[10px] px-2 py-1 rounded-md pointer-events-none backdrop-blur-sm border border-white/10 font-mono">
-        v1.0.14-fix-destructuring
+        v1.0.15-final-fix
       </div>
     </div>
   )
