@@ -157,10 +157,10 @@ const LegalDashboard: React.FC = () => {
     const fetchData = async () => {
       try {
         const [statsData, activityData, appointData, msgData] = await Promise.allSettled([
-          fetchJson<DashboardStats>('/api/v1/dashboard/stats'),
-          fetchJson<ActivityItem[]>('/api/v1/dashboard/activity'),
-          fetchJson<Appointment[]>('/api/v1/meetings/my-appointments'),
-          fetchJson<MessagePreview[]>('/api/v1/messaging/previews')
+          fetchJson<DashboardStats>('/v1/dashboard/stats'),
+          fetchJson<ActivityItem[]>('/v1/dashboard/activity'),
+          fetchJson<Appointment[]>('/v1/meetings/my-appointments'),
+          fetchJson<MessagePreview[]>('/v1/messaging/previews')
         ])
 
         if (statsData.status === 'fulfilled') setStats(statsData.value)
