@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button, Input, Modal } from '@l4h/shared-ui'
-import { Search, Filter, User, Phone, Calendar, Edit, AlertCircle, CheckCircle, Clock, Plus } from '@l4h/shared-ui'
+import { Search, Filter, User, Phone, Calendar, Edit, AlertCircle, CheckCircle, Clock, Plus, RotateCw } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import { useClients } from '../../hooks/useClients'
@@ -123,6 +123,20 @@ const ClientManagement: React.FC = () => {
     }
   }
 
+  const handleSyncClients = async () => {
+    try {
+      const token = localStorage.getItem('jwt_token')
+      await fetch('/api/v1/clients/sync', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      searchClients(filters)
+      alert('Clients synced successfully')
+    } catch (err) {
+      alert('Failed to sync clients')
+    }
+  }
+
   const clearFilters = () => {
     const clearedFilters: SearchFilters = {
       searchTerm: '',
@@ -137,62 +151,7 @@ const ClientManagement: React.FC = () => {
   }
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case CaseStatus.NotStarted:
-        return 'bg-gray-100 text-gray-800'
-      case CaseStatus.InProgress:
-        return 'bg-blue-100 text-blue-800'
-      case CaseStatus.Paid:
-        return 'bg-green-100 text-green-800'
-      case CaseStatus.FormsCompleted:
-        return 'bg-purple-100 text-purple-800'
-      case CaseStatus.Complete:
-        return 'bg-green-100 text-green-800'
-      case CaseStatus.ClosedRejected:
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case CaseStatus.NotStarted:
-        return <Clock className="w-4 h-4" />
-      case CaseStatus.InProgress:
-        return <AlertCircle className="w-4 h-4" />
-      case CaseStatus.Paid:
-        return <CheckCircle className="w-4 h-4" />
-      case CaseStatus.FormsCompleted:
-        return <CheckCircle className="w-4 h-4" />
-      case CaseStatus.Complete:
-        return <CheckCircle className="w-4 h-4" />
-      case CaseStatus.ClosedRejected:
-        return <AlertCircle className="w-4 h-4" />
-      default:
-        return <Clock className="w-4 h-4" />
-    }
-  }
-
-  const getClientFullName = (client: Client) => {
-    return `${client.firstName} ${client.lastName}`.trim()
-  }
-
-  const getClientPrimaryCase = (client: Client) => {
-    return client.cases.find(c => c.status !== CaseStatus.Complete && c.status !== CaseStatus.ClosedRejected) || client.cases[0]
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
+...
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Client Management</h1>
@@ -205,10 +164,16 @@ const ClientManagement: React.FC = () => {
         </div>
         <div className="flex space-x-3">
           {isAdmin && (
-            <Button variant="outline" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
-              <Filter className="w-4 h-4 mr-2" />
-              {showAdvancedFilters ? 'Hide Filters' : 'Advanced Filters'}
-            </Button>
+            <>
+              <Button variant="outline" onClick={handleSyncClients}>
+                <RotateCw className="w-4 h-4 mr-2" />
+                Sync Clients
+              </Button>
+              <Button variant="outline" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
+                <Filter className="w-4 h-4 mr-2" />
+                {showAdvancedFilters ? 'Hide Filters' : 'Advanced Filters'}
+              </Button>
+            </>
           )}
           <Button variant="primary">
             <Plus className="w-4 h-4 mr-2" />

@@ -724,7 +724,7 @@ public class CaseVisaTypeInfo
 
 public class AssignCaseRequest
 {
-    public int StaffId { get; set; }
+    public int? StaffId { get; set; }
 }
 
 public class UpdateCaseVisaTypesRequest

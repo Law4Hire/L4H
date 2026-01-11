@@ -94,6 +94,17 @@ public class ClientsController : ControllerBase
         return Ok(clients);
     }
 
+    /// <summary>
+    /// Sync clients from user accounts (Admin only)
+    /// </summary>
+    [HttpPost("sync")]
+    [Authorize(Policy = "IsAdmin")]
+    public async Task<IActionResult> SyncClients()
+    {
+        await SyncUsersToClients();
+        return Ok(new { message = "Client sync completed." });
+    }
+
     private async Task SyncUsersToClients()
     {
         try
