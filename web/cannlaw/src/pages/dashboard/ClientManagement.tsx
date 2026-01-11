@@ -151,8 +151,60 @@ const ClientManagement: React.FC = () => {
   }
 
   const getStatusColor = (status: string) => {
-...
-      <div className="flex justify-between items-center">
+    switch (status) {
+      case CaseStatus.NotStarted:
+        return 'bg-gray-100 text-gray-800'
+      case CaseStatus.InProgress:
+        return 'bg-blue-100 text-blue-800'
+      case CaseStatus.Paid:
+        return 'bg-green-100 text-green-800'
+      case CaseStatus.FormsCompleted:
+        return 'bg-purple-100 text-purple-800'
+      case CaseStatus.Complete:
+        return 'bg-green-100 text-green-800'
+      case CaseStatus.ClosedRejected:
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case CaseStatus.NotStarted:
+        return <Clock className="w-4 h-4" />
+      case CaseStatus.InProgress:
+        return <AlertCircle className="w-4 h-4" />
+      case CaseStatus.Paid:
+        return <CheckCircle className="w-4 h-4" />
+      case CaseStatus.FormsCompleted:
+        return <CheckCircle className="w-4 h-4" />
+      case CaseStatus.Complete:
+        return <CheckCircle className="w-4 h-4" />
+      case CaseStatus.ClosedRejected:
+        return <AlertCircle className="w-4 h-4" />
+      default:
+        return <Clock className="w-4 h-4" />
+    }
+  }
+
+  const getClientFullName = (client: Client) => {
+    return `${client.firstName} ${client.lastName}`.trim()
+  }
+
+  const getClientPrimaryCase = (client: Client) => {
+    return client.cases.find(c => c.status !== CaseStatus.Complete && c.status !== CaseStatus.ClosedRejected) || client.cases[0]
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  return (
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Client Management</h1>
           <p className="text-gray-600">
