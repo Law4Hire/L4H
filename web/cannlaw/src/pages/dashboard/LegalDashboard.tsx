@@ -53,7 +53,7 @@ const LegalDashboard: React.FC = () => {
 
   // Cases management
   const { cases, isLoading: casesLoading, error: casesError, fetchCases, assignCase, updateVisaTypes, updateCase } = useCases()
-  const { attorneys, fetchAttorneys } = useAttorneys()
+  const { attorneys, refetch: fetchAttorneys } = useAttorneys()
   const [searchTerm, setSearchTerm] = useState('')
   const [showAssigned, setShowAssigned] = useState(false)
   const [sortBy, setSortBy] = useState('lastActivityAt')
