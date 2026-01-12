@@ -226,11 +226,11 @@ public class ClientsController : ControllerBase
         }
 
         // Role-based access check
-        var isAdmin = User.HasClaim("is_admin", "true");
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value == "true" || c.Value == "True"));
         if (!isAdmin)
         {
-            var userIdClaim = User.FindFirst("sub")?.Value;
-            if (!int.TryParse(userIdClaim, out var userId) || existingClient.AssignedAttorneyId != userId)
+            var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
+            if (!int.TryParse(attorneyIdClaim, out var attorneyId) || existingClient.AssignedAttorneyId != attorneyId)
             {
                 return Forbid();
             }
