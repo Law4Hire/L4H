@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Card, Button, Input, Modal, useToast } from '@l4h/shared-ui'
 import { 
-  X, User, Mail, Phone, Edit, AlertTriangle, CheckCircle, 
-  Upload, Trash2, Camera, MapPin, Briefcase, Globe, Info, RefreshCw 
+  X, User, Mail, Edit, AlertTriangle, 
+  Camera, MapPin, Briefcase, RefreshCw 
 } from 'lucide-react'
 import { useAttorneys } from '../../hooks/useAttorneys'
 
@@ -52,14 +52,13 @@ interface Attorney {
 }
 
 const AttorneyManagementPage: React.FC = () => {
-  const { attorneys, isLoading, error: fetchError, createAttorney, updateAttorney, refetch: fetchAttorneys } = useAttorneys()
+  const { attorneys, isLoading, createAttorney, updateAttorney, refetch: fetchAttorneys } = useAttorneys()
   const [showForm, setShowForm] = useState(false)
   const [editingAttorney, setEditingAttorney] = useState<Attorney | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDeactivateModal, setShowDeactivateModal] = useState(false)
   const [attorneyToDeactivate, setAttorneyToDeactivate] = useState<Attorney | null>(null)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
-  const [dragActive, setDragActive] = useState(false)
   const [pendingPhotoFile, setPendingPhotoFile] = useState<File | null>(null)
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -324,7 +323,7 @@ const AttorneyManagementPage: React.FC = () => {
     try {
       const attorneyData = {
         ...formData,
-        photoUrl: formData.photoUrl || null,
+        photoUrl: formData.photoUrl || undefined,
         credentials: formData.credentials || '[]',
         practiceAreas: formData.practiceAreas || '[]',
         languages: formData.languages || '[]'
@@ -339,10 +338,10 @@ const AttorneyManagementPage: React.FC = () => {
 
       if (result.success) {
         // If there's a pending photo and we just created a new attorney, upload it
-        if (pendingPhotoFile && result.data?.id) {
+        if (pendingPhotoFile && (result as any).data?.id) {
           try {
             setUploadingPhoto(true)
-            await uploadPhotoToServer(result.data.id, pendingPhotoFile)
+            await uploadPhotoToServer((result as any).data.id, pendingPhotoFile)
             success(`Attorney created and photo uploaded successfully`)
           } catch (photoErr) {
             console.error('Photo upload error after creation:', photoErr)
@@ -495,7 +494,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder="e.g. Denise S. Cann"
-                      error={!!formErrors.name}
+                      error={formErrors.name}
                       className="dark:bg-gray-700 dark:text-white"
                     />
                   </div>

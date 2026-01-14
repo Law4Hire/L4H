@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, Button, Modal, cases, interview, useToast, useQuery } from '@l4h/shared-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 import NextSteps from '../components/NextSteps';
 import { useAuth } from '../hooks/useAuth';
@@ -26,8 +27,9 @@ const DashboardPage: React.FC = () => {
   const navigate = useNavigate()
   const { error: showError } = useToast()
   const { user } = useAuth();
+  const queryClient = useQueryClient()
   const [showRecommendationModal, setShowRecommendationModal] = useState(false)
-  const [selectedRecommendation, setSelectedRecommendation] = useState<VisaRecommendation | null>(null)
+  const [selectedRecommendation] = useState<VisaRecommendation | null>(null)
   const [showResetWarning, setShowResetWarning] = useState(false)
   const [showLockWarning, setShowLockWarning] = useState(false)
   const [existingVisaType, setExistingVisaType] = useState<string | null>(null)
@@ -199,7 +201,7 @@ const DashboardPage: React.FC = () => {
           <div className="text-red-600 text-center py-4 bg-red-50 rounded-lg">
             <p className="font-bold">Error loading cases</p>
             <p className="text-sm">{(error as any)?.detail || (error as any)?.message || 'Please check your connection and try again.'}</p>
-            <Button size="sm" variant="outline" className="mt-2" onClick={() => (queryClient as any).invalidateQueries({ queryKey: ['cases'] })}>Retry</Button>
+            <Button size="sm" variant="outline" className="mt-2" onClick={() => queryClient.invalidateQueries({ queryKey: ['cases'] })}>Retry</Button>
           </div>
         ) : casesList.length === 0 ? (
           <div className="text-gray-500 dark:text-gray-400 text-center py-4">
@@ -232,8 +234,8 @@ const DashboardPage: React.FC = () => {
                     {'View'}
                   </Button>
                 </div>
-                {caseItem.visaTypeCode && user?.country && (
-                  <NextSteps visaTypeCode={caseItem.visaTypeCode} countryCode={user.country} />
+                {caseItem.visaTypeCode && (user as any)?.country && (
+                  <NextSteps visaTypeCode={caseItem.visaTypeCode} countryCode={(user as any).country} />
                 )}
               </div>
             ))}
@@ -243,7 +245,7 @@ const DashboardPage: React.FC = () => {
 
       {/* Visa Recommendation Modal */}
       <Modal
-        isOpen={showRecommendationModal}
+        open={showRecommendationModal}
         onClose={() => setShowRecommendationModal(false)}
         title={'Your Visa Recommendation'}
       >
@@ -299,7 +301,7 @@ const DashboardPage: React.FC = () => {
 
       {/* Reset Interview Warning Modal */}
       <Modal
-        isOpen={showResetWarning}
+        open={showResetWarning}
         onClose={handleCancelReset}
         title="Existing Visa Type Suggestion"
       >
@@ -338,7 +340,7 @@ const DashboardPage: React.FC = () => {
 
       {/* Lock Warning Modal */}
       <Modal
-        isOpen={showLockWarning}
+        open={showLockWarning}
         onClose={() => setShowLockWarning(false)}
         title="Interview Locked"
       >

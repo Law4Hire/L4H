@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button, Input, useToast, Modal } from '@l4h/shared-ui'
-import { Trash2, X, Search, Filter, Edit } from 'lucide-react'
+import { Edit, Trash2, X, Search } from 'lucide-react'
 
 interface AdminPricingRuleResponse {
   id: number

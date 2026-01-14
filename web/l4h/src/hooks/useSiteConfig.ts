@@ -12,6 +12,13 @@ interface SiteConfiguration {
   socialMediaPlatforms: string // JSON
   uniqueSellingPoints: string // JSON
   logoUrl: string
+  exchangeTenantId?: string
+  exchangeClientId?: string
+  exchangeClientSecret?: string
+  exchangeSystemEmail?: string
+  stripePublishableKey?: string
+  stripeSecretKey?: string
+  stripeWebhookSecret?: string
   createdAt: string
   updatedAt: string
 }
