@@ -109,7 +109,7 @@ const SinglePageRegistration: React.FC = () => {
           {/* More fields to be added here based on GITHUB_ISSUES.md */}
 
           <div className="md:col-span-2 mt-6">
-            <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting} className="w-full">
+            <Button type="submit" disabled={isSubmitting} loading={isSubmitting} className="w-full">
               {isSubmitting ? 'Registering...' : 'Create Account & See Results'}
             </Button>
           </div>

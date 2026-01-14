@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 
 export interface CaseVisaType {
   visaTypeId: number
@@ -29,12 +29,20 @@ export interface UseCasesOptions {
   sortDesc?: boolean
 }
 
+export interface CaseUpdateData {
+  status?: string
+  assignedStaffId?: number | null
+  clientFirstName?: string
+  clientLastName?: string
+  clientEmail?: string
+}
+
 export function useCases() {
   const [cases, setCases] = useState<DashboardCase[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchCases = async (options: UseCasesOptions = {}) => {
+  const fetchCases = useCallback(async (options: UseCasesOptions = {}) => {
     try {
       setIsLoading(true)
       setError(null)
@@ -73,9 +81,9 @@ export function useCases() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
-  const assignCase = async (caseId: string, staffId: number | null) => {
+  const assignCase = useCallback(async (caseId: string, staffId: number | null) => {
     try {
       const token = localStorage.getItem('jwt_token')
       const response = await fetch(`/api/v1/cases/${caseId}/assign`, {
@@ -100,9 +108,9 @@ export function useCases() {
         error: err instanceof Error ? err.message : 'Unknown error'
       }
     }
-  }
+  }, [])
 
-  const updateVisaTypes = async (
+  const updateVisaTypes = useCallback(async (
     caseId: string,
     visaTypeIds: number[],
     primaryVisaTypeId?: number
@@ -134,9 +142,9 @@ export function useCases() {
         error: err instanceof Error ? err.message : 'Unknown error'
       }
     }
-  }
+  }, [])
 
-  const updateCase = async (caseId: string, data: any) => {
+  const updateCase = useCallback(async (caseId: string, data: CaseUpdateData) => {
     try {
       const token = localStorage.getItem('jwt_token')
       const response = await fetch(`/api/v1/cases/${caseId}`, {
@@ -156,7 +164,7 @@ export function useCases() {
       console.error('Error updating case:', err)
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
-  }
+  }, [])
 
   return {
     cases,

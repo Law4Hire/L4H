@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from './useAuth'
 
 interface Client {
@@ -96,11 +96,7 @@ export function useClients() {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
-  useEffect(() => {
-    fetchClients()
-  }, [user])
-
-  const fetchClients = async (filters?: SearchFilters) => {
+  const fetchClients = useCallback(async (filters?: SearchFilters) => {
     try {
       setIsLoading(true)
       const token = localStorage.getItem('jwt_token')
@@ -152,7 +148,11 @@ export function useClients() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    fetchClients()
+  }, [user, fetchClients])
 
   const getClient = async (id: number) => {
     try {

@@ -145,10 +145,6 @@ const AdminUSCISFormsPage: React.FC = () => {
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
-  // ============================================================================
-  // API Helper Functions
-  // ============================================================================
-
   const getAuthHeaders = () => {
     const token = localStorage.getItem('jwt_token')
     return {
@@ -164,16 +160,7 @@ const AdminUSCISFormsPage: React.FC = () => {
     }
   }
 
-  // ============================================================================
-  // Load Data
-  // ============================================================================
-
-  useEffect(() => {
-    loadForms()
-    loadVisaTypes()
-  }, [])
-
-  const loadForms = async () => {
+  const loadForms = React.useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/v1/admin/uscis-forms', {
@@ -192,9 +179,9 @@ const AdminUSCISFormsPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [error])
 
-  const loadVisaTypes = async () => {
+  const loadVisaTypes = React.useCallback(async () => {
     try {
       const response = await fetch('/api/v1/visa-types', {
         headers: getAuthHeaders()
@@ -210,7 +197,16 @@ const AdminUSCISFormsPage: React.FC = () => {
       console.error('Error loading visa types:', err)
       error('Failed to load visa types')
     }
-  }
+  }, [error])
+
+  // ============================================================================
+  // Load Data
+  // ============================================================================
+
+  useEffect(() => {
+    loadForms()
+    loadVisaTypes()
+  }, [loadForms, loadVisaTypes])
 
   // ============================================================================
   // Form CRUD Operations
@@ -1360,7 +1356,7 @@ const AdminUSCISFormsPage: React.FC = () => {
               <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
                 Cancel
               </Button>
-              <Button variant="danger" onClick={handleDeleteForm}>
+              <Button variant="destructive" onClick={handleDeleteForm}>
                 Delete Form
               </Button>
             </div>

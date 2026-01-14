@@ -63,7 +63,7 @@ const ServicesManagementPage: React.FC = () => {
   const handleSaveCategory = async () => {
     try {
       if (editingCategory) {
-        const result = await updateServiceCategory(editingCategory.id!, categoryFormData)
+        const result = await updateServiceCategory(editingCategory.id!, categoryFormData as any)
         if (result.success) {
           success('Category updated successfully')
           setShowCategoryModal(false)
@@ -72,7 +72,7 @@ const ServicesManagementPage: React.FC = () => {
           error(result.error || 'Failed to update category')
         }
       } else {
-        const result = await createServiceCategory(categoryFormData)
+        const result = await createServiceCategory(categoryFormData as any)
         if (result.success) {
           success('Category created successfully')
           setShowCategoryModal(false)

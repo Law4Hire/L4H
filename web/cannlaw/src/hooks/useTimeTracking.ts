@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from './useAuth'
 
 interface TimeEntry {
@@ -71,12 +71,7 @@ export function useTimeTracking() {
     }
   }, [activeTimer])
 
-  // Check for existing active timer on mount
-  useEffect(() => {
-    checkActiveTimer()
-  }, [user])
-
-  const checkActiveTimer = async () => {
+  const checkActiveTimer = useCallback(async () => {
     if (!user || user.role !== 'LegalProfessional') return
 
     try {
@@ -102,7 +97,12 @@ export function useTimeTracking() {
     } catch (err) {
       console.error('Error checking active timer:', err)
     }
-  }
+  }, [user])
+
+  // Check for existing active timer on mount
+  useEffect(() => {
+    checkActiveTimer()
+  }, [user, checkActiveTimer])
 
   const startTimer = async (clientId: number, clientName: string, description: string): Promise<TimerResult> => {
     if (!user || user.role !== 'LegalProfessional') {

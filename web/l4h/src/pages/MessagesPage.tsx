@@ -96,7 +96,7 @@ export default function MessagesPage() {
     }
   })
 
-  const threads = Array.isArray(threadsData) ? threadsData : (threadsData?.threads || [])
+  const threads: MessageThread[] = Array.isArray(threadsData) ? threadsData : (threadsData?.threads || [])
 
   // Fetch messages for selected thread
   const { data: messagesData, isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
@@ -451,16 +451,14 @@ export default function MessagesPage() {
                     ))}
                   </div>
 
-                  {/* Reply input */}
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
                     <div className="flex space-x-2">
-                      <Input
+                      <textarea
+                        className="flex-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 p-2"
                         value={replyContent}
                         onChange={(e) => setReplyContent(e.target.value)}
                         placeholder="Type your reply..."
-                        multiline
                         rows={2}
-                        className="flex-1"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault()
@@ -528,15 +526,19 @@ export default function MessagesPage() {
             required
           />
 
-          <Input
-            label={'Message'}
-            value={newMessage.initialMessage}
-            onChange={(e) => setNewMessage(prev => ({ ...prev, initialMessage: e.target.value }))}
-            multiline
-            rows={6}
-            placeholder={'Type your message here...'}
-            required
-          />
+          <div className="w-full">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Message
+            </label>
+            <textarea
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 p-2"
+              value={newMessage.initialMessage}
+              onChange={(e) => setNewMessage(prev => ({ ...prev, initialMessage: e.target.value }))}
+              rows={6}
+              placeholder="Type your message here..."
+              required
+            />
+          </div>
 
           <div className="flex justify-end space-x-2 pt-4">
             <Button

@@ -11,7 +11,7 @@ vi.mock('@l4h/shared-ui', async () => {
   return {
     ...actual,
     apiClient: {
-      getCases: vi.fn(),
+      getMyCases: vi.fn(),
     },
   }
 })
@@ -52,10 +52,10 @@ describe('DashboardPage', () => {
       { id: '3', status: 'closed', lastActivity: '2024-01-13T09:15:00Z' },
     ]
 
-    vi.mocked(apiClient.getCases).mockResolvedValue({
+    vi.mocked(apiClient.getMyCases).mockResolvedValue({
       success: true,
       data: mockCases,
-    })
+    } as any)
 
     renderWithRouter(<DashboardPage />)
     
@@ -71,10 +71,10 @@ describe('DashboardPage', () => {
       { id: '1', status: 'active', lastActivity: '2024-01-15T10:00:00Z' },
     ]
 
-    vi.mocked(apiClient.getCases).mockResolvedValue({
+    vi.mocked(apiClient.getMyCases).mockResolvedValue({
       success: true,
       data: mockCases,
-    })
+    } as any)
 
     renderWithRouter(<DashboardPage />)
     
@@ -93,10 +93,10 @@ describe('DashboardPage', () => {
   })
 
   it('handles API error gracefully', async () => {
-    vi.mocked(apiClient.getCases).mockResolvedValue({
+    vi.mocked(apiClient.getMyCases).mockResolvedValue({
       success: false,
       error: 'Failed to load cases',
-    })
+    } as any)
 
     renderWithRouter(<DashboardPage />)
     
@@ -106,7 +106,7 @@ describe('DashboardPage', () => {
   })
 
   it('shows loading state while fetching data', () => {
-    vi.mocked(apiClient.getCases).mockImplementation(
+    vi.mocked(apiClient.getMyCases).mockImplementation(
       () => new Promise(() => {}) // Never resolves
     )
 
@@ -140,10 +140,10 @@ describe('DashboardPage', () => {
       { id: '3', status: 'pending', lastActivity: '2024-01-13T09:15:00Z' },
     ]
 
-    vi.mocked(apiClient.getCases).mockResolvedValue({
+    vi.mocked(apiClient.getMyCases).mockResolvedValue({
       success: true,
       data: mockCases,
-    })
+    } as any)
 
     renderWithRouter(<DashboardPage />)
     

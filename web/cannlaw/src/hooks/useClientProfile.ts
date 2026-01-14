@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from './useAuth'
 
 interface Client {
@@ -112,13 +112,7 @@ export function useClientProfile(clientId: number) {
   const [isUpdating, setIsUpdating] = useState(false)
   const { user } = useAuth()
 
-  useEffect(() => {
-    if (clientId) {
-      fetchClient()
-    }
-  }, [clientId])
-
-  const fetchClient = async () => {
+  const fetchClient = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -147,7 +141,13 @@ export function useClientProfile(clientId: number) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [clientId])
+
+  useEffect(() => {
+    if (clientId) {
+      fetchClient()
+    }
+  }, [clientId, fetchClient])
 
   const updateClient = async (updates: Partial<Client>): Promise<UpdateResult> => {
     try {

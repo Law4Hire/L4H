@@ -12,6 +12,9 @@ interface Appointment {
   durationMinutes: number
   notes?: string
   status: 'scheduled' | 'confirmed' | 'cancelled'
+  meeting?: {
+    joinUrl: string
+  }
 }
 
 // Simple t function to replace i18n
@@ -45,7 +48,7 @@ export default function AppointmentsPage() {
     if (showCreateModal && casesList.length > 0 && !newAppointment.caseId) {
       setNewAppointment(prev => ({ ...prev, caseId: casesList[0].id }))
     }
-  }, [showCreateModal, casesList])
+  }, [showCreateModal, casesList, newAppointment.caseId])
 
   // Create appointment mutation
   const createAppointmentMutation = useMutation({
@@ -150,7 +153,7 @@ export default function AppointmentsPage() {
                     <Button
                       size="sm"
                       className="bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => window.open(appointment.meeting.joinUrl, '_blank')}
+                      onClick={() => appointment.meeting?.joinUrl && window.open(appointment.meeting.joinUrl, '_blank')}
                     >
                       Join Meeting
                     </Button>
@@ -218,13 +221,17 @@ export default function AppointmentsPage() {
             helperText={t('appointments.durationHelper', { defaultValue: `Duration in ${'minutes'}` })}
           />
 
-          <Input
-            label={'Notes'}
-            value={newAppointment.notes}
-            onChange={(e) => setNewAppointment(prev => ({ ...prev, notes: e.target.value }))}
-            multiline
-            rows={3}
-          />
+          <div className="w-full">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Notes
+            </label>
+            <textarea
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 p-2"
+              value={newAppointment.notes}
+              onChange={(e) => setNewAppointment(prev => ({ ...prev, notes: e.target.value }))}
+              rows={3}
+            />
+          </div>
 
           <div className="flex justify-end space-x-2 pt-4">
             <Button

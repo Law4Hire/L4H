@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from './useAuth'
 
 interface BillingSummary {
@@ -70,13 +70,7 @@ export function useBilling() {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
-  useEffect(() => {
-    if (user?.role === 'Admin') {
-      fetchBillingSummary()
-    }
-  }, [user])
-
-  const fetchBillingSummary = async (filters?: BillingFilters) => {
+  const fetchBillingSummary = useCallback(async (filters?: BillingFilters) => {
     if (!user || user.role !== 'Admin') {
       setError('Unauthorized: Admin access required')
       return
@@ -118,7 +112,13 @@ export function useBilling() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user?.role === 'Admin') {
+      fetchBillingSummary()
+    }
+  }, [user, fetchBillingSummary])
 
   const getAttorneyBilling = async (attorneyId: number, filters?: BillingFilters): Promise<BillingSummary | null> => {
     if (!user || user.role !== 'Admin') {

@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Container, Card, Button, Modal, useToast } from '@l4h/shared-ui'
 import { admin } from '@l4h/shared-ui'
-import { CheckCircle, XCircle, Eye, Clock, User } from 'lucide-react'
+import { CheckCircle, XCircle, FileText, User, ArrowRight, Clock, Eye } from 'lucide-react'
+
+const t = (key: string) => key
 
 interface Workflow {
   id: string

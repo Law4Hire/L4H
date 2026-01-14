@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from './useAuth'
 
 export interface VisaTypeInfo {
@@ -31,7 +31,7 @@ export const useVisaLibraryTiles = () => {
   const [error, setError] = useState<string | null>(null)
   const { getAuthHeaders } = useAuth()
 
-  const fetchTiles = async () => {
+  const fetchTiles = useCallback(async () => {
     try {
       setLoading(true)
       const headers = await getAuthHeaders()
@@ -51,9 +51,9 @@ export const useVisaLibraryTiles = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [getAuthHeaders])
 
-  const fetchVisaTypes = async () => {
+  const fetchVisaTypes = useCallback(async () => {
     try {
       const headers = await getAuthHeaders()
       const response = await fetch('/api/v1/admin/pricing/visa-types', {
@@ -65,7 +65,7 @@ export const useVisaLibraryTiles = () => {
       }
 
       const data = await response.json()
-      setAllVisaTypes(data.map((vt: any) => ({
+      setAllVisaTypes(data.map((vt: AdminVisaType) => ({
         id: vt.id,
         code: vt.code,
         name: vt.name,
@@ -74,12 +74,12 @@ export const useVisaLibraryTiles = () => {
     } catch (err: any) {
       console.error('Error fetching visa types:', err)
     }
-  }
+  }, [getAuthHeaders])
 
   useEffect(() => {
     fetchTiles()
     fetchVisaTypes()
-  }, [])
+  }, [fetchTiles, fetchVisaTypes])
 
   const createTile = async (tile: VisaLibraryTile) => {
     try {

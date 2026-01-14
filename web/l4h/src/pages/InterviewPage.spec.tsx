@@ -28,6 +28,8 @@ describe('InterviewPage', () => {
             { value: 'inside_us', label: 'Inside the United States' },
             { value: 'outside_us', label: 'Outside the United States' },
         ],
+        isRequired: true,
+        order: 1
     };
 
     const secondQuestion = {
@@ -36,11 +38,14 @@ describe('InterviewPage', () => {
         category: 'initial',
         inputType: 'select',
         options: [{ value: 'citizen', label: 'U.S. Citizen' }],
+        isRequired: true,
+        order: 2
     };
 
     beforeEach(() => {
         vi.mocked(interview.startAnonymous).mockResolvedValue({
             sessionToken: 'test-token',
+            sessionId: 'test-session-id',
             firstQuestion: firstQuestion,
         });
     });
@@ -64,6 +69,8 @@ describe('InterviewPage', () => {
         vi.mocked(interview.submitAnswer).mockResolvedValue({
             isComplete: false,
             nextQuestion: secondQuestion,
+            totalAnswers: 1,
+            remainingVisasCount: 10
         });
 
         render(
@@ -88,6 +95,8 @@ describe('InterviewPage', () => {
         vi.mocked(interview.submitAnswer).mockResolvedValue({
             isComplete: true,
             nextQuestion: null,
+            totalAnswers: 5,
+            remainingVisasCount: 1
         });
 
         render(

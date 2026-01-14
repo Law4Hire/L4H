@@ -189,73 +189,51 @@ export default function AdminInterviewEditor() {
     options: []
   });
 
-  useEffect(() => {
-    loadQuestions();
-    loadCategories();
-  }, []);
-
-  const loadCategories = async () => {
+  const loadQuestions = React.useCallback(async () => {
     try {
-      const token = localStorage.getItem('jwt_token');
-      const response = await fetch('/api/v1/admin/interview-categories', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.length > 0) {
-          setCategories(data);
-        } else {
-          setCategories(DEFAULT_CATEGORIES.map((c, i) => ({ ...c, displayOrder: i, isActive: true })));
-        }
-      }
-    } catch (err) {
-      console.error('Failed to load categories', err);
-    }
-  };
-
-  useEffect(() => {
-    if (!showModal) {
-      setFormData({
-        key: '',
-        text: '',
-        category: 'critical', 
-        inputType: 'select',
-        displayOrder: 1,
-        isRequired: false,
-        isActive: true,
-        description: '',
-        discriminatesVisaCodes: '',
-        selectionWeight: 100,
-        parentId: null,
-        pageConfig: '',
-        options: []
-      });
-      setEditingQuestion(null);
-    }
-  }, [showModal]);
-
-  const loadQuestions = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('jwt_token');
+      setLoading(true)
+      const token = localStorage.getItem('jwt_token')
       const response = await fetch('/api/v1/admin/interview-questions', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
-      });
-
+      })
       if (!response.ok) {
-        throw new Error('Failed to load questions');
+        throw new Error('Failed to load interview questions')
       }
-
-      const data = await response.json();
-      setQuestions(data);
-    } catch (err: any) {
-      error('Failed to load questions', err.message);
+      const data = await response.json()
+      setQuestions(data)
+    } catch (err) {
+      console.error('Error loading interview questions:', err)
+      error('Failed to load interview questions')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }, [error])
+
+  const loadCategories = React.useCallback(async () => {
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch('/api/v1/admin/interview-categories', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) {
+        throw new Error('Failed to load categories')
+      }
+      const data = await response.json()
+      setCategories(data)
+    } catch (err) {
+      console.error('Error loading categories:', err)
+      error('Failed to load categories')
+    }
+  }, [error])
+
+  useEffect(() => {
+    loadQuestions()
+    loadCategories()
+  }, [loadQuestions, loadCategories])
 
   const generateKeyFromText = (text: string): string => {
     return text

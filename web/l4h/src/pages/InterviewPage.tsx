@@ -25,6 +25,14 @@ interface VisaEvaluation {
   keyBenefits?: string[];
 }
 
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  status: 'uploading' | 'complete' | 'error';
+  progress: number;
+}
+
 const InterviewPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -44,17 +52,22 @@ const InterviewPage: React.FC = () => {
     }
   }, [isComplete, sessionToken, navigate]);
 
-  // Start or resume interview on load
-  useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      resumeInterview(token);
-    } else {
-      startInterview();
+  const startInterview = React.useCallback(async () => {
+    try {
+      setIsLoading(true);
+      // Use default language (English)
+      const response = await interview.startAnonymous();
+      setSessionToken(response.sessionToken);
+      setCurrentQuestion(response.firstQuestion);
+    } catch (error: any) {
+      console.error('Failed to start interview:', error);
+      showError(error.message || 'Failed to start the interview. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  }, [showError]);
 
-  const resumeInterview = async (token: string) => {
+  const resumeInterview = React.useCallback(async (token: string) => {
     try {
       setIsLoading(true);
       const response = await interview.resumeAnonymous(token);
@@ -79,22 +92,17 @@ const InterviewPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [startInterview]);
 
-  const startInterview = async () => {
-    try {
-      setIsLoading(true);
-      // Use default language (English)
-      const response = await interview.startAnonymous();
-      setSessionToken(response.sessionToken);
-      setCurrentQuestion(response.firstQuestion);
-    } catch (error: any) {
-      console.error('Failed to start interview:', error);
-      showError(error.message || 'Failed to start the interview. Please try again.');
-    } finally {
-      setIsLoading(false);
+  // Start or resume interview on load
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      resumeInterview(token);
+    } else {
+      startInterview();
     }
-  };
+  }, [searchParams, resumeInterview, startInterview]);
 
   // Function to handle the "jump-on" UX
   const handleAnswer = async (answerValue: string) => {
@@ -129,7 +137,7 @@ const InterviewPage: React.FC = () => {
     }
   };
 
-  const handleDocumentUploadComplete = async (uploadedFiles: any[]) => {
+  const handleDocumentUploadComplete = async (uploadedFiles: UploadedFile[]) => {
     if (!sessionToken || !currentQuestion) return;
 
     // Document upload acts as a regular question - proceed to next

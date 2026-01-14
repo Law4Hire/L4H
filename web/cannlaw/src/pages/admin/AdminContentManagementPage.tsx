@@ -28,6 +28,7 @@ const AdminContentManagementPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false)
   const [editingContent, setEditingQuestion] = useState<SiteContent | null>(null)
   const { success, error } = useToast()
+  const [content, setContent] = useState<SiteContent[]>([]);
 
   const [formData, setFormData] = useState<SiteContent>({
     contentType: 'blog',
@@ -39,27 +40,30 @@ const AdminContentManagementPage: React.FC = () => {
     tags: ''
   })
 
-  useEffect(() => {
-    loadContent()
-  }, [])
-
-  const loadContent = async () => {
+  const loadContent = React.useCallback(async () => {
     try {
       setIsLoading(true)
       const token = localStorage.getItem('jwt_token')
-      const response = await fetch('/api/v1/admin/site-content', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setContentList(data)
+      const headers = {
+        'Authorization': `Bearer ${token}`
       }
+      const response = await fetch('/api/v1/admin/content', { headers })
+      if (!response.ok) {
+        throw new Error('Failed to load content data')
+      }
+      const data = await response.json()
+      setContent(data)
     } catch (err) {
+      console.error('Error loading content:', err)
       error('Failed to load content')
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    loadContent()
+  }, [loadContent])
 
   const handleOpenModal = (content?: SiteContent) => {
     if (content) {

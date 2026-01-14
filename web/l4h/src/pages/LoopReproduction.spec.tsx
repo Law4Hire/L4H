@@ -9,7 +9,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock the API client
 vi.mock('@l4h/shared-ui', async () => {
-  const actual = await vi.importActual('@l4h/shared-ui');
+  const actual = await vi.importActual('@l4h/shared-ui') as any;
   return {
     ...actual,
     interview: {

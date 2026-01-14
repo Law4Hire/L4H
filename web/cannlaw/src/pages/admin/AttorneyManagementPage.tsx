@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Card, Button, Input, Modal, useToast } from '@l4h/shared-ui'
-import { X, User, Mail, Phone, Edit, AlertTriangle, CheckCircle, Upload, Image as ImageIcon } from '@l4h/shared-ui'
+import { X, User, Mail, Phone, Edit, AlertTriangle, CheckCircle, Image as ImageIcon } from '@l4h/shared-ui'
+import { Upload } from 'lucide-react'
 import { useAttorneys } from '../../hooks/useAttorneys'
 
 interface AttorneyFormData {
@@ -30,19 +31,20 @@ interface Attorney {
   id: number
   name: string
   title: string
+  bio: string
+  photoUrl: string
   email: string
   phone: string
-  bio?: string
-  photoUrl?: string
-  barNumber?: string
-  licenseState?: string
-  practiceAreas: string // JSON string
-  languages: string // JSON string
-  credentials: string // JSON string
-  yearsOfExperience: number
+  directPhone: string
+  directEmail: string
+  officeLocation: string
   defaultHourlyRate: number
-  isManagingAttorney: boolean
+  credentials: string // JSON array
+  practiceAreas: string // JSON array
+  languages: string // JSON array
   isActive: boolean
+  isManagingAttorney: boolean
+  displayOrder: number
   createdAt: string
   updatedAt: string
 }
@@ -225,7 +227,7 @@ const AttorneyManagementPage: React.FC = () => {
 
     setIsSubmitting(true)
     try {
-      let result
+      let result: any
       if (editingAttorney) {
         result = await updateAttorney(editingAttorney.id, formData)
       } else {

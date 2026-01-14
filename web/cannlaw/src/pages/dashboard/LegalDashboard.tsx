@@ -42,6 +42,14 @@ interface MessagePreview {
   time: string
 }
 
+interface CaseEditFormData {
+  status: string
+  assignedStaffId: string
+  clientFirstName: string
+  clientLastName: string
+  clientEmail: string
+}
+
 const LegalDashboard: React.FC = () => {
   const { user } = useAuth()
   const { theme, toggleTheme } = useTheme()
@@ -63,7 +71,13 @@ const LegalDashboard: React.FC = () => {
   const [showCaseModal, setShowCaseModal] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [isEditingCase, setIsEditingCase] = useState(false)
-  const [editFormData, setEditFormData] = useState<any>({}) // Generic object for case edits
+  const [editFormData, setEditFormData] = useState<CaseEditFormData>({
+    status: '',
+    assignedStaffId: '',
+    clientFirstName: '',
+    clientLastName: '',
+    clientEmail: ''
+  })
 
   // Use properties from User interface directly, avoiding potential 'roles' undefined access if interface changed
   const isAdmin = user?.isAdmin || user?.role === 'Admin' || false
@@ -173,7 +187,7 @@ const LegalDashboard: React.FC = () => {
     if (isAdmin) {
       fetchAttorneys()
     }
-  }, [])
+  }, [isAdmin, fetchAttorneys, fetchCases, showAssigned, searchTerm, sortBy, sortDesc])
 
   // Refetch cases when filters change
   useEffect(() => {
@@ -182,7 +196,7 @@ const LegalDashboard: React.FC = () => {
     }, 300) // Debounce search
 
     return () => clearTimeout(timer)
-  }, [searchTerm, showAssigned, sortBy, sortDesc])
+  }, [searchTerm, showAssigned, sortBy, sortDesc, fetchCases])
 
   if (isLoading) {
     return (
@@ -640,12 +654,12 @@ const LegalDashboard: React.FC = () => {
                  // Show unassign button if assigned and NOT in edit mode (edit mode has dropdown)
                  if (caseData && caseData.assignedStaffId && !isEditingCase) {
                    return (
-                     <Button 
-                       onClick={() => handleAssignCase(caseData.id, null)} 
-                       variant="danger"
-                       className="bg-red-600 hover:bg-red-700 text-white"
+                     <Button
+                       variant="destructive"
+                       size="sm"
+                       onClick={() => handleRequestReassignment(caseData.id)}
                      >
-                       Unassign / Return to Queue
+                       Request Reassignment
                      </Button>
                    )
                  }

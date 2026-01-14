@@ -307,7 +307,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
             <div>
               <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 border-b border-gray-700 pb-2 inline-block">Connect</h3>
               <div className="flex space-x-3 mb-6">
-                {socialMediaPlatforms.map((platform, index) => (
+                {socialMediaPlatforms.map((platform: any, index: number) => (
                   <a
                     key={index}
                     href={platform.url}

@@ -24,11 +24,7 @@ const AdminPackagesPage: React.FC = () => {
   const [createForm, setCreateForm] = useState({ code: '', displayName: '', description: '', sortOrder: 0, requiresLawyer: false, isActive: true })
   const { success, error } = useToast()
 
-  useEffect(() => {
-    loadPackages()
-  }, [])
-
-  const loadPackages = async () => {
+  const loadPackages = React.useCallback(async () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('jwt_token')
@@ -57,7 +53,11 @@ const AdminPackagesPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [error])
+
+  useEffect(() => {
+    loadPackages()
+  }, [loadPackages])
 
   const createPackage = async () => {
     try {

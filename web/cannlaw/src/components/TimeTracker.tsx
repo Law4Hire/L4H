@@ -134,15 +134,14 @@ export const TimeTracker: React.FC<TimeTrackerProps> = ({ caseId, clientName }) 
       </div>
       
       {activeEntry ? (
-        <Button
-          onClick={handleStop}
-          variant="danger"
-          size="sm"
-          loading={isLoading}
-          className="bg-red-600 hover:bg-red-700 text-white"
-        >
-          <Square size={16} className="mr-2 fill-current" /> Stop
-        </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleStop}
+              loading={isLoading}
+            >
+              Stop
+            </Button>
       ) : (
         <Button
           onClick={handleStart}

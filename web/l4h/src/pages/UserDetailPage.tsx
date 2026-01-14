@@ -30,14 +30,7 @@ const UserDetailPage: React.FC = () => {
     email: ''
   })
 
-  // Load user details
-  useEffect(() => {
-    if (userId) {
-      fetchUser(userId)
-    }
-  }, [userId])
-
-  const fetchUser = async (id: string) => {
+  const fetchUser = React.useCallback(async (id: string) => {
     try {
       setLoading(true)
       const users = await admin.users()
@@ -61,7 +54,14 @@ const UserDetailPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [error, navigate])
+
+  // Load user details
+  useEffect(() => {
+    if (userId) {
+      fetchUser(userId)
+    }
+  }, [userId, fetchUser])
 
   const handleUpdateBasic = async () => {
     if (!user) return

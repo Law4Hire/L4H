@@ -2,6 +2,15 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, Button } from '@l4h/shared-ui'
 
+const t = (key: string) => {
+  const translations: Record<string, string> = {
+    'admin.title': 'Admin Dashboard',
+    'admin.pricing': 'Pricing & Services',
+    'admin.workflows': 'Workflows',
+  }
+  return translations[key] || key
+}
+
 const AdminPage: React.FC = () => {
   const navigate = useNavigate()
 

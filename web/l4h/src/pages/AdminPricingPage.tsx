@@ -60,11 +60,7 @@ const AdminPricingPage: React.FC = () => {
   } | null>(null)
   const { success, error } = useToast()
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
-  const loadData = async () => {
+  const loadData = React.useCallback(async () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('jwt_token')
@@ -90,16 +86,26 @@ const AdminPricingPage: React.FC = () => {
       const pkgData = await pkgRes.json()
       setPackages(pkgData)
 
-      const transformed: VisaTypePricing[] = vtData.map((vt: any) => {
+      interface ApiVisaType {
+        id: number
+        code: string
+        name: string
+        isActive: boolean
+        pricingRules?: Array<{
+          rules: AdminPricingRuleResponse[]
+        }>
+      }
+
+      const transformed: VisaTypePricing[] = vtData.map((vt: ApiVisaType) => {
         const pMap: { [code: string]: AdminPricingRuleResponse | null } = {}
         
         // Ensure all packages exist in the map
-        pkgData.forEach((p: any) => pMap[p.code] = null)
+        pkgData.forEach((p: AdminPackageResponse) => pMap[p.code] = null)
 
-        if (vt.pricingRules?.length > 0) {
+        if (vt.pricingRules && vt.pricingRules.length > 0) {
           // Flatten all rules from all countries (taking first found for display)
-          vt.pricingRules.forEach((group: any) => {
-            group.rules.forEach((r: any) => {
+          vt.pricingRules.forEach((group) => {
+            group.rules.forEach((r) => {
               if (!pMap[r.packageCode]) pMap[r.packageCode] = r
             })
           })
@@ -119,7 +125,11 @@ const AdminPricingPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [error])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
 
   const handleAddRule = async () => {
     if (!selectedVisaType || !newRuleData.packageId) return

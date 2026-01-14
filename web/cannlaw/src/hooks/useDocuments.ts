@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from './useAuth'
 
 interface Document {
@@ -71,11 +71,7 @@ export function useDocuments(clientId?: number) {
   const [isUpdating, setIsUpdating] = useState(false)
   const { user } = useAuth()
 
-  useEffect(() => {
-    fetchDocuments({ clientId })
-  }, [clientId, user])
-
-  const fetchDocuments = async (filters?: DocumentFilters) => {
+  const fetchDocuments = useCallback(async (filters?: DocumentFilters) => {
     try {
       setIsLoading(true)
       const token = localStorage.getItem('jwt_token')
@@ -126,7 +122,11 @@ export function useDocuments(clientId?: number) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    fetchDocuments({ clientId })
+  }, [clientId, user, fetchDocuments])
 
   const getDocument = async (id: number): Promise<Document> => {
     try {
@@ -406,7 +406,6 @@ export function useDocuments(clientId?: number) {
     getDocumentsByCategory,
     searchDocuments,
     getRecentDocuments,
-    searchDocuments: fetchDocuments,
     refetch: () => fetchDocuments({ clientId }),
     canUploadDocument,
     canEditDocument,

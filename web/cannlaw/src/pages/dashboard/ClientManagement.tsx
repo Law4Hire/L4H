@@ -84,7 +84,7 @@ const ClientManagement: React.FC = () => {
       dateRange: ''
     }
     searchClients(initialFilters)
-  }, [user, isLegalProfessional, isAdmin])
+  }, [user, isLegalProfessional, isAdmin, searchClients])
 
   const handleFilterChange = (key: keyof SearchFilters, value: string) => {
     const newFilters = { ...filters, [key]: value }

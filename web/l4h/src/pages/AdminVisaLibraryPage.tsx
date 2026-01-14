@@ -47,11 +47,7 @@ export default function AdminVisaLibraryPage() {
     isActive: true
   });
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = React.useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('jwt_token');
@@ -77,7 +73,11 @@ export default function AdminVisaLibraryPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const openCreateTileModal = () => {
     setEditingTile(null);

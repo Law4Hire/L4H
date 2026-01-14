@@ -55,11 +55,7 @@ export default function AdminPathsPage() {
     requiredRole: 'admin'
   });
 
-  useEffect(() => {
-    loadPaths();
-  }, []);
-
-  const loadPaths = async () => {
+  const loadPaths = React.useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('jwt_token');
@@ -80,7 +76,11 @@ export default function AdminPathsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
+
+  useEffect(() => {
+    loadPaths();
+  }, [loadPaths]);
 
   const openCreateModal = () => {
     setEditingPath(null);

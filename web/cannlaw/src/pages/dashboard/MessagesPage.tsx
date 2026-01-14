@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Card, Button, useToast, fetchJson } from '@l4h/shared-ui'
+import React, { useState, useEffect, useCallback } from 'react'
+import { Card, Button, EmptyState, useToast, fetchJson } from '@l4h/shared-ui'
 import { MessageSquare, Send, User, Search, Clock, ChevronRight, Plus, X, Check } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { useAuth } from '../../hooks/useAuth'
@@ -21,29 +21,31 @@ interface Message {
   isMe: boolean
 }
 
-interface ApiMessage {
-  id: string
-  content: string
-  sender: string
-  timestamp: string
+interface ApiThread {
+  id: string;
+  subject: string;
+  lastMessageSnippet: string;
+  lastMessageTime: string;
+  participantName: string;
+  unreadCount: number;
 }
 
-interface Recipient {
-  id: string
-  label: string
-  description: string
+interface RecipientOption {
+  id: string;
+  label: string;
+  description: string;
 }
 
 const MessagesPage: React.FC = () => {
   const { user } = useAuth()
   const { error, success } = useToast()
   const [threads, setThreads] = useState<MessageThread[]>([])
-  const [recipients, setRecipients] = useState<Recipient[]>([])
-  const [selectedThread, setSelectedThread] = useState<string | null>(null)
+  const [recipients, setRecipients] = useState<RecipientOption[]>([])
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [messagesLoading, setMessagesLoading] = useState(false)
+  const [isLoadingThreads, setIsLoadingThreads] = useState(true)
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const [showNewThreadModal, setShowNewThreadModal] = useState(false)
   
   // New thread state
@@ -51,125 +53,154 @@ const MessagesPage: React.FC = () => {
   const [newSubject, setNewSubject] = useState('')
   const [newBody, setNewBody] = useState('')
 
-  useEffect(() => {
-    fetchThreads()
-    fetchRecipients()
-  }, [])
-
-  useEffect(() => {
-    if (selectedThread) {
-      fetchMessages(selectedThread)
-    }
-  }, [selectedThread])
-
-  const fetchThreads = async () => {
-    try {
-      const data = await fetchJson<any[]>('/v1/messaging/threads')
-      // Map API response (threadId, title) to frontend model (id, subject)
-      const mappedThreads = data.map(t => ({
-        id: t.threadId,
-        subject: t.title,
-        lastMessageSnippet: t.lastMessageSnippet,
-        lastMessageTime: t.lastMessageTime,
-        participantName: t.participantName,
-        unreadCount: t.unreadCount
-      }))
-      setThreads(mappedThreads)
-    } catch (err) {
-      console.error('Error fetching threads:', err)
-      error('Failed to load message threads')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchRecipients = async () => {
-    try {
-      const data = await fetchJson<Recipient[]>('/v1/messaging/recipients')
-      setRecipients(data)
-    } catch (err) {
-      console.error('Error fetching recipients:', err)
-    }
-  }
-
-  const handleRecipientToggle = (id: string) => {
-    setSelectedRecipients(prev => 
-      prev.includes(id) 
-        ? prev.filter(rid => rid !== id)
-        : [...prev, id]
-    )
-  }
-
-  const handleSelectAllRecipients = () => {
+  const handleSelectAllRecipients = useCallback(() => {
     if (selectedRecipients.length === recipients.length) {
       setSelectedRecipients([])
     } else {
       setSelectedRecipients(recipients.map(r => r.id))
     }
-  }
+  }, [recipients, selectedRecipients])
 
-  const handleCreateThread = async () => {
-    if (selectedRecipients.length === 0 || !newSubject || !newBody) return
+  const handleRecipientToggle = useCallback((recipientId: string) => {
+    setSelectedRecipients(prev => 
+      prev.includes(recipientId)
+        ? prev.filter(id => id !== recipientId)
+        : [...prev, recipientId]
+    )
+  }, [])
 
+  const fetchThreads = useCallback(async () => {
+    if (!user) return
+    setIsLoadingThreads(true)
     try {
-      // Send a message to each selected recipient
-      // This creates individual threads for each recipient
-      await Promise.all(selectedRecipients.map(recipientId => 
-        fetchJson('/v1/messaging/threads', {
-          method: 'POST',
-          body: JSON.stringify({
-            caseId: '00000000-0000-0000-0000-000000000000',
-            title: newSubject,
-            initialMessage: newBody,
-            recipientUserId: recipientId
-          })
-        })
-      ))
-
-      success(`Sent message to ${selectedRecipients.length} recipient(s)`)
-      setShowNewThreadModal(false)
-      setSelectedRecipients([])
-      setNewSubject('')
-      setNewBody('')
-      fetchThreads()
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch(`/api/v1/messaging/threads?userId=${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to fetch message threads')
+      const data: ApiThread[] = await response.json()
+      setThreads(data)
+      if (data.length > 0 && !selectedThreadId) {
+        setSelectedThreadId(data[0].id)
+      }
     } catch (err) {
-      error('Failed to send messages')
+      console.error('Error fetching threads:', err)
+      error('Failed to load message threads.', (err as Error).message || 'An unexpected error occurred.')
+    } finally {
+      setIsLoadingThreads(false)
     }
-  }
+  }, [user, error, selectedThreadId]) // Removed 'toast' as it's not in the context of error/success anymore
 
-  const fetchMessages = async (threadId: string) => {
+  const fetchRecipients = useCallback(async () => {
+    if (!user) return
     try {
-      setMessagesLoading(true)
-      const data = await fetchJson<{ messages: ApiMessage[] }>(`/v1/messaging/threads/${threadId}`)
-      
-      const mappedMessages: Message[] = (data.messages || []).map(m => ({
-        id: m.id,
-        body: m.content,
-        sentAt: m.timestamp,
-        senderName: m.sender,
-        isMe: m.sender === user?.email || m.sender === user?.name || m.sender === 'user' // Simple check
-      }))
-      
-      setMessages(mappedMessages)
+      const token = localStorage.getItem('jwt_token')
+      const usersResponse = await fetch('/api/v1/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      const attorneysResponse = await fetch('/api/v1/attorneys', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (!usersResponse.ok || !attorneysResponse.ok) {
+        throw new Error('Failed to fetch recipients')
+      }
+
+      const usersData = await usersResponse.json()
+      const attorneysData = await attorneysResponse.json()
+
+      const allPossibleRecipients: RecipientOption[] = [
+        ...usersData.map((u: any) => ({ id: u.id, label: u.name, description: 'User' })),
+        ...attorneysData.map((a: any) => ({ id: a.id, label: a.name, description: 'Attorney' }))
+      ]
+
+      setRecipients(allPossibleRecipients)
+    } catch (err) {
+      console.error('Error fetching recipients:', err)
+      error('Failed to load potential message recipients.', (err as Error).message || 'An unexpected error occurred.')
+    }
+  }, [user, error]) // Removed 'toast' as it's not in the context of error/success anymore
+
+  const handleCreateThread = useCallback(async () => {
+    if (selectedRecipients.length === 0 || !newSubject.trim() || !newBody.trim()) {
+      error('Please select recipients, a subject, and a message.')
+      return
+    }
+
+    try {
+      const response = await fetchJson('/v1/messaging/threads', {
+        method: 'POST',
+        body: JSON.stringify({
+          recipientIds: selectedRecipients,
+          subject: newSubject,
+          body: newBody
+        })
+      })
+
+      if (response.success) {
+        success('New message thread created!')
+        setShowNewThreadModal(false)
+        setSelectedRecipients([])
+        setNewSubject('')
+        setNewBody('')
+        fetchThreads()
+      } else {
+        error(response.error || 'Failed to create new message thread.')
+      }
+    } catch (err) {
+      console.error('Error creating new thread:', err)
+      error('An error occurred while creating the new thread.')
+    }
+  }, [selectedRecipients, newSubject, newBody, fetchThreads, error, success])
+
+
+  const fetchMessages = useCallback(async () => {
+    if (!selectedThreadId) return
+    setIsLoadingMessages(true)
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch(`/api/v1/messaging/threads/${selectedThreadId}/messages`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to fetch messages')
+      const data = await response.json()
+      setMessages(data)
     } catch (err) {
       console.error('Error fetching messages:', err)
-      error('Failed to load messages')
+      error('Failed to load messages for the selected thread.', (err as Error).message || 'An unexpected error occurred.')
     } finally {
-      setMessagesLoading(false)
+      setIsLoadingMessages(false)
     }
-  }
+  }, [selectedThreadId, error])
+
+  useEffect(() => {
+    fetchThreads()
+    fetchRecipients()
+  }, [fetchThreads, fetchRecipients])
+
+  useEffect(() => {
+    fetchMessages()
+  }, [fetchMessages])
 
   const handleSendMessage = async () => {
-    if (!selectedThread || !newMessage.trim()) return
+    if (!selectedThreadId || !newMessage.trim()) return
 
     try {
-      await fetchJson(`/v1/messaging/threads/${selectedThread}/messages`, {
+      await fetchJson(`/v1/messaging/threads/${selectedThreadId}/messages`, {
         method: 'POST',
         body: JSON.stringify({ content: newMessage }) // Send 'content' as expected by backend
       })
 
       setNewMessage('')
-      fetchMessages(selectedThread)
+      fetchMessages()
       fetchThreads() // Update snippets
     } catch (err) {
       console.error('Error sending message:', err)
@@ -177,7 +208,7 @@ const MessagesPage: React.FC = () => {
     }
   }
 
-  if (loading) {
+  if (isLoadingThreads) {
     return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>
   }
 
@@ -207,9 +238,9 @@ const MessagesPage: React.FC = () => {
             threads.map((thread) => (
               <div
                 key={thread.id}
-                onClick={() => setSelectedThread(thread.id)}
+                onClick={() => setSelectedThreadId(thread.id)}
                 className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-800 transition-colors border-b border-gray-100 dark:border-navy-800 ${
-                  selectedThread === thread.id ? 'bg-blue-50 dark:bg-navy-800 border-l-4 border-l-blue-600' : ''
+                  selectedThreadId === thread.id ? 'bg-blue-50 dark:bg-navy-800 border-l-4 border-l-blue-600' : ''
                 }`}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -228,21 +259,21 @@ const MessagesPage: React.FC = () => {
 
       {/* Main Chat Area */}
       <div className="hidden md:flex flex-1 flex-col bg-gray-50 dark:bg-navy-950">
-        {selectedThread ? (
+        {selectedThreadId ? (
           <>
             {/* Chat Header */}
             <div className="p-4 bg-white dark:bg-navy-900 border-b border-gray-200 dark:border-navy-800 flex justify-between items-center shadow-sm">
               <div>
                 <h3 className="font-bold text-navy-900 dark:text-white">
-                  {threads.find(t => t.id === selectedThread)?.participantName}
+                  {threads.find(t => t.id === selectedThreadId)?.participantName}
                 </h3>
-                <p className="text-xs text-gray-500">{threads.find(t => t.id === selectedThread)?.subject}</p>
+                <p className="text-xs text-gray-500">{threads.find(t => t.id === selectedThreadId)?.subject}</p>
               </div>
             </div>
 
             {/* Message Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {messagesLoading ? (
+              {isLoadingMessages ? (
                 <div className="flex justify-center py-8"><div className="animate-spin h-6 w-6 border-b-2 border-blue-600 rounded-full"></div></div>
               ) : (
                 messages.map((msg) => (

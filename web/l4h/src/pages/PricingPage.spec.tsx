@@ -13,7 +13,7 @@ vi.mock('@l4h/shared-ui', async () => {
     apiClient: {
       getPricing: vi.fn(),
       selectPackage: vi.fn(),
-    },
+    } as any,
   }
 })
 
@@ -71,7 +71,7 @@ describe('PricingPage', () => {
     vi.mocked(apiClient.getPricing).mockResolvedValue({
       success: true,
       data: mockPricing,
-    })
+    } as any)
 
     renderWithRouter(<PricingPage />)
     
@@ -100,7 +100,7 @@ describe('PricingPage', () => {
     vi.mocked(apiClient.getPricing).mockResolvedValue({
       success: true,
       data: mockPricing,
-    })
+    } as any)
 
     renderWithRouter(<PricingPage />)
     
@@ -128,9 +128,9 @@ describe('PricingPage', () => {
     vi.mocked(apiClient.getPricing).mockResolvedValue({
       success: true,
       data: mockPricing,
-    })
+    } as any)
 
-    vi.mocked(apiClient.selectPackage).mockResolvedValue({
+    vi.mocked(apiClient as any).selectPackage.mockResolvedValue({
       success: true,
       data: { caseId: 'case-123' },
     })
@@ -144,7 +144,7 @@ describe('PricingPage', () => {
     await user.click(screen.getByRole('button', { name: /select package/i }))
     
     await waitFor(() => {
-      expect(apiClient.selectPackage).toHaveBeenCalledWith('basic')
+      expect((apiClient as any).selectPackage).toHaveBeenCalledWith('basic')
       expect(screen.getByText(/package selected successfully/i)).toBeInTheDocument()
     })
   })
@@ -163,7 +163,7 @@ describe('PricingPage', () => {
     vi.mocked(apiClient.getPricing).mockResolvedValue({
       success: false,
       error: 'Failed to load pricing',
-    })
+    } as any)
 
     renderWithRouter(<PricingPage />)
     
@@ -190,9 +190,9 @@ describe('PricingPage', () => {
     vi.mocked(apiClient.getPricing).mockResolvedValue({
       success: true,
       data: mockPricing,
-    })
+    } as any)
 
-    vi.mocked(apiClient.selectPackage).mockResolvedValue({
+    vi.mocked(apiClient as any).selectPackage.mockResolvedValue({
       success: false,
       error: 'Selection failed',
     })
@@ -228,7 +228,7 @@ describe('PricingPage', () => {
     vi.mocked(apiClient.getPricing).mockResolvedValue({
       success: true,
       data: mockPricing,
-    })
+    } as any)
 
     renderWithRouter(<PricingPage />)
     
@@ -241,7 +241,7 @@ describe('PricingPage', () => {
     expect(selectButton).toHaveFocus()
     
     await user.keyboard('{Enter}')
-    expect(apiClient.selectPackage).toHaveBeenCalledWith('basic')
+    expect((apiClient as any).selectPackage).toHaveBeenCalledWith('basic')
   })
 
   it('has proper ARIA attributes', async () => {
@@ -261,7 +261,7 @@ describe('PricingPage', () => {
     vi.mocked(apiClient.getPricing).mockResolvedValue({
       success: true,
       data: mockPricing,
-    })
+    } as any)
 
     renderWithRouter(<PricingPage />)
     

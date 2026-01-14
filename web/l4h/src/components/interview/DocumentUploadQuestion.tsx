@@ -203,10 +203,10 @@ export const DocumentUploadQuestion: React.FC<DocumentUploadQuestionProps> = ({
           className="hidden"
           id="file-input"
         />
-        <label htmlFor="file-input">
-          <Button as="span" variant="outline" className="cursor-pointer">
+        <label htmlFor="file-input" className="cursor-pointer">
+          <span className="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm px-4 py-2 text-base">
             Choose Files
-          </Button>
+          </span>
         </label>
       </div>
 

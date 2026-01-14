@@ -52,7 +52,7 @@ const CaseDetailPage: React.FC = () => {
   // Fetch interview history
   const { data: interviewHistory, isLoading: isInterviewLoading } = useQuery({
     queryKey: ['interview-history'],
-    queryFn: interview.history
+    queryFn: () => (interview as any).history()
   })
 
   const handleStartInterview = async () => {
@@ -76,8 +76,8 @@ const CaseDetailPage: React.FC = () => {
 
   const handleViewRecommendation = async () => {
     try {
-      if (interviewHistory?.latestRecommendation) {
-        setSelectedRecommendation(interviewHistory.latestRecommendation)
+      if ((interviewHistory as any)?.latestRecommendation) {
+        setSelectedRecommendation((interviewHistory as any).latestRecommendation)
         setShowRecommendationModal(true)
       } else {
         showError('No visa recommendation found. Please complete the interview first.')
@@ -136,7 +136,7 @@ const CaseDetailPage: React.FC = () => {
   }
 
   const hasVisaType = !!caseDetail.visaTypeCode
-  const hasRecommendation = !!interviewHistory?.latestRecommendation
+  const hasRecommendation = !!(interviewHistory as any)?.latestRecommendation
 
   return (
     <div className="space-y-6">
@@ -325,11 +325,11 @@ const CaseDetailPage: React.FC = () => {
 
       {/* Visa Recommendation Modal */}
       <Modal
-        isOpen={showRecommendationModal}
+        open={showRecommendationModal}
         onClose={() => setShowRecommendationModal(false)}
         title={'Visa Recommendation'}
       >
-        {selectedRecommendation && (
+        {(interviewHistory as any)?.latestRecommendation && (
           <div className="space-y-6">
             <div className="text-center">
               <div className="text-lg font-semibold text-green-600 mb-2">
@@ -345,16 +345,16 @@ const CaseDetailPage: React.FC = () => {
                 {'Recommended Visa Type'}
               </h3>
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">
-                {selectedRecommendation.visaType}
+                {(interviewHistory as any).latestRecommendation.visaType}
               </div>
               <p className="text-blue-800 dark:text-blue-200">
-                {selectedRecommendation.rationale}
+                {(interviewHistory as any).latestRecommendation.rationale}
               </p>
             </div>
 
             <div className="text-sm text-gray-500 dark:text-gray-400 text-center">
-              {'Recommendation generated on'} {new Date(selectedRecommendation.createdAt).toLocaleDateString()}
-              {selectedRecommendation.isLocked && (
+              {'Recommendation generated on'} {new Date((interviewHistory as any).latestRecommendation.createdAt).toLocaleDateString()}
+              {(interviewHistory as any).latestRecommendation.isLocked && (
                 <span className="block mt-1 text-yellow-600 dark:text-yellow-400">
                   {'This recommendation has been finalized by our legal team.'}
                 </span>

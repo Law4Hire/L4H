@@ -168,11 +168,69 @@ export function useDocumentViewer(options: ViewerOptions = {}) {
     }
   }, [viewerState.documentId, metadata, user])
 
+  const canDownload = useCallback((): boolean => {
+    return options.enableDownload !== false && !!user
+  }, [options.enableDownload, user])
+
+  const canPrint = useCallback((): boolean => {
+    return options.enablePrint !== false && !!user
+  }, [options.enablePrint, user])
+
   const printDocument = useCallback(() => {
     if (viewerState.documentUrl && canPrint()) {
       window.open(viewerState.documentUrl, '_blank')?.print()
     }
-  }, [viewerState.documentUrl])
+  }, [viewerState.documentUrl, canPrint])
+
+  const canFullscreen = useCallback((): boolean => {
+    return options.enableFullscreen !== false
+  }, [options.enableFullscreen])
+
+  const isPreviewable = useCallback((contentType: string): boolean => {
+    const previewableTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'text/plain',
+      'text/html'
+    ]
+    
+    return previewableTypes.includes(contentType.toLowerCase())
+  }, [])
+
+  const getFileIcon = useCallback((contentType: string): string => {
+    if (contentType.startsWith('image/')) return '🖼️'
+    if (contentType.includes('pdf')) return '📄'
+    if (contentType.includes('word') || contentType.includes('document')) return '📝'
+    if (contentType.includes('spreadsheet') || contentType.includes('excel')) return '📊'
+    if (contentType.includes('presentation') || contentType.includes('powerpoint')) return '📊'
+    if (contentType.includes('zip') || contentType.includes('archive')) return '📦'
+    return '📎'
+  }, [])
+
+  const formatFileSize = useCallback((bytes: number): string => {
+    if (bytes === 0) return '0 Bytes'
+    
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }, [])
+
+  const getViewerComponent = useCallback((contentType: string) => {
+    if (contentType.includes('pdf')) {
+      return 'pdf-viewer'
+    } else if (contentType.startsWith('image/')) {
+      return 'image-viewer'
+    } else if (contentType.startsWith('text/')) {
+      return 'text-viewer'
+    } else {
+      return 'download-only'
+    }
+  }, [])
 
   const getPreviewUrl = useCallback(async (documentId: number): Promise<string | null> => {
     if (!user) return null
@@ -237,64 +295,6 @@ export function useDocumentViewer(options: ViewerOptions = {}) {
     
     return false
   }, [user])
-
-  const canDownload = useCallback((): boolean => {
-    return options.enableDownload !== false && !!user
-  }, [options.enableDownload, user])
-
-  const canPrint = useCallback((): boolean => {
-    return options.enablePrint !== false && !!user
-  }, [options.enablePrint, user])
-
-  const canFullscreen = useCallback((): boolean => {
-    return options.enableFullscreen !== false
-  }, [options.enableFullscreen])
-
-  const isPreviewable = useCallback((contentType: string): boolean => {
-    const previewableTypes = [
-      'application/pdf',
-      'image/jpeg',
-      'image/png',
-      'image/gif',
-      'image/webp',
-      'text/plain',
-      'text/html'
-    ]
-    
-    return previewableTypes.includes(contentType.toLowerCase())
-  }, [])
-
-  const getFileIcon = useCallback((contentType: string): string => {
-    if (contentType.startsWith('image/')) return '🖼️'
-    if (contentType.includes('pdf')) return '📄'
-    if (contentType.includes('word') || contentType.includes('document')) return '📝'
-    if (contentType.includes('spreadsheet') || contentType.includes('excel')) return '📊'
-    if (contentType.includes('presentation') || contentType.includes('powerpoint')) return '📊'
-    if (contentType.includes('zip') || contentType.includes('archive')) return '📦'
-    return '📎'
-  }, [])
-
-  const formatFileSize = useCallback((bytes: number): string => {
-    if (bytes === 0) return '0 Bytes'
-    
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }, [])
-
-  const getViewerComponent = useCallback((contentType: string) => {
-    if (contentType.includes('pdf')) {
-      return 'pdf-viewer'
-    } else if (contentType.startsWith('image/')) {
-      return 'image-viewer'
-    } else if (contentType.startsWith('text/')) {
-      return 'text-viewer'
-    } else {
-      return 'download-only'
-    }
-  }, [])
 
   return {
     viewerState,

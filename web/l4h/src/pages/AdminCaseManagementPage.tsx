@@ -67,11 +67,7 @@ const AdminCaseManagementPage: React.FC = () => {
   const [evaluations, setEvaluations] = useState<VisaEvaluation[]>([]);
   const [isEvaluationsLoading, setIsEvaluationsLoading] = useState(false);
 
-  useEffect(() => {
-    loadCases()
-  }, [])
-
-  const loadCases = async () => {
+  const loadCases = React.useCallback(async () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('jwt_token')
@@ -101,7 +97,11 @@ const AdminCaseManagementPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [error])
+
+  useEffect(() => {
+    loadCases()
+  }, [loadCases])
 
   const updateCaseStatus = async (caseId: string, newStatus: string, reason?: string) => {
     try {

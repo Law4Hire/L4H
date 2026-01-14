@@ -26,7 +26,7 @@ const AlertsManagementPage: React.FC = () => {
 
   useEffect(() => {
     fetchTemplates()
-  }, [])
+  }, [fetchTemplates])
 
   const handleSendAlert = async () => {
     if (!alertFormData.userId || !alertFormData.title || !alertFormData.message) {

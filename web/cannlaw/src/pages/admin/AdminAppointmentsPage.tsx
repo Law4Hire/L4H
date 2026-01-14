@@ -53,28 +53,18 @@ const AdminAppointmentsPage: React.FC = () => {
   const [assignmentHistory, setAssignmentHistory] = useState<AssignmentHistoryEntry[]>([])
   const [filterStatus, setFilterStatus] = useState('')
 
-  useEffect(() => {
-    loadAppointments()
-    loadUsers()
-  }, [filterStatus])
-
-  const loadAppointments = async () => {
+  const loadAppointments = React.useCallback(async () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('jwt_token')
-      const url = filterStatus
-        ? `/api/v1/appointments/admin/all?status=${filterStatus}`
-        : '/api/v1/appointments/admin/all'
-
-      const response = await fetch(url, {
+      const response = await fetch('/api/v1/admin/appointments', {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${token}`
         }
       })
-
-      if (!response.ok) throw new Error('Failed to load appointments')
-
+      if (!response.ok) {
+        throw new Error('Failed to load appointments')
+      }
       const data = await response.json()
       setAppointments(data)
     } catch (err) {
@@ -83,26 +73,31 @@ const AdminAppointmentsPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [error])
 
-  const loadUsers = async () => {
+  const loadUsers = React.useCallback(async () => {
     try {
       const token = localStorage.getItem('jwt_token')
       const response = await fetch('/api/v1/admin/users', {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${token}`
         }
       })
-
-      if (!response.ok) throw new Error('Failed to load users')
-
+      if (!response.ok) {
+        throw new Error('Failed to load users')
+      }
       const data = await response.json()
       setUsers(data)
     } catch (err) {
       console.error('Error loading users:', err)
+      error('Failed to load users')
     }
-  }
+  }, [error])
+
+  useEffect(() => {
+    loadAppointments()
+    loadUsers()
+  }, [loadAppointments, loadUsers])
 
   const handleOpenReassignModal = (appointment: AdminAppointment) => {
     setSelectedAppointment(appointment)

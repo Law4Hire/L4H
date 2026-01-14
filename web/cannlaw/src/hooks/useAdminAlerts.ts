@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useAuth } from './useAuth'
 
 export interface NotificationTemplate {
@@ -22,7 +22,7 @@ export const useAdminAlerts = () => {
   const [error, setError] = useState<string | null>(null)
   const { getAuthHeaders } = useAuth()
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -42,9 +42,9 @@ export const useAdminAlerts = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [getAuthHeaders])
 
-  const updateTemplate = async (id: number, subjectTemplate: string, bodyTemplate: string, emailBodyTemplate: string | null) => {
+  const updateTemplate = useCallback(async (id: number, subjectTemplate: string, bodyTemplate: string, emailBodyTemplate: string | null) => {
     try {
       const headers = await getAuthHeaders()
       const response = await fetch(`/api/notifications/templates/${id}`, {
@@ -70,9 +70,9 @@ export const useAdminAlerts = () => {
     } catch (err: any) {
       return { success: false, error: err.message }
     }
-  }
+  }, [getAuthHeaders, fetchTemplates])
 
-  const sendTestAlert = async (request: SendAlertRequest) => {
+  const sendTestAlert = useCallback(async (request: SendAlertRequest) => {
     try {
       const headers = await getAuthHeaders()
       const response = await fetch('/api/notifications/test', {
@@ -93,7 +93,7 @@ export const useAdminAlerts = () => {
     } catch (err: any) {
       return { success: false, error: err.message }
     }
-  }
+  }, [getAuthHeaders])
 
   return {
     templates,

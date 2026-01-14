@@ -4,6 +4,7 @@ import { Button, Card, Modal, Input, useToast } from '@l4h/shared-ui';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Trash2 } from 'lucide-react';
 
 interface QuestionOption {
   id?: string;
@@ -98,15 +99,15 @@ const AVAILABLE_PAGES = [
 ];
 
 interface SortableQuestionItemProps {
-  question: any;
+  question: InterviewQuestion & { level: number };
   index: number;
   totalCount: number;
-  onMoveUp: (question: any) => void;
-  onMoveDown: (question: any) => void;
-  onEdit: (question: any) => void;
-  onDelete: (question: any) => void;
-  onAddChild: (question: any) => void;
-  onToggleActive: (question: any) => void;
+  onMoveUp: (question: InterviewQuestion) => void;
+  onMoveDown: (question: InterviewQuestion) => void;
+  onEdit: (question: InterviewQuestion) => void;
+  onDelete: (question: InterviewQuestion) => void;
+  onAddChild: (question: InterviewQuestion) => void;
+  onToggleActive: (question: InterviewQuestion) => void;
 }
 
 function SortableQuestionItem({ question, index, totalCount, onMoveUp, onMoveDown, onEdit, onDelete, onAddChild, onToggleActive }: SortableQuestionItemProps) {
@@ -244,13 +245,7 @@ export default function AdminInterviewQuestionsPage() {
     options: []
   });
 
-  useEffect(() => {
-    loadQuestions();
-    loadCategories();
-    loadVisaTypes();
-  }, []);
-
-  const loadVisaTypes = async () => {
+  const loadVisaTypes = React.useCallback(async () => {
     try {
       const response = await fetch('/api/v1/public/visa-list');
       if (response.ok) {
@@ -259,9 +254,9 @@ export default function AdminInterviewQuestionsPage() {
     } catch (err) {
       console.error('Failed to load visa types');
     }
-  };
+  }, []);
 
-  const loadCategories = async () => {
+  const loadCategories = React.useCallback(async () => {
     try {
       const token = localStorage.getItem('jwt_token');
       const response = await fetch('/api/v1/admin/interview-categories', {
@@ -279,33 +274,9 @@ export default function AdminInterviewQuestionsPage() {
     } catch (err) {
       console.error('Failed to load categories', err);
     }
-  };
+  }, []);
 
-  // Sync formData when editing a question - use id as dependency to ensure it triggers
-  // Also clear formData AND editingQuestion when modal closes to prevent stale data
-  useEffect(() => {
-    if (!showModal) {
-      setFormData({
-        key: '',
-        text: '',
-        category: 'critical', 
-        inputType: 'select',
-        displayOrder: 1,
-        isRequired: false,
-        isActive: true,
-        description: '',
-        discriminatesVisaCodes: '',
-        selectionWeight: 100,
-        parentId: null,
-        parentOptionValue: null,
-        pageConfig: '',
-        options: []
-      });
-      setEditingQuestion(null);
-    }
-  }, [showModal]);
-
-  const loadQuestions = async () => {
+  const loadQuestions = React.useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('jwt_token');
@@ -326,7 +297,13 @@ export default function AdminInterviewQuestionsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
+
+  useEffect(() => {
+    loadQuestions();
+    loadCategories();
+    loadVisaTypes();
+  }, [loadQuestions, loadCategories, loadVisaTypes]);
 
   // Helper function to generate a key from question text
   const generateKeyFromText = (text: string): string => {

@@ -134,7 +134,7 @@ const LoginPage: React.FC = () => {
         
         <p className="text-[10px] text-gray-400 dark:text-navy-500 text-center mt-4 uppercase tracking-tighter">
           System Version: {
-            // @ts-ignore
+            // @ts-expect-error - __APP_VERSION__ is defined in vite.config.ts
             typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'Local-Dev'
           }
         </p>

@@ -40,12 +40,7 @@ const UserManagementPage: React.FC = () => {
     isStaff: false
   })
 
-  // Load users
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  const fetchUsers = async () => {
+  const fetchUsers = React.useCallback(async () => {
     try {
       setLoading(true)
       const data = await admin.users()
@@ -56,7 +51,12 @@ const UserManagementPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [error])
+
+  // Load users
+  useEffect(() => {
+    fetchUsers()
+  }, [fetchUsers])
 
 
   const handleCreateUser = async () => {

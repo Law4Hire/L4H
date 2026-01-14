@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Card, Button, Input, useToast, fetchJson } from '@l4h/shared-ui'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { Card, Button, Input, useToast, fetchJson, apiClient } from '@l4h/shared-ui'
 import { User, Mail, Phone, MapPin, Camera } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -24,23 +24,29 @@ const ProfilePage: React.FC = () => {
   const [isSaving, setIsSubmitting] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [formData, setFormData] = useState<AttorneyProfile | null>(null) // Define formData state
 
-  useEffect(() => {
-    fetchProfile()
-  }, [])
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
+    if (!user) return // Ensure user is available for profile fetching
+    setIsLoading(true)
     try {
-      setIsLoading(true)
-      const data = await fetchJson<AttorneyProfile>('/v1/attorneys/me')
-      setProfile(data)
+      const token = localStorage.getItem('jwt_token')
+      const headers = { Authorization: `Bearer ${token}` }
+      const response = await fetchJson(`/v1/users/${user.id}/profile`, { headers })
+      setProfile(response.data)
+      setFormData(response.data) // Initialize form with fetched data
     } catch (err) {
       console.error('Error fetching profile:', err)
-      error('Failed to load profile')
+      error('Error fetching profile', (err as Error).message || 'An unexpected error occurred.')
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user, error])
+
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -61,7 +67,7 @@ const ProfilePage: React.FC = () => {
       })
       success('Profile updated successfully')
     } catch (err) {
-      error('An error occurred while saving')
+      error('An error occurred while saving', (err as Error).message || 'Unknown error')
     } finally {
       setIsSubmitting(false)
     }
@@ -80,7 +86,6 @@ const ProfilePage: React.FC = () => {
         // So we fallback to raw fetch for file upload but use getJwtToken logic if needed, 
         // or ideally update fetchJson. For now, let's use a small helper or manual fetch 
         // but with the token retrieval logic from a shared place if possible.
-        // Actually, api-client.ts forces application/json. We should skip fetchJson for uploads.
         
         const token = localStorage.getItem('jwt_token')
         const response = await fetch(`/api/v1/attorneys/${profile.id}/photo`, {
@@ -94,10 +99,10 @@ const ProfilePage: React.FC = () => {
           setProfile({ ...profile, photoUrl: result.photoUrl })
           success('Photo uploaded successfully')
         } else {
-          error('Failed to upload photo')
+          error('Failed to upload photo', (await response.json()).message || 'Unknown error')
         }
       } catch (err) {
-        error('Error uploading photo')
+        error('Error uploading photo', (err as Error).message || 'Unknown error')
       } finally {
         setUploadingPhoto(false)
       }
@@ -196,19 +201,19 @@ const ProfilePage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Public Email</label>
-              <Input name="email" value={profile.email} onChange={handleInputChange} icon={<Mail size={16}/>} />
+              <Input name="email" value={profile.email} onChange={handleInputChange} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Public Phone</label>
-              <Input name="phone" value={profile.phone} onChange={handleInputChange} icon={<Phone size={16}/>} />
+              <Input name="phone" value={profile.phone} onChange={handleInputChange} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Direct Email (Internal)</label>
-              <Input name="directEmail" value={profile.directEmail} onChange={handleInputChange} icon={<Mail size={16}/>} />
+              <Input name="directEmail" value={profile.directEmail} onChange={handleInputChange} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Direct Phone (Internal)</label>
-              <Input name="directPhone" value={profile.directPhone} onChange={handleInputChange} icon={<Phone size={16}/>} />
+              <Input name="directPhone" value={profile.directPhone} onChange={handleInputChange} />
             </div>
           </div>
         </Card>

@@ -4,6 +4,8 @@ import { Container, Card, Button, useToast } from '@l4h/shared-ui'
 import { admin } from '@l4h/shared-ui'
 import { CheckCircle, XCircle, Clock, User, Calendar } from 'lucide-react'
 
+const t = (key: string) => key
+
 interface TimeEntry {
   id: string
   userId: string

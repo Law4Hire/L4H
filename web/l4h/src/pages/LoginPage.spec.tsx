@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BrowserRouter } from 'react-router-dom'
-import { LoginPage } from './LoginPage'
+import LoginPage from './LoginPage'
 import { authClient } from '@l4h/shared-ui'
 
 // Mock the auth client
@@ -13,7 +13,7 @@ vi.mock('@l4h/shared-ui', async () => {
     authClient: {
       login: vi.fn(),
       remember: vi.fn(),
-    },
+    } as any,
   }
 })
 
@@ -60,7 +60,7 @@ describe('LoginPage', () => {
       success: true,
       token: 'mock-token',
     })
-    const mockRemember = vi.mocked(authClient.remember).mockResolvedValue()
+    const mockRemember = vi.mocked(authClient.remember).mockResolvedValue(true)
 
     renderWithRouter(<LoginPage />)
     
@@ -71,7 +71,7 @@ describe('LoginPage', () => {
     
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123')
-      expect(mockRemember).toHaveBeenCalled()
+      expect(mockRemember).toHaveBeenCalledWith()
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard')
     })
   })
@@ -157,7 +157,7 @@ describe('LoginPage', () => {
       success: true,
       token: 'mock-token',
     })
-    const mockRemember = vi.mocked(authClient.remember).mockResolvedValue()
+    const mockRemember = vi.mocked(authClient.remember).mockResolvedValue(true)
 
     renderWithRouter(<LoginPage />)
     
@@ -169,7 +169,7 @@ describe('LoginPage', () => {
     
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123')
-      expect(mockRemember).not.toHaveBeenCalled()
+      expect(mockRemember).not.toHaveBeenCalledWith()
     })
   })
 

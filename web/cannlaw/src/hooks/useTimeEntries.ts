@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from './useAuth'
 
 interface TimeEntry {
@@ -29,6 +29,8 @@ interface TimeEntry {
 interface TimeEntryFilters {
   clientId?: number
   attorneyId?: number
+  userId?: number // Added userId
+  caseId?: number // Added caseId
   startDate?: string
   endDate?: string
   isBilled?: boolean
@@ -67,26 +69,13 @@ export function useTimeEntries(initialFilters?: TimeEntryFilters) {
   const [isUpdating, setIsUpdating] = useState(false)
   const { user } = useAuth()
 
-  useEffect(() => {
-    fetchTimeEntries(initialFilters)
-  }, [user])
-
-  const fetchTimeEntries = async (filters?: TimeEntryFilters) => {
+  const fetchTimeEntries = useCallback(async (filters?: TimeEntryFilters) => {
     try {
       setIsLoading(true)
       const token = localStorage.getItem('jwt_token')
-      
-      // Build query parameters with role-based filtering
       const params = new URLSearchParams()
-      
-      // Apply role-based filtering
-      if (user?.role === 'LegalProfessional' && user.attorneyId) {
-        params.append('attorneyId', user.attorneyId.toString())
-      }
-      
-      // Apply search filters
-      if (filters?.clientId) params.append('clientId', filters.clientId.toString())
-      if (filters?.attorneyId) params.append('attorneyId', filters.attorneyId.toString())
+      if (filters?.userId) params.append('userId', filters.userId.toString())
+      if (filters?.caseId) params.append('caseId', filters.caseId.toString())
       if (filters?.startDate) params.append('startDate', filters.startDate)
       if (filters?.endDate) params.append('endDate', filters.endDate)
       if (filters?.isBilled !== undefined) params.append('isBilled', filters.isBilled.toString())
@@ -100,22 +89,16 @@ export function useTimeEntries(initialFilters?: TimeEntryFilters) {
           'Authorization': `Bearer ${token}`
         }
       })
-      
+
       if (!response.ok) {
-        if (response.status === 403) {
-          throw new Error('Access denied: You do not have permission to view time entries')
-        }
         throw new Error('Failed to fetch time entries')
       }
-      
+
       const result: TimeEntriesResponse = await response.json()
       setTimeEntries(result.timeEntries)
       setTotalCount(result.totalCount)
       setTotalPages(result.totalPages)
       setCurrentPage(result.currentPage)
-      setTotalHours(result.totalHours)
-      setTotalAmount(result.totalAmount)
-      setUnbilledAmount(result.unbilledAmount)
       setError(null)
     } catch (err) {
       console.error('Error fetching time entries:', err)
@@ -123,7 +106,11 @@ export function useTimeEntries(initialFilters?: TimeEntryFilters) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    fetchTimeEntries()
+  }, [fetchTimeEntries])
 
   const getTimeEntry = async (id: number): Promise<TimeEntry> => {
     try {

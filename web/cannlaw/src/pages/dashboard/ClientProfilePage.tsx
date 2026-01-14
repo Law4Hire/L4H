@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Button, Input } from '@l4h/shared-ui'
+import { Card, Button, Input, useToast } from '@l4h/shared-ui' // Added useToast
 import { User, Mail, Phone, Calendar, Edit, Save, X, Plus, Download, Clock, CheckCircle, AlertCircle } from '@l4h/shared-ui'
 import { useClients } from '../../hooks/useClients'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import { useAuth } from '../../hooks/useAuth'
+import { useDocuments } from '../../hooks/useDocuments'
+import { useTimeEntries } from '../../hooks/useTimeEntries'
 
 interface ClientProfilePageProps {}
 
@@ -87,6 +89,9 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
   const { user, isAdmin } = useAuth() // Need isAdmin for assignment permission
   const { getClient } = useClients()
   const { attorneys } = useAttorneys()
+  const { documents, refetch: fetchClientDocuments } = useDocuments(parseInt(id!)); // Renamed to avoid conflict
+  const { timeEntries, searchTimeEntries: fetchClientTimeEntries } = useTimeEntries({ clientId: parseInt(id!) }); // Renamed to avoid conflict
+  const { success, error } = useToast() // Destructure success and error from useToast
 
   const [client, setClient] = useState<Client | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -96,61 +101,31 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
   const [, setShowCaseModal] = useState(false)
   const [, setShowDocumentModal] = useState(false)
   const [, setSelectedCase] = useState<Case | null>(null)
-  const [documents, setDocuments] = useState<Document[]>([])
-  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([])
+  // const [documents, setDocuments] = useState<Document[]>([]) // Removed, now from useDocuments
+  // const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]) // Removed, now from useTimeEntries
   const [activeTab, setActiveTab] = useState('overview')
 
   useEffect(() => {
     if (id) {
-      fetchClientData()
+      const fetchClientData = async () => {
+        try {
+          setIsLoading(true)
+          const clientData = await getClient(parseInt(id!))
+          setClient(clientData)
+          setEditedClient({ ...clientData })
+          
+          void fetchClientDocuments();
+          void fetchClientTimeEntries();
+        } catch (err) {
+          console.error('Error fetching client:', err)
+          error((err as Error).message || 'Error fetching client data')
+        } finally {
+          setIsLoading(false)
+        }
+      };
+      void fetchClientData();
     }
-  }, [id])
-
-  const fetchClientData = async () => {
-    try {
-      setIsLoading(true)
-      const clientData = await getClient(parseInt(id!))
-      setClient(clientData)
-      setEditedClient({ ...clientData })
-      
-      // Fetch related data
-      void fetchDocuments()
-      void fetchTimeEntries()
-    } catch (error) {
-      console.error('Error fetching client:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  } 
- const fetchDocuments = async () => {
-    try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/clients/${id}/documents`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (response.ok) {
-        const docs = await response.json()
-        setDocuments(docs)
-      }
-    } catch (error) {
-      console.error('Error fetching documents:', error)
-    }
-  }
-
-  const fetchTimeEntries = async () => {
-    try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/clients/${id}/time-entries`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (response.ok) {
-        const entries = await response.json()
-        setTimeEntries(entries)
-      }
-    } catch (error) {
-      console.error('Error fetching time entries:', error)
-    }
-  }
+  }, [id, getClient, fetchClientDocuments, fetchClientTimeEntries, error]);
 
   const handleSaveClient = async () => {
     try {
@@ -188,11 +163,10 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
 
       setClient(editedClient)
       setIsEditing(false)
-      // Refetch to get populated fields (like attorney name)
-      fetchClientData()
-    } catch (error) {
-      console.error('Error updating client:', error)
-      alert('Failed to update client')
+      success('Client profile updated successfully!')
+    } catch (err) { // Changed error to err
+      console.error('Error updating client:', err)
+      error((err as Error).message || 'Failed to update client profile')
     }
   }
 
@@ -208,15 +182,15 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
         body: JSON.stringify({ status: newStatus })
       })
 
-      if (response.ok) {
-        // Refresh client data to get updated case status
-        await fetchClientData()
-      } else {
-        alert('Failed to update case status')
+      if (!response.ok) { // Only throw if response is not ok
+        throw new Error('Failed to update case status')
       }
-    } catch (error) {
-      console.error('Error updating case status:', error)
-      alert('Failed to update case status')
+
+      // Refresh client data to get updated case status - useEffect will handle this
+      success('Case status updated successfully!') // Use success toast
+    } catch (err) { // Changed error to err
+      console.error('Error updating case status:', err)
+      error((err as Error).message || 'Failed to update case status') // Use error toast
     }
   }
 
@@ -354,7 +328,7 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
             <Card className="p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
               
-              {isEditing ? (
+              {isEditing && editedClient ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -381,14 +355,14 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                     <Input
-                      value={editedClient.phone}
+                      value={editedClient.phone || ''}
                       onChange={(e) => setEditedClient({...editedClient, phone: e.target.value})}
                     />
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                     <Input
-                      value={editedClient.address}
+                      value={editedClient.address || ''}
                       onChange={(e) => setEditedClient({...editedClient, address: e.target.value})}
                     />
                   </div>
@@ -396,14 +370,14 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                     <Input
                       type="date"
-                      value={editedClient.dateOfBirth?.split('T')[0]}
+                      value={editedClient.dateOfBirth?.split('T')[0] || ''}
                       onChange={(e) => setEditedClient({...editedClient, dateOfBirth: e.target.value})}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Country of Origin</label>
                     <Input
-                      value={editedClient.countryOfOrigin}
+                      value={editedClient.countryOfOrigin || ''}
                       onChange={(e) => setEditedClient({...editedClient, countryOfOrigin: e.target.value})}
                     />
                   </div>
@@ -436,14 +410,14 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
                     <div className="flex items-center space-x-3">
                       <Phone className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{client.phone}</p>
+                        <p className="text-sm font-medium text-gray-900">{client.phone || 'N/A'}</p>
                         <p className="text-xs text-gray-500">Phone Number</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <div className="w-5 h-5 text-gray-400">📍</div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{client.address}</p>
+                        <p className="text-sm font-medium text-gray-900">{client.address || 'N/A'}</p>
                         <p className="text-xs text-gray-500">Address</p>
                       </div>
                     </div>
@@ -451,7 +425,7 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
                       <Calendar className="w-5 h-5 text-gray-400" />
                       <div>
                         <p className="text-sm font-medium text-gray-900">
-                          {new Date(client.dateOfBirth).toLocaleDateString()}
+                          {client.dateOfBirth ? new Date(client.dateOfBirth).toLocaleDateString() : 'N/A'}
                         </p>
                         <p className="text-xs text-gray-500">Date of Birth</p>
                       </div>
@@ -459,7 +433,7 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
                   </div>
                   <div className="pt-4 border-t border-gray-200">
                     <p className="text-sm text-gray-600">
-                      <span className="font-medium">Country of Origin:</span> {client.countryOfOrigin}
+                      <span className="font-medium">Country of Origin:</span> {client.countryOfOrigin || 'N/A'}
                     </p>
                   </div>
                 </div>

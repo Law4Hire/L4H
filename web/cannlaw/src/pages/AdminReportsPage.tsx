@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Card, Button, useToast } from '@l4h/shared-ui'
 
 interface AdminAnalyticsDashboardResponse {
@@ -96,56 +96,40 @@ const AdminReportsPage: React.FC = () => {
   const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' })
   const { success, error } = useToast()
 
-  useEffect(() => {
-    loadAnalytics()
-  }, [])
+  const setAnalyticsData = (data: any) => {
+    setDashboardData(data.dashboardData);
+    setFinancialData(data.financialData);
+    setUserAnalytics(data.userAnalytics);
+  };
+  
+  const setIsLoading = (loadingState: boolean) => {
+    setLoading(loadingState);
+  };
 
-  const loadAnalytics = async () => {
+  const loadAnalytics = React.useCallback(async () => {
     try {
-      setLoading(true)
+      setIsLoading(true)
       const token = localStorage.getItem('jwt_token')
-      
-      if (!token) {
-        error('Authentication required', 'Please log in to access admin features')
-        return
-      }
-
       const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${token}`
       }
-
-      // Load dashboard analytics
-      const dashboardResponse = await fetch('/api/v1/admin/analytics/dashboard', { headers })
-      if (dashboardResponse.ok) {
-        const dashboard = await dashboardResponse.json()
-        setDashboardData(dashboard)
+      const response = await fetch('/api/v1/admin/analytics', { headers })
+      if (!response.ok) {
+        throw new Error('Failed to fetch analytics data')
       }
-
-      // Load financial analytics
-      const financialUrl = dateRange.startDate && dateRange.endDate 
-        ? `/api/v1/admin/analytics/financial?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`
-        : '/api/v1/admin/analytics/financial'
-      const financialResponse = await fetch(financialUrl, { headers })
-      if (financialResponse.ok) {
-        const financial = await financialResponse.json()
-        setFinancialData(financial)
-      }
-
-      // Load user analytics
-      const userResponse = await fetch('/api/v1/admin/analytics/users', { headers })
-      if (userResponse.ok) {
-        const users = await userResponse.json()
-        setUserAnalytics(users)
-      }
-
+      const data = await response.json()
+      setAnalyticsData(data)
     } catch (err) {
       console.error('Error loading analytics:', err)
-      error('Failed to load analytics', err instanceof Error ? err.message : 'Unknown error')
+      error(err instanceof Error ? err.message : 'Unknown error')
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    loadAnalytics()
+  }, [loadAnalytics])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {

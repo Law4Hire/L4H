@@ -68,8 +68,8 @@ const AttorneysPage: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          subject: `Inquiry for ${attorney.name}`
+          ...contactForm,
+          subject: `Inquiry for ${selectedAttorney.name}`
         })
       })
 
@@ -330,7 +330,7 @@ const AttorneysPage: React.FC = () => {
       {/* Contact Modal */}
       {selectedAttorney && (
         <Modal 
-          isOpen={!!selectedAttorney} 
+          open={!!selectedAttorney} 
           onClose={() => setSelectedAttorney(null)}
           title={`Contact ${selectedAttorney.name}`}
         >

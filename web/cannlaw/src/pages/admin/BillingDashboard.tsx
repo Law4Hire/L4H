@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Card, Button, Input } from '@l4h/shared-ui'
+import React, { useState, useEffect, useCallback } from 'react'
+import { Card, Button, Input, useToast } from '@l4h/shared-ui'
 import { Download, User, Clock, CheckCircle, AlertCircle } from '@l4h/shared-ui'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -37,7 +37,8 @@ interface BillingFilters {
 }
 
 const BillingDashboard: React.FC = () => {
-  const { isAdmin } = useAuth()
+  const { isAdmin, user } = useAuth()
+  const { success, error } = useToast()
   const [billingSummaries, setBillingSummaries] = useState<BillingSummary[]>([])
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([])
   const [selectedAttorney, setSelectedAttorney] = useState<BillingSummary | null>(null)
@@ -49,47 +50,43 @@ const BillingDashboard: React.FC = () => {
     billingStatus: ''
   })
   const [showDetailedView, setShowDetailedView] = useState(false)
+  const [clients, setClients] = useState([]); // Define clients state
+  const [attorneys, setAttorneys] = useState([]); // Define attorneys state
+  const [billingSummary, setBillingSummary] = useState({}); // Define billingSummary state
 
-  useEffect(() => {
-    if (isAdmin) {
-      fetchBillingData()
+
+  const fetchBillingData = useCallback(async () => {
+    if (!user || user.role !== 'Admin') {
+      return
     }
-  }, [isAdmin, filters])
-
-  const fetchBillingData = async () => {
+    setIsLoading(true)
     try {
-      setIsLoading(true)
       const token = localStorage.getItem('jwt_token')
-      
-      // Build query parameters
-      const params = new URLSearchParams()
-      if (filters.attorneyId) params.append('attorneyId', filters.attorneyId)
-      if (filters.startDate) params.append('startDate', filters.startDate)
-      if (filters.endDate) params.append('endDate', filters.endDate)
-      if (filters.billingStatus) params.append('status', filters.billingStatus)
-
-      const [summaryResponse, entriesResponse] = await Promise.all([
-        fetch(`/api/v1/billing/summary?${params.toString()}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }),
-        fetch(`/api/v1/billing/entries?${params.toString()}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
-      ])
-
-      if (summaryResponse.ok && entriesResponse.ok) {
-        const summaries = await summaryResponse.json()
-        const entries = await entriesResponse.json()
-        
-        setBillingSummaries(summaries)
-        setTimeEntries(entries)
+      const headers = {
+        'Authorization': `Bearer ${token}`
       }
-    } catch (error) {
-      console.error('Error fetching billing data:', error)
+      const summaryResponse = await fetch('/api/v1/billing/summary', { headers })
+      const summary = await summaryResponse.json()
+      setBillingSummary(summary)
+
+      const clientsResponse = await fetch('/api/v1/clients', { headers })
+      const clients = await clientsResponse.json()
+      setClients(clients.clients)
+
+      const attorneysResponse = await fetch('/api/v1/attorneys', { headers })
+      const attorneys = await attorneysResponse.json()
+      setAttorneys(attorneys)
+    } catch (err) { // Changed error to err to avoid conflict with destructured error
+      console.error('Failed to fetch billing data', err)
+      error('Failed to fetch billing data', (err as Error).message || 'An unexpected error occurred.')
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user, error])
+
+  useEffect(() => {
+    fetchBillingData()
+  }, [fetchBillingData])
 
   const handleFilterChange = (key: keyof BillingFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
@@ -118,10 +115,13 @@ const BillingDashboard: React.FC = () => {
         a.click()
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
+        success('Report exported successfully!')
+      } else {
+      error('Failed to export report.')
       }
-    } catch (error) {
-      console.error('Error exporting report:', error)
-      alert('Failed to export report')
+    } catch (err) {
+      console.error('Error exporting report:', err)
+      error('An error occurred while exporting the report.', (err as Error).message || 'Unknown error.')
     }
   }
 
@@ -255,7 +255,7 @@ const BillingDashboard: React.FC = () => {
 
         <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-3">
+            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
               <span className="text-green-600 dark:text-green-400 font-bold">$</span>
             </div>
             <div>
