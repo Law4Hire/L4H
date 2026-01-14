@@ -1098,73 +1098,82 @@ public class MessagingController : ControllerBase
         var isStaff = IsStaff();
         var isAdmin = User.HasClaim("is_admin", "true") || User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
 
+        IQueryable<User> query = _context.Users.AsNoTracking().Where(u => u.Id != userId);
+
         if (isAdmin)
         {
             // Admins see all users
-            var allUsers = await _context.Users
-                .Where(u => u.Id != userId)
-                .Select(u => new { 
-                    id = u.Id.Value, 
-                    label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
-                    description = u.IsAdmin ? "Administrator" : (u.IsStaff ? "Legal Professional" : "Client")
-                })
-                .OrderBy(u => u.label)
-                .ToListAsync().ConfigureAwait(false);
-            return Ok(allUsers);
         }
-        
-        if (isStaff)
+        else if (isStaff)
         {
             var currentUser = await _context.Users.FindAsync(userId);
             var attorneyId = currentUser?.AttorneyId;
 
-            // Get IDs of clients assigned to this staff member
-            var assignedClientIds = new List<UserId>();
+            // Legal Pros see assigned clients and all admins/staff
+            // If they are an attorney with assigned cases, include those clients
             if (attorneyId.HasValue)
             {
-                assignedClientIds = await _context.Cases
+                var assignedClientIdsQuery = _context.Cases
                     .Where(c => c.AssignedStaffId == attorneyId.Value)
-                    .Select(c => c.UserId)
-                    .ToListAsync().ConfigureAwait(false);
-            }
+                    .Select(c => c.UserId);
 
-            // Legal Pros see assigned clients and all admins/staff
-            var recipients = await _context.Users
-                .Where(u => u.Id != userId)
-                .Where(u => u.IsAdmin || u.IsStaff || assignedClientIds.Contains(u.Id))
-                .Select(u => new { 
-                    id = u.Id.Value, 
-                    label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
-                    description = u.IsAdmin ? "Administrator" : (u.IsStaff ? "Legal Professional" : "Client")
-                })
-                .OrderBy(u => u.label)
+                query = query.Where(u => u.IsAdmin || u.IsStaff || assignedClientIdsQuery.Contains(u.Id));
+            }
+            else
+            {
+                // Staff without attorney ID see other staff/admins
+                query = query.Where(u => u.IsAdmin || u.IsStaff);
+            }
+        }
+        else
+        {
+            // Regular users see admins and the specific staff assigned to their case
+            var myCaseStaffIds = await _context.Cases
+                .Where(c => c.UserId == userId && c.AssignedStaffId.HasValue)
+                .Select(c => c.AssignedStaffId!.Value)
                 .ToListAsync().ConfigureAwait(false);
-            return Ok(recipients);
+
+            if (myCaseStaffIds.Any())
+            {
+                var staffEmails = await _context.Attorneys
+                    .Where(a => myCaseStaffIds.Contains(a.Id))
+                    .Select(a => a.Email)
+                    .ToListAsync().ConfigureAwait(false);
+                
+                query = query.Where(u => u.IsAdmin || staffEmails.Contains(u.Email));
+            }
+            else
+            {
+                query = query.Where(u => u.IsAdmin);
+            }
         }
 
-        // Regular users see admins and the specific staff assigned to their case
-        var myCaseStaffIds = await _context.Cases
-            .Where(c => c.UserId == userId && c.AssignedStaffId.HasValue)
-            .Select(c => c.AssignedStaffId!.Value)
+        // Project only necessary fields to avoid over-fetching and potential translation issues
+        var users = await query
+            .Select(u => new 
+            { 
+                u.Id, 
+                u.FirstName, 
+                u.LastName, 
+                u.Email, 
+                u.IsAdmin, 
+                u.IsStaff 
+            })
+            .OrderBy(u => u.Email)
             .ToListAsync().ConfigureAwait(false);
 
-        // We need to map Attorney ID (int) back to User (Guid)
-        var staffEmails = await _context.Attorneys
-            .Where(a => myCaseStaffIds.Contains(a.Id))
-            .Select(a => a.Email)
-            .ToListAsync().ConfigureAwait(false);
-
-        var staffUsers = await _context.Users
-            .Where(u => staffEmails.Contains(u.Email) || u.IsAdmin)
-            .Select(u => new { 
+        // Perform formatting in memory
+        var result = users
+            .Select(u => new 
+            { 
                 id = u.Id.Value, 
                 label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
-                description = u.IsAdmin ? "Administrator" : "Assigned Professional"
+                description = u.IsAdmin ? "Administrator" : (u.IsStaff ? "Legal Professional" : "Client")
             })
             .OrderBy(u => u.label)
-            .ToListAsync().ConfigureAwait(false);
+            .ToList();
 
-        return Ok(staffUsers);
+        return Ok(result);
     }
 
     private bool IsMessageRead(Message m, UserId userId)

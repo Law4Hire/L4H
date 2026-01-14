@@ -1,359 +1,114 @@
 {
   "Visas": [
-    {
-      "VisaName": "A-1",
-      "VisaDescription": "Heads of state, ambassadors, career diplomats, and family.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "A-2",
-      "VisaDescription": "Other accredited officials and employees of foreign governments.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "A-3",
-      "VisaDescription": "Personal attendants and servants of A-1/A-2 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "B-1",
-      "VisaDescription": "Temporary business travel.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "B-2",
-      "VisaDescription": "Temporary pleasure or medical treatment.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "C-1",
-      "VisaDescription": "Transit through the United States.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "C-1/D",
-      "VisaDescription": "Combined transit and crewmember.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "D",
-      "VisaDescription": "Crewmembers of sea vessels or airlines.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "E-1",
-      "VisaDescription": "Treaty traders and employees.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "E-2",
-      "VisaDescription": "Treaty investors and employees.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "E-3",
-      "VisaDescription": "Australian professionals in specialty occupations.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "EB-1",
-      "VisaDescription": "Priority workers: Extraordinary ability, researchers, managers.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "EB-2",
-      "VisaDescription": "Advanced degrees or persons of exceptional ability.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "EB-3",
-      "VisaDescription": "Skilled workers, professionals, and other workers.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "EB-4",
-      "VisaDescription": "Special immigrants: religious workers, etc.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "EB-5",
-      "VisaDescription": "Immigrant investors.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "F-1",
-      "VisaDescription": "Academic or language students.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "F-2",
-      "VisaDescription": "Spouses and children of F-1 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "G-1",
-      "VisaDescription": "Resident representatives of member governments to international orgs.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "G-4",
-      "VisaDescription": "Officers and employees of international organizations.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "H-1B",
-      "VisaDescription": "Specialty occupation professionals.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "H-1B1",
-      "VisaDescription": "Specialty occupations for Chile and Singapore.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "H-3",
-      "VisaDescription": "Trainees or special education visitors.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "H-4",
-      "VisaDescription": "Spouses and children of H holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "I",
-      "VisaDescription": "Foreign media representatives.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "J-1",
-      "VisaDescription": "Exchange visitors.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "J-2",
-      "VisaDescription": "Spouses and children of J-1 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "K-1",
-      "VisaDescription": "Fiancé(e) of U.S. citizen.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "K-2",
-      "VisaDescription": "Minor children of K-1 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "K-3",
-      "VisaDescription": "Spouse of U.S. citizen awaiting immigrant visa.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "L-1A",
-      "VisaDescription": "Intracompany transferees (Managers/Executives).",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "L-1B",
-      "VisaDescription": "Intracompany transferees (Specialized Knowledge).",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "L-2",
-      "VisaDescription": "Spouses and children of L-1 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "M-1",
-      "VisaDescription": "Vocational or non-academic students.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "M-2",
-      "VisaDescription": "Spouses and children of M-1 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "O-1",
-      "VisaDescription": "Extraordinary ability in science, art, etc.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "O-2",
-      "VisaDescription": "Support personnel for O-1 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "O-3",
-      "VisaDescription": "Spouses and children of O-1/O-2 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "P-1",
-      "VisaDescription": "Internationally recognized athletes or groups.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "P-2",
-      "VisaDescription": "Reciprocal exchange artists/entertainers.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "P-3",
-      "VisaDescription": "Culturally unique artists/entertainers.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "P-4",
-      "VisaDescription": "Spouses and children of P holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "Q-1",
-      "VisaDescription": "International cultural exchange visitors.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "R-1",
-      "VisaDescription": "Temporary religious workers.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "R-2",
-      "VisaDescription": "Spouses and children of R-1 holders.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "S-5",
-      "VisaDescription": "Informants supplying critical information on criminal orgs.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "S-6",
-      "VisaDescription": "Informants supplying critical information on terrorism.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "T-1",
-      "VisaDescription": "Victims of severe human trafficking.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "TN",
-      "VisaDescription": "NAFTA/USMCA professionals.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "TPS",
-      "VisaDescription": "Temporary Protected Status.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "U-1",
-      "VisaDescription": "Victims of certain criminal activities.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "V-1",
-      "VisaDescription": "Spouses of LPRs awaiting pending I-130.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "Diversity",
-      "VisaDescription": "Diversity Immigrant Visa (Lottery).",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "IR-1",
-      "VisaDescription": "Spouse of U.S. Citizen (Immediate Relative).",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "IR-2",
-      "VisaDescription": "Unmarried Child under 21 of U.S. Citizen.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "IR-3",
-      "VisaDescription": "Orphan Adopted Abroad by U.S. Citizen.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "IR-4",
-      "VisaDescription": "Orphan to be Adopted in U.S. by U.S. Citizen.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "IR-5",
-      "VisaDescription": "Parent of U.S. Citizen (Citizen must be 21+).",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "F1-Im",
-      "VisaDescription": "Unmarried Sons and Daughters of U.S. Citizens.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "F2A",
-      "VisaDescription": "Spouses and Children of Permanent Residents.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "F2B",
-      "VisaDescription": "Unmarried Sons and Daughters (21+) of Permanent Residents.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "F3-Im",
-      "VisaDescription": "Married Sons and Daughters of U.S. Citizens.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "F4",
-      "VisaDescription": "Brothers and Sisters of Adult U.S. Citizens.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "NATZ",
-      "VisaDescription": "Naturalization / U.S. Citizenship application.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "ADOP",
-      "VisaDescription": "International Adoption Services.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "ASYL",
-      "VisaDescription": "Asylum and Refugee status.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "NIW",
-      "VisaDescription": "National Interest Waiver.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "VAWA",
-      "VisaDescription": "Violence Against Women Act (Battered Immigrants).",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "PARL",
-      "VisaDescription": "Parole / Humanitarian Parole.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "WAV",
-      "VisaDescription": "Waivers of Inadmissibility.",
-      "Status": "Active"
-    },
-    {
-      "VisaName": "DEP",
-      "VisaDescription": "Deportation / Removal Defense.",
-      "Status": "Active"
-    }
+    { "VisaName": "A-1", "VisaDescription": "Ambassadors, Public Ministers, Career Diplomats", "Status": "Active" },
+    { "VisaName": "A-2", "VisaDescription": "Other Foreign Government Officials", "Status": "Active" },
+    { "VisaName": "A-3", "VisaDescription": "Attendants/Servants of A-1/A-2", "Status": "Active" },
+    { "VisaName": "B-1", "VisaDescription": "Temporary Business Visitor", "Status": "Active" },
+    { "VisaName": "B-2", "VisaDescription": "Temporary Tourist Visitor", "Status": "Active" },
+    { "VisaName": "C-1", "VisaDescription": "Transit", "Status": "Active" },
+    { "VisaName": "C-1/D", "VisaDescription": "Combined Transit and Crewmember", "Status": "Active" },
+    { "VisaName": "C-2", "VisaDescription": "UN Transit", "Status": "Active" },
+    { "VisaName": "C-3", "VisaDescription": "Foreign Government Transit", "Status": "Active" },
+    { "VisaName": "CW-1", "VisaDescription": "CNMI-Only Transitional Worker", "Status": "Active" },
+    { "VisaName": "CW-2", "VisaDescription": "Spouse/Child of CW-1", "Status": "Active" },
+    { "VisaName": "D", "VisaDescription": "Crewmember", "Status": "Active" },
+    { "VisaName": "E-1", "VisaDescription": "Treaty Trader", "Status": "Active" },
+    { "VisaName": "E-2", "VisaDescription": "Treaty Investor", "Status": "Active" },
+    { "VisaName": "E-2C", "VisaDescription": "CNMI Investor", "Status": "Active" },
+    { "VisaName": "E-3", "VisaDescription": "Australian Specialty Occupation", "Status": "Active" },
+    { "VisaName": "E-3D", "VisaDescription": "Spouse/Child of E-3", "Status": "Active" },
+    { "VisaName": "E-3R", "VisaDescription": "Returning E-3", "Status": "Active" },
+    { "VisaName": "EB-1", "VisaDescription": "Priority Workers", "Status": "Active" },
+    { "VisaName": "EB-2", "VisaDescription": "Professionals with Advanced Degrees", "Status": "Active" },
+    { "VisaName": "EB-3", "VisaDescription": "Skilled Workers/Professionals", "Status": "Active" },
+    { "VisaName": "EB-4", "VisaDescription": "Special Immigrants", "Status": "Active" },
+    { "VisaName": "EB-5", "VisaDescription": "Immigrant Investors", "Status": "Active" },
+    { "VisaName": "F-1", "VisaDescription": "Academic Student", "Status": "Active" },
+    { "VisaName": "F-2", "VisaDescription": "Spouse/Child of F-1", "Status": "Active" },
+    { "VisaName": "F-3", "VisaDescription": "Border Commuter Student", "Status": "Active" },
+    { "VisaName": "G-1", "VisaDescription": "Resident Representative to Int. Org", "Status": "Active" },
+    { "VisaName": "G-2", "VisaDescription": "Other Representative to Int. Org", "Status": "Active" },
+    { "VisaName": "G-3", "VisaDescription": "Non-recognized Representative", "Status": "Active" },
+    { "VisaName": "G-4", "VisaDescription": "Officer/Employee of Int. Org", "Status": "Active" },
+    { "VisaName": "G-5", "VisaDescription": "Attendant/Servant of G-1 to G-4", "Status": "Active" },
+    { "VisaName": "H-1B", "VisaDescription": "Specialty Occupation Worker", "Status": "Active" },
+    { "VisaName": "H-1B1", "VisaDescription": "Specialty Occupation (Chile/Singapore)", "Status": "Active" },
+    { "VisaName": "H-1C", "VisaDescription": "Nurse (Relief Act)", "Status": "Active" },
+    { "VisaName": "H-2A", "VisaDescription": "Agricultural Worker", "Status": "Active" },
+    { "VisaName": "H-2B", "VisaDescription": "Non-agricultural Worker", "Status": "Active" },
+    { "VisaName": "H-3", "VisaDescription": "Trainee/Special Education", "Status": "Active" },
+    { "VisaName": "H-4", "VisaDescription": "Spouse/Child of H-1/H-2/H-3", "Status": "Active" },
+    { "VisaName": "I", "VisaDescription": "Foreign Media Representative", "Status": "Active" },
+    { "VisaName": "J-1", "VisaDescription": "Exchange Visitor", "Status": "Active" },
+    { "VisaName": "J-2", "VisaDescription": "Spouse/Child of J-1", "Status": "Active" },
+    { "VisaName": "K-1", "VisaDescription": "Fiancé(e)", "Status": "Active" },
+    { "VisaName": "K-2", "VisaDescription": "Child of K-1", "Status": "Active" },
+    { "VisaName": "K-3", "VisaDescription": "Spouse of USC awaiting visa", "Status": "Active" },
+    { "VisaName": "K-4", "VisaDescription": "Child of K-3", "Status": "Active" },
+    { "VisaName": "L-1A", "VisaDescription": "Intracompany Manager/Executive", "Status": "Active" },
+    { "VisaName": "L-1B", "VisaDescription": "Intracompany Specialized Knowledge", "Status": "Active" },
+    { "VisaName": "L-2", "VisaDescription": "Spouse/Child of L-1", "Status": "Active" },
+    { "VisaName": "M-1", "VisaDescription": "Vocational Student", "Status": "Active" },
+    { "VisaName": "M-2", "VisaDescription": "Spouse/Child of M-1", "Status": "Active" },
+    { "VisaName": "M-3", "VisaDescription": "Border Commuter Vocational", "Status": "Active" },
+    { "VisaName": "N-8", "VisaDescription": "Parent of SK-3 Special Immigrant", "Status": "Active" },
+    { "VisaName": "N-9", "VisaDescription": "Child of N-8 or SK-1/2/4", "Status": "Active" },
+    { "VisaName": "NATO-1", "VisaDescription": "Principal Perm. Rep. to NATO", "Status": "Active" },
+    { "VisaName": "NATO-2", "VisaDescription": "Other Rep. to NATO", "Status": "Active" },
+    { "VisaName": "NATO-3", "VisaDescription": "Official Clerical Staff of NATO", "Status": "Active" },
+    { "VisaName": "NATO-4", "VisaDescription": "Official of NATO (Other)", "Status": "Active" },
+    { "VisaName": "NATO-5", "VisaDescription": "Expert employed by NATO", "Status": "Active" },
+    { "VisaName": "NATO-6", "VisaDescription": "Member of Civilian Component", "Status": "Active" },
+    { "VisaName": "NATO-7", "VisaDescription": "Attendant/Servant of NATO-1 to 6", "Status": "Active" },
+    { "VisaName": "O-1", "VisaDescription": "Extraordinary Ability", "Status": "Active" },
+    { "VisaName": "O-2", "VisaDescription": "Support Personnel for O-1", "Status": "Active" },
+    { "VisaName": "O-3", "VisaDescription": "Spouse/Child of O-1/O-2", "Status": "Active" },
+    { "VisaName": "P-1", "VisaDescription": "Internationally Recognized Athlete/Group", "Status": "Active" },
+    { "VisaName": "P-2", "VisaDescription": "Reciprocal Exchange Artist", "Status": "Active" },
+    { "VisaName": "P-3", "VisaDescription": "Culturally Unique Artist", "Status": "Active" },
+    { "VisaName": "P-4", "VisaDescription": "Spouse/Child of P-1/2/3", "Status": "Active" },
+    { "VisaName": "Q-1", "VisaDescription": "Cultural Exchange Visitor", "Status": "Active" },
+    { "VisaName": "R-1", "VisaDescription": "Religious Worker", "Status": "Active" },
+    { "VisaName": "R-2", "VisaDescription": "Spouse/Child of R-1", "Status": "Active" },
+    { "VisaName": "S-5", "VisaDescription": "Informant (Criminal Org)", "Status": "Active" },
+    { "VisaName": "S-6", "VisaDescription": "Informant (Terrorism)", "Status": "Active" },
+    { "VisaName": "S-7", "VisaDescription": "Spouse/Child of S-5/6", "Status": "Active" },
+    { "VisaName": "SIJ", "VisaDescription": "Special Immigrant Juvenile", "Status": "Active" },
+    { "VisaName": "T-1", "VisaDescription": "Victim of Human Trafficking", "Status": "Active" },
+    { "VisaName": "T-2", "VisaDescription": "Spouse of T-1", "Status": "Active" },
+    { "VisaName": "T-3", "VisaDescription": "Child of T-1", "Status": "Active" },
+    { "VisaName": "T-4", "VisaDescription": "Parent of T-1", "Status": "Active" },
+    { "VisaName": "T-5", "VisaDescription": "Sibling of T-1", "Status": "Active" },
+    { "VisaName": "T-6", "VisaDescription": "Adult/Minor Child of T-1", "Status": "Active" },
+    { "VisaName": "TN", "VisaDescription": "NAFTA Professional", "Status": "Active" },
+    { "VisaName": "TD", "VisaDescription": "Spouse/Child of TN", "Status": "Active" },
+    { "VisaName": "TPS", "VisaDescription": "Temporary Protected Status", "Status": "Active" },
+    { "VisaName": "U-1", "VisaDescription": "Victim of Criminal Activity", "Status": "Active" },
+    { "VisaName": "U-2", "VisaDescription": "Spouse of U-1", "Status": "Active" },
+    { "VisaName": "U-3", "VisaDescription": "Child of U-1", "Status": "Active" },
+    { "VisaName": "U-4", "VisaDescription": "Parent of U-1", "Status": "Active" },
+    { "VisaName": "U-5", "VisaDescription": "Sibling of U-1", "Status": "Active" },
+    { "VisaName": "V-1", "VisaDescription": "Spouse of LPR (LIFE Act)", "Status": "Active" },
+    { "VisaName": "V-2", "VisaDescription": "Child of V-1", "Status": "Active" },
+    { "VisaName": "V-3", "VisaDescription": "Child of V-1/V-2", "Status": "Active" },
+    { "VisaName": "Diversity", "VisaDescription": "Diversity Visa (Lottery)", "Status": "Active" },
+    { "VisaName": "IR-1", "VisaDescription": "Spouse of US Citizen", "Status": "Active" },
+    { "VisaName": "IR-2", "VisaDescription": "Child of US Citizen", "Status": "Active" },
+    { "VisaName": "IR-3", "VisaDescription": "Orphan Adopted Abroad", "Status": "Active" },
+    { "VisaName": "IR-4", "VisaDescription": "Orphan to be Adopted in US", "Status": "Active" },
+    { "VisaName": "IR-5", "VisaDescription": "Parent of US Citizen", "Status": "Active" },
+    { "VisaName": "F1-Im", "VisaDescription": "Unmarried Son/Daughter of USC", "Status": "Active" },
+    { "VisaName": "F2A", "VisaDescription": "Spouse/Child of LPR", "Status": "Active" },
+    { "VisaName": "F2B", "VisaDescription": "Unmarried Son/Daughter of LPR", "Status": "Active" },
+    { "VisaName": "F3-Im", "VisaDescription": "Married Son/Daughter of USC", "Status": "Active" },
+    { "VisaName": "F4", "VisaDescription": "Sibling of USC", "Status": "Active" },
+    { "VisaName": "NATZ", "VisaDescription": "Naturalization", "Status": "Active" },
+    { "VisaName": "ADOP", "VisaDescription": "Adoption", "Status": "Active" },
+    { "VisaName": "ASYL", "VisaDescription": "Asylum", "Status": "Active" },
+    { "VisaName": "NIW", "VisaDescription": "National Interest Waiver", "Status": "Active" },
+    { "VisaName": "VAWA", "VisaDescription": "Violence Against Women Act", "Status": "Active" },
+    { "VisaName": "PARL", "VisaDescription": "Humanitarian Parole", "Status": "Active" },
+    { "VisaName": "WAV", "VisaDescription": "Waivers", "Status": "Active" },
+    { "VisaName": "DEP", "VisaDescription": "Deportation Defense", "Status": "Active" }
   ]
 }

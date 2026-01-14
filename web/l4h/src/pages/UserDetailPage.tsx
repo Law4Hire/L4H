@@ -23,6 +23,12 @@ const UserDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [newPassword, setNewPassword] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isEditingBasic, setIsEditingBasic] = useState(false)
+  const [basicFormData, setBasicFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: ''
+  })
 
   // Load user details
   useEffect(() => {
@@ -40,6 +46,11 @@ const UserDetailPage: React.FC = () => {
       console.log('Found user:', foundUser)
       if (foundUser) {
         setUser(foundUser)
+        setBasicFormData({
+          firstName: foundUser.firstName,
+          lastName: foundUser.lastName,
+          email: foundUser.email
+        })
       } else {
         error('User not found')
         navigate('/admin/users')
@@ -49,6 +60,32 @@ const UserDetailPage: React.FC = () => {
       console.error('Error fetching user:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleUpdateBasic = async () => {
+    if (!user) return
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch(`/api/v1/admin/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(basicFormData)
+      })
+
+      if (response.ok) {
+        setUser({ ...user, ...basicFormData })
+        setIsEditingBasic(false)
+        success('User details updated successfully')
+      } else {
+        const data = await response.json()
+        error('Failed to update user', data.detail || 'Unknown error')
+      }
+    } catch (err) {
+      error('Error updating user')
     }
   }
 
@@ -156,19 +193,51 @@ const UserDetailPage: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {user.firstName} {user.lastName}
-              </h1>
-              <p className="text-gray-600 dark:text-gray-300">{user.email}</p>
+            <div className="flex-1">
+              {isEditingBasic ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Input
+                    label="First Name"
+                    value={basicFormData.firstName}
+                    onChange={(e) => setBasicFormData({ ...basicFormData, firstName: e.target.value })}
+                  />
+                  <Input
+                    label="Last Name"
+                    value={basicFormData.lastName}
+                    onChange={(e) => setBasicFormData({ ...basicFormData, lastName: e.target.value })}
+                  />
+                  <Input
+                    label="Email"
+                    value={basicFormData.email}
+                    onChange={(e) => setBasicFormData({ ...basicFormData, email: e.target.value })}
+                  />
+                </div>
+              ) : (
+                <>
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    {user.firstName} {user.lastName}
+                  </h1>
+                  <p className="text-gray-600 dark:text-gray-300">{user.email}</p>
+                </>
+              )}
             </div>
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/admin/users')}
-              className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              ← Back to Users
-            </Button>
+            <div className="flex gap-2">
+              {isEditingBasic ? (
+                <>
+                  <Button variant="ghost" onClick={() => setIsEditingBasic(false)}>Cancel</Button>
+                  <Button onClick={handleUpdateBasic}>Save</Button>
+                </>
+              ) : (
+                <Button variant="ghost" onClick={() => setIsEditingBasic(true)}>Edit</Button>
+              )}
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/admin/users')}
+                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                ← Back to Users
+              </Button>
+            </div>
           </div>
         </div>
       </div>

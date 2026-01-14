@@ -268,7 +268,7 @@ const ClientManagement: React.FC = () => {
                   id="attorney-filter"
                   value={filters.assignedAttorney}
                   onChange={(e) => handleFilterChange('assignedAttorney', e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
                 >
                   <option value="">All Attorneys</option>
                   <option value="unassigned">Unassigned</option>
@@ -289,7 +289,7 @@ const ClientManagement: React.FC = () => {
                 id="status-filter"
                 value={filters.caseStatus}
                 onChange={(e) => handleFilterChange('caseStatus', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
               >
                 <option value="">All Statuses</option>
                 {Object.values(CaseStatus).map(status => (
@@ -306,7 +306,7 @@ const ClientManagement: React.FC = () => {
                 id="case-type-filter"
                 value={filters.caseType}
                 onChange={(e) => handleFilterChange('caseType', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
               >
                 <option value="">All Case Types</option>
                 <option value="Family-Based Immigration">Family-Based Immigration</option>
@@ -326,7 +326,7 @@ const ClientManagement: React.FC = () => {
                 id="date-range-filter"
                 value={filters.dateRange}
                 onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
               >
                 <option value="">All Time</option>
                 <option value="today">Today</option>
@@ -532,7 +532,7 @@ const ClientManagement: React.FC = () => {
               id="attorney-select"
               value={selectedAttorney}
               onChange={(e) => setSelectedAttorney(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
             >
               <option value="">Choose an attorney...</option>
               {attorneys.filter(a => a.isActive).map(attorney => (

@@ -215,13 +215,13 @@ public class AuthController : ControllerBase
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = HttpContext.Request.IsHttps,
+                Secure = true, // Always secure in production
                 SameSite = SameSiteMode.Lax,
-                Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
                 Expires = request.RememberMe 
                     ? DateTimeOffset.UtcNow.AddDays(_authConfig.Remember.Days)
-                    : DateTimeOffset.UtcNow.AddMinutes(10), // Short expiration for non-remember me (sliding window buffer)
-                Path = "/"
+                    : DateTimeOffset.UtcNow.AddMinutes(15), // Short expiration for non-remember me (sliding window buffer)
+                Path = "/",
+                IsEssential = true
             };
 
             Response.Cookies.Append("l4h_remember", rememberToken, cookieOptions);
@@ -273,11 +273,11 @@ public class AuthController : ControllerBase
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = HttpContext.Request.IsHttps,
+                Secure = true,
                 SameSite = SameSiteMode.Lax,
-                Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
                 Expires = DateTimeOffset.UtcNow.AddHours(8), // Shorter session for staff
-                Path = "/"
+                Path = "/",
+                IsEssential = true
             };
             Response.Cookies.Append("l4h_remember", rememberToken, cookieOptions);
         }
@@ -305,15 +305,14 @@ public class AuthController : ControllerBase
         if (!result.IsSuccess)
         {
             // Clear the invalid cookie with proper options
-            var cookieOptions = new CookieOptions
+            var deleteOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = HttpContext.Request.IsHttps,
+                Secure = true,
                 SameSite = SameSiteMode.Lax,
-                Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
                 Path = "/"
             };
-            Response.Cookies.Delete("l4h_remember", cookieOptions);
+            Response.Cookies.Delete("l4h_remember", deleteOptions);
             return Unauthorized(new { error = result.Error });
         }
 
@@ -326,13 +325,13 @@ public class AuthController : ControllerBase
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = HttpContext.Request.IsHttps,
+                Secure = true,
                 SameSite = SameSiteMode.Lax,
-                Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
                 Expires = result.Value.IsPersistent
                     ? DateTimeOffset.UtcNow.AddDays(_authConfig.Remember.Days)
-                    : DateTimeOffset.UtcNow.AddMinutes(10),
-                Path = "/"
+                    : DateTimeOffset.UtcNow.AddMinutes(15),
+                Path = "/",
+                IsEssential = true
             };
 
             Response.Cookies.Append("l4h_remember", newRememberToken, cookieOptions);
@@ -355,9 +354,8 @@ public class AuthController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = HttpContext.Request.IsHttps,
+            Secure = true,
             SameSite = SameSiteMode.Lax,
-            Domain = Request.Host.Host == "localhost" ? "localhost" : Request.Host.Host,
             Path = "/"
         };
 

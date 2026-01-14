@@ -77,6 +77,20 @@ export const Navigation: React.FC = () => {
           >
             Visa Library
           </button>
+          <button
+            onClick={() => navigate('/pricing')}
+            style={{ 
+              background: location.pathname === '/pricing' ? '#f3f4f6' : 'none', 
+              border: 'none', 
+              color: location.pathname === '/pricing' ? '#2563eb' : '#666', 
+              cursor: 'pointer', 
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              fontWeight: location.pathname === '/pricing' ? 'bold' : 'normal'
+            }}
+          >
+            Pricing
+          </button>
           
           {isLoading ? (
             <div style={{ padding: '0.5rem 1rem', color: '#666' }}>Loading...</div>

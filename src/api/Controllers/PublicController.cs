@@ -133,9 +133,23 @@ public class PublicController : ControllerBase
             _context.ContactMessages.Add(message);
             await _context.SaveChangesAsync();
 
-            // 2. Get site configuration for notification email
+            // 2. Get recipient emails (All Admins + Site Config Email)
+            var adminEmails = await _context.Users
+                .Where(u => u.IsAdmin && !string.IsNullOrEmpty(u.Email))
+                .Select(u => u.Email)
+                .ToListAsync();
+
             var siteConfig = await _context.SiteConfigurations.FirstOrDefaultAsync();
-            var adminEmail = siteConfig?.Email ?? "information@cannlaw.com";
+            if (!string.IsNullOrEmpty(siteConfig?.Email) && !adminEmails.Contains(siteConfig.Email))
+            {
+                adminEmails.Add(siteConfig.Email);
+            }
+
+            // Fallback
+            if (!adminEmails.Any())
+            {
+                adminEmails.Add("information@cannlaw.com");
+            }
 
             // 3. Send email notification to staff
             var staffSubject = $"New Contact Inquiry: {request.Subject ?? "No Subject"} ({referenceId})";
@@ -151,14 +165,16 @@ public class PublicController : ControllerBase
                 <p>{request.Message}</p>
             ";
 
-            try 
+            foreach (var email in adminEmails)
             {
-                await _mailService.SendEmailAsync(adminEmail, staffSubject, staffBody);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to send admin notification email for inquiry {ReferenceId}", referenceId);
-                // Don't fail the request if email fails, but log it
+                try 
+                {
+                    await _mailService.SendEmailAsync(email, staffSubject, staffBody);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send admin notification email to {Email} for inquiry {ReferenceId}", email, referenceId);
+                }
             }
 
             // 4. Send confirmation email to submitter

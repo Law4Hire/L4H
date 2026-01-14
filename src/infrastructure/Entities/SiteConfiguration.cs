@@ -42,6 +42,14 @@ public class SiteConfiguration
     [MaxLength(255)]
     public string? ExchangeSystemEmail { get; set; }
 
+    // Stripe settings
+    [MaxLength(200)]
+    public string? StripePublishableKey { get; set; }
+    [MaxLength(500)]
+    public string? StripeSecretKey { get; set; }
+    [MaxLength(200)]
+    public string? StripeWebhookSecret { get; set; }
+
     // Billing Settings
     public bool RoundBillingUp { get; set; } = false;
     

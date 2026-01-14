@@ -120,6 +120,7 @@ public class QuestionEngine : IQuestionEngine
             IsRequired = q.IsRequired,
             ParentId = q.ParentId,
             ParentOptionValue = q.ParentOptionValue,
+            DiscriminatesVisaCodes = q.DiscriminatesVisaCodes,
             Options = q.Options
                 .Where(o => o.IsActive)
                 .OrderBy(o => o.DisplayOrder)
@@ -226,7 +227,20 @@ public class QuestionEngine : IQuestionEngine
 
         foreach (var question in unansweredQuestions)
         {
-            if (!discriminators.TryGetValue(question.Key, out var relatedVisas))
+            HashSet<string> relatedVisas;
+            
+            if (!string.IsNullOrEmpty(question.DiscriminatesVisaCodes))
+            {
+                relatedVisas = question.DiscriminatesVisaCodes
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(v => v.Trim())
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            }
+            else if (discriminators.TryGetValue(question.Key, out var hardcodedVisas))
+            {
+                relatedVisas = hardcodedVisas;
+            }
+            else
             {
                 continue;
             }

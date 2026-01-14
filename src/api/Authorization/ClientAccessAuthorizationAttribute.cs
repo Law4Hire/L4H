@@ -17,13 +17,13 @@ public class ClientAccessAuthorizationAttribute : Attribute, IAsyncAuthorization
         var user = context.HttpContext.User;
         
         // Allow if user is admin
-        if (user.HasClaim("is_admin", "true") || user.HasClaim("is_admin", "True"))
+        if (user.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase))))
         {
             return;
         }
 
         // Check if user is a legal professional with attorney assignment
-        if (!user.HasClaim("is_legal_professional", "true") && !user.HasClaim("is_legal_professional", "True"))
+        if (!user.HasClaim(c => c.Type == "is_legal_professional" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase))))
         {
             context.Result = new ForbidResult();
             return;

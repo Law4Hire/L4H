@@ -104,20 +104,10 @@ const LegalDashboard: React.FC = () => {
 
       // Save Status (Legal Professional or Admin)
       if (editFormData.status) {
-        const token = localStorage.getItem('jwt_token')
-        const response = await fetch(`/api/v1/cases/${selectedCase}/status`, {
+        await fetchJson(`/v1/cases/${selectedCase}/status`, {
           method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
           body: JSON.stringify({ status: editFormData.status })
         })
-
-        if (!response.ok) {
-          const errData = await response.json()
-          throw new Error(errData.detail || 'Failed to update status')
-        }
       }
 
       // Save Client Details (Name/Email) if changed and ClientId exists
@@ -126,15 +116,10 @@ const LegalDashboard: React.FC = () => {
           editFormData.clientLastName !== caseData.clientLastName || 
           editFormData.clientEmail !== caseData.clientEmail
       )) {
-          const token = localStorage.getItem('jwt_token')
-          const clientRes = await fetch(`/api/v1/clients/${caseData.clientId}`, {
-             headers: { 'Authorization': `Bearer ${token}` }
-          })
-          if (clientRes.ok) {
-             const clientObj = await clientRes.json()
-             await fetch(`/api/v1/clients/${caseData.clientId}`, {
+          const clientObj = await fetchJson(`/v1/clients/${caseData.clientId}`)
+          if (clientObj) {
+             await fetchJson(`/v1/clients/${caseData.clientId}`, {
                 method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                    ...clientObj,
                    firstName: editFormData.clientFirstName,

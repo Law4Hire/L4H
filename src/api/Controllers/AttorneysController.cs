@@ -338,8 +338,9 @@ public class AttorneysController : ControllerBase
                 Credentials = "[\"J.D. University of Maryland School of Law\", \"MBA\"]",
                 PracticeAreas = "[\"Civil Litigation\", \"Criminal Litigation\", \"International Law\"]",
                 Languages = "[\"English\", \"Mandarin\", \"Taiwanese\"]",
-                PhotoUrl = new Uri("/images/attorneys/wen.jpg", UriKind.Relative)
+                PhotoUrl = null
             },
+
             new Attorney
             {
                 Name = "Angela Taylor",
@@ -376,8 +377,9 @@ public class AttorneysController : ControllerBase
                 Credentials = "[]",
                 PracticeAreas = "[\"Business Development\", \"Marketing\", \"International Trade\"]",
                 Languages = "[\"English\"]",
-                PhotoUrl = new Uri("/images/attorneys/john.jpg", UriKind.Relative)
+                PhotoUrl = null
             },
+
             new Attorney
             {
                 Name = "Chika Okala",
@@ -452,7 +454,7 @@ public class AttorneysController : ControllerBase
                 Credentials = "[\"CPA (Taiwan)\", \"Master of Accounting & Taxation NCCU\"]",
                 PracticeAreas = "[\"Financial Investment\", \"Graphic Design\", \"International Investment\"]",
                 Languages = "[\"English\", \"Mandarin\"]",
-                PhotoUrl = new Uri("/images/attorneys/katherine.jpg", UriKind.Relative)
+                PhotoUrl = null
             }
         };
 

@@ -200,7 +200,7 @@ const ClientProfilePage: React.FC<ClientProfilePageProps> = () => {
     try {
       const token = localStorage.getItem('jwt_token')
       const response = await fetch(`/api/v1/cases/${caseId}/status`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

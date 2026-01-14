@@ -173,8 +173,10 @@ const DashboardPage: React.FC = () => {
           
           <Button
             variant="outline"
-            className="h-20 flex flex-col items-center justify-center"
-            onClick={() => navigate('/appointments')}
+            className="h-20 flex flex-col items-center justify-center opacity-50 cursor-not-allowed"
+            onClick={() => {}}
+            disabled={true}
+            title="Coming Soon"
           >
             <div className="text-lg mb-1">📅</div>
             <div className="text-sm">{'My Appointments'}</div>

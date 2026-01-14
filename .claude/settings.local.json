@@ -31,7 +31,12 @@
       "Bash(grep:*)",
       "Bash(Select-String -Pattern \"error|warning CA1\")",
       "Bash(Select-Object -First 30)",
-      "Bash(Select-String -Pattern \"error|Build succeeded|Build FAILED\" -Context 0,2)"
+      "Bash(Select-String -Pattern \"error|Build succeeded|Build FAILED\" -Context 0,2)",
+      "Bash(tee:*)",
+      "Bash(find:*)",
+      "Bash(dotnet run:*)",
+      "Bash(npm run dev)",
+      "Bash(chmod:*)"
     ]
   }
 }

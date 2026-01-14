@@ -155,12 +155,22 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
 
             case "IR-3": // Adopted Child (Hague)
             case "IR-4": // Adopted Child (Non-Hague)
+            case "ADOP": // Adoption Services
                 result = EvaluateAdoption(visa, answerDict, user);
                 break;
 
             case "N-400": // Naturalization
             case "N-600": // Certificate of Citizenship
+            case "NATZ": // Naturalization
                 result = EvaluateCitizenship(visa, answerDict, user);
+                break;
+
+            case "F1-IM": // Family F1
+            case "F2A":
+            case "F2B":
+            case "F3-IM":
+            case "F4":
+                result = EvaluateFamilySpouse(visa, answerDict, user); // Broader family logic
                 break;
 
             default:

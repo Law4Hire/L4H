@@ -262,26 +262,26 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
   return (
     <div className="space-y-6">
       {/* Active Timer */}
-      <Card className="p-6">
+      <Card className="p-6 dark:bg-navy-900 dark:border-navy-800">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Time Tracking</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Time Tracking</h2>
           {isTracking && (
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-red-600 font-medium">Recording</span>
+              <span className="text-sm text-red-600 dark:text-red-400 font-medium">Recording</span>
             </div>
           )}
         </div>
 
         {/* Timer Display */}
         <div className="text-center mb-6">
-          <div className="text-4xl font-mono font-bold text-gray-900 mb-2">
+          <div className="text-4xl font-mono font-bold text-gray-900 dark:text-white mb-2">
             {formatTime(elapsedTime)}
           </div>
           {isTracking && (
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               Billable: {formatDuration(getCurrentBillableHours())} 
-              <span className="text-xs text-gray-500 ml-1">(6-min increments)</span>
+              <span className="text-xs text-gray-500 dark:text-gray-500 ml-1">(6-min increments)</span>
             </div>
           )}
         </div>
@@ -289,12 +289,12 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
         {/* Client Selection */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Client</label>
             <select
               value={selectedClientId || ''}
               onChange={(e) => setSelectedClientId(e.target.value ? parseInt(e.target.value) : null)}
               disabled={isTracking}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+              className="w-full p-2 border border-gray-300 dark:border-navy-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:disabled:bg-navy-950 bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
             >
               <option value="">Select a client...</option>
               {clients.map(client => (
@@ -306,26 +306,27 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Activity Description</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Activity Description</label>
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What are you working on?"
               disabled={isTracking}
+              className="dark:bg-navy-800 dark:border-navy-700 dark:text-white"
             />
           </div>
         </div>
 
         {/* Notes */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes (Optional)</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Additional notes about this work..."
             rows={2}
             disabled={isTracking}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+            className="w-full p-2 border border-gray-300 dark:border-navy-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:disabled:bg-navy-950 bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
           />
         </div>
 
@@ -336,18 +337,18 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
               variant="primary"
               onClick={startTime ? resumeTimer : startTimer}
               disabled={!selectedClientId || !description.trim()}
-              className="flex items-center"
+              className="flex items-center dark:bg-gold-600 dark:hover:bg-gold-500 dark:text-navy-900 font-bold"
             >
               ▶️
               <span className="ml-2">{startTime ? 'Resume' : 'Start Timer'}</span>
             </Button>
           ) : (
             <>
-              <Button variant="outline" onClick={pauseTimer} className="flex items-center">
+              <Button variant="outline" onClick={pauseTimer} className="flex items-center dark:text-white dark:border-navy-600">
                 ⏸️
                 <span className="ml-2">Pause</span>
               </Button>
-              <Button variant="primary" onClick={stopTimer} className="flex items-center">
+              <Button variant="primary" onClick={stopTimer} className="flex items-center dark:bg-red-600 dark:hover:bg-red-500 font-bold">
                 ⏹️
                 <span className="ml-2">Stop & Save</span>
               </Button>
@@ -356,11 +357,11 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
         </div>
       </Card>  
     {/* Recent Time Entries */}
-      <Card className="overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <Card className="overflow-hidden dark:bg-navy-900 dark:border-navy-800">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-navy-800">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-gray-900">Recent Time Entries</h3>
-            <Button variant="outline" size="sm" onClick={() => setShowEntryModal(true)}>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Time Entries</h3>
+            <Button variant="outline" size="sm" onClick={() => setShowEntryModal(true)} className="dark:text-white dark:border-navy-600">
               <Plus className="w-4 h-4 mr-1" />
               Add Manual Entry
             </Button>
@@ -368,60 +369,60 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-navy-800">
+            <thead className="bg-gray-50 dark:bg-navy-800">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Client
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Duration
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-navy-900 divide-y divide-gray-200 dark:divide-navy-800">
               {timeEntries.slice(0, 10).map((entry) => (
-                <tr key={entry.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr key={entry.id} className="hover:bg-gray-50 dark:hover:bg-navy-800 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                     {new Date(entry.startTime).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                     {entry.clientName || getClientName(entry.clientId)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">
                     <div>
                       <p className="font-medium">{entry.description}</p>
                       {entry.notes && (
-                        <p className="text-gray-500 text-xs mt-1">{entry.notes}</p>
+                        <p className="text-gray-500 dark:text-gray-500 text-xs mt-1">{entry.notes}</p>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                     {formatDuration(entry.duration)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                     ${entry.billableAmount.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       entry.isBilled 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
                     }`}>
                       {entry.isBilled ? 'Billed' : 'Unbilled'}
                     </span>
@@ -432,6 +433,7 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
                       size="sm"
                       onClick={() => handleEditEntry(entry)}
                       disabled={entry.isBilled}
+                      className="dark:text-white dark:border-navy-600"
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
@@ -444,9 +446,9 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
 
         {timeEntries.length === 0 && (
           <div className="text-center py-12">
-            <Clock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900">No time entries yet</h3>
-            <p className="text-gray-600">Start tracking time to see your entries here.</p>
+            <Clock className="mx-auto h-12 w-12 text-gray-400 dark:text-navy-700 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">No time entries yet</h3>
+            <p className="text-gray-600 dark:text-gray-400">Start tracking time to see your entries here.</p>
           </div>
         )}
       </Card>
@@ -461,22 +463,23 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
         title={editingEntry ? 'Edit Time Entry' : 'Add Manual Time Entry'}
         size="md"
       >
-        <div className="space-y-4">
+        <div className="space-y-4 p-4 dark:bg-navy-900">
           {editingEntry ? (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                 <Input
                   value={editingEntry.description}
                   onChange={(e) => setEditingEntry({
                     ...editingEntry,
                     description: e.target.value
                   })}
+                  className="dark:bg-navy-800 dark:border-navy-700 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
                 <textarea
                   value={editingEntry.notes}
                   onChange={(e) => setEditingEntry({
@@ -484,12 +487,12 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
                     notes: e.target.value
                   })}
                   rows={3}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 dark:border-navy-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Duration (hours, in 0.1 increments)
                 </label>
                 <Input
@@ -501,19 +504,21 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
                     ...editingEntry,
                     duration: parseFloat(e.target.value) || 0.1
                   })}
+                  className="dark:bg-navy-800 dark:border-navy-700 dark:text-white"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Minimum billable increment is 0.1 hours (6 minutes)
                 </p>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4">
+              <div className="flex justify-end space-x-3 pt-4 border-t dark:border-navy-800 mt-4">
                 <Button
                   variant="outline"
                   onClick={() => {
                     setShowEntryModal(false)
                     setEditingEntry(null)
                   }}
+                  className="dark:text-white dark:border-navy-600"
                 >
                   Cancel
                 </Button>
@@ -521,6 +526,7 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
                   variant="primary"
                   onClick={handleSaveEntry}
                   loading={isLoading}
+                  className="dark:bg-gold-600 dark:hover:bg-gold-500 dark:text-navy-900 font-bold"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   Save Changes
@@ -529,8 +535,9 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
             </>
           ) : (
             <div className="text-center py-8">
-              <Clock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <p className="text-gray-600">Manual time entry form will be implemented here.</p>
+              <Clock className="mx-auto h-12 w-12 text-gray-400 dark:text-navy-700 mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">Manual time entry form will be implemented here.</p>
+              <Button onClick={() => setShowEntryModal(false)} className="mt-4">Close</Button>
             </div>
           )}
         </div>

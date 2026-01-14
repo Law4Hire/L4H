@@ -10,7 +10,7 @@ namespace L4H.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/clients")]
-[Authorize(Policy = "IsLegalProfessional")]
+[Authorize(Policy = "IsAdminOrLegalProfessional")]
 [Tags("Clients")]
 public class ClientsController : ControllerBase
 {
@@ -25,7 +25,6 @@ public class ClientsController : ControllerBase
     /// Get clients based on user role - admins see all, legal professionals see assigned
     /// </summary>
     [HttpGet]
-    [Authorize(Policy = "IsAdminOrLegalProfessional")]
     [ProducesResponseType(typeof(Client[]), StatusCodes.Status200OK)]
     public async Task<ActionResult<Client[]>> GetClients(
         [FromQuery] string? search = null,
@@ -43,7 +42,7 @@ public class ClientsController : ControllerBase
             .AsQueryable();
 
         // Role-based filtering
-        var isAdmin = User.HasClaim("is_admin", "true") || User.HasClaim("is_admin", "True");
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase));
         if (!isAdmin)
         {
             // Legal professionals only see their assigned clients
@@ -280,6 +279,37 @@ public class ClientsController : ControllerBase
 
         await _context.SaveChangesAsync();
         return Ok();
+    }
+
+    /// <summary>
+    /// Get time entries for a specific client
+    /// </summary>
+    [HttpGet("{id}/time-entries")]
+    [Authorize(Policy = "IsAdminOrLegalProfessional")]
+    public async Task<ActionResult<IEnumerable<TimeEntry>>> GetClientTimeEntries(int id)
+    {
+        var entries = await _context.TimeEntries
+            .Include(te => te.Attorney)
+            .Where(te => te.ClientId == id)
+            .OrderByDescending(te => te.StartTime)
+            .ToListAsync();
+
+        return Ok(entries);
+    }
+
+    /// <summary>
+    /// Get documents for a specific client
+    /// </summary>
+    [HttpGet("{id}/documents")]
+    [Authorize(Policy = "IsAdminOrLegalProfessional")]
+    public async Task<ActionResult<IEnumerable<Document>>> GetClientDocuments(int id)
+    {
+        var docs = await _context.Documents
+            .Where(d => d.ClientId == id)
+            .OrderByDescending(d => d.UploadDate)
+            .ToListAsync();
+
+        return Ok(docs);
     }
 
     /// <summary>

@@ -312,6 +312,7 @@ const ContactPage: React.FC = () => {
                           if (normalizedName === 'twitter') url = 'https://twitter.com/cannlegalgroup'
                           if (normalizedName === 'whatsapp') url = 'https://wa.me/14109880123'
                           if (normalizedName === 'skype') url = 'skype:information@cannlaw.com?chat'
+                          if (normalizedName === 'line') url = 'https://line.me/R/ti/p/@cannlegalgroup'
                        }
                        
                        if (normalizedName === 'skype' && value && !value.startsWith('skype:')) {

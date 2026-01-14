@@ -76,6 +76,9 @@ public class SiteConfigurationController : ControllerBase
             existingConfig.ExchangeClientId = config.ExchangeClientId;
             existingConfig.ExchangeClientSecret = config.ExchangeClientSecret;
             existingConfig.ExchangeSystemEmail = config.ExchangeSystemEmail;
+            existingConfig.StripePublishableKey = config.StripePublishableKey;
+            existingConfig.StripeSecretKey = config.StripeSecretKey;
+            existingConfig.StripeWebhookSecret = config.StripeWebhookSecret;
             existingConfig.UpdatedAt = DateTime.UtcNow;
         }
 

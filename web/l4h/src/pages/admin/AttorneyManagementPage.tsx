@@ -110,6 +110,10 @@ const AttorneyManagementPage: React.FC = () => {
       errors.defaultHourlyRate = 'Hourly rate cannot be negative'
     }
 
+    if (formData.displayOrder < 0) {
+      errors.displayOrder = 'Display order cannot be negative'
+    }
+
     // Validate JSON fields
     if (formData.credentials) {
       try {
@@ -145,7 +149,14 @@ const AttorneyManagementPage: React.FC = () => {
       const checked = (e.target as HTMLInputElement).checked
       setFormData(prev => ({ ...prev, [name]: checked }))
     } else if (type === 'number') {
-      setFormData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }))
+      const numValue = parseFloat(value)
+      // Allow empty string or 0, but prevent NaN if possible, though parseFloat('') is NaN
+      // Better to check if value is empty string
+      if (value === '') {
+         setFormData(prev => ({ ...prev, [name]: 0 }))
+      } else {
+         setFormData(prev => ({ ...prev, [name]: isNaN(numValue) ? 0 : numValue }))
+      }
     } else {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
@@ -313,6 +324,7 @@ const AttorneyManagementPage: React.FC = () => {
     try {
       const attorneyData = {
         ...formData,
+        photoUrl: formData.photoUrl || null,
         credentials: formData.credentials || '[]',
         practiceAreas: formData.practiceAreas || '[]',
         languages: formData.languages || '[]'
@@ -465,9 +477,10 @@ const AttorneyManagementPage: React.FC = () => {
                   <Input
                     name="displayOrder"
                     type="number"
+                    min={0}
                     value={formData.displayOrder}
                     onChange={handleInputChange}
-                    className="dark:bg-gray-700 dark:border-gray-600"
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
               </div>
@@ -483,7 +496,7 @@ const AttorneyManagementPage: React.FC = () => {
                       onChange={handleInputChange}
                       placeholder="e.g. Denise S. Cann"
                       error={!!formErrors.name}
-                      className="dark:bg-gray-700"
+                      className="dark:bg-gray-700 dark:text-white"
                     />
                   </div>
                   <div>
@@ -493,7 +506,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.title}
                       onChange={handleInputChange}
                       placeholder="e.g. Senior Attorney"
-                      className="dark:bg-gray-700"
+                      className="dark:bg-gray-700 dark:text-white"
                     />
                   </div>
                   <div>
@@ -503,7 +516,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.officeLocation}
                       onChange={handleInputChange}
                       placeholder="e.g. Baltimore Office"
-                      className="dark:bg-gray-700"
+                      className="dark:bg-gray-700 dark:text-white"
                     />
                   </div>
                 </div>
@@ -519,7 +532,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="public@cannlaw.com"
-                      className="bg-white dark:bg-gray-800"
+                      className="bg-white dark:bg-gray-800 dark:text-white"
                     />
                     <Input
                       name="phone"
@@ -527,7 +540,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="(410) 988-0123"
-                      className="bg-white dark:bg-gray-800"
+                      className="bg-white dark:bg-gray-800 dark:text-white"
                     />
                     <Input
                       name="directEmail"
@@ -535,7 +548,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.directEmail}
                       onChange={handleInputChange}
                       placeholder="direct@cannlaw.com"
-                      className="bg-white dark:bg-gray-800"
+                      className="bg-white dark:bg-gray-800 dark:text-white"
                     />
                     <Input
                       name="directPhone"
@@ -543,7 +556,7 @@ const AttorneyManagementPage: React.FC = () => {
                       value={formData.directPhone}
                       onChange={handleInputChange}
                       placeholder="(410) 988-XXXX"
-                      className="bg-white dark:bg-gray-800"
+                      className="bg-white dark:bg-gray-800 dark:text-white"
                     />
                   </div>
                 </div>
@@ -568,7 +581,7 @@ const AttorneyManagementPage: React.FC = () => {
                       rows={3}
                       value={formData.practiceAreas}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-gray-300"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-white"
                       placeholder='["Area 1", "Area 2"]'
                     />
                   </div>
@@ -579,7 +592,7 @@ const AttorneyManagementPage: React.FC = () => {
                       rows={3}
                       value={formData.languages}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-gray-300"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-white"
                       placeholder='["English", "Spanish"]'
                     />
                   </div>
@@ -590,7 +603,7 @@ const AttorneyManagementPage: React.FC = () => {
                       rows={3}
                       value={formData.credentials}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-gray-300"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 font-mono text-xs dark:text-white"
                       placeholder='["J.D.", "LLM"]'
                     />
                   </div>

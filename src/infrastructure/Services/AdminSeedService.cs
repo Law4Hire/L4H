@@ -47,7 +47,7 @@ public class AdminSeedService : IAdminSeedService
         {
             Console.WriteLine("[AdminSeedService] About to seed admin user...");
             // Seed admin user
-            await SeedUserIfNotExists(adminEmail, defaultPassword, "Denise", "Cann", isAdmin: true, isStaff: false).ConfigureAwait(false);
+            await SeedUserIfNotExists(adminEmail, defaultPassword, "Denise", "Cann", isAdmin: true, isStaff: true).ConfigureAwait(false);
             Console.WriteLine("[AdminSeedService] Admin user seeded");
 
             Console.WriteLine("[AdminSeedService] About to seed test user...");
@@ -107,6 +107,15 @@ public class AdminSeedService : IAdminSeedService
         }
 
         Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Creating new user {email}");
+        
+        // Check if there is an attorney with this email to link
+        var attorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Email == email).ConfigureAwait(false);
+        int? attorneyId = attorney?.Id;
+        if (attorneyId.HasValue)
+        {
+             Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Found matching attorney for {email}, linking AttorneyId: {attorneyId}");
+        }
+
         // Create user
         var user = new User
         {
@@ -120,7 +129,8 @@ public class AdminSeedService : IAdminSeedService
             FailedLoginCount = 0,
             IsAdmin = isAdmin,
             IsStaff = isStaff,
-            IsActive = true // Seeded users should be active
+            IsActive = true, // Seeded users should be active
+            AttorneyId = attorneyId
         };
 
         Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Adding user to context");

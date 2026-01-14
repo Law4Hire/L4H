@@ -35,7 +35,12 @@ export function useAttorneys() {
     try {
       setIsLoading(true)
       console.log('Fetching attorneys from /api/v1/attorneys...')
-      const response = await fetch('/api/v1/attorneys')
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch('/api/v1/attorneys', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       
       if (!response.ok) {
         const errorText = await response.text()
@@ -63,7 +68,12 @@ export function useAttorneys() {
 
   const getAttorney = async (id: number) => {
     try {
-      const response = await fetch(`/api/v1/attorneys/${id}`)
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch(`/api/v1/attorneys/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       if (!response.ok) throw new Error('Failed to fetch attorney')
       return await response.json()
     } catch (err) {

@@ -614,6 +614,40 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
+    /// Update user basic information
+    /// </summary>
+    [HttpPut("users/{id}")]
+    [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<MessageResponse>> UpdateUser(
+        string id,
+        [FromBody] UpdateUserRequest request)
+    {
+        if (!Guid.TryParse(id, out var userId))
+        {
+            return BadRequest(new ProblemDetails { Title = "Invalid User ID" });
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == new UserId(userId)).ConfigureAwait(false);
+        if (user == null) return NotFound();
+
+        user.FirstName = request.FirstName ?? user.FirstName;
+        user.LastName = request.LastName ?? user.LastName;
+        
+        if (!string.IsNullOrWhiteSpace(request.Email) && user.Email != request.Email.ToLowerInvariant())
+        {
+            // Check if new email is already taken
+            var exists = await _context.Users.AnyAsync(u => u.Email == request.Email.ToLowerInvariant() && u.Id != user.Id);
+            if (exists) return Conflict(new ProblemDetails { Title = "Email already in use" });
+            
+            user.Email = request.Email.ToLowerInvariant();
+        }
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Ok(new MessageResponse { Message = "User updated successfully" });
+    }
+
+    /// <summary>
     /// Delete a user and all associated data
     /// </summary>
     /// <param name="id">User ID</param>
@@ -1522,6 +1556,13 @@ public class UpdateUserRolesRequest
 {
     public bool IsAdmin { get; set; }
     public bool IsStaff { get; set; }
+}
+
+public class UpdateUserRequest
+{
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? Email { get; set; }
 }
 
 public class AdminCaseResponse

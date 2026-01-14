@@ -10,6 +10,7 @@ namespace L4H.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/time-tracking")]
+[Route("api/v1/time-entries")]
 [Authorize]
 [Tags("Time Tracking")]
 public class TimeTrackingController : ControllerBase
@@ -336,6 +337,7 @@ public class TimeTrackingController : ControllerBase
     /// Update a time entry
     /// </summary>
     [HttpPut("{id}")]
+    [HttpPut("entries/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -352,7 +354,7 @@ public class TimeTrackingController : ControllerBase
         }
 
         // Verify ownership (unless admin)
-        var isAdmin = User.HasClaim("is_admin", "true");
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase)));
         if (!isAdmin && timeEntry.AttorneyId != attorneyId)
         {
             return Forbid();
@@ -407,6 +409,7 @@ public class TimeTrackingController : ControllerBase
     /// Delete a time entry
     /// </summary>
     [HttpDelete("{id}")]
+    [HttpDelete("entries/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -423,7 +426,7 @@ public class TimeTrackingController : ControllerBase
         }
 
         // Verify ownership (unless admin)
-        var isAdmin = User.HasClaim("is_admin", "true");
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase)));
         if (!isAdmin && timeEntry.AttorneyId != attorneyId)
         {
             return Forbid();

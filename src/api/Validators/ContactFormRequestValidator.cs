@@ -25,7 +25,7 @@ public class ContactFormRequestValidator : AbstractValidator<ContactFormRequest>
 
         RuleFor(x => x.Message)
             .NotEmpty().WithMessage("Message is required")
-            .Length(10, 5000).WithMessage("Message must be between 10 and 5000 characters");
+            .Length(2, 4000).WithMessage("Message must be between 2 and 4000 characters");
 
         RuleFor(x => x.ConsultationType)
             .NotEmpty().WithMessage("Consultation type is required");

@@ -22,7 +22,10 @@ const SystemSettingsPage: React.FC = () => {
     exchangeTenantId: '',
     exchangeClientId: '',
     exchangeClientSecret: '',
-    exchangeSystemEmail: ''
+    exchangeSystemEmail: '',
+    stripePublishableKey: '',
+    stripeSecretKey: '',
+    stripeWebhookSecret: ''
   })
 
   useEffect(() => {
@@ -41,7 +44,10 @@ const SystemSettingsPage: React.FC = () => {
         exchangeTenantId: siteConfig.exchangeTenantId || '',
         exchangeClientId: siteConfig.exchangeClientId || '',
         exchangeClientSecret: siteConfig.exchangeClientSecret || '',
-        exchangeSystemEmail: siteConfig.exchangeSystemEmail || ''
+        exchangeSystemEmail: siteConfig.exchangeSystemEmail || '',
+        stripePublishableKey: siteConfig.stripePublishableKey || '',
+        stripeSecretKey: siteConfig.stripeSecretKey || '',
+        stripeWebhookSecret: siteConfig.stripeWebhookSecret || ''
       })
     }
   }, [siteConfig])
@@ -332,6 +338,60 @@ const SystemSettingsPage: React.FC = () => {
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">
             Note: These settings are used to connect to Microsoft Graph for automated scheduling and calendar visibility.
+          </p>
+        </Card>
+
+        {/* Stripe Payment Integration */}
+        <Card className="p-6 dark:bg-gray-800 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Stripe Payment Integration</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label htmlFor="stripePublishableKey" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Stripe Publishable Key
+              </label>
+              <Input
+                id="stripePublishableKey"
+                name="stripePublishableKey"
+                type="text"
+                value={formData.stripePublishableKey}
+                onChange={handleInputChange}
+                placeholder="pk_test_..."
+                className="dark:bg-gray-700 dark:border-gray-600 font-mono text-xs"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label htmlFor="stripeSecretKey" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Stripe Secret Key
+              </label>
+              <Input
+                id="stripeSecretKey"
+                name="stripeSecretKey"
+                type="password"
+                value={formData.stripeSecretKey}
+                onChange={handleInputChange}
+                placeholder="sk_test_..."
+                className="dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label htmlFor="stripeWebhookSecret" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Stripe Webhook Secret
+              </label>
+              <Input
+                id="stripeWebhookSecret"
+                name="stripeWebhookSecret"
+                type="password"
+                value={formData.stripeWebhookSecret}
+                onChange={handleInputChange}
+                placeholder="whsec_..."
+                className="dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">
+            Note: These keys are required for processing payments through Stripe.
           </p>
         </Card>
 

@@ -10,7 +10,7 @@ namespace L4H.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/dashboard")]
-[Authorize(Policy = "IsLegalProfessional")]
+[Authorize(Policy = "IsAdminOrLegalProfessional")]
 [Tags("Dashboard")]
 public class DashboardController : ControllerBase
 {
@@ -34,15 +34,15 @@ public class DashboardController : ControllerBase
         }
 
         var user = await _context.Users.FindAsync(new UserId(userId));
-        var isAdmin = User.HasClaim("is_admin", "true") || (user?.IsAdmin ?? false);
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase))) || (user?.IsAdmin ?? false);
         var attorneyId = user?.AttorneyId;
 
         if (!isAdmin && attorneyId == null)
         {
-            // If not admin and not linked to attorney, they can't see legal dashboard stats
-            // But if they are just a client, they shouldn't be here anyway due to Policy.
-            // Policy "IsLegalProfessional" checks claim.
-            return Forbid("User is not associated with an attorney profile.");
+            // If not admin and not linked to attorney, they might be staff. 
+            // We should still allow them to see general stats if they pass the policy.
+            // But for now, let's keep the restriction or broaden it.
+            _logger.LogWarning("User {UserId} accessed stats but has no AttorneyId and is not Admin", userId);
         }
 
         var now = DateTime.UtcNow;
@@ -62,12 +62,17 @@ public class DashboardController : ControllerBase
             {
                 clientsQuery = clientsQuery.Where(c => c.AssignedAttorneyId == attorneyId.Value);
                 casesQuery = casesQuery.Where(c => c.AssignedStaffId == attorneyId.Value); 
-                // Note: Case entity uses AssignedStaffId (int), NOT User relationship for assignment usually.
-                // Previously it checked c.User.AttorneyId, which means "cases owned by clients who are assigned to me".
-                // But usually we assign cases directly. Let's use AssignedStaffId if available.
-                
                 appointmentsQuery = appointmentsQuery.Where(a => a.StaffUserId == new UserId(userId)); 
                 timeEntriesQuery = timeEntriesQuery.Where(t => t.AttorneyId == attorneyId.Value);
+            }
+            else
+            {
+                // If not admin and no attorney ID, they see nothing for now (staff without assignment)
+                // or we could let them see all if they are staff.
+                if (!(user?.IsStaff ?? false))
+                {
+                    return Forbid("User is not authorized to view dashboard statistics.");
+                }
             }
         }
 
@@ -120,12 +125,12 @@ public class DashboardController : ControllerBase
         }
 
         var user = await _context.Users.FindAsync(new UserId(userId));
-        var isAdmin = User.HasClaim("is_admin", "true") || (user?.IsAdmin ?? false);
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase))) || (user?.IsAdmin ?? false);
         var attorneyId = user?.AttorneyId;
 
-        if (!isAdmin && attorneyId == null)
+        if (!isAdmin && attorneyId == null && !(user?.IsStaff ?? false))
         {
-            return Forbid("User is not associated with an attorney profile.");
+            return Forbid("User is not authorized to view dashboard activity.");
         }
 
         var activityLimit = 10;
@@ -149,22 +154,25 @@ public class DashboardController : ControllerBase
         // 2. Appointments
         var appointmentsQuery = _context.Appointments
             .Include(a => a.Case)
-            .ThenInclude(c => c.User)
+            .ThenInclude(c => c != null ? c.User : null)
             .AsQueryable();
             
         if (!isAdmin) 
             appointmentsQuery = appointmentsQuery.Where(a => a.StaffUserId == new UserId(userId));
 
-        var recentAppointments = await appointmentsQuery
+        var recentAppointmentsData = await appointmentsQuery
             .OrderByDescending(a => a.CreatedAt)
             .Take(5)
+            .ToListAsync();
+
+        var recentAppointments = recentAppointmentsData
             .Select(a => new ActivityItem
             {
                 Type = "appointment",
-                Message = $"Appointment scheduled with {a.Case.User.FirstName} {a.Case.User.LastName}", 
+                Message = $"Appointment scheduled with {a.Case?.User?.FirstName ?? "Unknown"} {a.Case?.User?.LastName ?? "Client"}", 
                 Time = a.CreatedAt.ToString("o")
             })
-            .ToListAsync();
+            .ToList();
 
         // 3. Time Entries
         var timeEntriesQuery = _context.TimeEntries
@@ -173,16 +181,19 @@ public class DashboardController : ControllerBase
         if (!isAdmin && attorneyId.HasValue) 
             timeEntriesQuery = timeEntriesQuery.Where(t => t.AttorneyId == attorneyId.Value);
 
-        var recentTime = await timeEntriesQuery
+        var recentTimeData = await timeEntriesQuery
             .OrderByDescending(t => t.CreatedAt)
             .Take(5)
+            .ToListAsync();
+
+        var recentTime = recentTimeData
             .Select(t => new ActivityItem
             {
                 Type = "time_entry",
-                Message = $"Logged {t.Duration:F1}h for {t.Client.FirstName} {t.Client.LastName}",
+                Message = $"Logged {t.Duration:F1}h for {t.Client?.FirstName ?? "Unknown"} {t.Client?.LastName ?? "Client"}",
                 Time = t.CreatedAt.ToString("o")
             })
-            .ToListAsync();
+            .ToList();
 
         // Merge and sort
         var allActivity = recentClients

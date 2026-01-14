@@ -37,6 +37,7 @@ public class InterviewQuestion
     public int Order { get; set; }
     public Guid? ParentId { get; set; }
     public string? ParentOptionValue { get; set; }
+    public string? DiscriminatesVisaCodes { get; set; }
 }
 
 public class QuestionOption
