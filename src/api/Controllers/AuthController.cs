@@ -286,6 +286,16 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Debug endpoint to verify Attorney Login reachability via Browser (GET)
+    /// </summary>
+    [HttpGet("attorneylogin")]
+    [AllowAnonymous]
+    public IActionResult AttorneyLoginCheck()
+    {
+        return Ok(new { message = "Attorney Login Endpoint is Reachable via GET. Please use POST to login." });
+    }
+
+    /// <summary>
     /// Exchange remember-me token for new access token
     /// </summary>
     /// <returns>New JWT access token</returns>
