@@ -313,6 +313,9 @@ Console.WriteLine(Program.StartupLogs.Building);
 var app = builder.Build();
 Console.WriteLine(Program.StartupLogs.Built);
 
+// Enable CORS immediately
+app.UseCors("AllowAll");
+
 // Configure the HTTP request pipeline
 // Swagger temporarily disabled due to OpenAPI package compatibility issues in .NET 10 RC
 if (app.Environment.IsDevelopment())
@@ -417,8 +420,6 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads");
-
-app.UseCors("AllowAll");
 
 app.UseAuthentication();
 Console.WriteLine("[STARTUP] Authentication configured");
