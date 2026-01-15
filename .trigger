@@ -1,2 +1,2 @@
-# Trigger deployment: Fix ingress overlays for Cannlaw API routing
-# Timestamp: 2026-01-15 00:30
+# Trigger deployment: 1.0.19 - Fix ingress overlays, update version, and fix frontend types
+# Timestamp: 2026-01-15 01:00
