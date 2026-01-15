@@ -445,12 +445,18 @@ public class CannlawClientBillingSeeder : ISeedTask
             return;
         }
 
-        var clients = await _context.Clients.Include(c => c.AssignedAttorney).ToListAsync();
+        var clients = await _context.Clients
+            .Include(c => c.AssignedAttorney)
+            .Include(c => c.Cases) // Include Cases
+            .ToListAsync();
+            
         var timeEntries = new List<TimeEntry>();
 
         foreach (var client in clients)
         {
-            if (client.AssignedAttorney == null) continue;
+            if (client.AssignedAttorney == null || client.Cases == null || !client.Cases.Any()) continue; // Skip if no attorney or no cases
+
+            var clientCase = client.Cases.First(); // Use the first case
 
             // Create 3-5 time entries per client
             var entryCount = Random.Shared.Next(3, 6);
@@ -474,6 +480,7 @@ public class CannlawClientBillingSeeder : ISeedTask
                 var timeEntry = new TimeEntry
                 {
                     ClientId = client.Id,
+                    CaseId = clientCase.Id, // Assign valid CaseId
                     AttorneyId = client.AssignedAttorney.Id,
                     StartTime = startTime,
                     EndTime = endTime,
