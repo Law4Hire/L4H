@@ -36,7 +36,7 @@ let csrfToken: string | null = null
 let csrfTokenExpiry: number = 0
 
 // Define configurable base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = (import.meta as any).env.VITE_API_BASE_URL || '/api';
 
 // Cookie endpoints that require CSRF token
 const COOKIE_ENDPOINTS = [
