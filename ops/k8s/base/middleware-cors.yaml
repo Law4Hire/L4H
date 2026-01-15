@@ -1,0 +1,23 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cors-headers
+  namespace: l4h
+spec:
+  headers:
+    accessControlAllowMethods:
+      - "GET"
+      - "OPTIONS"
+      - "PUT"
+      - "POST"
+      - "DELETE"
+    accessControlAllowOriginList:
+      - "https://cannlaw.74-208-77-43.nip.io"
+      - "https://l4h.74-208-77-43.nip.io"
+      - "https://cannlaw-prod.74-208-77-43.nip.io"
+      - "https://l4h-prod.74-208-77-43.nip.io"
+    accessControlAllowHeaders:
+      - "*"
+    accessControlAllowCredentials: true
+    accessControlMaxAge: 100
+    addVaryHeader: true

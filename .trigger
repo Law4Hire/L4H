@@ -1,2 +1,2 @@
-# Trigger deployment: 1.0.26 - Move CORS middleware to top
-# Timestamp: 2026-01-15 05:00
+# Trigger deployment: 1.0.27 - Add Traefik Middleware for CORS
+# Timestamp: 2026-01-15 06:00

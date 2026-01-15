@@ -11,6 +11,7 @@ resources:
   - scraper.yaml
   - web.yaml
   - ingress.yaml
+  - middleware-cors.yaml
 
 # Note: secrets should be created manually or via CI/CD
 # NOT included in kustomization to avoid committing sensitive data

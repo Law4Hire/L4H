@@ -12,6 +12,7 @@ metadata:
     # Force HTTPS redirect
     traefik.ingress.kubernetes.io/redirect-entry-point: https
     traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: l4h-cors-headers@kubernetescrd
 spec:
   ingressClassName: traefik
   rules:
