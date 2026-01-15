@@ -18,7 +18,7 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite-env.d.ts"],
   "exclude": ["src/**/*.spec.ts", "src/**/*.spec.tsx", "src/**/*.test.ts", "src/**/*.test.tsx", "src/test-setup.ts", "src/**/demo.tsx", "src/**/*demo*.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
