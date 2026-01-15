@@ -299,7 +299,7 @@ public class CannlawClientBillingSeeder : ISeedTask
                 Address = "123 Main St, New York, NY 10001",
                 DateOfBirth = new DateTime(1985, 3, 15),
                 CountryOfOrigin = "United Kingdom",
-                AssignedAttorneyId = attorneys[0].Id, // Sarah Johnson
+                AssignedAttorneyId = attorneys[0].Id, 
                 CreatedBy = "System",
                 UpdatedBy = "System"
             },
@@ -312,7 +312,7 @@ public class CannlawClientBillingSeeder : ISeedTask
                 Address = "456 Oak Ave, Los Angeles, CA 90210",
                 DateOfBirth = new DateTime(1990, 7, 22),
                 CountryOfOrigin = "Mexico",
-                AssignedAttorneyId = attorneys[2].Id, // Maria Rodriguez
+                AssignedAttorneyId = attorneys[2].Id, 
                 CreatedBy = "System",
                 UpdatedBy = "System"
             },
@@ -325,7 +325,7 @@ public class CannlawClientBillingSeeder : ISeedTask
                 Address = "789 Pine St, San Francisco, CA 94102",
                 DateOfBirth = new DateTime(1988, 11, 8),
                 CountryOfOrigin = "China",
-                AssignedAttorneyId = attorneys[1].Id, // Michael Chen
+                AssignedAttorneyId = attorneys[1].Id, 
                 CreatedBy = "System",
                 UpdatedBy = "System"
             },
@@ -338,7 +338,7 @@ public class CannlawClientBillingSeeder : ISeedTask
                 Address = "321 Elm St, Chicago, IL 60601",
                 DateOfBirth = new DateTime(1992, 1, 30),
                 CountryOfOrigin = "India",
-                AssignedAttorneyId = attorneys[1].Id, // Michael Chen
+                AssignedAttorneyId = attorneys[1].Id, 
                 CreatedBy = "System",
                 UpdatedBy = "System"
             },
@@ -351,7 +351,7 @@ public class CannlawClientBillingSeeder : ISeedTask
                 Address = "654 Maple Dr, Miami, FL 33101",
                 DateOfBirth = new DateTime(1987, 9, 12),
                 CountryOfOrigin = "Brazil",
-                AssignedAttorneyId = attorneys[2].Id, // Maria Rodriguez
+                AssignedAttorneyId = attorneys[2].Id, 
                 CreatedBy = "System",
                 UpdatedBy = "System"
             },
@@ -364,7 +364,7 @@ public class CannlawClientBillingSeeder : ISeedTask
                 Address = "987 Cedar Ln, Boston, MA 02101",
                 DateOfBirth = new DateTime(1983, 5, 18),
                 CountryOfOrigin = "Canada",
-                AssignedAttorneyId = attorneys[0].Id, // Sarah Johnson
+                AssignedAttorneyId = attorneys[0].Id, 
                 CreatedBy = "System",
                 UpdatedBy = "System"
             }

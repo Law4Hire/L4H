@@ -58,7 +58,6 @@ public class AttorneysController : ControllerBase
         {
             var attorneys = await _context.Attorneys
                 .Where(a => a.IsActive)
-                .Where(a => a.Name != "Sarah Johnson" && a.Name != "Michael Chen" && a.Name != "Maria Rodriguez")
                 .OrderBy(a => a.DisplayOrder)
                 .ThenBy(a => a.Name)
                 .ToArrayAsync()
@@ -69,7 +68,6 @@ public class AttorneysController : ControllerBase
                 await InitializeDefaultAttorney();
                 attorneys = await _context.Attorneys
                     .Where(a => a.IsActive)
-                    .Where(a => a.Name != "Sarah Johnson" && a.Name != "Michael Chen" && a.Name != "Maria Rodriguez")
                     .OrderBy(a => a.DisplayOrder)
                     .ThenBy(a => a.Name)
                     .ToArrayAsync()
