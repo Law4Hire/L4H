@@ -35,6 +35,9 @@ if (typeof window !== 'undefined') {
 let csrfToken: string | null = null
 let csrfTokenExpiry: number = 0
 
+// Define configurable base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
 // Cookie endpoints that require CSRF token
 const COOKIE_ENDPOINTS = [
   '/v1/auth/login',
@@ -51,7 +54,7 @@ async function getCsrfToken(): Promise<string> {
   }
   
   try {
-    const response = await fetch('/api/v1/auth/csrf', {
+    const response = await fetch(`${API_BASE_URL}/v1/auth/csrf`, {
       credentials: 'include'
     })
     
@@ -79,7 +82,7 @@ async function fetchJson<T = any>(
   path: string,
   init: RequestInit = {}
 ): Promise<T> {
-  const url = `/api${path}`
+  const url = `${API_BASE_URL}${path}`
 
   // Prepare headers
   const headers: Record<string, string> = {
@@ -471,6 +474,10 @@ export const uploads = {
   
   async list(caseId: string) {
     return fetchJson(`/v1/uploads/list?caseId=${encodeURIComponent(caseId)}`)
+  },
+  
+  async download(fileId: string) {
+    return fetchJson(`/v1/uploads/${fileId}/download`)
   }
 }
 
@@ -499,6 +506,11 @@ export const interview = {
       method: 'POST',
       body: JSON.stringify({ caseId })
     })
+  },
+
+  // Get interview history for authenticated user
+  async history() {
+    return fetchJson('/v1/interview/history')
   },
 
   // Start a new anonymous interview
