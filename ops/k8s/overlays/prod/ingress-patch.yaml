@@ -25,6 +25,20 @@ spec:
             name: web-prod
             port:
               number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-prod
+            port:
+              number: 8080
+      - path: /gateway
+        pathType: Prefix
+        backend:
+          service:
+            name: upload-gateway-prod
+            port:
+              number: 7070
   - host: api-prod.74-208-77-43.nip.io
     http:
       paths:
