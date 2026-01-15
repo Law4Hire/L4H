@@ -8,7 +8,7 @@ export default defineConfig({
     dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'use-sync-external-store'],
   },
   define: {
-    '__APP_VERSION__': JSON.stringify('1.0.22-ts-fix'),
+    '__APP_VERSION__': JSON.stringify('1.0.23-debug'),
   },
   base: '/',
   build: {

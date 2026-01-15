@@ -2,6 +2,7 @@ using L4H.Infrastructure.Entities;
 using L4H.Infrastructure.Services;
 using L4H.Shared.Models;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.Extensions.Options;
