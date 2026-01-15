@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, useContext, useCallback, createElement } from 'react'
+import { auth as apiAuth } from '@l4h/shared-ui'
 
 interface User {
   id: number
@@ -117,73 +118,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      })
+      const authResponse = await apiAuth.login({ email, password })
+      const token = authResponse.token
 
-      if (response.ok) {
-        const authResponse = await response.json()
-        const token = authResponse.token
+      // Decode JWT to extract user information
+      const userData = decodeJwt(token)
 
-        // Decode JWT to extract user information
-        const userData = decodeJwt(token)
-
-        if (userData) {
-          localStorage.setItem('jwt_token', token)
-          setUser(userData)
-          return { success: true }
-        } else {
-          return { success: false, error: 'Failed to decode user information' }
-        }
+      if (userData) {
+        localStorage.setItem('jwt_token', token)
+        setUser(userData)
+        return { success: true }
       } else {
-        const error = await response.text()
-        return { success: false, error }
+        return { success: false, error: 'Failed to decode user information' }
       }
     } catch (error) {
-      return { success: false, error: 'Network error' }
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Login failed' 
+      }
     }
   }
 
   const loginAsProfessional = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/v1/auth/attorneylogin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      })
+      const authResponse = await apiAuth.loginAsProfessional({ email, password })
+      const token = authResponse.token
 
-      if (response.ok) {
-        const authResponse = await response.json()
-        const token = authResponse.token
+      // Decode JWT to extract user information
+      const userData = decodeJwt(token)
 
-        // Decode JWT to extract user information
-        const userData = decodeJwt(token)
-
-        if (userData) {
-          localStorage.setItem('jwt_token', token)
-          setUser(userData)
-          return { success: true }
-        } else {
-          return { success: false, error: 'Failed to decode user information' }
-        }
+      if (userData) {
+        localStorage.setItem('jwt_token', token)
+        setUser(userData)
+        return { success: true }
       } else {
-        const error = await response.text()
-        // Try to parse JSON error if possible
-        try {
-            const jsonError = JSON.parse(error)
-            return { success: false, error: jsonError.detail || jsonError.title || 'Login failed' }
-        } catch {
-            return { success: false, error: error || 'Login failed' }
-        }
+        return { success: false, error: 'Failed to decode user information' }
       }
     } catch (error) {
-      return { success: false, error: 'Network error' }
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Login failed' 
+      }
     }
   }
 

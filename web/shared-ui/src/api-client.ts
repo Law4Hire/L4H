@@ -260,6 +260,13 @@ export const auth = {
       body: JSON.stringify(credentials)
     })
   },
+
+  async loginAsProfessional(credentials: { email: string; password: string; rememberMe?: boolean }) {
+    return fetchJson('/v1/auth/attorneylogin', {
+      method: 'POST',
+      body: JSON.stringify(credentials)
+    })
+  },
   
   async signup(userData: { email: string; password: string; firstName: string; lastName: string }) {
     return fetchJson('/v1/auth/signup', {

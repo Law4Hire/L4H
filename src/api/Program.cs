@@ -60,6 +60,17 @@ builder.Services.AddScoped<IValidator<ContactFormRequest>, ContactFormRequestVal
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 // Swagger/OpenAPI re-enabled with Scalar
 builder.Services.AddOpenApi(options =>
 {
@@ -405,6 +416,8 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads");
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 Console.WriteLine("[STARTUP] Authentication configured");
