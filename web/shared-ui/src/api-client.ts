@@ -118,9 +118,11 @@ async function fetchJson<T = any>(
     const contentType = response.headers.get('content-type')
     if (!contentType?.includes('application/json')) {
       if (!response.ok) {
+        // Try to read the error message from the body even if it's not JSON
+        const errorText = await response.text().catch(() => response.statusText);
         throw new ApiError(
           `HTTP ${response.status}`,
-          response.statusText,
+          errorText || response.statusText,
           response.status
         )
       }

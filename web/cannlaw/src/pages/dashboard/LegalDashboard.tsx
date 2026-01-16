@@ -130,16 +130,25 @@ const LegalDashboard: React.FC = () => {
           editFormData.clientLastName !== caseData.clientLastName || 
           editFormData.clientEmail !== caseData.clientEmail
       )) {
+          // Fetch current client data to get required fields that aren't changing (like ID)
+          // But only send back what's needed for the update
           const clientObj = await fetchJson(`/v1/clients/${caseData.clientId}`)
           if (clientObj) {
+             const updatePayload = {
+               ...clientObj, // Start with existing data
+               firstName: editFormData.clientFirstName,
+               lastName: editFormData.clientLastName,
+               email: editFormData.clientEmail,
+               // Ensure we don't send back navigation properties that might cause issues
+               cases: undefined,
+               assignedAttorney: undefined,
+               documents: undefined,
+               timeEntries: undefined
+             }
+             
              await fetchJson(`/v1/clients/${caseData.clientId}`, {
                 method: 'PUT',
-                body: JSON.stringify({
-                   ...clientObj,
-                   firstName: editFormData.clientFirstName,
-                   lastName: editFormData.clientLastName,
-                   email: editFormData.clientEmail
-                })
+                body: JSON.stringify(updatePayload)
              })
           }
       }

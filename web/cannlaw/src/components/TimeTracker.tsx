@@ -92,7 +92,7 @@ export const TimeTracker: React.FC<TimeTrackerProps> = ({ caseId, clientName }) 
          // Optionally fetch the active timer to show it
          checkActiveTimer()
       } else {
-         error(err.message || 'Failed to start timer')
+         error(`Failed to start timer: ${err.message || 'Unknown error'}`)
       }
     } finally {
       setIsLoading(false)
