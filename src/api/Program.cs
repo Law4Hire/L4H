@@ -66,7 +66,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder =>
     {
         builder.SetIsOriginAllowed(_ => true) // Allow any origin
-               .AllowAnyMethod()
+               .WithMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // Explicitly list methods including PATCH
                .AllowAnyHeader()
                .AllowCredentials(); // Allow credentials (cookies/auth headers)
     });
