@@ -429,51 +429,60 @@ public class CasesController : ControllerBase
             return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Case not found." });
         }
 
-        // Verify the attorney exists
-        var attorney = await _context.Attorneys.FindAsync(request.StaffId);
-        if (attorney == null)
+        var previousStaffId = caseEntity.AssignedStaffId;
+
+        // If StaffId is provided, verify the attorney exists
+        Attorney? attorney = null;
+        if (request.StaffId.HasValue)
         {
-            // Debugging: Log available attorneys
-            var count = await _context.Attorneys.CountAsync();
-            var firstId = await _context.Attorneys.Select(a => a.Id).FirstOrDefaultAsync();
-            return NotFound(new ProblemDetails 
-            { 
-                Title = "Not Found", 
-                Detail = $"Attorney/Staff not found. ID requested: {request.StaffId}. Total attorneys in DB: {count}. First ID: {firstId}." 
-            });
+            attorney = await _context.Attorneys.FindAsync(request.StaffId);
+            if (attorney == null)
+            {
+                // Debugging: Log available attorneys
+                var count = await _context.Attorneys.CountAsync();
+                var firstId = await _context.Attorneys.Select(a => a.Id).FirstOrDefaultAsync();
+                return NotFound(new ProblemDetails 
+                { 
+                    Title = "Not Found", 
+                    Detail = $"Attorney/Staff not found. ID requested: {request.StaffId}. Total attorneys in DB: {count}. First ID: {firstId}." 
+                });
+            }
         }
 
-        var previousStaffId = caseEntity.AssignedStaffId;
+        // Update assignment (null means unassign)
         caseEntity.AssignedStaffId = request.StaffId;
         caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         // Send notification to the assigned attorney if they have notifications enabled
-        var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.AttorneyId == request.StaffId);
-        if (assignedUser != null)
+        if (request.StaffId.HasValue)
         {
-            var notificationPrefs = await _context.UserNotificationPreferences
-                .FirstOrDefaultAsync(p => p.UserId == assignedUser.Id && p.NotificationType == NotificationType.ClientAssignment);
-
-            // Send notification if preference not set or if enabled
-            if (notificationPrefs == null || notificationPrefs.InAppEnabled)
+            var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.AttorneyId == request.StaffId);
+            if (assignedUser != null)
             {
-                var notification = new Notification
+                var notificationPrefs = await _context.UserNotificationPreferences
+                    .FirstOrDefaultAsync(p => p.UserId == assignedUser.Id && p.NotificationType == NotificationType.ClientAssignment);
+
+                // Send notification if preference not set or if enabled
+                if (notificationPrefs == null || notificationPrefs.InAppEnabled)
                 {
-                    UserId = assignedUser.Id,
-                    Title = "New Case Assigned",
-                    Message = $"You have been assigned to case for {caseEntity.User.FirstName} {caseEntity.User.LastName}",
-                    Priority = NotificationPriority.Normal,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _context.Notifications.Add(notification);
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                    var notification = new Notification
+                    {
+                        UserId = assignedUser.Id,
+                        Title = "New Case Assigned",
+                        Message = $"You have been assigned to case for {caseEntity.User.FirstName} {caseEntity.User.LastName}",
+                        Priority = NotificationPriority.Normal,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    _context.Notifications.Add(notification);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                }
             }
         }
 
         await LogAuditAsync("case", "assign", "Case", id.ToString(),
-            new { previousStaffId, newStaffId = request.StaffId, attorneyName = attorney.Name }).ConfigureAwait(false);
+            new { previousStaffId, newStaffId = request.StaffId, attorneyName = attorney?.Name ?? "Unassigned" }).ConfigureAwait(false);
 
         return Ok(new { message = "Case assigned successfully" });
     }

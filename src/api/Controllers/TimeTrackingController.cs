@@ -116,7 +116,11 @@ public class TimeTrackingController : ControllerBase
         var isAdmin = User.HasClaim("is_admin", "true");
         if (!isAdmin && client.AssignedAttorneyId != attorneyId)
         {
-            return Forbid("You can only track time for your assigned clients");
+            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails 
+            { 
+                Title = "Forbidden", 
+                Detail = "You can only track time for your assigned clients" 
+            });
         }
 
         // Check for existing active time tracking session
