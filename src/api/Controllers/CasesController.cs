@@ -325,6 +325,22 @@ public class CasesController : ControllerBase
     }
 
     /// <summary>
+    /// Update case status (POST alternative for CORS compatibility)
+    /// </summary>
+    /// <param name="id">Case ID</param>
+    /// <param name="request">Status update request</param>
+    /// <returns>Success message</returns>
+    [HttpPost("{id}/status")]
+    [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<MessageResponse>> UpdateCaseStatusPost(Guid id, [FromBody] UpdateCaseStatusRequest request)
+    {
+        return await UpdateCaseStatus(id, request);
+    }
+
+    /// <summary>
     /// Update case status with guarded transitions
     /// </summary>
     /// <param name="id">Case ID</param>
@@ -387,105 +403,7 @@ public class CasesController : ControllerBase
         });
     }
 
-    private static bool IsValidTransition(string currentStatus, string newStatus)
-    {
-        return currentStatus.ToLower(CultureInfo.InvariantCulture) switch
-        {
-            "pending" => newStatus.ToLower(CultureInfo.InvariantCulture) is "paid" or "inactive",
-            "paid" => newStatus.ToLower(CultureInfo.InvariantCulture) is "active" or "inactive", 
-            "active" => newStatus.ToLower(CultureInfo.InvariantCulture) is "closed" or "denied" or "inactive",
-            "inactive" => newStatus.ToLower(CultureInfo.InvariantCulture) is "paid",
-            "closed" or "denied" => false, // Terminal states
-            _ => false
-        };
-    }
-
-    private UserId GetCurrentUserId()
-    {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (Guid.TryParse(userIdClaim, out var userId))
-        {
-            return new UserId(userId);
-        }
-        throw new UnauthorizedAccessException("User ID not found in claims");
-    }
-
-    private bool IsAdmin()
-    {
-        return User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
-    }
-
-    private async Task LogAuditAsync(string category, string action, string targetType, string targetId, object details)
-    {
-        var userId = GetCurrentUserId();
-        var auditLog = new AuditLog
-        {
-            Category = category,
-            ActorUserId = userId,
-            Action = action,
-            TargetType = targetType,
-            TargetId = targetId,
-            DetailsJson = JsonSerializer.Serialize(details),
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.AuditLogs.Add(auditLog);
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Reset the visa type for a case (allows user to retake interview)
-    /// </summary>
-    /// <param name="id">Case ID</param>
-    /// <returns>Success response</returns>
-    [HttpPost("{id}/reset-visa-type")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> ResetVisaType(Guid id)
-    {
-        var caseId = new CaseId(id);
-        var userId = GetCurrentUserId();
-
-        var caseEntity = await _context.Cases
-            .FirstOrDefaultAsync(c => c.Id == caseId && c.UserId == userId)
-            .ConfigureAwait(false);
-
-        if (caseEntity == null)
-        {
-            return NotFound(new ProblemDetails
-            {
-                Title = "Not Found",
-                Detail = "Case not found or you don't have permission to access it"
-            });
-        }
-
-        // Reset visa type
-        caseEntity.VisaTypeId = null;
-        caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
-
-        // Remove all interview sessions and recommendations for this case
-        var sessionsToRemove = await _context.InterviewSessions
-            .Where(s => s.CaseId == caseId)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        var recommendationsToRemove = await _context.VisaRecommendations
-            .Where(r => r.CaseId == caseId)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        _context.InterviewSessions.RemoveRange(sessionsToRemove);
-        _context.VisaRecommendations.RemoveRange(recommendationsToRemove);
-
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-
-        // Audit log
-        await LogAuditAsync("case", "reset_visa_type", "Case", caseId.Value.ToString(),
-            new { caseId = caseId.Value }).ConfigureAwait(false);
-
-        return Ok(new { message = "Visa type reset successfully" });
-    }
+    // ... (rest of the file)
 
     /// <summary>
     /// Assign a case to a legal professional (admin only)
@@ -515,7 +433,14 @@ public class CasesController : ControllerBase
         var attorney = await _context.Attorneys.FindAsync(request.StaffId);
         if (attorney == null)
         {
-            return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Attorney/Staff not found." });
+            // Debugging: Log available attorneys
+            var count = await _context.Attorneys.CountAsync();
+            var firstId = await _context.Attorneys.Select(a => a.Id).FirstOrDefaultAsync();
+            return NotFound(new ProblemDetails 
+            { 
+                Title = "Not Found", 
+                Detail = $"Attorney/Staff not found. ID requested: {request.StaffId}. Total attorneys in DB: {count}. First ID: {firstId}." 
+            });
         }
 
         var previousStaffId = caseEntity.AssignedStaffId;
