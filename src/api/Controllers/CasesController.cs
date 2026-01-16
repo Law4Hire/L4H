@@ -582,6 +582,52 @@ public class CasesController : ControllerBase
         return Ok(new { message = "Visa types updated successfully" });
     }
 
+    private static bool IsValidTransition(string currentStatus, string newStatus)
+    {
+        return currentStatus.ToLower(CultureInfo.InvariantCulture) switch
+        {
+            "pending" => newStatus.ToLower(CultureInfo.InvariantCulture) is "paid" or "inactive",
+            "paid" => newStatus.ToLower(CultureInfo.InvariantCulture) is "active" or "inactive", 
+            "active" => newStatus.ToLower(CultureInfo.InvariantCulture) is "closed" or "denied" or "inactive",
+            "inactive" => newStatus.ToLower(CultureInfo.InvariantCulture) is "paid",
+            "closed" or "denied" => false, // Terminal states
+            _ => false
+        };
+    }
+
+    private UserId GetCurrentUserId()
+    {
+        var userIdClaim = User.FindFirst("sub")?.Value;
+        if (Guid.TryParse(userIdClaim, out var userId))
+        {
+            return new UserId(userId);
+        }
+        throw new UnauthorizedAccessException("User ID not found in claims");
+    }
+
+    private bool IsAdmin()
+    {
+        return User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
+    }
+
+    private async Task LogAuditAsync(string category, string action, string targetType, string targetId, object details)
+    {
+        var userId = GetCurrentUserId();
+        var auditLog = new AuditLog
+        {
+            Category = category,
+            ActorUserId = userId,
+            Action = action,
+            TargetType = targetType,
+            TargetId = targetId,
+            DetailsJson = JsonSerializer.Serialize(details),
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.AuditLogs.Add(auditLog);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
     private bool IsLegalProfessional()
     {
         return User.HasClaim("is_legal_professional", "True") || User.HasClaim("is_admin", "True");
