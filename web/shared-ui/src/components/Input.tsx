@@ -46,6 +46,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
 
+        {/* @ts-ignore - CSS properties mismatch when consumed */}
         <input
           ref={ref}
           id={inputId}

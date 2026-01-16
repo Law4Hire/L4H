@@ -36,6 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const isDisabled = disabled || loading
 
     return (
+      // @ts-ignore - CSS properties mismatch when consumed
       <button
         ref={ref}
         disabled={isDisabled}

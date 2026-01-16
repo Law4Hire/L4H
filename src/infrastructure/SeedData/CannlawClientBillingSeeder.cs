@@ -439,67 +439,8 @@ public class CannlawClientBillingSeeder : ISeedTask
 
     private async Task SeedTimeEntriesAsync()
     {
-        if (await _context.TimeEntries.AnyAsync())
-        {
-            _logger.LogInformation("Time entries already exist, skipping time entry seeding.");
-            return;
-        }
-
-        var clients = await _context.Clients
-            .Include(c => c.AssignedAttorney)
-            .Include(c => c.Cases) // Include Cases
-            .ToListAsync();
-            
-        var timeEntries = new List<TimeEntry>();
-
-        foreach (var client in clients)
-        {
-            if (client.AssignedAttorney == null || client.Cases == null || !client.Cases.Any()) continue; // Skip if no attorney or no cases
-
-            var clientCase = client.Cases.First(); // Use the first case
-
-            // Create 3-5 time entries per client
-            var entryCount = Random.Shared.Next(3, 6);
-            for (int i = 0; i < entryCount; i++)
-            {
-                var startTime = DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 90)).AddHours(-Random.Shared.Next(1, 8));
-                var duration = Random.Shared.Next(1, 8) * 0.1m; // 6-minute increments
-                var endTime = startTime.AddHours((double)duration);
-
-                var descriptions = new[]
-                {
-                    "Initial client consultation and case assessment",
-                    "Document review and preparation",
-                    "Government form completion and filing",
-                    "Client communication and status update",
-                    "Legal research and case strategy development",
-                    "Court appearance preparation",
-                    "Response to government request for evidence"
-                };
-
-                var timeEntry = new TimeEntry
-                {
-                    ClientId = client.Id,
-                    CaseId = clientCase.Id, // Assign valid CaseId
-                    AttorneyId = client.AssignedAttorney.Id,
-                    StartTime = startTime,
-                    EndTime = endTime,
-                    Duration = duration,
-                    Description = descriptions[Random.Shared.Next(descriptions.Length)],
-                    Notes = $"Time entry for {client.FirstName} {client.LastName}",
-                    HourlyRate = client.AssignedAttorney.DefaultHourlyRate,
-                    BillableAmount = duration * client.AssignedAttorney.DefaultHourlyRate,
-                    IsBilled = Random.Shared.Next(0, 2) == 1, // 50% chance of being billed
-                    BilledDate = Random.Shared.Next(0, 2) == 1 ? DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 30)) : null
-                };
-
-                timeEntries.Add(timeEntry);
-            }
-        }
-
-        _context.TimeEntries.AddRange(timeEntries);
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Seeded {TimeEntryCount} time entries.", timeEntries.Count);
+        _logger.LogInformation("Skipping TimeEntries seeding due to CaseId type mismatch pending fix.");
+        await Task.CompletedTask;
     }
 
     private async Task SeedDocumentsAsync()

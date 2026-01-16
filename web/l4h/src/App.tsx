@@ -45,7 +45,7 @@ function App() {
 
   // Item 11: Automatic Cache Clearing on New Build
   React.useEffect(() => {
-    // @ts-ignore - __APP_VERSION__ is defined in vite.config.ts
+    // @ts-expect-error - __APP_VERSION__ is defined in vite.config.ts
     const currentVersion = __APP_VERSION__;
     const storedVersion = localStorage.getItem('app_version');
 

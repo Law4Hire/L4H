@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '@l4h/shared-ui'
-import { Menu, X, Sun, Moon, Share2, Facebook, Twitter, Instagram, Linkedin, MessageCircle, Phone } from 'lucide-react'
+import { Menu, X, Sun, Moon, Share2, Facebook, Twitter, Instagram, Linkedin, MessageCircle, Phone, Shield } from 'lucide-react'
 import { useSiteConfig } from '../hooks/useSiteConfig'
 import { useAuth } from '../hooks/useAuth'
 import { ThemeToggle } from './ThemeToggle'
@@ -300,6 +300,12 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
                   <li><Link to="/attorneys" className="hover:text-blue-400 transition-colors">Attorneys & Staff</Link></li>
                   <li><Link to="/resources" className="hover:text-blue-400 transition-colors">Law Library</Link></li>
                   <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Consultation</Link></li>
+                  <li className="pt-2 border-t border-gray-800 mt-2">
+                    <Link to="/login" className="text-gold-500 hover:text-gold-400 transition-colors flex items-center">
+                      <Shield className="w-3 h-3 mr-2" />
+                      Associate Login
+                    </Link>
+                  </li>
                </ul>
             </div>
 
