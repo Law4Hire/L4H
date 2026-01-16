@@ -118,11 +118,15 @@ const LegalDashboard: React.FC = () => {
 
       // Save Status (Legal Professional or Admin)
       if (editFormData.status) {
-        // Use POST instead of PATCH to avoid potential CORS preflight issues with PATCH method
-        await fetchJson(`/v1/cases/${selectedCase}/status`, {
-          method: 'POST',
-          body: JSON.stringify({ status: editFormData.status })
-        })
+        try {
+          await fetchJson(`/v1/cases/${selectedCase}/status`, {
+            method: 'POST',
+            body: JSON.stringify({ status: editFormData.status })
+          })
+        } catch (err) {
+          console.error('Failed to update status:', err)
+          alert('Failed to update status. Please try again.')
+        }
       }
 
       // Save Client Details (Name/Email) if changed and ClientId exists
