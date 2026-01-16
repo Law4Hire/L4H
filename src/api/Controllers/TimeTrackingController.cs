@@ -32,16 +32,38 @@ public class TimeTrackingController : ControllerBase
     public async Task<ActionResult<TimeEntry>> StartTimeTracking([FromBody] StartTimeTrackingRequest request)
     {
         var attorneyId = await GetCurrentAttorneyId();
+        
+        // Fallback: If AttorneyId is null on the user, try to find by email
         if (attorneyId == null)
         {
-            return BadRequest("Current user is not a registered attorney/staff member");
+            var userIdClaim = User.FindFirst("sub")?.Value;
+            if (Guid.TryParse(userIdClaim, out var userId))
+            {
+                var user = await _context.Users.FindAsync(new UserId(userId));
+                if (user != null && !string.IsNullOrEmpty(user.Email))
+                {
+                    var fallbackAttorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Email == user.Email);
+                    if (fallbackAttorney != null)
+                    {
+                        attorneyId = fallbackAttorney.Id;
+                        // Optional: Self-heal the link
+                        user.AttorneyId = attorneyId;
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+        }
+
+        if (attorneyId == null)
+        {
+            return BadRequest($"Current user is not a registered attorney/staff member. User ID: {User.FindFirst("sub")?.Value}");
         }
 
         // Verify attorney exists and is active
         var attorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Id == attorneyId.Value && a.IsActive);
         if (attorney == null)
         {
-            return BadRequest("Attorney not found or inactive");
+            return BadRequest($"Attorney not found or inactive (ID: {attorneyId})");
         }
 
         // Resolve Case and Client
