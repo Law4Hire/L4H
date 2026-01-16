@@ -193,6 +193,7 @@ const ClientManagement: React.FC = () => {
   }
 
   const getClientPrimaryCase = (client: Client) => {
+    if (!client.cases || client.cases.length === 0) return null
     return client.cases.find(c => c.status !== CaseStatus.Complete && c.status !== CaseStatus.ClosedRejected) || client.cases[0]
   }
 
@@ -352,6 +353,7 @@ const ClientManagement: React.FC = () => {
           <div className="text-center">
             <p className="text-2xl font-bold text-green-600">
               {clients.filter(c => {
+                if (!c.cases) return false
                 const primaryCase = getClientPrimaryCase(c)
                 return primaryCase?.status === CaseStatus.InProgress
               }).length}
@@ -363,6 +365,7 @@ const ClientManagement: React.FC = () => {
           <div className="text-center">
             <p className="text-2xl font-bold text-yellow-600">
               {clients.filter(c => {
+                if (!c.cases) return false
                 const primaryCase = getClientPrimaryCase(c)
                 return primaryCase?.status === CaseStatus.NotStarted
               }).length}
@@ -475,7 +478,7 @@ const ClientManagement: React.FC = () => {
                     )}
 
                     {/* Multiple Cases Indicator */}
-                    {client.cases.length > 1 && (
+                    {client.cases && client.cases.length > 1 && (
                       <div className="mb-4">
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
                           {client.cases.length} cases
