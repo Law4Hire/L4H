@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface Attorney {
   id: number
@@ -27,11 +27,7 @@ export function useAttorneys() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchAttorneys()
-  }, [])
-
-  const fetchAttorneys = async () => {
+  const fetchAttorneys = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await fetch('/api/v1/attorneys')
@@ -49,9 +45,13 @@ export function useAttorneys() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
-  const getAttorney = async (id: number) => {
+  useEffect(() => {
+    fetchAttorneys()
+  }, [fetchAttorneys])
+
+  const getAttorney = useCallback(async (id: number) => {
     try {
       const response = await fetch(`/api/v1/attorneys/${id}`)
       
@@ -64,9 +64,9 @@ export function useAttorneys() {
       console.error('Error fetching attorney:', err)
       throw err
     }
-  }
+  }, [])
 
-  const createAttorney = async (attorney: Partial<Attorney>) => {
+  const createAttorney = useCallback(async (attorney: Partial<Attorney>) => {
     try {
       const token = localStorage.getItem('jwt_token')
       const response = await fetch('/api/v1/attorneys', {
@@ -89,9 +89,9 @@ export function useAttorneys() {
       console.error('Error creating attorney:', err)
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
-  }
+  }, [fetchAttorneys])
 
-  const updateAttorney = async (id: number, attorney: Partial<Attorney>) => {
+  const updateAttorney = useCallback(async (id: number, attorney: Partial<Attorney>) => {
     try {
       const token = localStorage.getItem('jwt_token')
       const response = await fetch(`/api/v1/attorneys/${id}`, {
@@ -113,7 +113,7 @@ export function useAttorneys() {
       console.error('Error updating attorney:', err)
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
-  }
+  }, [fetchAttorneys])
 
   return {
     attorneys,
