@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { fetchJson } from '@l4h/shared-ui'
 
 export interface CaseVisaType {
   visaTypeId: number
@@ -61,19 +62,7 @@ export function useCases() {
         params.append('sortDesc', options.sortDesc.toString())
       }
 
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/cases/dashboard?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch cases: ${response.status}`)
-      }
-
-      const data = await response.json()
+      const data = await fetchJson<DashboardCase[]>(`/v1/cases/dashboard?${params.toString()}`)
       setCases(data)
     } catch (err) {
       console.error('Error fetching cases:', err)
@@ -85,20 +74,10 @@ export function useCases() {
 
   const assignCase = useCallback(async (caseId: string, staffId: number | null) => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/cases/${caseId}/assign`, {
+      await fetchJson(`/v1/cases/${caseId}/assign`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ staffId })
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.title || 'Failed to assign case')
-      }
 
       return { success: true }
     } catch (err) {
@@ -116,23 +95,13 @@ export function useCases() {
     primaryVisaTypeId?: number
   ) => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/cases/${caseId}/visa-types`, {
+      await fetchJson(`/v1/cases/${caseId}/visa-types`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           visaTypeIds,
           primaryVisaTypeId
         })
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.title || 'Failed to update visa types')
-      }
 
       return { success: true }
     } catch (err) {
@@ -146,19 +115,11 @@ export function useCases() {
 
   const updateCase = useCallback(async (caseId: string, data: CaseUpdateData) => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/cases/${caseId}`, {
+      await fetchJson(`/v1/cases/${caseId}`, {
         method: 'PATCH', // Using PATCH for partial updates
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(data)
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to update case')
-      }
       return { success: true }
     } catch (err) {
       console.error('Error updating case:', err)
