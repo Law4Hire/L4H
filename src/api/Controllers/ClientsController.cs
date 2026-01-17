@@ -246,6 +246,15 @@ public class ClientsController : ControllerBase
         existingClient.UpdatedAt = DateTime.UtcNow;
         existingClient.UpdatedBy = User.FindFirst("email")?.Value ?? "system";
 
+        // Sync changes to linked User account if exists
+        var linkedUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == existingClient.Email);
+        if (linkedUser != null)
+        {
+            linkedUser.FirstName = clientUpdate.FirstName;
+            linkedUser.LastName = clientUpdate.LastName ?? ""; // Ensure not null
+            // We do not update User email here to avoid locking user out without verification
+        }
+
         await _context.SaveChangesAsync();
         return Ok();
     }
