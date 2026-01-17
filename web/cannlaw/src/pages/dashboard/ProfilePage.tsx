@@ -28,16 +28,17 @@ const ProfilePage: React.FC = () => {
 
 
   const fetchProfile = useCallback(async () => {
-    if (!user) return // Ensure user is available for profile fetching
+    if (!user) return
     setIsLoading(true)
     try {
-      const token = localStorage.getItem('jwt_token')
-      const headers = { Authorization: `Bearer ${token}` }
-      const response = await fetchJson(`/v1/users/${user.id}/profile`, { headers })
-      setProfile(response.data)
-      setFormData(response.data) // Initialize form with fetched data
+      // Use the attorney-specific endpoint which resolves the current user's attorney record
+      // This avoids the issue with user.id being NaN and ensures we get the Attorney entity
+      const response = await fetchJson<AttorneyProfile>('/v1/attorneys/me')
+      setProfile(response)
+      setFormData(response)
     } catch (err) {
       console.error('Error fetching profile:', err)
+      // Fallback or specific error handling
       error('Error fetching profile', (err as Error).message || 'An unexpected error occurred.')
     } finally {
       setIsLoading(false)
