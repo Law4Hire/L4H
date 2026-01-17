@@ -120,6 +120,10 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
 
         context.Attorneys.AddRange(attorney1, attorney2);
 
+        // Create Users for Attorneys
+        var user1 = new User { Id = new UserId(Guid.NewGuid()), Email = attorney1.Email, AttorneyId = attorney1.Id, IsActive = true };
+        var user2 = new User { Id = new UserId(Guid.NewGuid()), Email = attorney2.Email, AttorneyId = attorney2.Id, IsActive = true };
+        
         // Create test clients with different case statuses
         var client1 = new Client
         {
@@ -174,8 +178,44 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
 
         context.Clients.AddRange(client1, client2, client3);
 
+        // Create Users for Clients (to support user-based lookups if needed)
+        var clientUser1 = new User { Id = new UserId(Guid.NewGuid()), Email = client1.Email, IsActive = true };
+        var clientUser2 = new User { Id = new UserId(Guid.NewGuid()), Email = client2.Email, IsActive = true };
+        var clientUser3 = new User { Id = new UserId(Guid.NewGuid()), Email = client3.Email, IsActive = true };
+
+        context.Users.AddRange(user1, user2, clientUser1, clientUser2, clientUser3);
+
         // Create test cases with different statuses
         var case1 = new Case
+        {
+            Id = CaseId.New(),
+            UserId = clientUser1.Id,
+            VisaTypeId = null,
+            Status = "In Progress",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        // NOTE: The test uses CannlawCase or similar logic, but let's stick to core entities
+        // CannlawCase logic is separate but linked via ClientId.
+        // Wait, the test uses 'Case' which maps to 'CannlawCases'? 
+        // No, in this test file 'Case' refers to L4H.Infrastructure.Entities.CannlawCase if imported, or L4H.Infrastructure.Entities.Case.
+        // Checking imports: using L4H.Infrastructure.Entities; 
+        // Both exist. 'Case' is the main one. 'CannlawCase' is separate.
+        // The seed data below uses 'Case' properties like 'CaseType', 'Description'. These are on 'CannlawCase'.
+        // So the 'Case' class in this file must be an alias or I need to check the entities.
+        // Looking at entity defs: CannlawCase has CaseType, Status (enum), Description.
+        // Case (main) has Status (string), VisaTypeId.
+        // The code below sets CaseType, Description. So it MUST be CannlawCase.
+        // But the variable type says 'var case1 = new Case'.
+        // Let's assume the test file has `using Case = L4H.Infrastructure.Entities.CannlawCase;` or similar, 
+        // OR the entity definition in the test file is different (mock).
+        // Actually, looking at the previous file content, `Case` is used.
+        // Let's assume it refers to `CannlawCase` given the properties.
+        // I will explicitly use `CannlawCase` to be safe if that's what it is.
+        // Wait, the property `ClientId` exists on `CannlawCase`. `Case` uses `UserId`.
+        // So yes, these are `CannlawCase` entities.
+        
+        var cannlawCase1 = new CannlawCase
         {
             Id = 1,
             ClientId = client1.Id,
@@ -188,7 +228,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
             UpdatedAt = DateTime.UtcNow
         };
 
-        var case2 = new Case
+        var cannlawCase2 = new CannlawCase
         {
             Id = 2,
             ClientId = client2.Id,
@@ -201,7 +241,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
             UpdatedAt = DateTime.UtcNow
         };
 
-        var case3 = new Case
+        var cannlawCase3 = new CannlawCase
         {
             Id = 3,
             ClientId = client3.Id,
@@ -214,7 +254,7 @@ public class CannlawClientManagementIntegrationTests : IClassFixture<WebApplicat
             UpdatedAt = DateTime.UtcNow
         };
 
-        context.Cases.AddRange(case1, case2, case3);
+        context.CannlawCases.AddRange(cannlawCase1, cannlawCase2, cannlawCase3);
 
         await context.SaveChangesAsync();
         return (attorney1, attorney2, client1, client2, client3);
