@@ -130,11 +130,13 @@ const LegalDashboard: React.FC = () => {
       }
 
       // Save Client Details (Name/Email) if changed and ClientId exists
+      console.log('Save triggered. CaseData ClientId:', caseData?.clientId)
       if (caseData?.clientId && (
           editFormData.clientFirstName !== caseData.clientFirstName || 
           editFormData.clientLastName !== caseData.clientLastName || 
           editFormData.clientEmail !== caseData.clientEmail
       )) {
+          console.log('Client changes detected. Updating client:', caseData.clientId)
           // Fetch current client data to get required fields that aren't changing (like ID)
           // But only send back what's needed for the update
           const clientObj = await fetchJson(`/v1/clients/${caseData.clientId}`)
@@ -151,11 +153,19 @@ const LegalDashboard: React.FC = () => {
                timeEntries: undefined
              }
              
-             await fetchJson(`/v1/clients/${caseData.clientId}`, {
-                method: 'PUT',
-                body: JSON.stringify(updatePayload)
-             })
+             try {
+               await fetchJson(`/v1/clients/${caseData.clientId}`, {
+                  method: 'PUT',
+                  body: JSON.stringify(updatePayload)
+               })
+               console.log('Client update successful')
+             } catch (err) {
+               console.error('Failed to update client details:', err)
+               alert('Failed to update client details. ' + (err instanceof Error ? err.message : ''))
+             }
           }
+      } else {
+          console.log('No client changes detected or missing ClientId')
       }
 
       await fetchCases({ showAssigned, search: searchTerm, sortBy, sortDesc })

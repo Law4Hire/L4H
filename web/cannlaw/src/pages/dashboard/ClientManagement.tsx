@@ -345,18 +345,18 @@ const ClientManagement: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-blue-600">{clients.length}</p>
+            <p className="text-2xl font-bold text-blue-600">{clients?.length || 0}</p>
             <p className="text-sm text-gray-600">Total Clients</p>
           </div>
         </Card>
         <Card className="p-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-green-600">
-              {clients.filter(c => {
+              {clients?.filter(c => {
                 if (!c.cases) return false
                 const primaryCase = getClientPrimaryCase(c)
                 return primaryCase?.status === CaseStatus.InProgress
-              }).length}
+              }).length || 0}
             </p>
             <p className="text-sm text-gray-600">Active Cases</p>
           </div>
@@ -364,11 +364,11 @@ const ClientManagement: React.FC = () => {
         <Card className="p-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-yellow-600">
-              {clients.filter(c => {
+              {clients?.filter(c => {
                 if (!c.cases) return false
                 const primaryCase = getClientPrimaryCase(c)
                 return primaryCase?.status === CaseStatus.NotStarted
-              }).length}
+              }).length || 0}
             </p>
             <p className="text-sm text-gray-600">Not Started</p>
           </div>
@@ -376,7 +376,7 @@ const ClientManagement: React.FC = () => {
         <Card className="p-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-purple-600">
-              {clients.filter(c => !c.assignedAttorneyId).length}
+              {clients?.filter(c => !c.assignedAttorneyId).length || 0}
             </p>
             <p className="text-sm text-gray-600">Unassigned</p>
           </div>
@@ -387,11 +387,11 @@ const ClientManagement: React.FC = () => {
       <Card className="overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
-            Clients ({clients.length})
+            Clients ({clients?.length || 0})
           </h2>
         </div>
         
-        {clients.length === 0 ? (
+        {!clients || clients.length === 0 ? (
           <div className="text-center py-12">
             <User className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">No clients found</h3>
@@ -405,6 +405,7 @@ const ClientManagement: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
             {clients.map((client) => {
+              if (!client) return null;
               const primaryCase = getClientPrimaryCase(client)
               const fullName = getClientFullName(client)
               

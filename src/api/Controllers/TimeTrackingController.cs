@@ -131,13 +131,16 @@ public class TimeTrackingController : ControllerBase
             return BadRequest("Client not found");
         }
 
-        var isAdmin = User.HasClaim("is_admin", "true");
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase));
+        _logger.LogInformation("Auth Check: User {User}, isAdmin: {IsAdmin}, ClientAssignedAtty: {ClientAtty}, CurrentAtty: {AttyId}", 
+            User.FindFirst("sub")?.Value, isAdmin, client.AssignedAttorneyId, attorneyId);
+
         if (!isAdmin && client.AssignedAttorneyId != attorneyId)
         {
             return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails 
             { 
                 Title = "Forbidden", 
-                Detail = "You can only track time for your assigned clients" 
+                Detail = $"You can only track time for your assigned clients. Client Assigned ID: {client.AssignedAttorneyId}, Your Attorney ID: {attorneyId}" 
             });
         }
 
