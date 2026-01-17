@@ -5,6 +5,7 @@ using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using System.Security.Claims;
 using L4H.Api.Authorization;
+using L4H.Shared.Models; // Added missing using directive
 
 namespace L4H.Api.Controllers;
 
