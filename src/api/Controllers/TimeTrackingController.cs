@@ -16,10 +16,12 @@ namespace L4H.Api.Controllers;
 public class TimeTrackingController : ControllerBase
 {
     private readonly L4HDbContext _context;
+    private readonly ILogger<TimeTrackingController> _logger;
 
-    public TimeTrackingController(L4HDbContext context)
+    public TimeTrackingController(L4HDbContext context, ILogger<TimeTrackingController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     /// <summary>
@@ -37,26 +39,42 @@ public class TimeTrackingController : ControllerBase
         if (attorneyId == null)
         {
             var userIdClaim = User.FindFirst("sub")?.Value;
+            _logger.LogWarning("AttorneyId is null for user claim sub: {Sub}. Attempting fallback...", userIdClaim);
+            
             if (Guid.TryParse(userIdClaim, out var userId))
             {
                 var user = await _context.Users.FindAsync(new UserId(userId));
-                if (user != null && !string.IsNullOrEmpty(user.Email))
+                if (user != null)
                 {
-                    var fallbackAttorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Email == user.Email);
-                    if (fallbackAttorney != null)
+                    _logger.LogWarning("User found: {Email}. AttorneyId: {AttorneyId}", user.Email, user.AttorneyId);
+                    if (!string.IsNullOrEmpty(user.Email))
                     {
-                        attorneyId = fallbackAttorney.Id;
-                        // Optional: Self-heal the link
-                        user.AttorneyId = attorneyId;
-                        await _context.SaveChangesAsync();
+                        var fallbackAttorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Email == user.Email);
+                        if (fallbackAttorney != null)
+                        {
+                            _logger.LogInformation("Fallback found attorney by email: {Id}", fallbackAttorney.Id);
+                            attorneyId = fallbackAttorney.Id;
+                            // Optional: Self-heal the link
+                            user.AttorneyId = attorneyId;
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Fallback failed: No attorney found with email {Email}", user.Email);
+                        }
                     }
+                }
+                else
+                {
+                    _logger.LogError("User not found in DB with ID: {UserId}", userId);
                 }
             }
         }
 
         if (attorneyId == null)
         {
-            return BadRequest($"Current user is not a registered attorney/staff member. User ID: {User.FindFirst("sub")?.Value}");
+            var userIdClaim = User.FindFirst("sub")?.Value;
+            return BadRequest($"Current user is not a registered attorney/staff member. User ID Claim: {userIdClaim}");
         }
 
         // Verify attorney exists and is active
