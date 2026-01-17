@@ -46,10 +46,27 @@ public class ClientsController : ControllerBase
         if (!isAdmin)
         {
             // Legal professionals only see their assigned clients
+            int? userAttorneyId = null;
             var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
-            if (int.TryParse(attorneyIdClaim, out var userAttorneyId))
+            
+            if (int.TryParse(attorneyIdClaim, out var id))
             {
-                query = query.Where(c => c.AssignedAttorneyId == userAttorneyId);
+                userAttorneyId = id;
+            }
+            else
+            {
+                // Fallback: Look up user in DB to get AttorneyId if claim is missing
+                var userIdClaim = User.FindFirst("sub")?.Value;
+                if (Guid.TryParse(userIdClaim, out var userId))
+                {
+                    var user = await _context.Users.FindAsync(new UserId(userId));
+                    userAttorneyId = user?.AttorneyId;
+                }
+            }
+
+            if (userAttorneyId.HasValue)
+            {
+                query = query.Where(c => c.AssignedAttorneyId == userAttorneyId.Value);
             }
             else
             {
