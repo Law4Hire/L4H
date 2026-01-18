@@ -122,8 +122,31 @@ public class TimeTrackingController : ControllerBase
         }
         else if (request.ClientId.HasValue)
         {
-            // Legacy support or direct client billing without case (if needed)
+            // Direct client billing
             client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == request.ClientId.Value);
+            
+            if (client != null)
+            {
+                // We MUST have a valid CaseId for the TimeEntry database constraint.
+                // Try to find an active case for this client via email -> User -> Case
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == client.Email);
+                if (user != null)
+                {
+                    caseEntity = await _context.Cases
+                        .Include(c => c.User)
+                        .Where(c => c.UserId == user.Id)
+                        .OrderByDescending(c => c.LastActivityAt)
+                        .FirstOrDefaultAsync();
+                }
+                
+                if (caseEntity == null)
+                {
+                    // If no case exists, we cannot create a time entry due to FK constraints.
+                    // Option: Create a default "General Matter" case for this user?
+                    // For now, return specific error.
+                    return BadRequest($"Client {client.FirstName} {client.LastName} has no active cases. Please create a case first.");
+                }
+            }
         }
 
         if (client == null)

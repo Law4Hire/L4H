@@ -238,7 +238,7 @@ const ClientManagement: React.FC = () => {
       </div>
 
       {/* Search Bar */}
-      <Card className="p-4">
+      <Card className="p-4 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
         <div className="flex items-center space-x-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -247,10 +247,10 @@ const ClientManagement: React.FC = () => {
               placeholder="Search clients by name, email, case type, or government case number..."
               value={filters.searchTerm}
               onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-white dark:bg-navy-800 dark:border-navy-600 dark:text-white"
             />
           </div>
-          <Button variant="outline" onClick={clearFilters}>
+          <Button variant="outline" onClick={clearFilters} className="dark:text-white dark:border-navy-600 dark:hover:bg-navy-800">
             Clear All
           </Button>
         </div>
@@ -258,18 +258,18 @@ const ClientManagement: React.FC = () => {
 
       {/* Advanced Filters */}
       {(showAdvancedFilters || !isAdmin) && (
-        <Card className="p-6">
+        <Card className="p-6 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {isAdmin && (
               <div>
-                <label htmlFor="attorney-filter" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="attorney-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Assigned Attorney
                 </label>
                 <select
                   id="attorney-filter"
                   value={filters.assignedAttorney}
                   onChange={(e) => handleFilterChange('assignedAttorney', e.target.value)}
-                  className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
+                  className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-800 dark:text-white"
                 >
                   <option value="">All Attorneys</option>
                   <option value="unassigned">Unassigned</option>
@@ -283,14 +283,14 @@ const ClientManagement: React.FC = () => {
             )}
 
             <div>
-              <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Case Status
               </label>
               <select
                 id="status-filter"
                 value={filters.caseStatus}
                 onChange={(e) => handleFilterChange('caseStatus', e.target.value)}
-                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
+                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-800 dark:text-white"
               >
                 <option value="">All Statuses</option>
                 {Object.values(CaseStatus).map(status => (
@@ -300,14 +300,14 @@ const ClientManagement: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="case-type-filter" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="case-type-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Case Type
               </label>
               <select
                 id="case-type-filter"
                 value={filters.caseType}
                 onChange={(e) => handleFilterChange('caseType', e.target.value)}
-                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
+                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-800 dark:text-white"
               >
                 <option value="">All Case Types</option>
                 <option value="Family-Based Immigration">Family-Based Immigration</option>
@@ -320,14 +320,14 @@ const ClientManagement: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="date-range-filter" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="date-range-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Date Range
               </label>
               <select
                 id="date-range-filter"
                 value={filters.dateRange}
                 onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 dark:text-white"
+                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-800 dark:text-white"
               >
                 <option value="">All Time</option>
                 <option value="today">Today</option>
@@ -343,59 +343,59 @@ const ClientManagement: React.FC = () => {
 
       {/* Client Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4">
+        <Card className="p-4 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
           <div className="text-center">
-            <p className="text-2xl font-bold text-blue-600">{clients?.length || 0}</p>
-            <p className="text-sm text-gray-600">Total Clients</p>
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{clients?.length || 0}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Total Clients</p>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="p-4 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
           <div className="text-center">
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
               {clients?.filter(c => {
                 if (!c.cases) return false
                 const primaryCase = getClientPrimaryCase(c)
                 return primaryCase?.status === CaseStatus.InProgress
               }).length || 0}
             </p>
-            <p className="text-sm text-gray-600">Active Cases</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Active Cases</p>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="p-4 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
           <div className="text-center">
-            <p className="text-2xl font-bold text-yellow-600">
+            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
               {clients?.filter(c => {
                 if (!c.cases) return false
                 const primaryCase = getClientPrimaryCase(c)
                 return primaryCase?.status === CaseStatus.NotStarted
               }).length || 0}
             </p>
-            <p className="text-sm text-gray-600">Not Started</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Not Started</p>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="p-4 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
           <div className="text-center">
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
               {clients?.filter(c => !c.assignedAttorneyId).length || 0}
             </p>
-            <p className="text-sm text-gray-600">Unassigned</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Unassigned</p>
           </div>
         </Card>
       </div>
 
       {/* Client List */}
-      <Card className="overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
+      <Card className="overflow-hidden bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-navy-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Clients ({clients?.length || 0})
           </h2>
         </div>
         
         {!clients || clients.length === 0 ? (
           <div className="text-center py-12">
-            <User className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No clients found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <User className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No clients found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {Object.values(filters).some(f => f) 
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Get started by adding your first client.'
@@ -410,25 +410,25 @@ const ClientManagement: React.FC = () => {
               const fullName = getClientFullName(client)
               
               return (
-                <Card key={client.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={client.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-white dark:bg-navy-800 border-gray-200 dark:border-navy-700">
                   <div className="p-6">
                     {/* Client Header */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-start space-x-3">
-                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                          <User className="w-6 h-6 text-blue-600" />
+                        <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                          <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-gray-900 truncate">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                             {fullName}
                           </h3>
-                          <p className="text-sm text-gray-600 truncate">{client.email}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{client.email}</p>
                           {client.assignedAttorney ? (
-                            <p className="text-xs text-blue-600">
+                            <p className="text-xs text-blue-600 dark:text-blue-400">
                               Assigned to {client.assignedAttorney.name}
                             </p>
                           ) : (
-                            <p className="text-xs text-red-600">Unassigned</p>
+                            <p className="text-xs text-red-600 dark:text-red-400">Unassigned</p>
                           )}
                         </div>
                       </div>
@@ -441,6 +441,7 @@ const ClientManagement: React.FC = () => {
                             setClientToAssign(client)
                             setShowAssignModal(true)
                           }}
+                          className="dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-700"
                         >
                           <Plus className="w-4 h-4" />
                         </Button>
@@ -449,11 +450,11 @@ const ClientManagement: React.FC = () => {
 
                     {/* Contact Information */}
                     <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm text-gray-600">
+                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                         <Phone className="w-4 h-4 mr-2" />
                         <span>{client.phone}</span>
                       </div>
-                      <div className="flex items-center text-sm text-gray-600">
+                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                         <Calendar className="w-4 h-4 mr-2" />
                         <span>From {client.countryOfOrigin}</span>
                       </div>
@@ -463,15 +464,15 @@ const ClientManagement: React.FC = () => {
                     {primaryCase && (
                       <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-gray-700">Primary Case</span>
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Primary Case</span>
                           <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(primaryCase.status)}`}>
                             {getStatusIcon(primaryCase.status)}
                             <span className="ml-1">{primaryCase.status}</span>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600">{primaryCase.caseType}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{primaryCase.caseType}</p>
                         {primaryCase.governmentCaseNumber && (
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                             Case #: {primaryCase.governmentCaseNumber}
                           </p>
                         )}
@@ -481,25 +482,25 @@ const ClientManagement: React.FC = () => {
                     {/* Multiple Cases Indicator */}
                     {client.cases && client.cases.length > 1 && (
                       <div className="mb-4">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                           {client.cases.length} cases
                         </span>
                       </div>
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-navy-700">
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-700">
                           View Profile
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-700">
                           <Edit className="w-4 h-4 mr-1" />
                           Edit
                         </Button>
                       </div>
                       
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 dark:text-gray-500">
                         Added {new Date(client.createdAt).toLocaleDateString()}
                       </span>
                     </div>
