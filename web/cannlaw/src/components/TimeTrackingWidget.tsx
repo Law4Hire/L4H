@@ -74,29 +74,23 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
     }
   }, [isTracking, startTime])
 
+  const [activeEntryId, setActiveEntryId] = useState<number | null>(null)
+  
+  // ... existing state ...
+
   const checkActiveTimer = async () => {
     try {
-      // Use fetchJson which handles base URL and auth
-      const activeTimer = await fetchJson<any>('/v1/time-tracking/active')
+      const activeTimer = await fetchJson<TimeEntry>('/v1/time-tracking/active')
       if (activeTimer) {
         setIsTracking(true)
         setStartTime(new Date(activeTimer.startTime))
         setSelectedClientId(activeTimer.clientId)
+        setActiveEntryId(activeTimer.id) // Store ID
         setDescription(activeTimer.description || '')
         setNotes(activeTimer.notes || '')
       }
     } catch (error) {
-      // 404 is expected if no active timer, ignore it
-      // console.error('Error checking active timer:', error)
-    }
-  }
-
-  const fetchTimeEntries = async () => {
-    try {
-      const entries = await fetchJson<TimeEntry[]>('/v1/time-tracking/entries')
-      setTimeEntries(entries || [])
-    } catch (error) {
-      console.error('Error fetching time entries:', error)
+      // Ignore 404
     }
   }
 
@@ -107,7 +101,7 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
     }
 
     try {
-      await fetchJson('/v1/time-tracking/start', {
+      const entry = await fetchJson<TimeEntry>('/v1/time-tracking/start', {
         method: 'POST',
         body: JSON.stringify({
           clientId: selectedClientId,
@@ -120,6 +114,7 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
       setStartTime(now)
       setIsTracking(true)
       setElapsedTime(0)
+      setActiveEntryId(entry.id) // Store ID
     } catch (error) {
       console.error('Error starting timer:', error)
       alert(`Failed to start timer: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -127,38 +122,34 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
   }
 
   const stopTimer = async () => {
-    if (!startTime) return
+    if (!activeEntryId) {
+        // Fallback: try to fetch if state is missing
+        await checkActiveTimer()
+        if (!activeEntryId) {
+            alert('No active timer found to stop')
+            return
+        }
+    }
 
     try {
-      const entry = await fetchJson<TimeEntry>('/v1/time-tracking/stop/0', { // ID 0 or handle active endpoint
-         // Wait, the API typically expects an ID to stop. 
-         // But we might need to lookup the active one first or use a 'stop-active' endpoint.
-         // Let's first try to get the active one's ID if we don't store it.
-         // Actually, let's assumes we need to fetch active first or the API supports stopping active.
-         // The backend StopTimeTracking takes {id}.
-         // We should store the activeEntryId when we check/start.
-         // For now, let's fetch active to get ID.
+      const entry = await fetchJson<TimeEntry>(`/v1/time-tracking/stop/${activeEntryId}`, {
+        method: 'POST'
       })
-      // Correct approach: We need the ID. 
-      // Let's re-fetch active to get ID if we don't have it in state.
-      // Better: Update state to store active entry object.
-      // For quick fix:
-      const active = await fetchJson<TimeEntry>('/v1/time-tracking/active')
-      if (active) {
-          await fetchJson(`/v1/time-tracking/stop/${active.id}`, { method: 'POST' })
-          
-          setIsTracking(false)
-          setStartTime(null)
-          setElapsedTime(0)
-          setDescription('')
-          setNotes('')
-          setSelectedClientId(null)
-          
-          await fetchTimeEntries()
-          
-          if (onTimeEntryCreated) {
-            onTimeEntryCreated(active)
-          }
+
+      if (entry) {
+        setIsTracking(false)
+        setStartTime(null)
+        setElapsedTime(0)
+        setDescription('')
+        setNotes('')
+        setSelectedClientId(null)
+        setActiveEntryId(null)
+        
+        await fetchTimeEntries()
+        
+        if (onTimeEntryCreated) {
+          onTimeEntryCreated(entry)
+        }
       }
     } catch (error) {
       console.error('Error stopping timer:', error)

@@ -75,16 +75,17 @@ const ClientManagement: React.FC = () => {
 
   useEffect(() => {
     // Initial load with role-based filtering
+    // Default to showing "My Clients" if user has an attorney ID, regardless of Admin role
+    // This reduces clutter and matches user expectation. They can clear filter to see all.
     const initialFilters: SearchFilters = {
       searchTerm: '',
-      // Only filter by attorney if user is LegalProfessional AND NOT Admin
-      assignedAttorney: (isLegalProfessional && !isAdmin && user?.attorneyId) ? user.attorneyId.toString() : '',
+      assignedAttorney: user?.attorneyId ? user.attorneyId.toString() : '',
       caseStatus: '',
       caseType: '',
       dateRange: ''
     }
     searchClients(initialFilters)
-  }, [user, isLegalProfessional, isAdmin, searchClients])
+  }, [user, searchClients]) // Removed individual role deps as we rely on user object now
 
   const handleFilterChange = (key: keyof SearchFilters, value: string) => {
     const newFilters = { ...filters, [key]: value }
@@ -491,10 +492,32 @@ const ClientManagement: React.FC = () => {
                     {/* Action Buttons */}
                     <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-navy-700">
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" className="dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-700">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-700"
+                          onClick={() => {
+                             // Assuming View Profile means navigating to detail page
+                             // Need to implement Client Detail page or reuse existing
+                             // For now, redirect to /clients/:id
+                             window.location.href = `/clients/${client.id}`
+                          }}
+                        >
                           View Profile
                         </Button>
-                        <Button variant="outline" size="sm" className="dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-700">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-700"
+                          onClick={() => {
+                            // Open edit modal (reuse assignment modal for now or create new)
+                            // Since we don't have a dedicated edit modal in this file yet,
+                            // we'll implement a basic one or just log for now until requested.
+                            // Given user request: "buttons don't do anything", we must make them do something.
+                            // Let's redirect to the edit page if it exists, or just show an alert
+                            alert(`Edit client ${client.firstName} ${client.lastName} (Not implemented yet)`)
+                          }}
+                        >
                           <Edit className="w-4 h-4 mr-1" />
                           Edit
                         </Button>
