@@ -2,7 +2,7 @@ import { useState, useEffect, createContext, useContext, useCallback, createElem
 import { auth as apiAuth } from '@l4h/shared-ui'
 
 interface User {
-  id: number
+  id: string
   email: string
   role: 'Admin' | 'LegalProfessional' | 'Client'
   attorneyId?: number
@@ -72,7 +72,7 @@ const decodeJwt = (token: string): User | null => {
     }
 
     return {
-      id: parseInt(userId),
+      id: userId,
       email,
       role,
       attorneyId,

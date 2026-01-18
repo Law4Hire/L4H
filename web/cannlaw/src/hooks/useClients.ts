@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from './useAuth'
+import { fetchJson } from '@l4h/shared-ui'
 
 interface Client {
   id: number
@@ -80,13 +81,6 @@ interface SearchFilters {
   pageSize?: number
 }
 
-interface ClientsResponse {
-  clients: Client[]
-  totalCount: number
-  totalPages: number
-  currentPage: number
-}
-
 export function useClients() {
   const [clients, setClients] = useState<Client[]>([])
   const [totalCount, setTotalCount] = useState(0)
@@ -99,19 +93,18 @@ export function useClients() {
   const fetchClients = useCallback(async (filters?: SearchFilters) => {
     try {
       setIsLoading(true)
-      const token = localStorage.getItem('jwt_token')
       
-      // Build query parameters with role-based filtering
+      // Build query parameters
       const params = new URLSearchParams()
       
-      // Apply role-based filtering
+      // Apply role-based filtering logic
       if (user?.role === 'LegalProfessional' && user.attorneyId) {
         params.append('attorneyId', user.attorneyId.toString())
       }
       
       // Apply search filters
       if (filters?.searchTerm) params.append('search', filters.searchTerm)
-      if (filters?.assignedAttorney) params.append('attorney', filters.assignedAttorney)
+      if (filters?.assignedAttorney) params.append('attorneyId', filters.assignedAttorney)
       if (filters?.attorneyId) params.append('attorneyId', filters.attorneyId.toString())
       if (filters?.caseStatus) params.append('status', filters.caseStatus)
       if (filters?.caseType) params.append('caseType', filters.caseType)
@@ -123,24 +116,14 @@ export function useClients() {
       if (filters?.page) params.append('page', filters.page.toString())
       if (filters?.pageSize) params.append('pageSize', filters.pageSize.toString())
 
-      const response = await fetch(`/api/v1/clients?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      // The backend returns Client[] directly, but with X-Total-Count header
+      // fetchJson will return the body.
+      const data = await fetchJson<Client[]>(`/v1/clients?${params.toString()}`)
       
-      if (!response.ok) {
-        if (response.status === 403) {
-          throw new Error('Access denied: You do not have permission to view clients')
-        }
-        throw new Error('Failed to fetch clients')
-      }
-      
-      const result: ClientsResponse = await response.json()
-      setClients(result.clients)
-      setTotalCount(result.totalCount)
-      setTotalPages(result.totalPages)
-      setCurrentPage(result.currentPage)
+      setClients(data || [])
+      setTotalCount(data?.length || 0) // Fallback for pagination if headers not parsed by fetchJson
+      setTotalPages(1)
+      setCurrentPage(1)
       setError(null)
     } catch (err) {
       console.error('Error fetching clients:', err)
@@ -154,120 +137,70 @@ export function useClients() {
     fetchClients()
   }, [user, fetchClients])
 
-  const getClient = async (id: number) => {
-    try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/clients/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch client')
-      }
-      
-      return await response.json()
-    } catch (err) {
-      console.error('Error fetching client:', err)
-      throw err
-    }
-  }
+  const getClient = useCallback(async (id: number) => {
+    return await fetchJson<Client>(`/v1/clients/${id}`)
+  }, [])
 
-  const createClient = async (client: Partial<Client>) => {
+  const createClient = useCallback(async (client: Partial<Client>) => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch('/api/v1/clients', {
+      const data = await fetchJson<Client>('/v1/clients', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify(client)
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to create client')
-      }
-
-      const newClient = await response.json()
-      await fetchClients() // Refresh data
-      return { success: true, data: newClient }
+      await fetchClients()
+      return { success: true, data }
     } catch (err) {
-      console.error('Error creating client:', err)
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
-  }
+  }, [fetchClients])
 
-  const updateClient = async (id: number, client: Partial<Client>) => {
+  const updateClient = useCallback(async (id: number, client: Partial<Client>) => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/clients/${id}`, {
+      await fetchJson(`/v1/clients/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify(client)
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to update client')
-      }
-
-      await fetchClients() // Refresh data
+      await fetchClients()
       return { success: true }
     } catch (err) {
-      console.error('Error updating client:', err)
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
-  }
+  }, [fetchClients])
 
-  const assignClient = async (clientId: number, attorneyId: number) => {
+  const assignClient = useCallback(async (clientId: number, attorneyId: number) => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/clients/${clientId}/assign`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+      await fetchJson(`/v1/clients/${clientId}/assign`, {
+        method: 'PUT', // Backend uses PUT for assign
         body: JSON.stringify({ attorneyId })
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to assign client')
-      }
-
-      await fetchClients() // Refresh data
+      await fetchClients()
       return { success: true }
     } catch (err) {
-      console.error('Error assigning client:', err)
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
-  }
+  }, [fetchClients])
 
-  const getMyClients = async () => {
+  const getMyClients = useCallback(async () => {
     if (user?.role === 'LegalProfessional' && user.attorneyId) {
       return fetchClients({ attorneyId: user.attorneyId })
     }
     return fetchClients()
-  }
+  }, [user, fetchClients])
 
-  const getUnassignedClients = async () => {
+  const getUnassignedClients = useCallback(async () => {
     if (user?.role === 'Admin') {
       return fetchClients({ unassignedOnly: true })
     }
     throw new Error('Unauthorized: Admin access required')
-  }
+  }, [user, fetchClients])
 
-  const searchClientsByName = async (searchTerm: string) => {
+  const searchClientsByName = useCallback(async (searchTerm: string) => {
     return fetchClients({ searchTerm, sortBy: 'name', sortOrder: 'asc' })
-  }
+  }, [fetchClients])
 
-  const getClientsByStatus = async (status: CaseStatus) => {
+  const getClientsByStatus = useCallback(async (status: CaseStatus) => {
     return fetchClients({ caseStatus: status })
-  }
+  }, [fetchClients])
 
   const canViewAllClients = () => {
     return user?.role === 'Admin'
@@ -283,7 +216,7 @@ export function useClients() {
       assigned: clients.filter(c => c.assignedAttorneyId).length,
       unassigned: clients.filter(c => !c.assignedAttorneyId).length,
       withActiveCases: clients.filter(c => 
-        c.cases.some(case_ => 
+        c.cases && c.cases.some(case_ => 
           case_.status !== CaseStatus.Complete && 
           case_.status !== CaseStatus.ClosedRejected
         )

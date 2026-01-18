@@ -73,14 +73,7 @@ const MessagesPage: React.FC = () => {
     if (!user) return
     setIsLoadingThreads(true)
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/messaging/threads?userId=${user.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      if (!response.ok) throw new Error('Failed to fetch message threads')
-      const data: ApiThread[] = await response.json()
+      const data = await fetchJson<ApiThread[]>(`/v1/messaging/threads?userId=${user.id}`)
       setThreads(data)
       if (data.length > 0 && !selectedThreadId) {
         setSelectedThreadId(data[0].id)
@@ -91,29 +84,15 @@ const MessagesPage: React.FC = () => {
     } finally {
       setIsLoadingThreads(false)
     }
-  }, [user, error, selectedThreadId]) // Removed 'toast' as it's not in the context of error/success anymore
+  }, [user, error, selectedThreadId])
 
   const fetchRecipients = useCallback(async () => {
     if (!user) return
     try {
-      const token = localStorage.getItem('jwt_token')
-      const usersResponse = await fetch('/api/v1/admin/users', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      const attorneysResponse = await fetch('/api/v1/attorneys', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!usersResponse.ok || !attorneysResponse.ok) {
-        throw new Error('Failed to fetch recipients')
-      }
-
-      const usersData = await usersResponse.json()
-      const attorneysData = await attorneysResponse.json()
+      const [usersData, attorneysData] = await Promise.all([
+        fetchJson<any[]>('/v1/admin/users'),
+        fetchJson<any[]>('/v1/attorneys')
+      ])
 
       const allPossibleRecipients: RecipientOption[] = [
         ...usersData.map((u: any) => ({ id: u.id, label: u.name, description: 'User' })),
@@ -125,7 +104,7 @@ const MessagesPage: React.FC = () => {
       console.error('Error fetching recipients:', err)
       error('Failed to load potential message recipients.', (err as Error).message || 'An unexpected error occurred.')
     }
-  }, [user, error]) // Removed 'toast' as it's not in the context of error/success anymore
+  }, [user, error])
 
   const handleCreateThread = useCallback(async () => {
     if (selectedRecipients.length === 0 || !newSubject.trim() || !newBody.trim()) {
@@ -134,7 +113,7 @@ const MessagesPage: React.FC = () => {
     }
 
     try {
-      const response = await fetchJson('/v1/messaging/threads', {
+      const response = await fetchJson<any>('/v1/messaging/threads', {
         method: 'POST',
         body: JSON.stringify({
           recipientIds: selectedRecipients,
@@ -143,16 +122,12 @@ const MessagesPage: React.FC = () => {
         })
       })
 
-      if (response.success) {
-        success('New message thread created!')
-        setShowNewThreadModal(false)
-        setSelectedRecipients([])
-        setNewSubject('')
-        setNewBody('')
-        fetchThreads()
-      } else {
-        error(response.error || 'Failed to create new message thread.')
-      }
+      success('New message thread created!')
+      setShowNewThreadModal(false)
+      setSelectedRecipients([])
+      setNewSubject('')
+      setNewBody('')
+      fetchThreads()
     } catch (err) {
       console.error('Error creating new thread:', err)
       error('An error occurred while creating the new thread.')
@@ -164,14 +139,7 @@ const MessagesPage: React.FC = () => {
     if (!selectedThreadId) return
     setIsLoadingMessages(true)
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/messaging/threads/${selectedThreadId}/messages`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      if (!response.ok) throw new Error('Failed to fetch messages')
-      const data = await response.json()
+      const data = await fetchJson<Message[]>(`/v1/messaging/threads/${selectedThreadId}/messages`)
       setMessages(data)
     } catch (err) {
       console.error('Error fetching messages:', err)
