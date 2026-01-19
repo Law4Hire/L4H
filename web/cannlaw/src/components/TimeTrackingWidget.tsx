@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Card, Button, Input, Modal, fetchJson } from '@l4h/shared-ui'
 import { Clock, Edit, Save, Plus } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
@@ -45,39 +45,39 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
   const [showEntryModal, setShowEntryModal] = useState(false)
   const [editingEntry, setEditingEntry] = useState<TimeEntry | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [activeEntryId, setActiveEntryId] = useState<number | null>(null)
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // -- Functions defined BEFORE useEffect to prevent ReferenceError --
-  const checkActiveTimer = async () => {
-    try {
-      const activeTimer = await fetchJson<TimeEntry>('/v1/time-tracking/active')
-      if (activeTimer) {
-        setIsTracking(true)
-        setStartTime(new Date(activeTimer.startTime))
-        setSelectedClientId(activeTimer.clientId)
-        setActiveEntryId(activeTimer.id) // Store ID
-        setDescription(activeTimer.description || '')
-        setNotes(activeTimer.notes || '')
-      }
-    } catch (error) {
-      // Ignore 404
-    }
-  }
-
-  const fetchTimeEntries = async () => {
+  const fetchTimeEntries = useCallback(async () => {
     try {
       const entries = await fetchJson<TimeEntry[]>('/v1/time-tracking/entries')
       setTimeEntries(entries || [])
     } catch (error) {
       console.error('Error fetching time entries:', error)
     }
-  }
+  }, [])
+
+  const checkActiveTimer = useCallback(async () => {
+    try {
+      const activeTimer = await fetchJson<any>('/v1/time-tracking/active')
+      if (activeTimer) {
+        setIsTracking(true)
+        setStartTime(new Date(activeTimer.startTime))
+        setSelectedClientId(activeTimer.clientId)
+        setActiveEntryId(activeTimer.id)
+        setDescription(activeTimer.description || '')
+        setNotes(activeTimer.notes || '')
+      }
+    } catch (error) {
+      // Ignore 404
+    }
+  }, [])
 
   useEffect(() => {
     fetchTimeEntries()
     checkActiveTimer()
-  }, [])
+  }, [fetchTimeEntries, checkActiveTimer])
 
   useEffect(() => {
     if (isTracking && startTime) {
@@ -100,26 +100,6 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
     }
   }, [isTracking, startTime])
 
-  const [activeEntryId, setActiveEntryId] = useState<number | null>(null)
-  
-  // ... existing state ...
-
-  const checkActiveTimer = async () => {
-    try {
-      const activeTimer = await fetchJson<TimeEntry>('/v1/time-tracking/active')
-      if (activeTimer) {
-        setIsTracking(true)
-        setStartTime(new Date(activeTimer.startTime))
-        setSelectedClientId(activeTimer.clientId)
-        setActiveEntryId(activeTimer.id) // Store ID
-        setDescription(activeTimer.description || '')
-        setNotes(activeTimer.notes || '')
-      }
-    } catch (error) {
-      // Ignore 404
-    }
-  }
-
   const startTimer = async () => {
     if (!selectedClientId || !description.trim()) {
       alert('Please select a client and enter a description')
@@ -140,7 +120,7 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
       setStartTime(now)
       setIsTracking(true)
       setElapsedTime(0)
-      setActiveEntryId(entry.id) // Store ID
+      setActiveEntryId(entry.id)
     } catch (error) {
       console.error('Error starting timer:', error)
       alert(`Failed to start timer: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -148,17 +128,22 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
   }
 
   const stopTimer = async () => {
-    if (!activeEntryId) {
-        // Fallback: try to fetch if state is missing
-        await checkActiveTimer()
-        if (!activeEntryId) {
-            alert('No active timer found to stop')
-            return
-        }
+    let timerId = activeEntryId;
+    
+    if (!timerId) {
+        try {
+          const active = await fetchJson<TimeEntry>('/v1/time-tracking/active')
+          if (active) timerId = active.id;
+        } catch (e) {}
+    }
+
+    if (!timerId) {
+        alert('No active timer found to stop')
+        return
     }
 
     try {
-      const entry = await fetchJson<TimeEntry>(`/v1/time-tracking/stop/${activeEntryId}`, {
+      const entry = await fetchJson<TimeEntry>(`/v1/time-tracking/stop/${timerId}`, {
         method: 'POST'
       })
 
@@ -284,7 +269,7 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
               value={selectedClientId || ''}
               onChange={(e) => setSelectedClientId(e.target.value ? parseInt(e.target.value) : null)}
               disabled={isTracking}
-              className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:disabled:bg-navy-950 bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
+              className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-800 text-gray-900 dark:text-white disabled:opacity-50"
             >
               <option value="">Select a client...</option>
               {clients.map(client => (
@@ -316,7 +301,7 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
             placeholder="Additional notes about this work..."
             rows={2}
             disabled={isTracking}
-            className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:disabled:bg-navy-950 bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
+            className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-800 text-gray-900 dark:text-white disabled:opacity-50"
           />
         </div>
 
