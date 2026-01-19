@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card } from '@l4h/shared-ui'
+import { Card, fetchJson } from '@l4h/shared-ui'
 import TimeTrackingWidget from '../../components/TimeTrackingWidget'
 import { useClients } from '../../hooks/useClients'
 
@@ -22,14 +22,8 @@ const TimeTrackingPage: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch('/api/v1/time-tracking/stats', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data)
-      }
+      const data = await fetchJson<TimeStats>('/v1/time-tracking/stats')
+      setStats(data)
     } catch (error) {
       console.error('Error fetching time stats:', error)
     }
@@ -59,7 +53,7 @@ const TimeTrackingPage: React.FC = () => {
 
   if (clientsLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen dark:bg-navy-950">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     )
@@ -81,22 +75,22 @@ const TimeTrackingPage: React.FC = () => {
 
       {/* Additional Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="p-6">
+        <Card className="p-6 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
           <div className="text-center">
-            <p className="text-2xl font-bold text-blue-600">{stats.hoursToday.toFixed(1)}</p>
-            <p className="text-sm text-gray-600">Hours Today</p>
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.hoursToday.toFixed(1)}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Hours Today</p>
           </div>
         </Card>
-        <Card className="p-6">
+        <Card className="p-6 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
           <div className="text-center">
-            <p className="text-2xl font-bold text-green-600">{stats.hoursThisWeek.toFixed(1)}</p>
-            <p className="text-sm text-gray-600">Hours This Week</p>
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.hoursThisWeek.toFixed(1)}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Hours This Week</p>
           </div>
         </Card>
-        <Card className="p-6">
+        <Card className="p-6 bg-white dark:bg-navy-900 border-gray-200 dark:border-navy-700">
           <div className="text-center">
-            <p className="text-2xl font-bold text-purple-600">${stats.unbilledAmount.toFixed(2)}</p>
-            <p className="text-sm text-gray-600">Unbilled Amount</p>
+            <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">${stats.unbilledAmount.toFixed(2)}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Unbilled Amount</p>
           </div>
         </Card>
       </div>
