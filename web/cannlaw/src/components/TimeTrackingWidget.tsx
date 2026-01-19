@@ -48,6 +48,32 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
+  // -- Functions defined BEFORE useEffect to prevent ReferenceError --
+  const checkActiveTimer = async () => {
+    try {
+      const activeTimer = await fetchJson<TimeEntry>('/v1/time-tracking/active')
+      if (activeTimer) {
+        setIsTracking(true)
+        setStartTime(new Date(activeTimer.startTime))
+        setSelectedClientId(activeTimer.clientId)
+        setActiveEntryId(activeTimer.id) // Store ID
+        setDescription(activeTimer.description || '')
+        setNotes(activeTimer.notes || '')
+      }
+    } catch (error) {
+      // Ignore 404
+    }
+  }
+
+  const fetchTimeEntries = async () => {
+    try {
+      const entries = await fetchJson<TimeEntry[]>('/v1/time-tracking/entries')
+      setTimeEntries(entries || [])
+    } catch (error) {
+      console.error('Error fetching time entries:', error)
+    }
+  }
+
   useEffect(() => {
     fetchTimeEntries()
     checkActiveTimer()
