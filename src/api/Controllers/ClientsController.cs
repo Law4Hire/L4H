@@ -67,7 +67,15 @@ public class ClientsController : ControllerBase
 
             if (userAttorneyId.HasValue)
             {
-                query = query.Where(c => c.AssignedAttorneyId == userAttorneyId.Value);
+                // Find clients directly assigned OR clients with cases assigned to this attorney
+                // Case -> User -> Email -> Client
+                var assignedCaseUserEmails = _context.Cases
+                    .Where(c => c.AssignedStaffId == userAttorneyId.Value)
+                    .Select(c => c.User.Email);
+
+                query = query.Where(c => 
+                    c.AssignedAttorneyId == userAttorneyId.Value || 
+                    assignedCaseUserEmails.Contains(c.Email));
             }
             else
             {
