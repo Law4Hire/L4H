@@ -51,7 +51,8 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
 
   const fetchTimeEntries = useCallback(async () => {
     try {
-      const entries = await fetchJson<TimeEntry[]>('/v1/time-tracking/entries')
+      // API endpoint is /api/v1/time-tracking (GET), not /entries
+      const entries = await fetchJson<TimeEntry[]>('/v1/time-tracking')
       setTimeEntries(entries || [])
     } catch (error) {
       console.error('Error fetching time entries:', error)

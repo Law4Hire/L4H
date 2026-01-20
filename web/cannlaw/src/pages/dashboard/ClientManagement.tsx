@@ -141,8 +141,10 @@ const ClientManagement: React.FC = () => {
   const clearFilters = () => {
     const clearedFilters: SearchFilters = {
       searchTerm: '',
-      // Only filter by attorney if user is LegalProfessional AND NOT Admin
-      assignedAttorney: (isLegalProfessional && !isAdmin && user?.attorneyId) ? user.attorneyId.toString() : '',
+      // On the Clients page, ALWAYS filter by the current user's attorney ID
+      // This page shows only assigned clients, regardless of admin status
+      // (Dashboard shows all cases for admins, but Clients page is personal view)
+      assignedAttorney: user?.attorneyId ? user.attorneyId.toString() : '',
       caseStatus: '',
       caseType: '',
       dateRange: ''
