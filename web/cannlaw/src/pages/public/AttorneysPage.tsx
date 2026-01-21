@@ -43,15 +43,14 @@ const AttorneysPage: React.FC = () => {
   const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
   // Map attorney names to local image files
+  // Only include attorneys who have actual photos on the original site
   const localPhotoMap: Record<string, string> = {
     'Denise S. Cann': '/images/attorneys/denise.jpg',
     'Angela Taylor': '/images/attorneys/angela.jpg',
-    'John Charles': '/images/attorneys/john.jpg',
     'Alex Shu': '/images/attorneys/alex.jpg',
     'Janice Lin': '/images/attorneys/janice.jpg',
-    'Chika Okala': '/images/attorneys/chika.jpg',
-    'Wen Lee': '/images/attorneys/wen.jpg',
-    'Katherine J. Wong': '/images/attorneys/katherine.jpg'
+    'Chika Okala': '/images/attorneys/chika.jpg'
+    // John Charles, Wen Lee, and Katherine J. Wong don't have photos on original site
   }
 
   const handleContactSubmit = async (e: React.FormEvent) => {
