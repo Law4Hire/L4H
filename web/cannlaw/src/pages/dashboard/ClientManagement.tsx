@@ -156,19 +156,19 @@ const ClientManagement: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case CaseStatus.NotStarted:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
       case CaseStatus.InProgress:
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
       case CaseStatus.Paid:
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
       case CaseStatus.FormsCompleted:
-        return 'bg-purple-100 text-purple-800'
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
       case CaseStatus.Complete:
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
       case CaseStatus.ClosedRejected:
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
     }
   }
 
@@ -212,10 +212,10 @@ const ClientManagement: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Client Management</h1>
-          <p className="text-gray-600">
-            {isAdmin 
-              ? 'Manage all clients and their case assignments' 
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Client Management</h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            {isAdmin
+              ? 'Manage all clients and their case assignments'
               : 'Manage your assigned clients and their cases'
             }
           </p>

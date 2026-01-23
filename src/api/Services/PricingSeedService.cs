@@ -79,41 +79,50 @@ public class PricingSeedService : IPricingSeedService
     {
         var packages = new[]
         {
-            new Package 
-            { 
-                Code = "BASIC", 
-                DisplayName = "Basic Service", 
-                Description = "Essential document preparation and filing support", 
-                SortOrder = 1, 
-                IsActive = true 
+            new Package
+            {
+                Code = "BASIC",
+                DisplayName = "Basic Service",
+                Description = "Essential document preparation and filing support",
+                SortOrder = 1,
+                IsActive = true
             },
-            new Package 
-            { 
-                Code = "STANDARD", 
-                DisplayName = "Standard Service", 
-                Description = "Complete case management with attorney consultation", 
-                SortOrder = 2, 
-                IsActive = true 
+            new Package
+            {
+                Code = "STANDARD",
+                DisplayName = "Standard Service",
+                Description = "Complete case management with attorney consultation",
+                SortOrder = 2,
+                IsActive = true
             },
-            new Package 
-            { 
-                Code = "PREMIUM", 
-                DisplayName = "Premium Service", 
-                Description = "Full-service representation with priority support", 
-                SortOrder = 3, 
-                IsActive = true 
+            new Package
+            {
+                Code = "PREMIUM",
+                DisplayName = "Premium Service",
+                Description = "Full-service representation with priority support",
+                SortOrder = 3,
+                IsActive = true
             },
-            new Package 
-            { 
-                Code = "CONSULTATION", 
-                DisplayName = "Initial Consultation", 
-                Description = "One-hour consultation with immigration attorney", 
-                SortOrder = 0, 
-                IsActive = true 
+            new Package
+            {
+                // Use "CONSULT" to match PackagesSeeder - avoid duplicate "Initial Consultation" entries
+                Code = "CONSULT",
+                DisplayName = "Initial Consultation",
+                Description = "One-hour consultation with immigration attorney",
+                SortOrder = 0,
+                IsActive = true
             }
         };
 
-        _context.Packages.AddRange(packages);
+        // Only add packages that don't already exist
+        foreach (var pkg in packages)
+        {
+            var exists = await _context.Packages.AnyAsync(p => p.Code == pkg.Code).ConfigureAwait(false);
+            if (!exists)
+            {
+                _context.Packages.Add(pkg);
+            }
+        }
         await _context.SaveChangesAsync().ConfigureAwait(false); // Save to get IDs
     }
 
@@ -123,6 +132,17 @@ public class PricingSeedService : IPricingSeedService
         var visaTypes = await _context.VisaTypes.ToListAsync().ConfigureAwait(false);
         var packages = await _context.Packages.ToListAsync().ConfigureAwait(false);
 
+        // Get package references once (use CONSULT to match PackagesSeeder)
+        var consultationPackage = packages.FirstOrDefault(p => p.Code == "CONSULT");
+        var basicPackage = packages.FirstOrDefault(p => p.Code == "BASIC");
+        var standardPackage = packages.FirstOrDefault(p => p.Code == "STANDARD");
+        var premiumPackage = packages.FirstOrDefault(p => p.Code == "PREMIUM");
+
+        if (consultationPackage == null)
+        {
+            _logger.LogWarning("[SEED] CONSULT package not found, skipping consultation pricing rules");
+        }
+
         var countries = new[] { "US", "CA", "IN", "CN", "GB", "DE", "AU", "MX" };
         var pricingRules = new List<PricingRule>();
 
@@ -131,49 +151,55 @@ public class PricingSeedService : IPricingSeedService
             foreach (var country in countries)
             {
                 // Consultation package - same price for all visa types
-                var consultationPackage = packages.First(p => p.Code == "CONSULTATION");
-                pricingRules.Add(new PricingRule
+                if (consultationPackage != null)
                 {
-                    VisaTypeId = visaType.Id,
-                    PackageId = consultationPackage.Id,
-                    CountryCode = country,
-                    BasePrice = 150.00m,
-                    Currency = "USD",
-                    TaxRate = GetTaxRateForCountry(country),
-                    FxSurchargeMode = GetFxSurchargeMode(country),
-                    IsActive = true
-                });
+                    pricingRules.Add(new PricingRule
+                    {
+                        VisaTypeId = visaType.Id,
+                        PackageId = consultationPackage.Id,
+                        CountryCode = country,
+                        BasePrice = 150.00m,
+                        Currency = "USD",
+                        TaxRate = GetTaxRateForCountry(country),
+                        FxSurchargeMode = GetFxSurchargeMode(country),
+                        IsActive = true
+                    });
+                }
 
                 // Basic package - varies by visa complexity
-                var basicPackage = packages.First(p => p.Code == "BASIC");
-                pricingRules.Add(new PricingRule
+                if (basicPackage != null)
                 {
-                    VisaTypeId = visaType.Id,
-                    PackageId = basicPackage.Id,
-                    CountryCode = country,
-                    BasePrice = GetBasicPriceForVisaType(visaType.Code),
-                    Currency = "USD",
-                    TaxRate = GetTaxRateForCountry(country),
-                    FxSurchargeMode = GetFxSurchargeMode(country),
-                    IsActive = true
-                });
+                    pricingRules.Add(new PricingRule
+                    {
+                        VisaTypeId = visaType.Id,
+                        PackageId = basicPackage.Id,
+                        CountryCode = country,
+                        BasePrice = GetBasicPriceForVisaType(visaType.Code),
+                        Currency = "USD",
+                        TaxRate = GetTaxRateForCountry(country),
+                        FxSurchargeMode = GetFxSurchargeMode(country),
+                        IsActive = true
+                    });
+                }
 
                 // Standard package - 1.5x basic price
-                var standardPackage = packages.First(p => p.Code == "STANDARD");
-                pricingRules.Add(new PricingRule
+                if (standardPackage != null)
                 {
-                    VisaTypeId = visaType.Id,
-                    PackageId = standardPackage.Id,
-                    CountryCode = country,
-                    BasePrice = Math.Round(GetBasicPriceForVisaType(visaType.Code) * 1.5m, 2),
-                    Currency = "USD",
-                    TaxRate = GetTaxRateForCountry(country),
-                    FxSurchargeMode = GetFxSurchargeMode(country),
-                    IsActive = true
-                });
+                    pricingRules.Add(new PricingRule
+                    {
+                        VisaTypeId = visaType.Id,
+                        PackageId = standardPackage.Id,
+                        CountryCode = country,
+                        BasePrice = Math.Round(GetBasicPriceForVisaType(visaType.Code) * 1.5m, 2),
+                        Currency = "USD",
+                        TaxRate = GetTaxRateForCountry(country),
+                        FxSurchargeMode = GetFxSurchargeMode(country),
+                        IsActive = true
+                    });
+                }
 
                 // Premium package - 2.2x basic price
-                var premiumPackage = packages.First(p => p.Code == "PREMIUM");
+                if (premiumPackage == null) continue;
                 pricingRules.Add(new PricingRule
                 {
                     VisaTypeId = visaType.Id,

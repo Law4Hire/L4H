@@ -65,9 +65,24 @@ const BillingDashboard: React.FC = () => {
       const headers = {
         'Authorization': `Bearer ${token}`
       }
-      const summaryResponse = await fetch('/api/v1/billing/summary', { headers })
+      const summaryResponse = await fetch('/api/v1/billing/dashboard', { headers })
       const summary = await summaryResponse.json()
       setBillingSummary(summary)
+
+      // Map backend AttorneySummaries to frontend BillingSummary format
+      if (summary.attorneySummaries && Array.isArray(summary.attorneySummaries)) {
+        const mappedSummaries: BillingSummary[] = summary.attorneySummaries.map((s: any) => ({
+          attorneyId: s.attorneyId,
+          attorneyName: s.attorneyName,
+          totalHours: s.totalHours,
+          totalAmount: s.billableAmount,
+          billedAmount: s.billedAmount,
+          unbilledAmount: s.unbilledAmount,
+          clientCount: s.clientCount,
+          averageRate: s.totalHours > 0 ? s.billableAmount / s.totalHours : s.defaultHourlyRate
+        }))
+        setBillingSummaries(mappedSummaries)
+      }
 
       const clientsResponse = await fetch('/api/v1/clients', { headers })
       const clients = await clientsResponse.json()

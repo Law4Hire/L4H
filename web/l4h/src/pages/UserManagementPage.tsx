@@ -7,11 +7,19 @@ interface User {
   email: string
   firstName: string
   lastName: string
+  phone?: string
   isAdmin: boolean
   isStaff: boolean
   isActive: boolean
   emailVerified: boolean
   createdAt: string
+}
+
+interface EditUserForm {
+  email: string
+  firstName: string
+  lastName: string
+  phone: string
 }
 
 interface CreateUserForm {
@@ -39,6 +47,15 @@ const UserManagementPage: React.FC = () => {
     isAdmin: false,
     isStaff: false
   })
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [editFormData, setEditFormData] = useState<EditUserForm>({
+    email: '',
+    firstName: '',
+    lastName: '',
+    phone: ''
+  })
+  const [saving, setSaving] = useState(false)
 
   const fetchUsers = React.useCallback(async () => {
     try {
@@ -58,6 +75,54 @@ const UserManagementPage: React.FC = () => {
     fetchUsers()
   }, [fetchUsers])
 
+
+  const handleEditUser = (user: User) => {
+    setEditingUser(user)
+    setEditFormData({
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone || ''
+    })
+    setShowEditModal(true)
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingUser) return
+
+    if (!editFormData.email || !editFormData.firstName || !editFormData.lastName) {
+      error('Please fill in all required fields')
+      return
+    }
+
+    try {
+      setSaving(true)
+      const token = localStorage.getItem('jwt_token')
+
+      const response = await fetch(`/api/v1/admin/users/${editingUser.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editFormData)
+      })
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.detail || `Failed to update user: ${response.status}`)
+      }
+
+      success('User updated successfully')
+      setShowEditModal(false)
+      setEditingUser(null)
+      fetchUsers()
+    } catch (err: any) {
+      error(err.message || 'Failed to update user')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   const handleCreateUser = async () => {
     if (!formData.email || !formData.firstName || !formData.lastName || !formData.password) {
@@ -165,16 +230,26 @@ const UserManagementPage: React.FC = () => {
                     <div className="text-sm text-gray-900 dark:text-gray-300">{user.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        navigate(`/admin/users/${user.id}`)
-                      }}
-                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                      View
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditUser(user)}
+                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          navigate(`/admin/users/${user.id}`)
+                        }}
+                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        View
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -268,6 +343,67 @@ const UserManagementPage: React.FC = () => {
               loading={creating}
             >
               Create User
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit User Modal */}
+      <Modal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title={`Edit User: ${editingUser?.firstName} ${editingUser?.lastName}`}
+        size="md"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Email *"
+            type="email"
+            value={editFormData.email}
+            onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+            placeholder="user@example.com"
+            required
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="First Name *"
+              value={editFormData.firstName}
+              onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
+              placeholder="John"
+              required
+            />
+
+            <Input
+              label="Last Name *"
+              value={editFormData.lastName}
+              onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
+              placeholder="Doe"
+              required
+            />
+          </div>
+
+          <Input
+            label="Phone Number"
+            type="tel"
+            value={editFormData.phone}
+            onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+            placeholder="(410) 555-0123"
+          />
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowEditModal(false)}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveEdit}
+              loading={saving}
+            >
+              Save Changes
             </Button>
           </div>
         </div>

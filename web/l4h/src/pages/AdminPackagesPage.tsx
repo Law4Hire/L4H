@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button, useToast } from '@l4h/shared-ui'
-import { RefreshCw, Shield, ShieldOff, CheckCircle, XCircle, Pencil, Plus } from 'lucide-react'
+import { RefreshCw, Shield, ShieldOff, CheckCircle, XCircle, Pencil, Plus, Trash2 } from 'lucide-react'
 
 interface Package {
   id: number
@@ -21,7 +21,8 @@ const AdminPackagesPage: React.FC = () => {
   const [editingPackage, setEditingPackage] = useState<Package | null>(null)
   const [editForm, setEditForm] = useState({ displayName: '', description: '', sortOrder: 0 })
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [createForm, setCreateForm] = useState({ code: '', displayName: '', description: '', sortOrder: 0, requiresLawyer: false, isActive: true })
+  const [createForm, setCreateForm] = useState({ displayName: '', description: '', sortOrder: 0, requiresLawyer: false, isActive: true })
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<Package | null>(null)
   const { success, error } = useToast()
 
   const loadPackages = React.useCallback(async () => {
@@ -59,6 +60,14 @@ const AdminPackagesPage: React.FC = () => {
     loadPackages()
   }, [loadPackages])
 
+  const generateCode = (displayName: string): string => {
+    return displayName
+      .toUpperCase()
+      .replace(/[^A-Z0-9\s]/g, '')
+      .replace(/\s+/g, '_')
+      .substring(0, 30)
+  }
+
   const createPackage = async () => {
     try {
       setSaving(0) // Use 0 to indicate saving new package
@@ -69,13 +78,23 @@ const AdminPackagesPage: React.FC = () => {
         return
       }
 
+      if (!createForm.displayName.trim()) {
+        error('Display name is required')
+        return
+      }
+
+      const packageData = {
+        ...createForm,
+        code: generateCode(createForm.displayName)
+      }
+
       const response = await fetch('/api/v1/admin/pricing/packages', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(createForm)
+        body: JSON.stringify(packageData)
       })
 
       if (!response.ok) {
@@ -85,11 +104,44 @@ const AdminPackagesPage: React.FC = () => {
 
       success('Package created successfully')
       setShowCreateModal(false)
-      setCreateForm({ code: '', displayName: '', description: '', sortOrder: 0, requiresLawyer: false, isActive: true })
+      setCreateForm({ displayName: '', description: '', sortOrder: 0, requiresLawyer: false, isActive: true })
       await loadPackages()
     } catch (err) {
       console.error('Error creating package:', err)
       error(err instanceof Error ? err.message : 'Failed to create package')
+    } finally {
+      setSaving(null)
+    }
+  }
+
+  const deletePackage = async (pkg: Package) => {
+    try {
+      setSaving(pkg.id)
+      const token = localStorage.getItem('jwt_token')
+
+      if (!token) {
+        error('Authentication required')
+        return
+      }
+
+      const response = await fetch(`/api/v1/admin/pricing/packages/${pkg.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.detail || `Failed to delete package: ${response.status}`)
+      }
+
+      success('Package deleted successfully')
+      setShowDeleteConfirm(null)
+      await loadPackages()
+    } catch (err) {
+      console.error('Error deleting package:', err)
+      error(err instanceof Error ? err.message : 'Failed to delete package')
     } finally {
       setSaving(null)
     }
@@ -235,15 +287,8 @@ const AdminPackagesPage: React.FC = () => {
                 {packages.map(pkg => (
                   <tr key={pkg.id} className={!pkg.isActive ? 'bg-gray-50 dark:bg-gray-900/50' : ''}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {pkg.displayName}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {pkg.code}
-                          </div>
-                        </div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {pkg.displayName}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -298,15 +343,26 @@ const AdminPackagesPage: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <Button
-                        onClick={() => openEditModal(pkg)}
-                        disabled={saving === pkg.id}
-                        variant="outline"
-                        className="inline-flex items-center gap-2 text-sm dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-                      >
-                        <Pencil size={14} />
-                        Edit
-                      </Button>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          onClick={() => openEditModal(pkg)}
+                          disabled={saving === pkg.id}
+                          variant="outline"
+                          className="inline-flex items-center gap-2 text-sm dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                        >
+                          <Pencil size={14} />
+                          Edit
+                        </Button>
+                        <Button
+                          onClick={() => setShowDeleteConfirm(pkg)}
+                          disabled={saving === pkg.id}
+                          variant="destructive"
+                          className="inline-flex items-center gap-2 text-sm"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -433,16 +489,6 @@ const AdminPackagesPage: React.FC = () => {
                     <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Create New Package</h3>
                     <div className="mt-4 space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Code</label>
-                        <input
-                          type="text"
-                          value={createForm.code}
-                          onChange={(e) => setCreateForm({ ...createForm, code: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                          placeholder="e.g. SILVER_INDIV"
-                        />
-                      </div>
-                      <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Display Name</label>
                         <input
                           type="text"
@@ -490,6 +536,53 @@ const AdminPackagesPage: React.FC = () => {
                   {saving === 0 ? 'Creating...' : 'Create Package'}
                 </Button>
                 <Button onClick={() => setShowCreateModal(false)} disabled={saving === 0} variant="outline" className="mt-3 w-full sm:mt-0 sm:w-auto dark:border-gray-600 dark:text-gray-300">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 transition-opacity" onClick={() => setShowDeleteConfirm(null)}></div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 sm:mx-0 sm:h-10 sm:w-10">
+                    <Trash2 className="h-6 w-6 text-red-600 dark:text-red-400" />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
+                      Delete Package
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Are you sure you want to delete the package <strong className="text-gray-900 dark:text-white">{showDeleteConfirm.displayName}</strong>? This action cannot be undone.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
+                <Button
+                  onClick={() => deletePackage(showDeleteConfirm)}
+                  disabled={saving === showDeleteConfirm.id}
+                  variant="destructive"
+                  className="w-full sm:w-auto"
+                >
+                  {saving === showDeleteConfirm.id ? 'Deleting...' : 'Delete'}
+                </Button>
+                <Button
+                  onClick={() => setShowDeleteConfirm(null)}
+                  disabled={saving === showDeleteConfirm.id}
+                  variant="outline"
+                  className="mt-3 w-full sm:mt-0 sm:w-auto dark:border-gray-600 dark:text-gray-300"
+                >
                   Cancel
                 </Button>
               </div>

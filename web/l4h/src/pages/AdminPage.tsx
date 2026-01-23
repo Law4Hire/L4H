@@ -22,11 +22,12 @@ const AdminPage: React.FC = () => {
   const displayPaths = [
     { name: 'User Management', path: '/admin/users', description: 'Manage users, roles, and permissions', displayOrder: 1 },
     { name: 'Case Management', path: '/admin/cases', description: 'Review and manage immigration cases', displayOrder: 2 },
-    { name: 'Pricing & Packages', path: '/admin/pricing', description: 'Configure service packages and pricing', displayOrder: 3 },
-    { name: 'Interview Questions', path: '/admin/interview-questions', description: 'Manage customer interview questions and flow', displayOrder: 4 },
-    { name: 'USCIS Forms', path: '/admin/uscis-forms', description: 'Manage immigration forms, pricing, and dependencies', displayOrder: 5 },
-    { name: 'Visa Library', path: '/admin/visa-library', description: 'Manage visa library categories and assign visa types', displayOrder: 6 },
-    { name: 'Legal Professionals', path: '/admin/attorneys', description: 'Manage legal professional accounts', displayOrder: 7 },
+    { name: 'Pricing', path: '/admin/pricing', description: 'Configure visa type pricing', displayOrder: 3 },
+    { name: 'Packages', path: '/admin/packages', description: 'Manage service packages', displayOrder: 4 },
+    { name: 'Interview Questions', path: '/admin/interview-questions', description: 'Manage customer interview questions and flow', displayOrder: 5 },
+    { name: 'USCIS Forms', path: '/admin/uscis-forms', description: 'Manage immigration forms, pricing, and dependencies', displayOrder: 6 },
+    { name: 'Visa Library', path: '/admin/visa-library', description: 'Manage visa library categories and assign visa types', displayOrder: 7 },
+    { name: 'Legal Professionals', path: '/admin/attorneys', description: 'Manage legal professional accounts', displayOrder: 8 },
     { name: 'Reports & Analytics', path: '/admin/reports', description: 'View platform statistics and reports', displayOrder: 1000 },
     { name: 'System Settings', path: '/admin/system-settings', description: 'Configure platform settings including phone number', displayOrder: 1001 },
   ]

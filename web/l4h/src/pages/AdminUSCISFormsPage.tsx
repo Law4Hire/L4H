@@ -75,7 +75,6 @@ interface PricingFormData {
   paralegalPriceUSD: string
   lawyerPriceUSD: string
   llcFeeUSD: string
-  llcFeePercentage: string
   description: string
 }
 
@@ -112,7 +111,6 @@ const AdminUSCISFormsPage: React.FC = () => {
     paralegalPriceUSD: '',
     lawyerPriceUSD: '',
     llcFeeUSD: '',
-    llcFeePercentage: '',
     description: ''
   })
   const [pricingHistory, setPricingHistory] = useState<FormPricing[]>([])
@@ -347,7 +345,6 @@ const AdminUSCISFormsPage: React.FC = () => {
         paralegalPriceUSD: form.pricing.paralegalPriceUSD?.toString() || '',
         lawyerPriceUSD: form.pricing.lawyerPriceUSD?.toString() || '',
         llcFeeUSD: form.pricing.llcFeeUSD.toString(),
-        llcFeePercentage: form.pricing.llcFeePercentage?.toString() || '',
         description: form.pricing.description || ''
       })
     } else {
@@ -356,7 +353,6 @@ const AdminUSCISFormsPage: React.FC = () => {
         paralegalPriceUSD: '',
         lawyerPriceUSD: '',
         llcFeeUSD: '0',
-        llcFeePercentage: '',
         description: ''
       })
     }
@@ -387,7 +383,6 @@ const AdminUSCISFormsPage: React.FC = () => {
         paralegalPriceUSD: pricingData.paralegalPriceUSD ? parseFloat(pricingData.paralegalPriceUSD) : null,
         lawyerPriceUSD: pricingData.lawyerPriceUSD ? parseFloat(pricingData.lawyerPriceUSD) : null,
         llcFeeUSD: parseFloat(pricingData.llcFeeUSD) || 0,
-        llcFeePercentage: pricingData.llcFeePercentage ? parseFloat(pricingData.llcFeePercentage) : null,
         description: pricingData.description || null
       }
 
@@ -978,18 +973,6 @@ const AdminUSCISFormsPage: React.FC = () => {
               </div>
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  LLC Fee Percentage (optional)
-                </label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={pricingData.llcFeePercentage}
-                  onChange={(e) => setPricingData({ ...pricingData, llcFeePercentage: e.target.value })}
-                  placeholder="Alternative to fixed fee"
-                />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Description
                 </label>
                 <Input
@@ -1345,10 +1328,10 @@ const AdminUSCISFormsPage: React.FC = () => {
           title="Confirm Delete"
         >
           <div className="space-y-4">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Are you sure you want to delete form <strong>{formToDelete.formNumber} - {formToDelete.formName}</strong>?
+            <p className="text-sm text-gray-900 dark:text-white">
+              Are you sure you want to delete form <strong className="text-gray-900 dark:text-white">{formToDelete.formNumber} - {formToDelete.formName}</strong>?
             </p>
-            <p className="text-sm text-red-600 dark:text-red-400">
+            <p className="text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-900/30 p-3 rounded-md">
               This will also delete all associated pricing history, visa type mappings, and form dependencies.
               This action cannot be undone.
             </p>

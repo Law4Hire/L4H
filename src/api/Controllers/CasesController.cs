@@ -616,7 +616,7 @@ public class CasesController : ControllerBase
 
     private bool IsAdmin()
     {
-        return User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
+        return User.HasClaim("is_admin", "True") || User.HasClaim("is_admin", "true") || User.IsInRole("Admin");
     }
 
     private async Task LogAuditAsync(string category, string action, string targetType, string targetId, object details)
@@ -639,7 +639,8 @@ public class CasesController : ControllerBase
 
     private bool IsLegalProfessional()
     {
-        return User.HasClaim("is_legal_professional", "True") || User.HasClaim("is_admin", "True");
+        return User.HasClaim("is_legal_professional", "True") || User.HasClaim("is_legal_professional", "true") ||
+               User.HasClaim("is_admin", "True") || User.HasClaim("is_admin", "true");
     }
 }
 

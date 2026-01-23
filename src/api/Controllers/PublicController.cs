@@ -37,18 +37,17 @@ public class PublicController : ControllerBase
     [ProducesResponseType<IEnumerable<VisaTypeInfo>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetVisaTypes()
     {
-        var visaTypes = await _context.VisaClasses
+        var visaTypes = await _context.VisaTypes
             .Where(v => v.IsActive)
             .Select(v => new VisaTypeInfo
             {
                 Id = v.Id,
                 Code = v.Code ?? string.Empty,
                 Name = v.Name ?? string.Empty,
-                GeneralCategory = v.GeneralCategory ?? string.Empty,
+                GeneralCategory = string.Empty,
                 Description = L4H.Api.Helpers.VisaDescriptionHelper.GetDescription(v.Code ?? string.Empty)
             })
-            .OrderBy(v => v.GeneralCategory)
-            .ThenBy(v => v.Name)
+            .OrderBy(v => v.Code)
             .ToListAsync()
             .ConfigureAwait(false);
 
@@ -72,7 +71,7 @@ public class PublicController : ControllerBase
     [ProducesResponseType<IEnumerable<VisaListItem>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetVisaList()
     {
-        var visaList = await _context.VisaClasses
+        var visaList = await _context.VisaTypes
             .Where(v => v.IsActive)
             .Select(v => new VisaListItem
             {
