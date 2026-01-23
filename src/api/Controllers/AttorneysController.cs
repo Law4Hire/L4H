@@ -169,13 +169,53 @@ public class AttorneysController : ControllerBase
     /// </summary>
     [HttpPost]
     [Authorize(Policy = "IsAdmin")]
-    public async Task<ActionResult<Attorney>> CreateAttorney([FromBody] Attorney attorney)
+    public async Task<ActionResult<Attorney>> CreateAttorney([FromBody] AttorneyRequestDto request)
     {
-        attorney.CreatedAt = DateTime.UtcNow;
-        attorney.UpdatedAt = DateTime.UtcNow;
-        _context.Attorneys.Add(attorney);
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-        return CreatedAtAction(nameof(GetAttorney), new { id = attorney.Id }, attorney);
+        try
+        {
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                return BadRequest(new { message = "Name is required" });
+            }
+
+            var attorney = new Attorney
+            {
+                Name = request.Name,
+                Title = request.Title ?? string.Empty,
+                Bio = request.Bio ?? string.Empty,
+                Email = request.Email ?? string.Empty,
+                Phone = request.Phone ?? string.Empty,
+                DirectPhone = request.DirectPhone ?? string.Empty,
+                DirectEmail = request.DirectEmail ?? string.Empty,
+                OfficeLocation = request.OfficeLocation ?? string.Empty,
+                DefaultHourlyRate = request.DefaultHourlyRate,
+                Credentials = request.Credentials ?? "[]",
+                PracticeAreas = request.PracticeAreas ?? "[]",
+                Languages = request.Languages ?? "[]",
+                IsActive = request.IsActive,
+                IsManagingAttorney = request.IsManagingAttorney,
+                DisplayOrder = Math.Max(0, request.DisplayOrder),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            if (!string.IsNullOrWhiteSpace(request.PhotoUrl))
+            {
+                if (Uri.TryCreate(request.PhotoUrl, UriKind.RelativeOrAbsolute, out var uri))
+                {
+                    attorney.PhotoUrl = uri;
+                }
+            }
+
+            _context.Attorneys.Add(attorney);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            return CreatedAtAction(nameof(GetAttorney), new { id = attorney.Id }, attorney);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating attorney");
+            return StatusCode(500, new { message = "Error creating attorney", details = ex.Message });
+        }
     }
 
     /// <summary>
@@ -232,7 +272,7 @@ public class AttorneysController : ControllerBase
         if (attorney == null) return NotFound();
 
         var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-        var isAdmin = User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
+        var isAdmin = User.HasClaim("is_admin", "True") || User.HasClaim("is_admin", "true") || User.IsInRole("Admin");
         if (!isAdmin && !attorney.Email.Equals(userEmail, StringComparison.OrdinalIgnoreCase)) return Forbid();
 
         if (photo == null || photo.Length == 0) return BadRequest("No photo file provided");

@@ -528,6 +528,85 @@ public class MessagingController : ControllerBase
     }
 
     /// <summary>
+    /// Mark all messages in a thread as read
+    /// </summary>
+    /// <param name="threadId">Thread ID</param>
+    /// <returns>Read confirmation with count</returns>
+    [HttpPost("threads/{threadId}/mark-read")]
+    [HttpPut("threads/{threadId}/mark-read")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> MarkThreadMessagesAsRead(Guid threadId)
+    {
+        var userId = GetCurrentUserId();
+
+        // Get thread with messages and verify access
+        var thread = await _context.MessageThreads
+            .Include(t => t.Case)
+            .Include(t => t.Messages)
+            .FirstOrDefaultAsync(t => t.Id == threadId).ConfigureAwait(false);
+
+        if (thread == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Thread Not Found",
+                Detail = "Message thread not found."
+            });
+        }
+
+        // Verify case ownership or staff access
+        if (thread.Case.UserId != userId && !IsStaff())
+        {
+            return StatusCode(403, new ProblemDetails
+            {
+                Title = "Forbidden",
+                Detail = "Access denied to this message thread."
+            });
+        }
+
+        var readAt = DateTime.UtcNow;
+        var markedCount = 0;
+
+        foreach (var message in thread.Messages)
+        {
+            var readBy = new Dictionary<string, DateTime>();
+            if (!string.IsNullOrEmpty(message.ReadByJson))
+            {
+                try
+                {
+                    readBy = JsonSerializer.Deserialize<Dictionary<string, DateTime>>(message.ReadByJson)
+                        ?? new Dictionary<string, DateTime>();
+                }
+                catch (JsonException)
+                {
+                    _logger.LogWarning("Failed to deserialize ReadByJson for message {MessageId}", message.Id);
+                }
+            }
+
+            // Mark as read if not already read by this user
+            if (!readBy.ContainsKey(userId.Value.ToString()))
+            {
+                readBy[userId.Value.ToString()] = readAt;
+                message.ReadByJson = JsonSerializer.Serialize(readBy);
+                markedCount++;
+            }
+        }
+
+        if (markedCount > 0)
+        {
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            // Log audit event
+            LogAudit("messages", "mark_thread_read", "MessageThread", threadId.ToString(),
+                new { threadId, markedCount });
+        }
+
+        return Ok(new { success = true, markedCount, readAt });
+    }
+
+    /// <summary>
     /// Mark a specific message as read
     /// </summary>
     /// <param name="messageId">Message ID</param>
@@ -1113,11 +1192,13 @@ public class MessagingController : ControllerBase
             // If they are an attorney with assigned cases, include those clients
             if (attorneyId.HasValue)
             {
-                var assignedClientIdsQuery = _context.Cases
+                // Materialize the list first to avoid LINQ translation issues with strongly-typed IDs
+                var assignedClientIds = await _context.Cases
                     .Where(c => c.AssignedStaffId == attorneyId.Value)
-                    .Select(c => c.UserId);
+                    .Select(c => c.UserId)
+                    .ToListAsync().ConfigureAwait(false);
 
-                query = query.Where(u => u.IsAdmin || u.IsStaff || assignedClientIdsQuery.Contains(u.Id));
+                query = query.Where(u => u.IsAdmin || u.IsStaff || assignedClientIds.Contains(u.Id));
             }
             else
             {

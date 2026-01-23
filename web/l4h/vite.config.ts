@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'use-sync-external-store'],
     },
     define: {
-      '__APP_VERSION__': JSON.stringify('1.0.3-bf5b634'),
+      '__APP_VERSION__': JSON.stringify(`1.0.3-${Date.now()}`),
     },
     base: '/',
     build: {

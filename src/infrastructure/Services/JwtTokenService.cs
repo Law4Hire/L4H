@@ -31,9 +31,9 @@ public class JwtTokenService : IJwtTokenService
             new Claim(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
             new Claim("sub", user.Id.Value.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim("email_verified", user.EmailVerified.ToString()),
-            new Claim("is_admin", user.IsAdmin.ToString()),
-            new Claim("is_legal_professional", user.IsLegalProfessional.ToString()),
+            new Claim("email_verified", user.EmailVerified.ToString().ToLowerInvariant()),
+            new Claim("is_admin", user.IsAdmin.ToString().ToLowerInvariant()),
+            new Claim("is_legal_professional", user.IsLegalProfessional.ToString().ToLowerInvariant()),
             new Claim("security_stamp", user.PasswordUpdatedAt.Ticks.ToString())
         };
 

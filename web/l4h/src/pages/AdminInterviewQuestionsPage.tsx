@@ -613,6 +613,7 @@ export default function AdminInterviewQuestionsPage() {
       options: [
         ...formData.options,
         {
+          id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           value: '',
           label: '',
           displayOrder: formData.options.length,
@@ -1029,7 +1030,7 @@ export default function AdminInterviewQuestionsPage() {
                
                <div className="space-y-4 pr-2">
                  {formData.options.map((option, index) => (
-                   <Card key={index} className="p-4 border-2 border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-900">
+                   <Card key={option.id || `option-${index}`} className="p-4 border-2 border-gray-100 dark:border-navy-700 bg-white dark:bg-navy-900">
                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                        <div className="space-y-2">
                          <label className="block text-xs font-bold uppercase text-gray-500">Label (What User Sees)</label>

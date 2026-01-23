@@ -32,6 +32,7 @@ const AdminVisaLibraryPage = lazy(() => import('./pages/AdminVisaLibraryPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
 const SystemSettingsPage = lazy(() => import('./pages/admin/SystemSettingsPage'))
+const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -447,6 +448,21 @@ function App() {
                 isAuthenticated={isAuthenticated}
               >
                 <SystemSettingsPage />
+              </Layout>
+            </RouteGuard>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Reports & Analytics'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <AdminReportsPage />
               </Layout>
             </RouteGuard>
           }

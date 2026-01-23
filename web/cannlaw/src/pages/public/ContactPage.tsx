@@ -50,7 +50,26 @@ const ContactPage: React.FC = () => {
       } else {
         const data = await response.json().catch(() => ({}))
         setSubmitStatus('error')
-        setErrorMessage(data.detail || data.title || 'There was an error sending your message. Please try again or call us directly.')
+        // Handle ASP.NET Core ValidationProblemDetails format
+        let errorMsg = 'There was an error sending your message. Please try again or call us directly.'
+        if (data.errors) {
+          // Extract validation errors from the errors object
+          const errorMessages: string[] = []
+          for (const field in data.errors) {
+            const fieldErrors = data.errors[field]
+            if (Array.isArray(fieldErrors)) {
+              errorMessages.push(...fieldErrors)
+            }
+          }
+          if (errorMessages.length > 0) {
+            errorMsg = errorMessages.join('. ')
+          }
+        } else if (data.detail) {
+          errorMsg = data.detail
+        } else if (data.title && data.title !== 'One or more validation errors occurred.') {
+          errorMsg = data.title
+        }
+        setErrorMessage(errorMsg)
       }
     } catch (error) {
       setSubmitStatus('error')

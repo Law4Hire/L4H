@@ -617,6 +617,7 @@ public class AdminController : ControllerBase
     /// Update user basic information
     /// </summary>
     [HttpPut("users/{id}")]
+    [HttpPatch("users/{id}")]
     [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<MessageResponse>> UpdateUser(
         string id,
@@ -632,13 +633,18 @@ public class AdminController : ControllerBase
 
         user.FirstName = request.FirstName ?? user.FirstName;
         user.LastName = request.LastName ?? user.LastName;
-        
+
+        if (request.Phone != null)
+        {
+            user.PhoneNumber = request.Phone;
+        }
+
         if (!string.IsNullOrWhiteSpace(request.Email) && user.Email != request.Email.ToLowerInvariant())
         {
             // Check if new email is already taken
             var exists = await _context.Users.AnyAsync(u => u.Email == request.Email.ToLowerInvariant() && u.Id != user.Id);
             if (exists) return Conflict(new ProblemDetails { Title = "Email already in use" });
-            
+
             user.Email = request.Email.ToLowerInvariant();
         }
 
@@ -1563,6 +1569,7 @@ public class UpdateUserRequest
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Email { get; set; }
+    public string? Phone { get; set; }
 }
 
 public class AdminCaseResponse

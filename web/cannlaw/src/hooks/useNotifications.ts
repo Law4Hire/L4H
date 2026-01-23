@@ -929,13 +929,13 @@ export const useCommunication = () => {
     }
   }, []);
 
-  const markMessagesAsRead = useCallback(async (conversationId: number) => {
+  const markMessagesAsRead = useCallback(async (conversationId: number | string) => {
     const token = localStorage.getItem('jwt_token');
     if (!token) return;
 
     try {
-      const response = await fetch(`/api/communications/conversations/${conversationId}/mark-read`, {
-        method: 'PUT',
+      const response = await fetch(`/api/v1/messaging/threads/${conversationId}/mark-read`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
