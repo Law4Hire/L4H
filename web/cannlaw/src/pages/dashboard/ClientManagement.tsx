@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button, Input, Modal } from '@l4h/shared-ui'
+import { Card, Button, Input, Modal, useToast } from '@l4h/shared-ui'
 import { Search, Filter, User, Phone, Calendar, Edit, AlertCircle, CheckCircle, Clock, Plus, RotateCw } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { useAttorneys } from '../../hooks/useAttorneys'
@@ -58,6 +58,7 @@ const ClientManagement: React.FC = () => {
   const { user, isAdmin, isLegalProfessional } = useAuth()
   const { clients, isLoading, searchClients, assignClient } = useClients()
   const { attorneys } = useAttorneys()
+  const { success: toastSuccess, error: toastError } = useToast()
   
   const [filters, setFilters] = useState<SearchFilters>({
     searchTerm: '',
@@ -127,11 +128,12 @@ const ClientManagement: React.FC = () => {
         setSelectedAttorney('')
         // Refresh the client list
         searchClients(filters)
+        toastSuccess('Assignment Complete', 'Client assigned successfully')
       } else {
-        alert('Failed to assign client: ' + result.error)
+        toastError('Assignment Failed', result.error || 'Failed to assign client')
       }
     } catch (error) {
-      alert('Failed to assign client')
+      toastError('Error', 'An unexpected error occurred while assigning client')
     } finally {
       setIsAssigning(false)
     }
@@ -153,6 +155,26 @@ const ClientManagement: React.FC = () => {
   const handleEditClient = async () => {
     if (!clientToEdit) return
 
+    // Validate required fields
+    if (!editForm.firstName.trim()) {
+      toastError('Validation Error', 'First name is required')
+      return
+    }
+    if (!editForm.lastName.trim()) {
+      toastError('Validation Error', 'Last name is required')
+      return
+    }
+    if (!editForm.email.trim()) {
+      toastError('Validation Error', 'Email is required')
+      return
+    }
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(editForm.email)) {
+      toastError('Validation Error', 'Please enter a valid email address')
+      return
+    }
+
     setIsEditing(true)
     try {
       const token = localStorage.getItem('jwt_token')
@@ -172,13 +194,13 @@ const ClientManagement: React.FC = () => {
         setShowEditModal(false)
         setClientToEdit(null)
         searchClients(filters)
-        alert('Client updated successfully')
+        toastSuccess('Success', 'Client updated successfully')
       } else {
-        const error = await response.text()
-        alert('Failed to update client: ' + error)
+        const errorText = await response.text()
+        toastError('Update Failed', errorText || 'Failed to update client')
       }
     } catch (error) {
-      alert('Failed to update client')
+      toastError('Error', 'An unexpected error occurred while updating client')
     } finally {
       setIsEditing(false)
     }
@@ -192,9 +214,9 @@ const ClientManagement: React.FC = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       searchClients(filters)
-      alert('Clients synced successfully')
+      toastSuccess('Sync Complete', 'Clients synced successfully')
     } catch (err) {
-      alert('Failed to sync clients')
+      toastError('Sync Failed', 'Failed to sync clients')
     }
   }
 

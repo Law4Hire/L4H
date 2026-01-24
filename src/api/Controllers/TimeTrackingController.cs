@@ -473,17 +473,38 @@ public class TimeTrackingController : ControllerBase
         }
         else if (request.Duration.HasValue)
         {
-            // Direct duration update (in hours)
-            // Round to 6-minute (0.1 hour) increments
-            var roundedDuration = Math.Ceiling(request.Duration.Value / 0.1m) * 0.1m;
+            // Validate positive duration
+            if (request.Duration.Value <= 0)
+            {
+                return BadRequest("Duration must be greater than zero");
+            }
+
+            // Get site configuration for billing rules (respect RoundBillingUp setting)
+            var config = await _context.SiteConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync();
+            var roundUp = config?.RoundBillingUp ?? false;
+
+            // Round to 6-minute (0.1 hour) increments based on configuration
+            decimal roundedDuration;
+            if (roundUp)
+            {
+                roundedDuration = Math.Ceiling(request.Duration.Value / 0.1m) * 0.1m;
+            }
+            else
+            {
+                roundedDuration = Math.Floor(request.Duration.Value / 0.1m) * 0.1m;
+            }
+
+            // Ensure minimum of 0.1 hours after rounding
+            if (roundedDuration <= 0)
+            {
+                roundedDuration = 0.1m;
+            }
+
             timeEntry.Duration = roundedDuration;
 
-            // Recalculate billable amount based on attorney rate
-            var attorney = await _context.Attorneys.FindAsync(timeEntry.AttorneyId);
-            if (attorney != null)
-            {
-                timeEntry.BillableAmount = roundedDuration * attorney.DefaultHourlyRate;
-            }
+            // Use the entry's stored HourlyRate to preserve historical rates
+            // (don't fetch attorney's current DefaultHourlyRate which may have changed)
+            timeEntry.BillableAmount = roundedDuration * timeEntry.HourlyRate;
 
             // Adjust end time to match the new duration
             if (timeEntry.StartTime != default)
