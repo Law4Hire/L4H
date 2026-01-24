@@ -183,7 +183,7 @@ const MessagesPage: React.FC = () => {
   return (
     <div className="h-[calc(100vh-12rem)] flex overflow-hidden bg-white dark:bg-navy-900 rounded-lg shadow-lg border border-gray-200 dark:border-navy-800">
       {/* Sidebar - Thread List */}
-      <div className="w-full md:w-80 flex flex-col border-r border-gray-200 dark:border-navy-800">
+      <div className={`w-full md:w-80 flex flex-col border-r border-gray-200 dark:border-navy-800 ${selectedThreadId ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-950 flex justify-between items-center">
           <h2 className="text-xl font-bold text-navy-900 dark:text-white flex items-center">
             <MessageSquare size={20} className="mr-2 text-blue-600" />
@@ -226,16 +226,25 @@ const MessagesPage: React.FC = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="hidden md:flex flex-1 flex-col bg-gray-50 dark:bg-navy-950">
+      <div className={`flex-1 flex-col bg-gray-50 dark:bg-navy-950 ${selectedThreadId ? 'flex' : 'hidden md:flex'}`}>
         {selectedThreadId ? (
           <>
             {/* Chat Header */}
             <div className="p-4 bg-white dark:bg-navy-900 border-b border-gray-200 dark:border-navy-800 flex justify-between items-center shadow-sm">
-              <div>
-                <h3 className="font-bold text-navy-900 dark:text-white">
-                  {threads.find(t => t.id === selectedThreadId)?.participantName}
-                </h3>
-                <p className="text-xs text-gray-500">{threads.find(t => t.id === selectedThreadId)?.subject}</p>
+              <div className="flex items-center">
+                {/* Back button for mobile */}
+                <button
+                  onClick={() => setSelectedThreadId(null)}
+                  className="md:hidden mr-3 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-navy-800"
+                >
+                  <ChevronRight size={20} className="transform rotate-180 text-gray-600 dark:text-gray-400" />
+                </button>
+                <div>
+                  <h3 className="font-bold text-navy-900 dark:text-white">
+                    {threads.find(t => t.id === selectedThreadId)?.participantName}
+                  </h3>
+                  <p className="text-xs text-gray-500">{threads.find(t => t.id === selectedThreadId)?.subject}</p>
+                </div>
               </div>
             </div>
 

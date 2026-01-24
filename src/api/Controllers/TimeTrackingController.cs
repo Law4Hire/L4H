@@ -280,7 +280,7 @@ public class TimeTrackingController : ControllerBase
     /// </summary>
     [HttpGet("active")]
     [ProducesResponseType(typeof(TimeEntry), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult<TimeEntry>> GetActiveTimeTracking()
     {
         var attorneyId = await GetCurrentAttorneyId();
@@ -293,7 +293,8 @@ public class TimeTrackingController : ControllerBase
 
         if (activeSession == null)
         {
-            return NotFound("No active time tracking session");
+            // Return 204 No Content instead of 404 to avoid console errors in frontend
+            return NoContent();
         }
 
         return Ok(activeSession);
@@ -462,7 +463,7 @@ public class TimeTrackingController : ControllerBase
 
             timeEntry.StartTime = request.StartTime.Value;
             timeEntry.EndTime = request.EndTime.Value;
-            
+
             // Get site configuration for billing rules
             var config = await _context.SiteConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync();
             var roundUp = config?.RoundBillingUp ?? false;
@@ -470,9 +471,50 @@ public class TimeTrackingController : ControllerBase
             // Recalculate duration and billing
             timeEntry.RoundDurationToSixMinuteIncrements(roundUp);
         }
+        else if (request.Duration.HasValue)
+        {
+            // Validate positive duration
+            if (request.Duration.Value <= 0)
+            {
+                return BadRequest("Duration must be greater than zero");
+            }
+
+            // Get site configuration for billing rules (respect RoundBillingUp setting)
+            var config = await _context.SiteConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync();
+            var roundUp = config?.RoundBillingUp ?? false;
+
+            // Round to 6-minute (0.1 hour) increments based on configuration
+            decimal roundedDuration;
+            if (roundUp)
+            {
+                roundedDuration = Math.Ceiling(request.Duration.Value / 0.1m) * 0.1m;
+            }
+            else
+            {
+                roundedDuration = Math.Floor(request.Duration.Value / 0.1m) * 0.1m;
+            }
+
+            // Ensure minimum of 0.1 hours after rounding
+            if (roundedDuration <= 0)
+            {
+                roundedDuration = 0.1m;
+            }
+
+            timeEntry.Duration = roundedDuration;
+
+            // Use the entry's stored HourlyRate to preserve historical rates
+            // (don't fetch attorney's current DefaultHourlyRate which may have changed)
+            timeEntry.BillableAmount = roundedDuration * timeEntry.HourlyRate;
+
+            // Adjust end time to match the new duration
+            if (timeEntry.StartTime != default)
+            {
+                timeEntry.EndTime = timeEntry.StartTime.AddHours((double)roundedDuration);
+            }
+        }
 
         await _context.SaveChangesAsync();
-        return Ok();
+        return Ok(timeEntry);
     }
 
     /// <summary>
@@ -588,4 +630,5 @@ public class UpdateTimeEntryRequest
     public string? Notes { get; set; }
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
+    public decimal? Duration { get; set; } // Duration in hours (e.g., 1.5 = 1.5 hours)
 }

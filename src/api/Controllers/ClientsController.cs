@@ -190,7 +190,14 @@ public class ClientsController : ControllerBase
             var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
             if (int.TryParse(attorneyIdClaim, out var attorneyId))
             {
-                query = query.Where(c => c.AssignedAttorneyId == attorneyId);
+                // Clients can be associated to this attorney either directly (AssignedAttorneyId)
+                // or via cases where the case's user email matches the client's email.
+                // Using a subquery instead of materializing list to avoid N+1 performance issue.
+                query = query.Where(c =>
+                    c.AssignedAttorneyId == attorneyId ||
+                    _context.Cases.Any(cs =>
+                        cs.AssignedStaffId == attorneyId &&
+                        cs.User.Email == c.Email));
             }
             else
             {

@@ -61,7 +61,28 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
 
   const checkActiveTimer = useCallback(async () => {
     try {
-      const activeTimer = await fetchJson<any>('/v1/time-tracking/active')
+      const token = localStorage.getItem('jwt_token')
+      // Use configured API base URL (respects VITE_API_BASE_URL environment variable)
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      const response = await fetch(`${apiBaseUrl}/v1/time-tracking/active`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      // 204 No Content means no active timer (success, just empty)
+      if (response.status === 204) {
+        return
+      }
+
+      // Handle actual errors differently from 204
+      if (!response.ok) {
+        console.error('Error checking active timer:', response.status, response.statusText)
+        return
+      }
+
+      const activeTimer = await response.json()
       if (activeTimer) {
         setIsTracking(true)
         setStartTime(new Date(activeTimer.startTime))
@@ -71,7 +92,8 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
         setNotes(activeTimer.notes || '')
       }
     } catch (error) {
-      // Ignore 404
+      // Log network/parsing errors but don't crash
+      console.error('Error checking active timer:', error)
     }
   }, [])
 
