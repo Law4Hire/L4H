@@ -463,7 +463,7 @@ public class TimeTrackingController : ControllerBase
 
             timeEntry.StartTime = request.StartTime.Value;
             timeEntry.EndTime = request.EndTime.Value;
-            
+
             // Get site configuration for billing rules
             var config = await _context.SiteConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync();
             var roundUp = config?.RoundBillingUp ?? false;
@@ -471,9 +471,29 @@ public class TimeTrackingController : ControllerBase
             // Recalculate duration and billing
             timeEntry.RoundDurationToSixMinuteIncrements(roundUp);
         }
+        else if (request.Duration.HasValue)
+        {
+            // Direct duration update (in hours)
+            // Round to 6-minute (0.1 hour) increments
+            var roundedDuration = Math.Ceiling(request.Duration.Value / 0.1m) * 0.1m;
+            timeEntry.Duration = roundedDuration;
+
+            // Recalculate billable amount based on attorney rate
+            var attorney = await _context.Attorneys.FindAsync(timeEntry.AttorneyId);
+            if (attorney != null)
+            {
+                timeEntry.BillableAmount = roundedDuration * attorney.DefaultHourlyRate;
+            }
+
+            // Adjust end time to match the new duration
+            if (timeEntry.StartTime != default)
+            {
+                timeEntry.EndTime = timeEntry.StartTime.AddHours((double)roundedDuration);
+            }
+        }
 
         await _context.SaveChangesAsync();
-        return Ok();
+        return Ok(timeEntry);
     }
 
     /// <summary>
@@ -589,4 +609,5 @@ public class UpdateTimeEntryRequest
     public string? Notes { get; set; }
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
+    public decimal? Duration { get; set; } // Duration in hours (e.g., 1.5 = 1.5 hours)
 }
