@@ -190,7 +190,16 @@ public class ClientsController : ControllerBase
             var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
             if (int.TryParse(attorneyIdClaim, out var attorneyId))
             {
-                query = query.Where(c => c.AssignedAttorneyId == attorneyId);
+                // Check both direct client assignment AND case-level assignments
+                // Find clients assigned to this attorney via cases (by email match)
+                var assignedCaseUserEmails = await _context.Cases
+                    .Where(c => c.AssignedStaffId == attorneyId)
+                    .Select(c => c.User.Email)
+                    .ToListAsync().ConfigureAwait(false);
+
+                query = query.Where(c =>
+                    c.AssignedAttorneyId == attorneyId ||
+                    assignedCaseUserEmails.Contains(c.Email));
             }
             else
             {

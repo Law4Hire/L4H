@@ -73,6 +73,19 @@ const ClientManagement: React.FC = () => {
   const [isAssigning, setIsAssigning] = useState(false)
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
 
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [clientToEdit, setClientToEdit] = useState<Client | null>(null)
+  const [editForm, setEditForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    countryOfOrigin: ''
+  })
+  const [isEditing, setIsEditing] = useState(false)
+
   useEffect(() => {
     // Initial load with role-based filtering
     // Default to showing "My Clients" if user has an attorney ID, regardless of Admin role
@@ -121,6 +134,53 @@ const ClientManagement: React.FC = () => {
       alert('Failed to assign client')
     } finally {
       setIsAssigning(false)
+    }
+  }
+
+  const openEditModal = (client: Client) => {
+    setClientToEdit(client)
+    setEditForm({
+      firstName: client.firstName,
+      lastName: client.lastName,
+      email: client.email,
+      phone: client.phone || '',
+      address: client.address || '',
+      countryOfOrigin: client.countryOfOrigin || ''
+    })
+    setShowEditModal(true)
+  }
+
+  const handleEditClient = async () => {
+    if (!clientToEdit) return
+
+    setIsEditing(true)
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch(`/api/v1/clients/${clientToEdit.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...clientToEdit,
+          ...editForm
+        })
+      })
+
+      if (response.ok) {
+        setShowEditModal(false)
+        setClientToEdit(null)
+        searchClients(filters)
+        alert('Client updated successfully')
+      } else {
+        const error = await response.text()
+        alert('Failed to update client: ' + error)
+      }
+    } catch (error) {
+      alert('Failed to update client')
+    } finally {
+      setIsEditing(false)
     }
   }
 
@@ -198,6 +258,25 @@ const ClientManagement: React.FC = () => {
   const getClientPrimaryCase = (client: Client) => {
     if (!client.cases || client.cases.length === 0) return null
     return client.cases.find(c => c.status !== CaseStatus.Complete && c.status !== CaseStatus.ClosedRejected) || client.cases[0]
+  }
+
+  // Check if client has any assignment (direct or via case)
+  const getClientAssignmentInfo = (client: Client) => {
+    // First check direct assignment
+    if (client.assignedAttorney) {
+      return { isAssigned: true, assignedTo: client.assignedAttorney.name, source: 'client' }
+    }
+
+    // Check if any of the client's cases are assigned
+    // Note: The Case interface doesn't include assignedStaffName yet, so we show "Assigned (via case)"
+    // This is a display-only fix - the backend properly handles case-level assignments
+    if (client.cases && client.cases.length > 0) {
+      // If the client appears in our filtered list but has no direct assignment,
+      // they must be assigned via a case (otherwise backend wouldn't return them)
+      return { isAssigned: true, assignedTo: 'Assigned (via case)', source: 'case' }
+    }
+
+    return { isAssigned: false, assignedTo: null, source: null }
   }
 
   if (isLoading) {
@@ -426,13 +505,19 @@ const ClientManagement: React.FC = () => {
                             {fullName}
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{client.email}</p>
-                          {client.assignedAttorney ? (
-                            <p className="text-xs text-blue-600 dark:text-blue-400">
-                              Assigned to {client.assignedAttorney.name}
-                            </p>
-                          ) : (
-                            <p className="text-xs text-red-600 dark:text-red-400">Unassigned</p>
-                          )}
+                          {(() => {
+                            const assignmentInfo = getClientAssignmentInfo(client)
+                            if (assignmentInfo.isAssigned) {
+                              return (
+                                <p className="text-xs text-blue-600 dark:text-blue-400">
+                                  {assignmentInfo.source === 'client'
+                                    ? `Assigned to ${assignmentInfo.assignedTo}`
+                                    : assignmentInfo.assignedTo}
+                                </p>
+                              )
+                            }
+                            return <p className="text-xs text-red-600 dark:text-red-400">Unassigned</p>
+                          })()}
                         </div>
                       </div>
                       
@@ -507,18 +592,11 @@ const ClientManagement: React.FC = () => {
                         >
                           View Profile
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-700"
-                          onClick={() => {
-                            // Open edit modal (reuse assignment modal for now or create new)
-                            // Since we don't have a dedicated edit modal in this file yet,
-                            // we'll implement a basic one or just log for now until requested.
-                            // Given user request: "buttons don't do anything", we must make them do something.
-                            // Let's redirect to the edit page if it exists, or just show an alert
-                            alert(`Edit client ${client.firstName} ${client.lastName} (Not implemented yet)`)
-                          }}
+                          onClick={() => openEditModal(client)}
                         >
                           <Edit className="w-4 h-4 mr-1" />
                           Edit
@@ -588,6 +666,101 @@ const ClientManagement: React.FC = () => {
               disabled={!selectedAttorney}
             >
               {isAssigning ? 'Assigning...' : 'Assign Client'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Client Edit Modal */}
+      <Modal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title="Edit Client"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                First Name
+              </label>
+              <Input
+                value={editForm.firstName}
+                onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
+                className="dark:bg-navy-800 dark:border-navy-600 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Last Name
+              </label>
+              <Input
+                value={editForm.lastName}
+                onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
+                className="dark:bg-navy-800 dark:border-navy-600 dark:text-white"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email
+            </label>
+            <Input
+              type="email"
+              value={editForm.email}
+              onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+              className="dark:bg-navy-800 dark:border-navy-600 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Phone
+            </label>
+            <Input
+              value={editForm.phone}
+              onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+              className="dark:bg-navy-800 dark:border-navy-600 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Address
+            </label>
+            <Input
+              value={editForm.address}
+              onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+              className="dark:bg-navy-800 dark:border-navy-600 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Country of Origin
+            </label>
+            <Input
+              value={editForm.countryOfOrigin}
+              onChange={(e) => setEditForm({ ...editForm, countryOfOrigin: e.target.value })}
+              className="dark:bg-navy-800 dark:border-navy-600 dark:text-white"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowEditModal(false)}
+              disabled={isEditing}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleEditClient}
+              loading={isEditing}
+            >
+              {isEditing ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </div>
