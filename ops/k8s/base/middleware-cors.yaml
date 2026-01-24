@@ -17,7 +17,14 @@ spec:
       - "https://cannlaw-prod.74-208-77-43.nip.io"
       - "https://l4h-prod.74-208-77-43.nip.io"
     accessControlAllowHeaders:
-      - "*"
+      - "Authorization"
+      - "Content-Type"
+      - "X-CSRF-TOKEN"
+      - "X-Requested-With"
+      - "Accept"
+      - "Origin"
+      - "Cache-Control"
+      - "Pragma"
     accessControlAllowCredentials: true
     accessControlMaxAge: 100
     addVaryHeader: true
