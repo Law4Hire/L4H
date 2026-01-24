@@ -280,7 +280,7 @@ public class TimeTrackingController : ControllerBase
     /// </summary>
     [HttpGet("active")]
     [ProducesResponseType(typeof(TimeEntry), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult<TimeEntry>> GetActiveTimeTracking()
     {
         var attorneyId = await GetCurrentAttorneyId();
@@ -293,7 +293,8 @@ public class TimeTrackingController : ControllerBase
 
         if (activeSession == null)
         {
-            return NotFound("No active time tracking session");
+            // Return 204 No Content instead of 404 to avoid console errors in frontend
+            return NoContent();
         }
 
         return Ok(activeSession);

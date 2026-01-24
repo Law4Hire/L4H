@@ -61,7 +61,20 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
 
   const checkActiveTimer = useCallback(async () => {
     try {
-      const activeTimer = await fetchJson<any>('/v1/time-tracking/active')
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch('/api/v1/time-tracking/active', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      // 204 No Content means no active timer
+      if (response.status === 204 || !response.ok) {
+        return
+      }
+
+      const activeTimer = await response.json()
       if (activeTimer) {
         setIsTracking(true)
         setStartTime(new Date(activeTimer.startTime))
@@ -71,7 +84,7 @@ const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
         setNotes(activeTimer.notes || '')
       }
     } catch (error) {
-      // Ignore 404
+      // Ignore errors - no active timer
     }
   }, [])
 
