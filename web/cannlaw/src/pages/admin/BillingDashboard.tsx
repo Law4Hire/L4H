@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Card, Button, Input, useToast } from '@l4h/shared-ui'
 import { Download, User, Clock, CheckCircle, AlertCircle } from '@l4h/shared-ui'
+import { RefreshCw } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
 interface BillingSummary {
@@ -40,9 +41,12 @@ const BillingDashboard: React.FC = () => {
   const { isAdmin, user } = useAuth()
   const { success, error } = useToast()
   const [billingSummaries, setBillingSummaries] = useState<BillingSummary[]>([])
+  const [filteredSummaries, setFilteredSummaries] = useState<BillingSummary[]>([])
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([])
   const [selectedAttorney, setSelectedAttorney] = useState<BillingSummary | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [showAllCases, setShowAllCases] = useState(false) // Admin checkbox - default is false (show assigned only)
+  const [currentUserAttorneyId, setCurrentUserAttorneyId] = useState<number | null>(null)
   const [filters, setFilters] = useState<BillingFilters>({
     attorneyId: '',
     startDate: '',
@@ -65,6 +69,18 @@ const BillingDashboard: React.FC = () => {
       const headers = {
         'Authorization': `Bearer ${token}`
       }
+
+      // Get current user's attorney profile to determine their attorney ID
+      try {
+        const meResponse = await fetch('/api/v1/attorneys/me', { headers })
+        if (meResponse.ok) {
+          const meData = await meResponse.json()
+          setCurrentUserAttorneyId(meData.id)
+        }
+      } catch {
+        // User might not have an attorney profile, that's ok
+      }
+
       const summaryResponse = await fetch('/api/v1/billing/dashboard', { headers })
       const summary = await summaryResponse.json()
       setBillingSummary(summary)
@@ -98,6 +114,17 @@ const BillingDashboard: React.FC = () => {
       setIsLoading(false)
     }
   }, [user, error])
+
+  // Filter summaries based on showAllCases checkbox
+  useEffect(() => {
+    if (showAllCases || !currentUserAttorneyId) {
+      // Show all summaries
+      setFilteredSummaries(billingSummaries)
+    } else {
+      // Show only the current user's attorney summary
+      setFilteredSummaries(billingSummaries.filter(s => s.attorneyId === currentUserAttorneyId))
+    }
+  }, [billingSummaries, showAllCases, currentUserAttorneyId])
 
   useEffect(() => {
     fetchBillingData()
@@ -141,7 +168,7 @@ const BillingDashboard: React.FC = () => {
   }
 
   const getTotalStats = () => {
-    return billingSummaries.reduce((acc, summary) => ({
+    return filteredSummaries.reduce((acc, summary) => ({
       totalHours: acc.totalHours + summary.totalHours,
       totalAmount: acc.totalAmount + summary.totalAmount,
       billedAmount: acc.billedAmount + summary.billedAmount,
@@ -188,12 +215,28 @@ const BillingDashboard: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Billing Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-400">Monitor attorney billing and time tracking</p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex items-center space-x-4">
+          {/* Admin checkbox to show all cases */}
+          {isAdmin && (
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showAllCases}
+                onChange={(e) => setShowAllCases(e.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Show All Cases</span>
+            </label>
+          )}
+          <Button variant="outline" onClick={() => fetchBillingData()} className="dark:text-white dark:border-navy-600 dark:hover:bg-navy-800">
+            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
           <Button variant="outline" onClick={handleExportReport} className="dark:text-white dark:border-navy-600 dark:hover:bg-navy-800">
             <Download className="w-4 h-4 mr-2" />
             Export Report
           </Button>
-          <Button 
+          <Button
             variant={showDetailedView ? 'primary' : 'outline'}
             onClick={() => setShowDetailedView(!showDetailedView)}
             className={showDetailedView ? '' : 'dark:text-white dark:border-navy-600 dark:hover:bg-navy-800'}
@@ -304,7 +347,7 @@ const BillingDashboard: React.FC = () => {
       {/* Attorney Billing Summary Cards */}
       {!showDetailedView && (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {billingSummaries.map((summary) => (
+          {filteredSummaries.map((summary) => (
             <div key={summary.attorneyId} 
                  className="cursor-pointer"
                  onClick={() => setSelectedAttorney(summary)}>

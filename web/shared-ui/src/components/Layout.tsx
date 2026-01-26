@@ -136,7 +136,9 @@ export const Layout: React.FC<LayoutProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/visa-library')}
-                className={getCurrentPath() === '/visa-library' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300 hover:text-navy-900 dark:hover:text-white'}
+                className={getCurrentPath() === '/visa-library'
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-navy-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'}
               >
                 Visa Library
               </Button>
@@ -155,7 +157,7 @@ export const Layout: React.FC<LayoutProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-sm"
+                    className="text-sm text-gray-600 dark:text-gray-300 hover:text-navy-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setShowUserDropdown(!showUserDropdown)}
                   >
                     Hello {getUserDisplayName(user)}

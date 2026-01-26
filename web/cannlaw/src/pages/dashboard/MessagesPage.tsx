@@ -73,10 +73,29 @@ const MessagesPage: React.FC = () => {
     if (!user) return
     setIsLoadingThreads(true)
     try {
-      const data = await fetchJson<ApiThread[]>(`/v1/messaging/threads?userId=${user.id}`)
-      setThreads(data)
-      if (data.length > 0 && !selectedThreadId) {
-        setSelectedThreadId(data[0].id)
+      interface ApiThreadResponse {
+        threadId: string
+        caseId?: string
+        title: string
+        participantName: string
+        lastMessageSnippet: string
+        lastMessageTime: string
+        messageCount: number
+        unreadCount: number
+      }
+      const data = await fetchJson<ApiThreadResponse[]>(`/v1/messaging/threads`)
+      // Map API response fields to frontend MessageThread interface
+      const mappedThreads: MessageThread[] = data.map((t: ApiThreadResponse) => ({
+        id: t.threadId,
+        subject: t.title,
+        lastMessageSnippet: t.lastMessageSnippet,
+        lastMessageTime: t.lastMessageTime,
+        participantName: t.participantName,
+        unreadCount: t.unreadCount
+      }))
+      setThreads(mappedThreads)
+      if (mappedThreads.length > 0 && !selectedThreadId) {
+        setSelectedThreadId(mappedThreads[0].id)
       }
     } catch (err) {
       console.error('Error fetching threads:', err)
@@ -139,15 +158,33 @@ const MessagesPage: React.FC = () => {
     if (!selectedThreadId) return
     setIsLoadingMessages(true)
     try {
-      const data = await fetchJson<Message[]>(`/v1/messaging/threads/${selectedThreadId}/messages`)
-      setMessages(data)
+      interface ApiMessage {
+        id: string
+        content: string
+        sender: string
+        timestamp: string
+        isRead?: boolean
+      }
+      interface ApiResponse {
+        messages: ApiMessage[]
+      }
+      const data = await fetchJson<ApiResponse>(`/v1/messaging/threads/${selectedThreadId}/messages`)
+      // Map API response fields to frontend Message interface
+      const mappedMessages: Message[] = (data.messages || []).map((m: ApiMessage) => ({
+        id: m.id,
+        body: m.content,
+        senderName: m.sender,
+        sentAt: m.timestamp,
+        isMe: m.sender === user?.email || m.sender === `${user?.firstName} ${user?.lastName}`
+      }))
+      setMessages(mappedMessages)
     } catch (err) {
       console.error('Error fetching messages:', err)
       error('Failed to load messages for the selected thread.', (err as Error).message || 'An unexpected error occurred.')
     } finally {
       setIsLoadingMessages(false)
     }
-  }, [selectedThreadId, error])
+  }, [selectedThreadId, error, user])
 
   useEffect(() => {
     fetchThreads()

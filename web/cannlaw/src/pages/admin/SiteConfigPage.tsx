@@ -79,30 +79,30 @@ const SiteConfigPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Site Configuration</h1>
-        <p className="text-gray-600">Manage your firm's information and website content</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Site Configuration</h1>
+        <p className="text-gray-600 dark:text-gray-400">Manage your firm's information and website content</p>
       </div>
 
       {/* Status Messages */}
       {submitStatus === 'success' && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800">Site configuration updated successfully!</p>
+        <div className="p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
+          <p className="text-green-800 dark:text-green-300">Site configuration updated successfully!</p>
         </div>
       )}
 
       {submitStatus === 'error' && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800">Failed to update site configuration. Please try again.</p>
+        <div className="p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-red-800 dark:text-red-300">Failed to update site configuration. Please try again.</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+        <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firmName" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="firmName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Firm Name *
               </label>
               <Input
@@ -117,7 +117,7 @@ const SiteConfigPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="managingAttorney" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="managingAttorney" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Managing Attorney
               </label>
               <Input
@@ -131,7 +131,7 @@ const SiteConfigPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="primaryPhone" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="primaryPhone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Primary Phone *
               </label>
               <Input
@@ -146,7 +146,7 @@ const SiteConfigPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="corporatePhone" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="corporatePhone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Corporate Phone *
               </label>
               <Input
@@ -161,7 +161,7 @@ const SiteConfigPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Email Address *
               </label>
               <Input
@@ -176,7 +176,7 @@ const SiteConfigPage: React.FC = () => {
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="logoUrl" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="logoUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Logo URL
               </label>
               <Input
@@ -198,7 +198,7 @@ const SiteConfigPage: React.FC = () => {
                   onChange={handleInputChange}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <span className="text-sm font-medium text-gray-700">Round Billing Up (17 mins = 0.3 hrs instead of 0.2 hrs)</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Round Billing Up (17 mins = 0.3 hrs instead of 0.2 hrs)</span>
               </label>
               <p className="text-xs text-gray-500 mt-1 ml-7">
                 If enabled, billing will round up to the next 6-minute increment (ceiling). Otherwise, it follows standard rounding (floor/nearest).
@@ -208,10 +208,10 @@ const SiteConfigPage: React.FC = () => {
         </Card>
 
         {/* Primary Focus Statement */}
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Primary Focus Statement</h2>
+        <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Primary Focus Statement</h2>
           <div>
-            <label htmlFor="primaryFocusStatement" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="primaryFocusStatement" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Mission Statement
             </label>
             <textarea
@@ -221,16 +221,16 @@ const SiteConfigPage: React.FC = () => {
               value={formData.primaryFocusStatement}
               onChange={handleInputChange}
               placeholder="Fast, efficient, and convenient. Comprehensive representation from state side through consular processing."
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-navy-900 text-gray-900 dark:text-white"
             />
           </div>
         </Card>
 
         {/* Office Locations */}
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Office Locations</h2>
+        <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Office Locations</h2>
           <div>
-            <label htmlFor="locations" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="locations" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Locations (JSON Format)
             </label>
             <textarea
@@ -244,19 +244,19 @@ const SiteConfigPage: React.FC = () => {
   {"city": "Martinsburg, West Virginia", "zip": "25403", "type": "USA Office"},
   {"city": "Taichung, Taiwan", "address": "42 Datong Jie, 7th Floor", "type": "International Office"}
 ]`}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm bg-white dark:bg-navy-900 text-gray-900 dark:text-white"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Enter office locations in JSON format. Each location should have at least "city" and "type" fields.
             </p>
           </div>
         </Card>
 
         {/* Social Media Platforms */}
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Social Media & Communication</h2>
+        <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Social Media & Communication</h2>
           <div>
-            <label htmlFor="socialMediaPlatforms" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="socialMediaPlatforms" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Social Media Platforms (JSON Format)
             </label>
             <textarea
@@ -271,19 +271,19 @@ const SiteConfigPage: React.FC = () => {
   "LINE",
   "SKYPE: cannlegalgroup"
 ]`}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm bg-white dark:bg-navy-900 text-gray-900 dark:text-white"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Enter social media platforms and communication methods in JSON array format.
             </p>
           </div>
         </Card>
 
         {/* Unique Selling Points */}
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Unique Selling Points</h2>
+        <Card className="p-6 bg-white dark:bg-navy-800 border dark:border-navy-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Unique Selling Points</h2>
           <div>
-            <label htmlFor="uniqueSellingPoints" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="uniqueSellingPoints" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Key Benefits (JSON Format)
             </label>
             <textarea
@@ -296,9 +296,9 @@ const SiteConfigPage: React.FC = () => {
   "24/7 Round-the-Clock Support",
   "Direct Online Client Access to case status, attorneys, and checklists"
 ]`}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm bg-white dark:bg-navy-900 text-gray-900 dark:text-white"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Enter unique selling points and key benefits in JSON array format.
             </p>
           </div>
@@ -325,9 +325,9 @@ const SiteConfigPage: React.FC = () => {
       </form>
 
       {/* Preview Section */}
-      <Card className="p-6 bg-gray-50">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Preview</h2>
-        <div className="space-y-4 text-sm">
+      <Card className="p-6 bg-gray-50 dark:bg-navy-900 border dark:border-navy-700">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Preview</h2>
+        <div className="space-y-4 text-sm text-gray-900 dark:text-gray-200">
           <div>
             <strong>Firm Name:</strong> {formData.firmName || 'Not set'}
           </div>
@@ -343,7 +343,7 @@ const SiteConfigPage: React.FC = () => {
           {formData.locations && (
             <div>
               <strong>Locations:</strong>
-              <pre className="mt-1 text-xs bg-white p-2 rounded border overflow-x-auto">
+              <pre className="mt-1 text-xs bg-white dark:bg-navy-800 p-2 rounded border dark:border-navy-600 overflow-x-auto text-gray-900 dark:text-gray-200">
                 {formData.locations}
               </pre>
             </div>
