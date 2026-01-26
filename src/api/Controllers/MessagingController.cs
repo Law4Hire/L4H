@@ -1280,7 +1280,21 @@ public class MessagingController : ControllerBase
 
     private bool IsStaff()
     {
-        return User.HasClaim("IsAdmin", "true") || User.IsInRole("Admin") || User.IsInRole("Staff");
+        // Check for admin claims (both casings used in JWT)
+        var isAdmin = User.HasClaim("is_admin", "true") ||
+                      User.HasClaim("is_admin", "True") ||
+                      User.IsInRole("Admin");
+
+        // Check for staff/legal professional claims
+        var isStaffClaim = User.HasClaim("is_staff", "true") ||
+                           User.HasClaim("is_staff", "True") ||
+                           User.HasClaim("is_legal_professional", "true") ||
+                           User.HasClaim("is_legal_professional", "True") ||
+                           User.IsInRole("Staff") ||
+                           User.IsInRole("LegalProfessional") ||
+                           User.IsInRole("Attorney");
+
+        return isAdmin || isStaffClaim;
     }
 
     private void LogAudit(string category, string action, string targetType, string targetId, object details)

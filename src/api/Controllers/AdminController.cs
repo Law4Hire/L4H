@@ -439,6 +439,72 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
+    /// Delete a package (admin only)
+    /// </summary>
+    /// <param name="id">Package ID</param>
+    /// <returns>Success message</returns>
+    [HttpDelete("pricing/packages/{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DeletePackage(int id)
+    {
+        var package = await _context.Packages
+            .FirstOrDefaultAsync(p => p.Id == id)
+            .ConfigureAwait(false);
+
+        if (package == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Package Not Found",
+                Detail = $"Package with ID {id} was not found"
+            });
+        }
+
+        // Check if package is being used by any pricing rules
+        var hasRules = await _context.PricingRules
+            .AnyAsync(pr => pr.PackageId == id)
+            .ConfigureAwait(false);
+
+        if (hasRules)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Cannot Delete Package",
+                Detail = "This package has associated pricing rules. Remove or reassign the pricing rules first."
+            });
+        }
+
+        // Check if package is used in any cases
+        var hasCases = await _context.Cases
+            .AnyAsync(c => c.PackageId == id)
+            .ConfigureAwait(false);
+
+        if (hasCases)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Cannot Delete Package",
+                Detail = "This package is used by existing cases. It cannot be deleted."
+            });
+        }
+
+        var packageCode = package.Code;
+        var packageName = package.DisplayName;
+
+        _context.Packages.Remove(package);
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Audit log
+        await LogAuditAsync("admin", "package_delete", "Package", id.ToString(),
+            new { packageCode, displayName = packageName, deletedBy = GetCurrentUserId().ToString() }).ConfigureAwait(false);
+
+        return NoContent();
+    }
+
+    /// <summary>
     /// Get all users for admin management
     /// </summary>
     /// <returns>All users with their basic information</returns>
@@ -1198,6 +1264,8 @@ public class AdminController : ControllerBase
             .Include(c => c.Package)
             .Include(c => c.PriceSnapshots.OrderByDescending(p => p.CreatedAt))
             .Include(c => c.InterviewSessions)
+            // Filter out cases belonging to legal professionals/staff - they shouldn't appear in case summary
+            .Where(c => !c.User.IsStaff && !c.User.IsLegalProfessional)
             .OrderByDescending(c => c.LastActivityAt)
             .ToListAsync().ConfigureAwait(false);
 

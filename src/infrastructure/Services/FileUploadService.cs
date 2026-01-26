@@ -72,9 +72,10 @@ public class FileUploadService : IFileUploadService
         _logger = logger;
         _context = context;
 
-        // Use configured basePath from FileStorage:BasePath, fallback to platform-appropriate default
+        // Use configured basePath from FileStorage:BasePath, fallback to /data/uploads (consistent with Program.cs)
+        // This must match the path used in Program.cs for static file serving
         _baseUploadPath = configuration.GetValue<string>("FileStorage:BasePath")
-            ?? Path.Combine(environment.ContentRootPath, "uploads");
+            ?? "/data/uploads";
     }
 
     public async Task<string> UploadAttorneyPhotoAsync(IFormFile file, string attorneyName)

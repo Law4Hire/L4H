@@ -4,8 +4,7 @@ import { useAttorneys } from '../../hooks/useAttorneys'
 import PublicLayout from '../../components/PublicLayout'
 import { Phone, Mail, AlertCircle, MessageSquare } from 'lucide-react'
 
-const BioWithReadMore: React.FC<{ bio: string }> = ({ bio }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const BioWithReadMore: React.FC<{ bio: string; onReadFullBio?: () => void }> = ({ bio, onReadFullBio }) => {
   const maxLength = 200; // Adjust length as needed
 
   if (bio.length <= maxLength) {
@@ -18,22 +17,35 @@ const BioWithReadMore: React.FC<{ bio: string }> = ({ bio }) => {
 
   return (
     <div className="mb-6 border-b border-gray-100 dark:border-navy-800 pb-6 flex-grow">
-      <div className={`text-gray-600 dark:text-gray-300 text-sm leading-relaxed font-light ${isExpanded ? 'max-h-64 overflow-y-auto pr-2 custom-scrollbar' : ''}`}>
-        {isExpanded ? bio : `${bio.substring(0, maxLength)}...`}
+      <div className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed font-light">
+        {`${bio.substring(0, maxLength)}...`}
       </div>
       <button
-        onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+        onClick={(e) => { e.stopPropagation(); onReadFullBio?.(); }}
         className="text-gold-600 dark:text-gold-500 text-xs font-bold uppercase tracking-wider mt-2 hover:underline focus:outline-none"
       >
-        {isExpanded ? 'Show Less' : 'Read Full Bio'}
+        Read Full Bio
       </button>
     </div>
   );
 };
 
+interface Attorney {
+  id: number
+  name: string
+  title: string
+  bio: string
+  photoUrl?: string
+  phone?: string
+  practiceAreas?: string | string[]
+  languages?: string | string[]
+  credentials?: string | string[]
+}
+
 const AttorneysPage: React.FC = () => {
   const { attorneys, isLoading, error } = useAttorneys()
   const [selectedAttorney, setSelectedAttorney] = useState<{ name: string } | null>(null)
+  const [bioModalAttorney, setBioModalAttorney] = useState<Attorney | null>(null) // Full screen bio modal
   const [contactForm, setContactForm] = useState({
     name: '',
     email: '',
@@ -186,7 +198,10 @@ const AttorneysPage: React.FC = () => {
 
                         {/* Bio */}
                         {attorney.bio && (
-                            <BioWithReadMore bio={attorney.bio} />
+                            <BioWithReadMore
+                              bio={attorney.bio}
+                              onReadFullBio={() => setBioModalAttorney(attorney as Attorney)}
+                            />
                         )}
 
                         {/* Practice Areas */}
@@ -325,6 +340,135 @@ const AttorneysPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Full Screen Bio Modal */}
+      {bioModalAttorney && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={() => setBioModalAttorney(null)}
+        >
+          <div
+            className="bg-white dark:bg-navy-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="bg-navy-900 dark:bg-navy-950 text-white p-6 relative">
+              <button
+                onClick={() => setBioModalAttorney(null)}
+                className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors text-2xl font-light"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+              <h2 className="text-2xl font-serif font-bold">{bioModalAttorney.name}</h2>
+              <p className="text-gold-500 font-medium uppercase tracking-wider text-sm mt-1">
+                {bioModalAttorney.title}
+              </p>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <div className="prose prose-lg dark:prose-invert max-w-none">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {bioModalAttorney.bio}
+                </p>
+              </div>
+
+              {/* Credentials, Languages, Practice Areas */}
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                {bioModalAttorney.credentials && (() => {
+                  try {
+                    const credentials = typeof bioModalAttorney.credentials === 'string'
+                      ? JSON.parse(bioModalAttorney.credentials)
+                      : bioModalAttorney.credentials
+                    if (!Array.isArray(credentials) || credentials.length === 0) return null
+
+                    return (
+                      <div>
+                        <h4 className="font-bold text-navy-900 dark:text-white mb-3 text-xs uppercase tracking-widest">
+                          Credentials
+                        </h4>
+                        <ul className="space-y-1">
+                          {credentials.map((cred: string, index: number) => (
+                            <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
+                              • {cred}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  } catch {
+                    return null
+                  }
+                })()}
+
+                {bioModalAttorney.practiceAreas && (() => {
+                  try {
+                    const areas = typeof bioModalAttorney.practiceAreas === 'string'
+                      ? JSON.parse(bioModalAttorney.practiceAreas)
+                      : bioModalAttorney.practiceAreas
+                    if (!Array.isArray(areas) || areas.length === 0) return null
+
+                    return (
+                      <div>
+                        <h4 className="font-bold text-navy-900 dark:text-white mb-3 text-xs uppercase tracking-widest">
+                          Practice Areas
+                        </h4>
+                        <ul className="space-y-1">
+                          {areas.map((area: string, index: number) => (
+                            <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
+                              • {area}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  } catch {
+                    return null
+                  }
+                })()}
+
+                {bioModalAttorney.languages && (() => {
+                  try {
+                    const langs = typeof bioModalAttorney.languages === 'string'
+                      ? JSON.parse(bioModalAttorney.languages)
+                      : bioModalAttorney.languages
+                    if (!Array.isArray(langs) || langs.length === 0) return null
+
+                    return (
+                      <div>
+                        <h4 className="font-bold text-navy-900 dark:text-white mb-3 text-xs uppercase tracking-widest">
+                          Languages
+                        </h4>
+                        <ul className="space-y-1">
+                          {langs.map((lang: string, index: number) => (
+                            <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
+                              • {lang}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  } catch {
+                    return null
+                  }
+                })()}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-gray-200 dark:border-navy-700 p-4 bg-gray-50 dark:bg-navy-800 flex justify-end">
+              <Button
+                variant="primary"
+                onClick={() => setBioModalAttorney(null)}
+                className="bg-navy-900 dark:bg-gold-500 dark:text-navy-900"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Contact Modal */}
       {selectedAttorney && (
