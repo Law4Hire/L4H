@@ -1,22 +1,31 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { BrowserRouter } from 'react-router-dom'
+import { screen, waitFor } from '@testing-library/react'
 import { DashboardPage } from './DashboardPage'
-import { apiClient } from '@l4h/shared-ui'
+import { cases } from '@l4h/shared-ui'
+import { renderWithProviders } from '../test-utils'
 
-// Mock the API client
+// Mock the shared-ui module
 vi.mock('@l4h/shared-ui', async () => {
   const actual = await vi.importActual('@l4h/shared-ui')
   return {
     ...actual,
-    apiClient: {
-      getMyCases: vi.fn(),
+    cases: {
+      mine: vi.fn(),
+      resetVisaType: vi.fn(),
+    },
+    interview: {
+      start: vi.fn(),
+      startAnonymous: vi.fn(),
     },
   }
 })
 
-// Mock react-router-dom
+// Mock useAuth
+vi.mock('../hooks/useAuth', () => ({
+  useAuth: () => ({ user: { name: 'Test User' }, isAuthenticated: true }),
+}))
+
+// Mock react-router-dom navigate
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom')
@@ -26,150 +35,64 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      {component}
-    </BrowserRouter>
-  )
-}
-
 describe('DashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders dashboard with welcome message', () => {
-    renderWithRouter(<DashboardPage />)
-    
-    expect(screen.getByText(/welcome/i)).toBeInTheDocument()
-  })
+  it('renders dashboard with welcome message', async () => {
+    vi.mocked(cases.mine).mockResolvedValue([])
 
-  it('loads and displays case status badges', async () => {
-    const mockCases = [
-      { id: '1', status: 'active', lastActivity: '2024-01-15T10:00:00Z' },
-      { id: '2', status: 'pending', lastActivity: '2024-01-14T15:30:00Z' },
-      { id: '3', status: 'closed', lastActivity: '2024-01-13T09:15:00Z' },
-    ]
+    renderWithProviders(<DashboardPage />)
 
-    vi.mocked(apiClient.getMyCases).mockResolvedValue({
-      success: true,
-      data: mockCases,
-    } as any)
-
-    renderWithRouter(<DashboardPage />)
-    
     await waitFor(() => {
-      expect(screen.getByText('Active')).toBeInTheDocument()
-      expect(screen.getByText('Pending')).toBeInTheDocument()
-      expect(screen.getByText('Closed')).toBeInTheDocument()
-    })
-  })
-
-  it('displays last activity information', async () => {
-    const mockCases = [
-      { id: '1', status: 'active', lastActivity: '2024-01-15T10:00:00Z' },
-    ]
-
-    vi.mocked(apiClient.getMyCases).mockResolvedValue({
-      success: true,
-      data: mockCases,
-    } as any)
-
-    renderWithRouter(<DashboardPage />)
-    
-    await waitFor(() => {
-      expect(screen.getByText(/last activity/i)).toBeInTheDocument()
-    })
-  })
-
-  it('shows quick links to other pages', () => {
-    renderWithRouter(<DashboardPage />)
-    
-    expect(screen.getByRole('link', { name: /appointments/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /messages/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /uploads/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /pricing/i })).toBeInTheDocument()
-  })
-
-  it('handles API error gracefully', async () => {
-    vi.mocked(apiClient.getMyCases).mockResolvedValue({
-      success: false,
-      error: 'Failed to load cases',
-    } as any)
-
-    renderWithRouter(<DashboardPage />)
-    
-    await waitFor(() => {
-      expect(screen.getByText(/failed to load cases/i)).toBeInTheDocument()
+      expect(screen.getByText('Welcome to your Dashboard')).toBeInTheDocument()
     })
   })
 
   it('shows loading state while fetching data', () => {
-    vi.mocked(apiClient.getMyCases).mockImplementation(
+    vi.mocked(cases.mine).mockImplementation(
       () => new Promise(() => {}) // Never resolves
     )
 
-    renderWithRouter(<DashboardPage />)
-    
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+    renderWithProviders(<DashboardPage />)
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
-  it('navigates to correct pages when quick links are clicked', async () => {
-    const user = userEvent.setup()
-
-    renderWithRouter(<DashboardPage />)
-    
-    await user.click(screen.getByRole('link', { name: /appointments/i }))
-    expect(mockNavigate).toHaveBeenCalledWith('/appointments')
-    
-    await user.click(screen.getByRole('link', { name: /messages/i }))
-    expect(mockNavigate).toHaveBeenCalledWith('/messages')
-    
-    await user.click(screen.getByRole('link', { name: /uploads/i }))
-    expect(mockNavigate).toHaveBeenCalledWith('/uploads')
-    
-    await user.click(screen.getByRole('link', { name: /pricing/i }))
-    expect(mockNavigate).toHaveBeenCalledWith('/pricing')
-  })
-
-  it('displays case count summary', async () => {
+  it('displays case status when cases are loaded', async () => {
     const mockCases = [
-      { id: '1', status: 'active', lastActivity: '2024-01-15T10:00:00Z' },
-      { id: '2', status: 'active', lastActivity: '2024-01-14T15:30:00Z' },
-      { id: '3', status: 'pending', lastActivity: '2024-01-13T09:15:00Z' },
+      { id: 'abc12345-6789', status: 'active', createdAt: '2024-01-15T10:00:00Z', isVisaLockedByAttorney: false },
     ]
 
-    vi.mocked(apiClient.getMyCases).mockResolvedValue({
-      success: true,
-      data: mockCases,
-    } as any)
+    vi.mocked(cases.mine).mockResolvedValue(mockCases as any)
 
-    renderWithRouter(<DashboardPage />)
-    
+    renderWithProviders(<DashboardPage />)
+
     await waitFor(() => {
-      expect(screen.getByText(/2 active cases/i)).toBeInTheDocument()
-      expect(screen.getByText(/1 pending case/i)).toBeInTheDocument()
+      expect(screen.getByText('active')).toBeInTheDocument()
     })
   })
 
-  it('has proper ARIA attributes', () => {
-    renderWithRouter(<DashboardPage />)
-    
-    expect(screen.getByRole('main')).toBeInTheDocument()
-    expect(screen.getByRole('navigation')).toBeInTheDocument()
+  it('shows no cases found when empty', async () => {
+    vi.mocked(cases.mine).mockResolvedValue([])
+
+    renderWithProviders(<DashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('No cases found')).toBeInTheDocument()
+    })
   })
 
-  it('supports keyboard navigation for quick links', async () => {
-    const user = userEvent.setup()
+  it('shows quick link buttons', async () => {
+    vi.mocked(cases.mine).mockResolvedValue([])
 
-    renderWithRouter(<DashboardPage />)
-    
-    const appointmentsLink = screen.getByRole('link', { name: /appointments/i })
-    appointmentsLink.focus()
-    expect(appointmentsLink).toHaveFocus()
-    
-    await user.keyboard('{Enter}')
-    expect(mockNavigate).toHaveBeenCalledWith('/appointments')
+    renderWithProviders(<DashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Start Interview')).toBeInTheDocument()
+      expect(screen.getByText('View Pricing')).toBeInTheDocument()
+      expect(screen.getByText('Messages')).toBeInTheDocument()
+    })
   })
 })

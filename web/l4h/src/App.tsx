@@ -322,7 +322,7 @@ function App() {
           element={
             <RouteGuard>
               <Layout
-                title={'Pricing Management'}
+                title={'Visa/Pricing Management'}
                 showUserMenu={true}
                 user={user}
                 isAuthenticated={isAuthenticated}

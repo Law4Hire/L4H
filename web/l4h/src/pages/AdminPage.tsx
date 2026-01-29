@@ -22,7 +22,7 @@ const AdminPage: React.FC = () => {
   const displayPaths = [
     { name: 'User Management', path: '/admin/users', description: 'Manage users, roles, and permissions', displayOrder: 1 },
     { name: 'Case Management', path: '/admin/cases', description: 'Review and manage immigration cases', displayOrder: 2 },
-    { name: 'Pricing', path: '/admin/pricing', description: 'Configure visa type pricing', displayOrder: 3 },
+    { name: 'Visa/Pricing Management', path: '/admin/pricing', description: 'Configure visa type pricing and active status', displayOrder: 3 },
     { name: 'Packages', path: '/admin/packages', description: 'Manage service packages', displayOrder: 4 },
     { name: 'Interview Questions', path: '/admin/interview-questions', description: 'Manage customer interview questions and flow', displayOrder: 5 },
     { name: 'USCIS Forms', path: '/admin/uscis-forms', description: 'Manage immigration forms, pricing, and dependencies', displayOrder: 6 },

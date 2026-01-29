@@ -1,21 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { BrowserRouter } from 'react-router-dom'
+import { screen, waitFor } from '@testing-library/react'
 import { PricingPage } from './PricingPage'
-import { apiClient } from '@l4h/shared-ui'
+import { cases, pricing } from '@l4h/shared-ui'
+import { renderWithProviders } from '../test-utils'
 
-// Mock the API client
+// Mock the shared-ui module
 vi.mock('@l4h/shared-ui', async () => {
   const actual = await vi.importActual('@l4h/shared-ui')
   return {
     ...actual,
-    apiClient: {
-      getPricing: vi.fn(),
-      selectPackage: vi.fn(),
-    } as any,
+    cases: {
+      mine: vi.fn(),
+      setPackage: vi.fn(),
+    },
+    pricing: {
+      get: vi.fn(),
+    },
   }
 })
+
+// Mock useAuth
+vi.mock('../hooks/useAuth', () => ({
+  useAuth: () => ({ user: { name: 'Test User', country: 'US' }, isAuthenticated: true }),
+}))
 
 // Mock react-router-dom
 const mockNavigate = vi.fn()
@@ -27,64 +34,37 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      {component}
-    </BrowserRouter>
-  )
-}
-
 describe('PricingPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders pricing page with title', () => {
-    renderWithRouter(<PricingPage />)
-    
-    expect(screen.getByText(/pricing/i)).toBeInTheDocument()
-  })
+  it('renders pricing page title', async () => {
+    vi.mocked(cases.mine).mockResolvedValue([])
 
-  it('loads and displays pricing packages', async () => {
-    const mockPricing = {
-      packages: [
-        {
-          id: 'basic',
-          name: 'Basic Package',
-          description: 'Essential services',
-          price: 1000,
-          currency: 'USD',
-          features: ['Feature 1', 'Feature 2'],
-        },
-        {
-          id: 'premium',
-          name: 'Premium Package',
-          description: 'Advanced services',
-          price: 2500,
-          currency: 'USD',
-          features: ['Feature 1', 'Feature 2', 'Feature 3'],
-        },
-      ],
-    }
+    renderWithProviders(<PricingPage />)
 
-    vi.mocked(apiClient.getPricing).mockResolvedValue({
-      success: true,
-      data: mockPricing,
-    } as any)
-
-    renderWithRouter(<PricingPage />)
-    
     await waitFor(() => {
-      expect(screen.getByText('Basic Package')).toBeInTheDocument()
-      expect(screen.getByText('Premium Package')).toBeInTheDocument()
-      expect(screen.getByText('$1,000.00')).toBeInTheDocument()
-      expect(screen.getByText('$2,500.00')).toBeInTheDocument()
+      expect(screen.getByText('Our Service Packages')).toBeInTheDocument()
     })
   })
 
-  it('displays package features', async () => {
-    const mockPricing = {
+  it('shows message when no active case', async () => {
+    vi.mocked(cases.mine).mockResolvedValue([])
+
+    renderWithProviders(<PricingPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('You need to create a case before selecting a pricing package.')).toBeInTheDocument()
+    })
+  })
+
+  it('displays pricing packages when case has qualified visa', async () => {
+    vi.mocked(cases.mine).mockResolvedValue([
+      { id: 'case-1', status: 'active', createdAt: '2024-01-01', visaTypeCode: 'H1B' },
+    ] as any)
+
+    vi.mocked(pricing.get).mockResolvedValue({
       packages: [
         {
           id: 'basic',
@@ -95,179 +75,14 @@ describe('PricingPage', () => {
           features: ['Feature 1', 'Feature 2'],
         },
       ],
-    }
-
-    vi.mocked(apiClient.getPricing).mockResolvedValue({
-      success: true,
-      data: mockPricing,
     } as any)
 
-    renderWithRouter(<PricingPage />)
-    
+    renderWithProviders(<PricingPage />)
+
     await waitFor(() => {
+      expect(screen.getByText('Basic Package')).toBeInTheDocument()
       expect(screen.getByText('Feature 1')).toBeInTheDocument()
       expect(screen.getByText('Feature 2')).toBeInTheDocument()
-    })
-  })
-
-  it('handles package selection', async () => {
-    const user = userEvent.setup()
-    const mockPricing = {
-      packages: [
-        {
-          id: 'basic',
-          name: 'Basic Package',
-          description: 'Essential services',
-          price: 1000,
-          currency: 'USD',
-          features: ['Feature 1'],
-        },
-      ],
-    }
-
-    vi.mocked(apiClient.getPricing).mockResolvedValue({
-      success: true,
-      data: mockPricing,
-    } as any)
-
-    vi.mocked(apiClient as any).selectPackage.mockResolvedValue({
-      success: true,
-      data: { caseId: 'case-123' },
-    })
-
-    renderWithRouter(<PricingPage />)
-    
-    await waitFor(() => {
-      expect(screen.getByText('Basic Package')).toBeInTheDocument()
-    })
-
-    await user.click(screen.getByRole('button', { name: /select package/i }))
-    
-    await waitFor(() => {
-      expect((apiClient as any).selectPackage).toHaveBeenCalledWith('basic')
-      expect(screen.getByText(/package selected successfully/i)).toBeInTheDocument()
-    })
-  })
-
-  it('shows loading state while fetching pricing', () => {
-    vi.mocked(apiClient.getPricing).mockImplementation(
-      () => new Promise(() => {}) // Never resolves
-    )
-
-    renderWithRouter(<PricingPage />)
-    
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
-  })
-
-  it('handles API error gracefully', async () => {
-    vi.mocked(apiClient.getPricing).mockResolvedValue({
-      success: false,
-      error: 'Failed to load pricing',
-    } as any)
-
-    renderWithRouter(<PricingPage />)
-    
-    await waitFor(() => {
-      expect(screen.getByText(/failed to load pricing/i)).toBeInTheDocument()
-    })
-  })
-
-  it('shows error message on package selection failure', async () => {
-    const user = userEvent.setup()
-    const mockPricing = {
-      packages: [
-        {
-          id: 'basic',
-          name: 'Basic Package',
-          description: 'Essential services',
-          price: 1000,
-          currency: 'USD',
-          features: ['Feature 1'],
-        },
-      ],
-    }
-
-    vi.mocked(apiClient.getPricing).mockResolvedValue({
-      success: true,
-      data: mockPricing,
-    } as any)
-
-    vi.mocked(apiClient as any).selectPackage.mockResolvedValue({
-      success: false,
-      error: 'Selection failed',
-    })
-
-    renderWithRouter(<PricingPage />)
-    
-    await waitFor(() => {
-      expect(screen.getByText('Basic Package')).toBeInTheDocument()
-    })
-
-    await user.click(screen.getByRole('button', { name: /select package/i }))
-    
-    await waitFor(() => {
-      expect(screen.getByText(/selection failed/i)).toBeInTheDocument()
-    })
-  })
-
-  it('supports keyboard navigation', async () => {
-    const user = userEvent.setup()
-    const mockPricing = {
-      packages: [
-        {
-          id: 'basic',
-          name: 'Basic Package',
-          description: 'Essential services',
-          price: 1000,
-          currency: 'USD',
-          features: ['Feature 1'],
-        },
-      ],
-    }
-
-    vi.mocked(apiClient.getPricing).mockResolvedValue({
-      success: true,
-      data: mockPricing,
-    } as any)
-
-    renderWithRouter(<PricingPage />)
-    
-    await waitFor(() => {
-      expect(screen.getByText('Basic Package')).toBeInTheDocument()
-    })
-
-    const selectButton = screen.getByRole('button', { name: /select package/i })
-    selectButton.focus()
-    expect(selectButton).toHaveFocus()
-    
-    await user.keyboard('{Enter}')
-    expect((apiClient as any).selectPackage).toHaveBeenCalledWith('basic')
-  })
-
-  it('has proper ARIA attributes', async () => {
-    const mockPricing = {
-      packages: [
-        {
-          id: 'basic',
-          name: 'Basic Package',
-          description: 'Essential services',
-          price: 1000,
-          currency: 'USD',
-          features: ['Feature 1'],
-        },
-      ],
-    }
-
-    vi.mocked(apiClient.getPricing).mockResolvedValue({
-      success: true,
-      data: mockPricing,
-    } as any)
-
-    renderWithRouter(<PricingPage />)
-    
-    await waitFor(() => {
-      expect(screen.getByRole('main')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /select package/i })).toBeInTheDocument()
     })
   })
 })

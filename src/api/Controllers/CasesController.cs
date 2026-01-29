@@ -59,6 +59,7 @@ public class CasesController : ControllerBase
             .Include(c => c.User)
             .Include(c => c.CaseVisaTypes)
                 .ThenInclude(cvt => cvt.VisaType)
+            .Where(c => !c.User.IsAdmin && !c.User.IsStaff && !c.User.IsLegalProfessional)
             .AsQueryable();
 
         // Filter by assignment based on user role
@@ -175,6 +176,13 @@ public class CasesController : ControllerBase
     {
         var userId = GetCurrentUserId();
         
+        // Admins and staff should never have cases — return empty if they call this
+        var currentUser = await _context.Users.FindAsync(userId).ConfigureAwait(false);
+        if (currentUser != null && (currentUser.IsAdmin || currentUser.IsStaff || currentUser.IsLegalProfessional))
+        {
+            return Ok(Array.Empty<CaseResponse>());
+        }
+
         var cases = await _context.Cases
             .Include(c => c.VisaType)
             .Include(c => c.Package)

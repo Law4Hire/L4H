@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { vi } from 'vitest';
 import React from 'react';
-import { interview } from '@l4h/shared-ui';
+import { interview, ToastProvider } from '@l4h/shared-ui';
 import InterviewPage from './InterviewPage';
 import VisaResultsPage from './VisaResultsPage'; // To test navigation
 
@@ -53,9 +53,9 @@ describe('InterviewPage', () => {
     it('should start the interview on mount and display the first question', async () => {
         render(
             <MemoryRouter initialEntries={['/interview']}>
-                <Routes>
+                <ToastProvider><Routes>
                     <Route path="/interview" element={<InterviewPage />} />
-                </Routes>
+                </Routes></ToastProvider>
             </MemoryRouter>
         );
 
@@ -75,9 +75,9 @@ describe('InterviewPage', () => {
 
         render(
             <MemoryRouter initialEntries={['/interview']}>
-                <Routes>
+                <ToastProvider><Routes>
                     <Route path="/interview" element={<InterviewPage />} />
-                </Routes>
+                </Routes></ToastProvider>
             </MemoryRouter>
         );
 
@@ -101,10 +101,10 @@ describe('InterviewPage', () => {
 
         render(
             <MemoryRouter initialEntries={['/interview']}>
-                <Routes>
+                <ToastProvider><Routes>
                     <Route path="/interview" element={<InterviewPage />} />
                     <Route path="/results" element={<div>Results Page</div>} />
-                </Routes>
+                </Routes></ToastProvider>
             </MemoryRouter>
         );
 

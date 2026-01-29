@@ -234,6 +234,32 @@ const AdminPricingPage: React.FC = () => {
     setAddingPackage(false)
   }
 
+  const handleToggleVisaActive = async (vt: VisaTypePricing) => {
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const res = await fetch(`/api/v1/admin/pricing/visa-types/${vt.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ isActive: !vt.isActive })
+      })
+      if (res.ok) {
+        success(`Visa type ${!vt.isActive ? 'enabled' : 'disabled'}`)
+        // Update local state
+        setVisaTypes(prev => prev.map(v => v.id === vt.id ? { ...v, isActive: !v.isActive } : v))
+        if (selectedVisaType?.id === vt.id) {
+          setSelectedVisaType(prev => prev ? { ...prev, isActive: !prev.isActive } : prev)
+        }
+      } else {
+        error('Failed to update visa type status')
+      }
+    } catch {
+      error('Failed to update visa type status')
+    }
+  }
+
   const startEditPackage = (code: string, rule: AdminPricingRuleResponse | null) => {
     if (!rule) return
     setEditingPackage({
@@ -249,7 +275,7 @@ const AdminPricingPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-md border dark:border-gray-800">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 font-serif">Pricing Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 font-serif">Visa/Pricing Management</h1>
         <p className="text-gray-600 dark:text-gray-400">Configure prices for {visaTypes.length} visa types and associate them with service packages.</p>
       </div>
 
@@ -305,7 +331,23 @@ const AdminPricingPage: React.FC = () => {
                 <div className="text-sm font-bold text-gray-900 dark:text-white mb-1">{selectedVisaType.name}</div>
                 <div className="text-xs text-gray-500">Code: {selectedVisaType.code}</div>
               </div>
-              <Button size="sm" onClick={() => setAddingPackage(true)} className="bg-blue-600 hover:bg-blue-700">Add New Association</Button>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <span className={`text-xs font-bold uppercase ${selectedVisaType.isActive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {selectedVisaType.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={selectedVisaType.isActive}
+                    onClick={() => handleToggleVisaActive(selectedVisaType)}
+                    className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${selectedVisaType.isActive ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                  >
+                    <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition duration-200 ease-in-out ${selectedVisaType.isActive ? 'translate-x-5' : 'translate-x-0'}`} />
+                  </button>
+                </label>
+                <Button size="sm" onClick={() => setAddingPackage(true)} className="bg-blue-600 hover:bg-blue-700">Add New Association</Button>
+              </div>
             </div>
 
             {addingPackage && (

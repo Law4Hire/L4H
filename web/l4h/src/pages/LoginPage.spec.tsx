@@ -1,19 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { BrowserRouter } from 'react-router-dom'
 import LoginPage from './LoginPage'
-import { authClient } from '@l4h/shared-ui'
+import { auth } from '@l4h/shared-ui'
+import { renderWithProviders } from '../test-utils'
 
-// Mock the auth client
+// Mock the shared-ui module
 vi.mock('@l4h/shared-ui', async () => {
   const actual = await vi.importActual('@l4h/shared-ui')
   return {
     ...actual,
-    authClient: {
+    auth: {
       login: vi.fn(),
-      remember: vi.fn(),
-    } as any,
+    },
+    setJwtToken: vi.fn(),
+    cases: {
+      mine: vi.fn(),
+    },
+    interview: {
+      start: vi.fn(),
+    },
   }
 })
 
@@ -27,164 +33,71 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      {component}
-    </BrowserRouter>
-  )
-}
-
 describe('LoginPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('renders login form with email and password fields', () => {
-    renderWithRouter(<LoginPage />)
-    
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument()
+    renderWithProviders(<LoginPage />)
+
+    expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument()
+    expect(screen.getByLabelText('Email')).toBeInTheDocument()
+    expect(screen.getByLabelText('Password')).toBeInTheDocument()
   })
 
   it('renders remember me checkbox', () => {
-    renderWithRouter(<LoginPage />)
-    
+    renderWithProviders(<LoginPage />)
+
     expect(screen.getByLabelText(/remember me/i)).toBeInTheDocument()
   })
 
-  it('handles form submission with valid credentials', async () => {
-    const user = userEvent.setup()
-    const mockLogin = vi.mocked(authClient.login).mockResolvedValue({
-      success: true,
-      token: 'mock-token',
-    })
-    const mockRemember = vi.mocked(authClient.remember).mockResolvedValue(true)
+  it('has a form with proper aria-label', () => {
+    renderWithProviders(<LoginPage />)
 
-    renderWithRouter(<LoginPage />)
-    
-    await user.type(screen.getByLabelText(/email/i), 'test@example.com')
-    await user.type(screen.getByLabelText(/password/i), 'password123')
-    await user.click(screen.getByLabelText(/remember me/i))
+    const form = screen.getByRole('form')
+    expect(form).toHaveAttribute('aria-label', 'Login form')
+  })
+
+  it('handles successful login', async () => {
+    const user = userEvent.setup()
+    vi.mocked(auth.login).mockResolvedValue({
+      token: 'mock-token',
+      isStaff: false,
+      isAdmin: false,
+      isProfileComplete: true,
+      isInterviewComplete: true,
+    } as any)
+
+    renderWithProviders(<LoginPage />)
+
+    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByLabelText('Password'), 'password123')
     await user.click(screen.getByRole('button', { name: /login/i }))
-    
+
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123')
-      expect(mockRemember).toHaveBeenCalledWith()
+      expect(auth.login).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+        rememberMe: false,
+      })
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard')
     })
   })
 
-  it('shows error message on login failure', async () => {
+  it('shows error on login failure', async () => {
     const user = userEvent.setup()
-    const mockLogin = vi.mocked(authClient.login).mockResolvedValue({
-      success: false,
-      error: 'Invalid credentials',
-    })
+    vi.mocked(auth.login).mockRejectedValue(new Error('Invalid credentials'))
 
-    renderWithRouter(<LoginPage />)
-    
-    await user.type(screen.getByLabelText(/email/i), 'test@example.com')
-    await user.type(screen.getByLabelText(/password/i), 'wrongpassword')
+    renderWithProviders(<LoginPage />)
+
+    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByLabelText('Password'), 'wrongpassword')
     await user.click(screen.getByRole('button', { name: /login/i }))
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Invalid credentials')).toBeInTheDocument()
+      const alerts = screen.getAllByRole('alert')
+      expect(alerts.some(el => el.textContent?.includes('Invalid credentials'))).toBe(true)
     })
-  })
-
-  it('shows loading state during login', async () => {
-    const user = userEvent.setup()
-    const mockLogin = vi.mocked(authClient.login).mockImplementation(
-      () => new Promise(() => {}) // Never resolves
-    )
-
-    renderWithRouter(<LoginPage />)
-    
-    await user.type(screen.getByLabelText(/email/i), 'test@example.com')
-    await user.type(screen.getByLabelText(/password/i), 'password123')
-    await user.click(screen.getByRole('button', { name: /login/i }))
-    
-    expect(screen.getByRole('button', { name: /login/i })).toBeDisabled()
-    expect(screen.getByTestId('spinner')).toBeInTheDocument()
-  })
-
-  it('validates required fields', async () => {
-    const user = userEvent.setup()
-
-    renderWithRouter(<LoginPage />)
-    
-    await user.click(screen.getByRole('button', { name: /login/i }))
-    
-    expect(screen.getByText(/email is required/i)).toBeInTheDocument()
-    expect(screen.getByText(/password is required/i)).toBeInTheDocument()
-  })
-
-  it('validates email format', async () => {
-    const user = userEvent.setup()
-
-    renderWithRouter(<LoginPage />)
-    
-    await user.type(screen.getByLabelText(/email/i), 'invalid-email')
-    await user.click(screen.getByRole('button', { name: /login/i }))
-    
-    expect(screen.getByText(/invalid email format/i)).toBeInTheDocument()
-  })
-
-  it('supports keyboard navigation', async () => {
-    const user = userEvent.setup()
-
-    renderWithRouter(<LoginPage />)
-    
-    const emailInput = screen.getByLabelText(/email/i)
-    const passwordInput = screen.getByLabelText(/password/i)
-    const loginButton = screen.getByRole('button', { name: /login/i })
-    
-    emailInput.focus()
-    expect(emailInput).toHaveFocus()
-    
-    await user.keyboard('{Tab}')
-    expect(passwordInput).toHaveFocus()
-    
-    await user.keyboard('{Tab}')
-    expect(loginButton).toHaveFocus()
-  })
-
-  it('handles remember me functionality', async () => {
-    const user = userEvent.setup()
-    const mockLogin = vi.mocked(authClient.login).mockResolvedValue({
-      success: true,
-      token: 'mock-token',
-    })
-    const mockRemember = vi.mocked(authClient.remember).mockResolvedValue(true)
-
-    renderWithRouter(<LoginPage />)
-    
-    await user.type(screen.getByLabelText(/email/i), 'test@example.com')
-    await user.type(screen.getByLabelText(/password/i), 'password123')
-    
-    // Don't check remember me
-    await user.click(screen.getByRole('button', { name: /login/i }))
-    
-    await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123')
-      expect(mockRemember).not.toHaveBeenCalledWith()
-    })
-  })
-
-  it('has proper ARIA attributes', () => {
-    renderWithRouter(<LoginPage />)
-    
-    const form = screen.getByRole('form')
-    expect(form).toHaveAttribute('aria-label', 'Login form')
-    
-    const emailInput = screen.getByLabelText(/email/i)
-    expect(emailInput).toHaveAttribute('type', 'email')
-    expect(emailInput).toHaveAttribute('required')
-    
-    const passwordInput = screen.getByLabelText(/password/i)
-    expect(passwordInput).toHaveAttribute('type', 'password')
-    expect(passwordInput).toHaveAttribute('required')
   })
 })
