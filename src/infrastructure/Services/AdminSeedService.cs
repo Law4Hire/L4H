@@ -136,18 +136,23 @@ public class AdminSeedService : IAdminSeedService
         Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Adding user to context");
         _context.Users.Add(user);
 
-        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Creating inactive case for user");
-        // Create inactive case for each user
-        var userCase = new Case
+        // Only create cases for regular users (clients), not admin or staff
+        if (!isAdmin && !isStaff)
         {
-            UserId = user.Id,
-            Status = "inactive",
-            CreatedAt = DateTime.UtcNow,
-            LastActivityAt = DateTime.UtcNow
-        };
-
-        Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Adding case to context");
-        _context.Cases.Add(userCase);
+            Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Creating inactive case for client user");
+            var userCase = new Case
+            {
+                UserId = user.Id,
+                Status = "inactive",
+                CreatedAt = DateTime.UtcNow,
+                LastActivityAt = DateTime.UtcNow
+            };
+            _context.Cases.Add(userCase);
+        }
+        else
+        {
+            Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Skipping case creation for admin/staff user {email}");
+        }
 
         Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] About to call SaveChangesAsync...");
         await _context.SaveChangesAsync().ConfigureAwait(false);

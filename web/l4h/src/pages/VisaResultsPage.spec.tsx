@@ -1,16 +1,17 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import React from 'react';
-import { interview } from '@l4h/shared-ui';
+import { interview, ToastProvider } from '@l4h/shared-ui';
 import VisaResultsPage from './VisaResultsPage';
 
 // Mock the API client
 vi.mock('@l4h/shared-ui', async () => {
-    const original = await vi.importActual('@l4h/shared-ui');
+    const original = await vi.importActual('@l4h/shared-ui') as any;
     return {
         ...original,
         interview: {
+            ...original.interview,
             getEvaluations: vi.fn(),
         },
     };
@@ -32,20 +33,24 @@ describe('VisaResultsPage', () => {
         },
     ];
 
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     it('should display evaluation results when the API call is successful', async () => {
         vi.mocked(interview.getEvaluations).mockResolvedValue(mockEvaluations);
 
         render(
             <MemoryRouter initialEntries={[{ pathname: '/results', state: { sessionToken: 'test-token' } }]}>
-                <Routes>
+                <ToastProvider><Routes>
                     <Route path="/results" element={<VisaResultsPage />} />
-                </Routes>
+                </Routes></ToastProvider>
             </MemoryRouter>
         );
 
         await waitFor(() => {
             expect(screen.getByText('H-1B Visa')).toBeInTheDocument();
-            expect(screen.getByText('Match Score:')).toBeInTheDocument();
+            expect(screen.getByText('95% Match')).toBeInTheDocument();
         });
     });
 
@@ -54,9 +59,9 @@ describe('VisaResultsPage', () => {
 
         render(
             <MemoryRouter initialEntries={[{ pathname: '/results', state: { sessionToken: 'test-token' } }]}>
-                <Routes>
+                <ToastProvider><Routes>
                     <Route path="/results" element={<VisaResultsPage />} />
-                </Routes>
+                </Routes></ToastProvider>
             </MemoryRouter>
         );
 
@@ -70,16 +75,18 @@ describe('VisaResultsPage', () => {
 
         render(
             <MemoryRouter initialEntries={[{ pathname: '/results', state: { sessionToken: 'test-token' } }]}>
-                <Routes>
+                <ToastProvider><Routes>
                     <Route path="/results" element={<VisaResultsPage />} />
                     <Route path="/register-interview" element={<div>Registration Page</div>} />
-                </Routes>
+                </Routes></ToastProvider>
             </MemoryRouter>
         );
 
         await waitFor(() => {
-            fireEvent.click(screen.getByText('Register to Proceed'));
+            expect(screen.getByText('H-1B Visa')).toBeInTheDocument();
         });
+
+        fireEvent.click(screen.getByText('Register'));
 
         await waitFor(() => {
             expect(screen.getByText('Registration Page')).toBeInTheDocument();
