@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using L4H.Infrastructure.SeedData;
+using Microsoft.AspNetCore.Authorization;
 
 namespace L4H.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = "IsAdmin")]
 public class AdminSeedController : ControllerBase
 {
     private readonly SeedRunner _seedRunner;
