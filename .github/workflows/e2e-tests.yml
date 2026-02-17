@@ -53,7 +53,7 @@ jobs:
       run: dotnet build --no-restore --configuration Release
 
     - name: Install Playwright browsers and dependencies
-      run: pwsh tests/ui.e2e/bin/Release/net10.0/playwright.ps1 install --with-deps
+      run: pwsh tests/e2e/ui.e2e/bin/Release/net10.0/playwright.ps1 install --with-deps
 
     - name: Wait for SQL Server
       run: |
