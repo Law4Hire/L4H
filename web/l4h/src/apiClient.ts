@@ -46,7 +46,7 @@ export const apiClient = {
   },
 
   getMyVerifiedDocuments: async () => {
-    const response = await fetch(`${API_BASE_URL}/documentpool/mine/verified`);
+    const response = await fetch(`${API_BASE_URL}/documents/mine/verified`);
     if (!response.ok) throw new Error('Failed to fetch verified documents');
     return response.json();
   },

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
+using L4H.Infrastructure.Interfaces;
 using L4H.Infrastructure.Services;
 using System.Security.Claims;
 using L4H.Shared.Models;
+using L4H.Shared.Models.Dtos;
 
 namespace L4H.Api.Controllers;
 
@@ -22,11 +24,33 @@ public class DocumentsController : ControllerBase
     public DocumentsController(
         L4HDbContext context, 
         IFileUploadService fileUploadService,
-        ICannlawUserService userService)
+        ICannlawUserService userService,
+        IDocumentPoolService documentPoolService)
     {
         _context = context;
         _fileUploadService = fileUploadService;
         _userService = userService;
+        _documentPoolService = documentPoolService;
+    }
+
+    private readonly IDocumentPoolService _documentPoolService;
+
+    /// <summary>
+    /// Get verified legal documents for the current user from the document pool
+    /// </summary>
+    [HttpGet("mine/verified")]
+    [ProducesResponseType(typeof(DocumentPoolDto[]), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<DocumentPoolDto>>> GetMyVerified()
+    {
+        var userIdClaim = User.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var typedUserId = new UserId(userId);
+        var docs = await _documentPoolService.GetVerifiedDocumentsForUserAsync(typedUserId);
+        return Ok(docs);
     }
 
     /// <summary>
@@ -132,7 +156,22 @@ public class DocumentsController : ControllerBase
         var document = await _fileUploadService.GetDocumentByIdAsync(id);
         if (document == null) return NotFound();
 
-        // Access check omitted for brevity, should be implemented similarly to GetUserDocuments
+        // Access check
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase));
+        if (!isAdmin)
+        {
+            var subClaim = User.FindFirst("sub")?.Value;
+            if (document.UserId == null || subClaim != document.UserId.Value.ToString())
+            {
+                // Check if user is the assigned attorney
+                var user = await _userService.GetClientByIdAsync(document.UserId.Value);
+                var attorneyIdClaim = User.FindFirst("AttorneyId")?.Value;
+                if (user == null || !int.TryParse(attorneyIdClaim, out var attorneyId) || user.AssignedAttorneyId != attorneyId)
+                {
+                    return Forbid();
+                }
+            }
+        }
 
         return Ok(document);
     }
@@ -143,6 +182,26 @@ public class DocumentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteDocument(int id)
     {
+        var document = await _fileUploadService.GetDocumentByIdAsync(id);
+        if (document == null) return NotFound();
+
+        // Access check
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase));
+        if (!isAdmin)
+        {
+            var subClaim = User.FindFirst("sub")?.Value;
+            if (document.UserId == null || subClaim != document.UserId.Value.ToString())
+            {
+                // Check if user is the assigned attorney
+                var user = await _userService.GetClientByIdAsync(document.UserId.Value);
+                var attorneyIdClaim = User.FindFirst("AttorneyId")?.Value;
+                if (user == null || !int.TryParse(attorneyIdClaim, out var attorneyId) || user.AssignedAttorneyId != attorneyId)
+                {
+                    return Forbid();
+                }
+            }
+        }
+
         var result = await _fileUploadService.DeleteDocumentAsync(id);
         if (!result.Success) return BadRequest(result.ErrorMessage);
         return Ok();

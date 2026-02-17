@@ -9,6 +9,7 @@ namespace L4H.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[Authorize(Policy = "IsLegalProfessional")]
 public class DocumentPoolController : ControllerBase
 {
     private readonly IDocumentPoolService _documentPoolService;
@@ -18,24 +19,7 @@ public class DocumentPoolController : ControllerBase
         _documentPoolService = documentPoolService;
     }
 
-    [HttpGet("mine/verified")]
-    [Authorize]
-    public async Task<ActionResult<IEnumerable<DocumentPoolDto>>> GetMyVerified()
-    {
-        var userIdClaim = User.FindFirst("sub")?.Value;
-        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
-        {
-            return Unauthorized();
-        }
-
-        var typedUserId = new UserId(userId);
-        // Note: I need to add a method to the service for this
-        var docs = await _documentPoolService.GetVerifiedDocumentsForUserAsync(typedUserId);
-        return Ok(docs);
-    }
-
     [HttpGet("status/{status}")]
-    [Authorize(Policy = "IsAdminOrLegalProfessional")]
     public async Task<ActionResult<IEnumerable<DocumentPoolDto>>> GetByStatus(VerificationStatus status)
     {
         var docs = await _documentPoolService.GetDocumentsByStatusAsync(status);

@@ -116,6 +116,11 @@ public class AttorneyPhotoService : IAttorneyPhotoService
                 var attorney = await _context.Attorneys.FindAsync(attorneyId);
                 if (attorney != null) attorney.PhotoUrl = new Uri(nextPrimary.FileUrl, UriKind.RelativeOrAbsolute);
             }
+            else
+            {
+                var attorney = await _context.Attorneys.FindAsync(attorneyId);
+                if (attorney != null) attorney.PhotoUrl = null;
+            }
         }
 
         await _context.SaveChangesAsync();

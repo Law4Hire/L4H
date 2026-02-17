@@ -134,6 +134,17 @@ public class ClientsController : ControllerBase
         var existing = await _userService.GetClientByIdAsync(userId);
         if (existing == null) return NotFound();
 
+        // Access check
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase));
+        if (!isAdmin)
+        {
+            var attorneyIdClaim = User.FindFirst("AttorneyId")?.Value;
+            if (!int.TryParse(attorneyIdClaim, out var attorneyId) || existing.AssignedAttorneyId != attorneyId)
+            {
+                return Forbid();
+            }
+        }
+
         // Update properties
         if (request.FirstName != null) existing.FirstName = request.FirstName;
         if (request.LastName != null) existing.LastName = request.LastName;
