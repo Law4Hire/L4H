@@ -61,13 +61,15 @@ public class Attorney
     
     // Navigation properties for client billing system
     [System.Text.Json.Serialization.JsonIgnore]
-    public ICollection<Client> AssignedClients { get; } = new List<Client>();
+    public ICollection<User> AssignedUsers { get; } = new List<User>();
     
     [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<TimeEntry> TimeEntries { get; } = new List<TimeEntry>();
     
     [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<BillingRate> BillingRates { get; } = new List<BillingRate>();
+    
+    public ICollection<AttorneyImage> Images { get; } = new List<AttorneyImage>();
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

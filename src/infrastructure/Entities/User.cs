@@ -21,10 +21,14 @@ public class User
     public bool IsActive { get; set; } = true;
     
     // Attorney Association for Legal Professionals
-    public int? AttorneyId { get; set; }
+    public int? AttorneyProfileId { get; set; }
     [JsonIgnore]
+    public Attorney? AttorneyProfile { get; set; }
 
-    public Attorney? Attorney { get; set; }
+    // Client Relationship (User assigned to an Attorney)
+    public int? AssignedAttorneyId { get; set; }
+    [JsonIgnore]
+    public Attorney? AssignedAttorney { get; set; }
 
     // Extended Profile Information
     public string PhoneNumber { get; set; } = string.Empty;
@@ -87,4 +91,8 @@ public class User
     [JsonIgnore]
 
     public ICollection<UserSession> UserSessions { get; set; } = new List<UserSession>();
+    [JsonIgnore]
+    public ICollection<TimeEntry> TimeEntries { get; set; } = new List<TimeEntry>();
+    [JsonIgnore]
+    public ICollection<Document> Documents { get; set; } = new List<Document>();
 }

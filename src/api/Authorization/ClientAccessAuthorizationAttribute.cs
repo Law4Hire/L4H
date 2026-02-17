@@ -36,22 +36,22 @@ public class ClientAccessAuthorizationAttribute : Attribute, IAsyncAuthorization
             return;
         }
 
-        // Get client ID from route parameters
-        var clientIdParam = context.RouteData.Values["id"]?.ToString() ?? 
-                           context.RouteData.Values["clientId"]?.ToString();
+        // Get user ID from route parameters
+        var userIdParam = context.RouteData.Values["id"]?.ToString() ?? 
+                           context.RouteData.Values["userId"]?.ToString();
         
-        if (string.IsNullOrEmpty(clientIdParam) || !int.TryParse(clientIdParam, out var clientId))
+        if (string.IsNullOrEmpty(userIdParam) || !Guid.TryParse(userIdParam, out var targetUserId))
         {
-            // If no client ID in route, allow (will be handled by controller logic)
+            // If no user ID in route, allow (will be handled by controller logic)
             return;
         }
 
-        // Check if the client is assigned to this attorney
+        // Check if the target user is assigned to this attorney
         var dbContext = context.HttpContext.RequestServices.GetRequiredService<L4HDbContext>();
-        var client = await dbContext.Clients
-            .FirstOrDefaultAsync(c => c.Id == clientId);
+        var targetUser = await dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == new L4H.Shared.Models.UserId(targetUserId));
 
-        if (client == null || client.AssignedAttorneyId != attorneyId)
+        if (targetUser == null || targetUser.AssignedAttorneyId != attorneyId)
         {
             context.Result = new ForbidResult();
             return;

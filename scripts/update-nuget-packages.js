@@ -3,26 +3,26 @@ const path = require('path');
 
 const packageMappings = {
   // EntityFrameworkCore packages
-  'Microsoft.EntityFrameworkCore': '10.0.0-rc.2.24569.1',
-  'Microsoft.EntityFrameworkCore.SqlServer': '10.0.0-rc.2.24569.1',
-  'Microsoft.EntityFrameworkCore.Design': '10.0.0-rc.2.24569.1',
-  'Microsoft.EntityFrameworkCore.InMemory': '10.0.0-rc.2.24569.1',
+  'Microsoft.EntityFrameworkCore': '10.0.3.1',
+  'Microsoft.EntityFrameworkCore.SqlServer': '10.0.3.1',
+  'Microsoft.EntityFrameworkCore.Design': '10.0.3.1',
+  'Microsoft.EntityFrameworkCore.InMemory': '10.0.3.1',
 
   // ASP.NET Core packages
-  'Microsoft.AspNetCore.Authentication.JwtBearer': '10.0.0-rc.2.24569.4',
-  'Microsoft.AspNetCore.OpenApi': '10.0.0-rc.2.24569.4',
-  'Microsoft.AspNetCore.Mvc.Testing': '10.0.0-rc.2.24569.4',
+  'Microsoft.AspNetCore.Authentication.JwtBearer': '10.0.3.4',
+  'Microsoft.AspNetCore.OpenApi': '10.0.3.4',
+  'Microsoft.AspNetCore.Mvc.Testing': '10.0.3.4',
 
   // Extensions packages
-  'Microsoft.Extensions.Hosting': '10.0.0-rc.2.24569.1',
-  'Microsoft.Extensions.Http': '10.0.0-rc.2.24569.1',
-  'Microsoft.Extensions.Localization': '10.0.0-rc.2.24569.4',
-  'Microsoft.Extensions.Hosting.Abstractions': '10.0.0-rc.2.24569.1',
-  'Microsoft.Extensions.Logging.Abstractions': '10.0.0-rc.2.24569.1',
-  'Microsoft.Extensions.Options': '10.0.0-rc.2.24569.1',
-  'Microsoft.Extensions.Localization.Abstractions': '10.0.0-rc.2.24569.4',
-  'Microsoft.Extensions.Configuration.Abstractions': '10.0.0-rc.2.24569.1',
-  'Microsoft.Extensions.DependencyInjection': '10.0.0-rc.2.24569.1'
+  'Microsoft.Extensions.Hosting': '10.0.3.1',
+  'Microsoft.Extensions.Http': '10.0.3.1',
+  'Microsoft.Extensions.Localization': '10.0.3.4',
+  'Microsoft.Extensions.Hosting.Abstractions': '10.0.3.1',
+  'Microsoft.Extensions.Logging.Abstractions': '10.0.3.1',
+  'Microsoft.Extensions.Options': '10.0.3.1',
+  'Microsoft.Extensions.Localization.Abstractions': '10.0.3.4',
+  'Microsoft.Extensions.Configuration.Abstractions': '10.0.3.1',
+  'Microsoft.Extensions.DependencyInjection': '10.0.3.1'
 };
 
 function updateProjectFile(filePath) {

@@ -68,9 +68,13 @@ public class Worker : BackgroundService
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<L4HDbContext>();
         var scraperService = scope.ServiceProvider.GetRequiredService<WorkflowScraperService>();
+        var sentinelService = scope.ServiceProvider.GetRequiredService<IUscisVersionSentinelService>();
         
         try
         {
+            // Audit USCIS Form Versions
+            await sentinelService.AuditFormVersionsAsync(cancellationToken).ConfigureAwait(false);
+
             // Get all active visa types and countries to scrape
             var visaTypes = await context.VisaTypes.ToListAsync(cancellationToken).ConfigureAwait(false);
             var countries = await GetActiveCountriesAsync(context, cancellationToken).ConfigureAwait(false);

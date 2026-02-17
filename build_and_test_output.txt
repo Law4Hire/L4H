@@ -1,2 +1,0 @@
-test_build.sh: line 3: dotnet: command not found
-test_build.sh: line 6: dotnet: command not found

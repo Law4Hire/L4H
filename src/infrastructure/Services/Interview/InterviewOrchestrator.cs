@@ -31,10 +31,10 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         _context = context;
     }
 
-    public async Task<InterviewStartResult> StartAnonymousInterviewAsync(string? languageCode = null)
+    public async Task<InterviewStartResult> StartAnonymousInterviewAsync()
     {
         // Create new anonymous session
-        var session = await _sessionManager.CreateAnonymousSessionAsync(languageCode);
+        var session = await _sessionManager.CreateAnonymousSessionAsync();
 
         // Get first question
         var firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());
@@ -52,10 +52,10 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         };
     }
 
-    public async Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId, string? languageCode = null)
+    public async Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId)
     {
         // Create new authenticated session linked to the case
-        var session = await _sessionManager.CreateAuthenticatedSessionAsync(caseId, userId, languageCode);
+        var session = await _sessionManager.CreateAuthenticatedSessionAsync(caseId, userId);
 
         // Get first question
         var firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());

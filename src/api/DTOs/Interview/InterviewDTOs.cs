@@ -5,7 +5,6 @@ namespace L4H.Api.DTOs.Interview;
 /// </summary>
 public class StartInterviewRequest
 {
-    public string? LanguageCode { get; set; }
 }
 
 /// <summary>

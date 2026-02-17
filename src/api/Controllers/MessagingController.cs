@@ -1186,7 +1186,7 @@ public class MessagingController : ControllerBase
         else if (isStaff)
         {
             var currentUser = await _context.Users.FindAsync(userId);
-            var attorneyId = currentUser?.AttorneyId;
+            var attorneyId = currentUser?.AttorneyProfileId;
 
             // Legal Pros see assigned clients and all admins/staff
             // If they are an attorney with assigned cases, include those clients

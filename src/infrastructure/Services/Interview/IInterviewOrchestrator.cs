@@ -12,12 +12,12 @@ public interface IInterviewOrchestrator
     /// Starts a new anonymous interview session
     /// </summary>
     /// <returns>Session with first question</returns>
-    Task<InterviewStartResult> StartAnonymousInterviewAsync(string? languageCode = null);
+    Task<InterviewStartResult> StartAnonymousInterviewAsync();
 
     /// <summary>
     /// Starts a new authenticated interview session linked to a case
     /// </summary>
-    Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId, string? languageCode = null);
+    Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId);
 
     /// <summary>
     /// Resumes an existing interview session

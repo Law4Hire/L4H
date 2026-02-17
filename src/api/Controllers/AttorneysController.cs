@@ -264,6 +264,23 @@ public class AttorneysController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Get all images for an attorney
+    /// </summary>
+    [HttpGet("{id}/images")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<AttorneyImage>>> GetAttorneyImages(int id)
+    {
+        var images = await _context.AttorneyImages
+            .Where(i => i.AttorneyId == id)
+            .OrderByDescending(i => i.IsPrimary)
+            .ThenByDescending(i => i.CreatedAt)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return Ok(images);
+    }
+
     [HttpPost("{id}/photo")]
     [Authorize]
     public async Task<ActionResult> UploadAttorneyPhoto(int id, IFormFile photo)
@@ -280,12 +297,31 @@ public class AttorneysController : ControllerBase
 
         try
         {
-            if (attorney.PhotoUrl != null) await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
             var photoUrl = await _fileUploadService.UploadAttorneyPhotoAsync(photo, attorney.Name);
-            attorney.PhotoUrl = new Uri(photoUrl, UriKind.RelativeOrAbsolute);
-            attorney.UpdatedAt = DateTime.UtcNow;
+            
+            // Add to AttorneyImages table
+            var attorneyImage = new AttorneyImage
+            {
+                Id = Guid.NewGuid(),
+                AttorneyId = id,
+                FileUrl = photoUrl,
+                FileName = photo.FileName,
+                IsPrimary = false, // Not primary by default when uploading to a list
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // If this is the first image, make it primary
+            var hasImages = await _context.AttorneyImages.AnyAsync(i => i.AttorneyId == id).ConfigureAwait(false);
+            if (!hasImages)
+            {
+                attorneyImage.IsPrimary = true;
+                attorney.PhotoUrl = new Uri(photoUrl, UriKind.RelativeOrAbsolute);
+            }
+
+            _context.AttorneyImages.Add(attorneyImage);
             await _context.SaveChangesAsync();
-            return Ok(new { photoUrl });
+
+            return Ok(attorneyImage);
         }
         catch (Exception ex)
         {
@@ -293,9 +329,96 @@ public class AttorneysController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Select an existing image as the primary profile photo
+    /// </summary>
+    [HttpPost("{id}/images/{imageId}/select")]
+    [Authorize(Policy = "IsAdmin")]
+    public async Task<ActionResult> SelectAttorneyPhoto(int id, Guid imageId)
+    {
+        var attorney = await _context.Attorneys.FindAsync(id);
+        if (attorney == null) return NotFound("Attorney not found");
+
+        var image = await _context.AttorneyImages
+            .FirstOrDefaultAsync(i => i.Id == imageId && i.AttorneyId == id)
+            .ConfigureAwait(false);
+
+        if (image == null) return NotFound("Image not found");
+
+        // Clear existing primary
+        var existingPrimary = await _context.AttorneyImages
+            .Where(i => i.AttorneyId == id && i.IsPrimary)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        foreach (var p in existingPrimary)
+        {
+            p.IsPrimary = false;
+        }
+
+        // Set new primary
+        image.IsPrimary = true;
+        attorney.PhotoUrl = new Uri(image.FileUrl, UriKind.RelativeOrAbsolute);
+        attorney.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Primary photo updated", photoUrl = image.FileUrl });
+    }
+
+    [HttpDelete("{id}/images/{imageId}")]
+    [Authorize(Policy = "IsAdmin")]
+    public async Task<ActionResult> DeleteAttorneyPhoto(int id, Guid imageId)
+    {
+        var image = await _context.AttorneyImages
+            .FirstOrDefaultAsync(i => i.Id == imageId && i.AttorneyId == id)
+            .ConfigureAwait(false);
+
+        if (image == null) return NotFound();
+
+        try
+        {
+            // Delete physical file
+            await _fileUploadService.DeleteFileAsync(image.FileUrl);
+
+            _context.AttorneyImages.Remove(image);
+
+            // If we deleted the primary image, update the attorney profile
+            if (image.IsPrimary)
+            {
+                var attorney = await _context.Attorneys.FindAsync(id);
+                if (attorney != null)
+                {
+                    attorney.PhotoUrl = null;
+                    
+                    // Try to find another image to make primary
+                    var nextImage = await _context.AttorneyImages
+                        .Where(i => i.AttorneyId == id && i.Id != imageId)
+                        .OrderByDescending(i => i.CreatedAt)
+                        .FirstOrDefaultAsync()
+                        .ConfigureAwait(false);
+
+                    if (nextImage != null)
+                    {
+                        nextImage.IsPrimary = true;
+                        attorney.PhotoUrl = new Uri(nextImage.FileUrl, UriKind.RelativeOrAbsolute);
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Failed to delete photo: {ex.Message}");
+        }
+    }
+
     [HttpDelete("{id}/photo")]
     [Authorize(Policy = "IsAdmin")]
-    public async Task<ActionResult> DeleteAttorneyPhoto(int id)
+    [Obsolete("Use DeleteAttorneyPhoto with imageId instead")]
+    public async Task<ActionResult> DeleteAttorneyPhotoLegacy(int id)
     {
         var attorney = await _context.Attorneys.FindAsync(id);
         if (attorney == null) return NotFound();
@@ -314,9 +437,9 @@ public class AttorneysController : ControllerBase
     [Authorize(Policy = "IsAdmin")]
     public async Task<ActionResult> DeleteAttorney(int id)
     {
-        var attorney = await _context.Attorneys.Include(a => a.AssignedClients).FirstOrDefaultAsync(a => a.Id == id);
+        var attorney = await _context.Attorneys.Include(a => a.AssignedUsers).FirstOrDefaultAsync(a => a.Id == id);
         if (attorney == null) return NotFound();
-        if (attorney.AssignedClients.Any()) return BadRequest("Cannot delete attorney with assigned clients.");
+        if (attorney.AssignedUsers.Any()) return BadRequest("Cannot delete attorney with assigned clients.");
 
         if (attorney.PhotoUrl != null) await _fileUploadService.DeleteFileAsync(attorney.PhotoUrl.ToString());
         _context.Attorneys.Remove(attorney);
@@ -331,6 +454,18 @@ public class AttorneysController : ControllerBase
         var attorney = await _context.Attorneys.FindAsync(id);
         if (attorney == null) return NotFound();
         attorney.IsActive = false;
+        attorney.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpPost("{id}/reactivate")]
+    [Authorize(Policy = "IsAdmin")]
+    public async Task<ActionResult> ReactivateAttorney(int id)
+    {
+        var attorney = await _context.Attorneys.FindAsync(id);
+        if (attorney == null) return NotFound();
+        attorney.IsActive = true;
         attorney.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         return Ok();

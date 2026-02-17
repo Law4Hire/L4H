@@ -11,14 +11,14 @@ public class TimeEntry
     public CaseId CaseId { get; set; }
     public Case Case { get; set; } = null!;
 
-    public int ClientId { get; set; }
-    public Client Client { get; set; } = null!;
+        public UserId? UserId { get; set; }
+        public User? User { get; set; }
     
     public int AttorneyId { get; set; }
     public Attorney Attorney { get; set; } = null!;
     
     public DateTime StartTime { get; set; }
-    public DateTime EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
     
     /// <summary>
     /// Duration in hours, rounded to 6-minute increments (0.1 hour billing units)
@@ -40,18 +40,26 @@ public class TimeEntry
     [Column(TypeName = "decimal(10,2)")]
     public decimal BillableAmount { get; set; }
 
+    public bool IsBillable { get; set; } = true;
+    public string ServiceType { get; set; } = "Legal";
+
     public bool IsBilled { get; set; }
     public DateTime? BilledDate { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public string CreatedBy { get; set; } = string.Empty;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public string UpdatedBy { get; set; } = string.Empty;
     
     /// <summary>
     /// Validates and rounds duration to 6-minute increments (0.1 hour)
     /// </summary>
     public void RoundDurationToSixMinuteIncrements(bool roundUp = false)
     {
+        if (!EndTime.HasValue) return;
+
         // Convert to 6-minute increments (0.1 hour units)
-        var totalMinutes = (EndTime - StartTime).TotalMinutes;
+        var totalMinutes = (EndTime.Value - StartTime).TotalMinutes;
         
         // If duration is less than 6 minutes and not rounding up, it might be 0
         // User requirement: "Billing does not begin until ... 5 minutes 59 is passed." 

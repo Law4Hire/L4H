@@ -33,7 +33,7 @@ public class AnonymousInterviewController : ControllerBase
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var result = await _orchestrator.StartAnonymousInterviewAsync(request.LanguageCode);
+        var result = await _orchestrator.StartAnonymousInterviewAsync();
         return Ok(result.ToStartResponse());
     }
 

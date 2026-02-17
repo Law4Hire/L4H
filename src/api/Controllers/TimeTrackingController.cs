@@ -5,6 +5,7 @@ using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
 using System.Security.Claims;
+using System.Globalization;
 
 namespace L4H.Api.Controllers;
 
@@ -35,42 +36,6 @@ public class TimeTrackingController : ControllerBase
     {
         var attorneyId = await GetCurrentAttorneyId();
         
-        // Fallback: If AttorneyId is null on the user, try to find by email
-        if (attorneyId == null)
-        {
-            var userIdClaim = User.FindFirst("sub")?.Value;
-            _logger.LogWarning("AttorneyId is null for user claim sub: {Sub}. Attempting fallback...", userIdClaim);
-            
-            if (Guid.TryParse(userIdClaim, out var userId))
-            {
-                var user = await _context.Users.FindAsync(new UserId(userId));
-                if (user != null)
-                {
-                    _logger.LogWarning("User found: {Email}. AttorneyId: {AttorneyId}", user.Email, user.AttorneyId);
-                    if (!string.IsNullOrEmpty(user.Email))
-                    {
-                        var fallbackAttorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Email == user.Email);
-                        if (fallbackAttorney != null)
-                        {
-                            _logger.LogInformation("Fallback found attorney by email: {Id}", fallbackAttorney.Id);
-                            attorneyId = fallbackAttorney.Id;
-                            // Optional: Self-heal the link
-                            user.AttorneyId = attorneyId;
-                            await _context.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            _logger.LogWarning("Fallback failed: No attorney found with email {Email}", user.Email);
-                        }
-                    }
-                }
-                else
-                {
-                    _logger.LogError("User not found in DB with ID: {UserId}", userId);
-                }
-            }
-        }
-
         if (attorneyId == null)
         {
             var userIdClaim = User.FindFirst("sub")?.Value;
@@ -84,9 +49,9 @@ public class TimeTrackingController : ControllerBase
             return BadRequest($"Attorney not found or inactive (ID: {attorneyId})");
         }
 
-        // Resolve Case and Client
+        // Resolve Case and User
         Case? caseEntity = null;
-        Client? client = null;
+        User? clientUser = null;
 
         if (request.CaseId.HasValue)
         {
@@ -100,76 +65,52 @@ public class TimeTrackingController : ControllerBase
                 return BadRequest("Case not found");
             }
 
-            // Find client by matching user email (Cannlaw specific mapping)
-            client = await _context.Clients.FirstOrDefaultAsync(c => c.Email == caseEntity.User.Email);
-
-            // Auto-create Client if missing but User exists
-            if (client == null && caseEntity.User != null)
-            {
-                client = new Client
-                {
-                    FirstName = caseEntity.User.FirstName ?? "Unknown",
-                    LastName = caseEntity.User.LastName ?? "Unknown",
-                    Email = caseEntity.User.Email,
-                    Phone = caseEntity.User.PhoneNumber ?? "",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    CreatedBy = "System (TimeTracking)"
-                };
-                _context.Clients.Add(client);
-                await _context.SaveChangesAsync();
-            }
+            clientUser = caseEntity.User;
         }
-        else if (request.ClientId.HasValue)
+        else if (request.ClientId.HasValue) // ClientId here is actually UserId (Guid)
         {
-            // Direct client billing
-            client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == request.ClientId.Value);
+            var userId = new UserId(request.ClientId.Value);
+            clientUser = await _context.Users.FindAsync(userId);
             
-            if (client != null)
+            if (clientUser != null)
             {
                 // We MUST have a valid CaseId for the TimeEntry database constraint.
-                // Try to find an active case for this client via email -> User -> Case
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == client.Email);
-                if (user != null)
-                {
-                    caseEntity = await _context.Cases
-                        .Include(c => c.User)
-                        .Where(c => c.UserId == user.Id)
-                        .OrderByDescending(c => c.LastActivityAt)
-                        .FirstOrDefaultAsync();
-                }
+                caseEntity = await _context.Cases
+                    .Where(c => c.UserId == userId)
+                    .OrderByDescending(c => c.LastActivityAt)
+                    .FirstOrDefaultAsync();
                 
                 if (caseEntity == null)
                 {
-                    // If no case exists, we cannot create a time entry due to FK constraints.
-                    // Option: Create a default "General Matter" case for this user?
-                    // For now, return specific error.
-                    return BadRequest($"Client {client.FirstName} {client.LastName} has no active cases. Please create a case first.");
+                    return BadRequest($"User {clientUser.FirstName} {clientUser.LastName} has no active cases. Please create a case first.");
                 }
             }
         }
 
-        if (client == null)
+        if (clientUser == null)
         {
-            return BadRequest("Client not found");
+            return BadRequest("Client user not found");
         }
 
         var isAdmin = User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase));
-        _logger.LogInformation("Auth Check: User {User}, isAdmin: {IsAdmin}, ClientAssignedAtty: {ClientAtty}, CurrentAtty: {AttyId}", 
-            User.FindFirst("sub")?.Value, isAdmin, client.AssignedAttorneyId, attorneyId);
-
-        if (!isAdmin && client.AssignedAttorneyId != attorneyId)
+        
+        // Access check - user must be assigned to attorney or admin
+        if (!isAdmin && clientUser.AssignedAttorneyId != attorneyId)
         {
-            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails 
-            { 
-                Title = "Forbidden", 
-                Detail = $"You can only track time for your assigned clients. Client Assigned ID: {client.AssignedAttorneyId}, Your Attorney ID: {attorneyId}" 
-            });
+            // Also allow if they are working on a case assigned to them, even if client isn't
+            if (caseEntity?.AssignedStaffId != attorneyId)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails 
+                { 
+                    Title = "Forbidden", 
+                    Detail = $"You can only track time for your assigned clients or cases." 
+                });
+            }
         }
 
         // Check for existing active time tracking session
         var activeSession = await _context.TimeEntries
-            .FirstOrDefaultAsync(te => te.AttorneyId == attorneyId && te.EndTime == default);
+            .FirstOrDefaultAsync(te => te.AttorneyId == attorneyId && te.EndTime == null);
 
         if (activeSession != null)
         {
@@ -180,34 +121,21 @@ public class TimeTrackingController : ControllerBase
         var timeEntry = new TimeEntry
         {
             CaseId = caseEntity?.Id ?? default, 
-            ClientId = client.Id,
+            UserId = clientUser.Id,
             AttorneyId = attorneyId.Value,
             StartTime = DateTime.UtcNow,
             Description = request.Description ?? string.Empty,
             Notes = request.Notes ?? string.Empty,
             HourlyRate = attorney.DefaultHourlyRate,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = User.FindFirst(ClaimTypes.Email)?.Value ?? "system",
+            UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value ?? "system",
+            IsBillable = true, // Default to billable
+            ServiceType = "Legal"
         };
         
-        if (caseEntity != null)
-        {
-            timeEntry.CaseId = caseEntity.Id;
-        }
-        else
-        {
-            return BadRequest("Case ID is required for time tracking.");
-        }
-
         _context.TimeEntries.Add(timeEntry);
         await _context.SaveChangesAsync();
-
-        // Load related entities for response
-        await _context.Entry(timeEntry)
-            .Reference(te => te.Client)
-            .LoadAsync();
-        await _context.Entry(timeEntry)
-            .Reference(te => te.Attorney)
-            .LoadAsync();
 
         return CreatedAtAction(nameof(GetTimeEntry), new { id = timeEntry.Id }, timeEntry);
     }
@@ -226,7 +154,7 @@ public class TimeTrackingController : ControllerBase
         if (attorneyId == null) return BadRequest("Invalid user");
 
         var timeEntry = await _context.TimeEntries
-            .Include(te => te.Client)
+            .Include(te => te.User)
             .Include(te => te.Attorney)
             .FirstOrDefaultAsync(te => te.Id == id);
 
@@ -242,7 +170,7 @@ public class TimeTrackingController : ControllerBase
             return Forbid();
         }
 
-        if (timeEntry.EndTime != default)
+        if (timeEntry.EndTime != null)
         {
             return BadRequest("Time tracking session is already stopped");
         }
@@ -269,6 +197,9 @@ public class TimeTrackingController : ControllerBase
 
         // Calculate duration and billing amount with rounding preference
         timeEntry.RoundDurationToSixMinuteIncrements(roundUp);
+        
+        timeEntry.UpdatedAt = DateTime.UtcNow;
+        timeEntry.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value ?? "system";
 
         await _context.SaveChangesAsync();
 
@@ -287,13 +218,12 @@ public class TimeTrackingController : ControllerBase
         if (attorneyId == null) return BadRequest("Invalid user");
 
         var activeSession = await _context.TimeEntries
-            .Include(te => te.Client)
+            .Include(te => te.User)
             .Include(te => te.Attorney)
-            .FirstOrDefaultAsync(te => te.AttorneyId == attorneyId && te.EndTime == default);
+            .FirstOrDefaultAsync(te => te.AttorneyId == attorneyId && te.EndTime == null);
 
         if (activeSession == null)
         {
-            // Return 204 No Content instead of 404 to avoid console errors in frontend
             return NoContent();
         }
 
@@ -313,7 +243,7 @@ public class TimeTrackingController : ControllerBase
         if (attorneyId == null) return BadRequest("Invalid user");
 
         var query = _context.TimeEntries
-            .Include(te => te.Client)
+            .Include(te => te.User)
             .Include(te => te.Attorney)
             .AsQueryable();
 
@@ -340,7 +270,7 @@ public class TimeTrackingController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(TimeEntry[]), StatusCodes.Status200OK)]
     public async Task<ActionResult<TimeEntry[]>> GetTimeEntries(
-        [FromQuery] int? clientId = null,
+        [FromQuery] Guid? clientId = null,
         [FromQuery] int? attorneyId = null,
         [FromQuery] DateTime? startDate = null,
         [FromQuery] DateTime? endDate = null,
@@ -352,7 +282,7 @@ public class TimeTrackingController : ControllerBase
         if (currentAttorneyId == null) return BadRequest("Invalid user");
 
         var query = _context.TimeEntries
-            .Include(te => te.Client)
+            .Include(te => te.User)
             .Include(te => te.Attorney)
             .AsQueryable();
 
@@ -367,7 +297,8 @@ public class TimeTrackingController : ControllerBase
         // Apply filters
         if (clientId.HasValue)
         {
-            query = query.Where(te => te.ClientId == clientId.Value);
+            var userId = new UserId(clientId.Value);
+            query = query.Where(te => te.UserId == userId);
         }
 
         if (attorneyId.HasValue && isAdmin)
@@ -391,7 +322,7 @@ public class TimeTrackingController : ControllerBase
         }
 
         // Only show completed time entries
-        query = query.Where(te => te.EndTime != default);
+        query = query.Where(te => te.EndTime != null);
 
         var totalCount = await query.CountAsync();
         var timeEntries = await query
@@ -409,10 +340,6 @@ public class TimeTrackingController : ControllerBase
     /// </summary>
     [HttpPut("{id}")]
     [HttpPut("entries/{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> UpdateTimeEntry(int id, [FromBody] UpdateTimeEntryRequest request)
     {
         var attorneyId = await GetCurrentAttorneyId();
@@ -424,26 +351,22 @@ public class TimeTrackingController : ControllerBase
             return NotFound();
         }
 
-        // Verify ownership (unless admin)
-        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase)));
+        var isAdmin = User.HasClaim("is_admin", "true");
         if (!isAdmin && timeEntry.AttorneyId != attorneyId)
         {
             return Forbid();
         }
 
-        // Cannot edit billed time entries
         if (timeEntry.IsBilled)
         {
             return BadRequest("Cannot edit billed time entries");
         }
 
-        // Cannot edit active time entries
-        if (timeEntry.EndTime == default)
+        if (timeEntry.EndTime == null)
         {
             return BadRequest("Cannot edit active time tracking session. Stop it first.");
         }
 
-        // Update fields
         if (!string.IsNullOrWhiteSpace(request.Description))
         {
             timeEntry.Description = request.Description;
@@ -464,26 +387,20 @@ public class TimeTrackingController : ControllerBase
             timeEntry.StartTime = request.StartTime.Value;
             timeEntry.EndTime = request.EndTime.Value;
 
-            // Get site configuration for billing rules
             var config = await _context.SiteConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync();
             var roundUp = config?.RoundBillingUp ?? false;
-
-            // Recalculate duration and billing
             timeEntry.RoundDurationToSixMinuteIncrements(roundUp);
         }
         else if (request.Duration.HasValue)
         {
-            // Validate positive duration
             if (request.Duration.Value <= 0)
             {
                 return BadRequest("Duration must be greater than zero");
             }
 
-            // Get site configuration for billing rules (respect RoundBillingUp setting)
             var config = await _context.SiteConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync();
             var roundUp = config?.RoundBillingUp ?? false;
 
-            // Round to 6-minute (0.1 hour) increments based on configuration
             decimal roundedDuration;
             if (roundUp)
             {
@@ -494,24 +411,19 @@ public class TimeTrackingController : ControllerBase
                 roundedDuration = Math.Floor(request.Duration.Value / 0.1m) * 0.1m;
             }
 
-            // Ensure minimum of 0.1 hours after rounding
-            if (roundedDuration <= 0)
-            {
-                roundedDuration = 0.1m;
-            }
+            if (roundedDuration <= 0) roundedDuration = 0.1m;
 
             timeEntry.Duration = roundedDuration;
-
-            // Use the entry's stored HourlyRate to preserve historical rates
-            // (don't fetch attorney's current DefaultHourlyRate which may have changed)
             timeEntry.BillableAmount = roundedDuration * timeEntry.HourlyRate;
 
-            // Adjust end time to match the new duration
             if (timeEntry.StartTime != default)
             {
                 timeEntry.EndTime = timeEntry.StartTime.AddHours((double)roundedDuration);
             }
         }
+        
+        timeEntry.UpdatedAt = DateTime.UtcNow;
+        timeEntry.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value ?? "system";
 
         await _context.SaveChangesAsync();
         return Ok(timeEntry);
@@ -522,10 +434,6 @@ public class TimeTrackingController : ControllerBase
     /// </summary>
     [HttpDelete("{id}")]
     [HttpDelete("entries/{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> DeleteTimeEntry(int id)
     {
         var attorneyId = await GetCurrentAttorneyId();
@@ -537,14 +445,12 @@ public class TimeTrackingController : ControllerBase
             return NotFound();
         }
 
-        // Verify ownership (unless admin)
-        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase)));
+        var isAdmin = User.HasClaim("is_admin", "true");
         if (!isAdmin && timeEntry.AttorneyId != attorneyId)
         {
             return Forbid();
         }
 
-        // Cannot delete billed time entries
         if (timeEntry.IsBilled)
         {
             return BadRequest("Cannot delete billed time entries");
@@ -555,6 +461,7 @@ public class TimeTrackingController : ControllerBase
 
         return Ok();
     }
+    
     /// <summary>
     /// Get time tracking statistics
     /// </summary>
@@ -600,25 +507,27 @@ public class TimeTrackingController : ControllerBase
         }
 
         var user = await _context.Users.FindAsync(new UserId(userId));
-        return user?.AttorneyId;
+        return user?.AttorneyProfileId;
     }
 }
 
 public class TimeTrackingStats
 {
-            public decimal HoursToday { get; set; }
-            public decimal HoursThisWeek { get; set; }
-            public decimal UnbilledAmount { get; set; }
-        }
+    public decimal HoursToday { get; set; }
+    public decimal HoursThisWeek { get; set; }
+    public decimal UnbilledAmount { get; set; }
+}
     
-        // Request/Response Models
-        public class StartTimeTrackingRequest
-        {
-            public int? ClientId { get; set; }
-            public Guid? CaseId { get; set; }
-            public string? Description { get; set; }
-            public string? Notes { get; set; }
-        }public class StopTimeTrackingRequest
+// Request/Response Models
+public class StartTimeTrackingRequest
+{
+    public Guid? ClientId { get; set; }
+    public Guid? CaseId { get; set; }
+    public string? Description { get; set; }
+    public string? Notes { get; set; }
+}
+
+public class StopTimeTrackingRequest
 {
     public string? Description { get; set; }
     public string? Notes { get; set; }

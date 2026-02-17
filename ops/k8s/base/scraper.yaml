@@ -19,6 +19,11 @@ spec:
         image: ghcr.io/law4hire/l4h-scraper:latest  # Will be updated by CI/CD
         imagePullPolicy: IfNotPresent
         env:
+        - name: SQL_SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: l4h-secrets
+              key: sql-sa-password
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
         - name: Scraper__Cron
@@ -29,11 +34,6 @@ spec:
           value: "true"
         - name: ConnectionStrings__SqlServer
           value: "Server=sqlserver,1433;Database=L4H;User Id=sa;Password=$(SQL_SA_PASSWORD);TrustServerCertificate=True;"
-        - name: SQL_SA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: l4h-secrets
-              key: sql-sa-password
         resources:
           requests:
             memory: "256Mi"

@@ -1,9 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
-using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
+using System.Security.Claims;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace L4H.Infrastructure.Services;
 
@@ -50,9 +52,9 @@ public class JwtTokenService : IJwtTokenService
         }
 
         // Add attorney assignment information for legal professionals
-        if (user.IsLegalProfessional && user.AttorneyId.HasValue)
+        if (user.IsLegalProfessional && user.AttorneyProfileId.HasValue)
         {
-            claims.Add(new Claim("attorney_id", user.AttorneyId.Value.ToString()));
+            claims.Add(new Claim("AttorneyId", user.AttorneyProfileId.Value.ToString(CultureInfo.InvariantCulture)));
         }
 
         // Add name claims if available

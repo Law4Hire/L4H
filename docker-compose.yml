@@ -24,17 +24,44 @@ services:
     container_name: l4h-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=L4H;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;
+      - ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=L4H;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;
       - Logging__LogLevel__Default=Information
       - ADMIN_SEED_PASSWORD=SecureTest123!
     ports:
-      - "8765:8080"
+      - "8766:8080"
     depends_on:
       sqlserver:
         condition: service_healthy
     volumes:
       - ./data/uploads:/app/uploads
     restart: unless-stopped
+
+  upload-gateway:
+    build:
+      context: .
+      dockerfile: src/upload-gateway/Dockerfile
+    container_name: l4h-upload-gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Uploads__Token__SigningKey=SecureTest123!UploadKey
+      - Logging__LogLevel__Default=Information
+    ports:
+      - "7070:7070"
+    volumes:
+      - ./data/uploads:/data/uploads
+
+  scraper:
+    build:
+      context: .
+      dockerfile: src/scraper/Dockerfile
+    container_name: l4h-scraper
+    environment:
+      - ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=L4H;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./data/scraped:/data/scraped
 
   law4hire:
     build:

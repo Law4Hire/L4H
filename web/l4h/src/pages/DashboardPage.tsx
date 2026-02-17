@@ -114,6 +114,17 @@ const DashboardPage: React.FC = () => {
     navigate(`/cases/${caseId}`)
   }
 
+  const handlePayNow = async (caseId: string) => {
+    try {
+      const response = await apiClient.createCheckoutSession(caseId);
+      if (response.checkoutUrl) {
+        window.location.href = response.checkoutUrl;
+      }
+    } catch (err) {
+      showError('Failed to initiate payment');
+    }
+  }
+
   const getStatusBadge = (status: string) => {
     const statusClasses = {
       active: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400',
@@ -226,6 +237,16 @@ const DashboardPage: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                   {getStatusBadge(caseItem.status)}
+                  {caseItem.status === 'pending' && (
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      onClick={() => handlePayNow(caseItem.id)}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {'Pay Now'}
+                    </Button>
+                  )}
                   <Button
                     size="sm"
                     variant="outline"
@@ -241,6 +262,30 @@ const DashboardPage: React.FC = () => {
             ))}
           </div>
         )}
+      </Card>
+
+      {/* Forms to Complete (Epic #27 Integration) */}
+      <Card title={'Forms to Complete'}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 border border-blue-100 bg-blue-50/30 dark:bg-blue-900/10 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                <span className="text-xl">📄</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{'I-129 Petition for Nonimmigrant Worker'}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{'Action required: Complete missing fields'}</p>
+              </div>
+            </div>
+            <Button 
+              size="sm" 
+              variant="primary" 
+              onClick={() => navigate('/document-interview/00000000-0000-0000-0000-000000000000')}
+            >
+              {'Complete Form'}
+            </Button>
+          </div>
+        </div>
       </Card>
 
       {/* Visa Recommendation Modal */}

@@ -19,6 +19,7 @@ const VerifyPage = lazy(() => import('./pages/VerifyPage'))
 const VisaLibraryPage = lazy(() => import('./pages/VisaLibraryPage'))
 const InterviewPage = lazy(() => import('./pages/InterviewPage'))
 const VisaResultsPage = lazy(() => import('./pages/VisaResultsPage'))
+const DocumentInterviewPage = lazy(() => import('./pages/DocumentInterviewPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
 const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
@@ -33,6 +34,7 @@ const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
 const SystemSettingsPage = lazy(() => import('./pages/admin/SystemSettingsPage'))
 const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
+const DocumentPoolPage = lazy(() => import('./pages/admin/DocumentPoolPage'))
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -272,6 +274,21 @@ function App() {
             </Layout>
           }
         />
+        <Route
+          path="/document-interview/:formId"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Smart Form Completion'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <DocumentInterviewPage />
+              </Layout>
+            </RouteGuard>
+          }
+        />
         <Route 
           path="/admin" 
           element={
@@ -463,6 +480,21 @@ function App() {
                 isAuthenticated={isAuthenticated}
               >
                 <AdminReportsPage />
+              </Layout>
+            </RouteGuard>
+          }
+        />
+        <Route
+          path="/admin/document-pool"
+          element={
+            <RouteGuard>
+              <Layout
+                title={'Document Pool Management'}
+                showUserMenu={true}
+                user={user}
+                isAuthenticated={isAuthenticated}
+              >
+                <DocumentPoolPage />
               </Layout>
             </RouteGuard>
           }

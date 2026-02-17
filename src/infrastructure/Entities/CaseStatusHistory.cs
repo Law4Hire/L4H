@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using L4H.Shared.Models;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -6,11 +7,11 @@ public class CaseStatusHistory
 {
     public int Id { get; set; }
     
-    public int CaseId { get; set; }
-    public CannlawCase Case { get; set; } = null!;
+    public CaseId CaseId { get; set; }
+    public Case Case { get; set; } = null!;
     
-    public CaseStatus FromStatus { get; set; }
-    public CaseStatus ToStatus { get; set; }
+    public string FromStatus { get; set; } = string.Empty; // Was CaseStatus enum
+    public string ToStatus { get; set; } = string.Empty; // Was CaseStatus enum
     
     [MaxLength(1000)]
     public string Notes { get; set; } = string.Empty;

@@ -17,7 +17,7 @@ public class SessionManager : ISessionManager
         _context = context;
     }
 
-    public async Task<InterviewSession> CreateAnonymousSessionAsync(string? languageCode = null)
+    public async Task<InterviewSession> CreateAnonymousSessionAsync()
     {
         var session = new InterviewSession
         {
@@ -33,7 +33,7 @@ public class SessionManager : ISessionManager
         return session;
     }
 
-    public async Task<InterviewSession> CreateAuthenticatedSessionAsync(CaseId caseId, UserId userId, string? languageCode = null)
+    public async Task<InterviewSession> CreateAuthenticatedSessionAsync(CaseId caseId, UserId userId)
     {
         var session = new InterviewSession
         {

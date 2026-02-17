@@ -893,6 +893,38 @@ namespace L4H.Infrastructure.Migrations
                     b.ToTable("Attorneys");
                 });
 
+            modelBuilder.Entity("L4H.Infrastructure.Entities.AttorneyImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AttorneyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttorneyId");
+
+                    b.ToTable("AttorneyImages");
+                });
+
             modelBuilder.Entity("L4H.Infrastructure.Entities.AuditLog", b =>
                 {
                     b.Property<long>("Id")
@@ -1059,20 +1091,15 @@ namespace L4H.Infrastructure.Migrations
                     b.ToTable("BillingRates");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CannlawCase", b =>
+            modelBuilder.Entity("L4H.Infrastructure.Entities.Case", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("AssignedStaffId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CaseType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("ClientId")
+                    b.Property<int?>("AttorneySelectedVisaTypeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CompletionDate")
@@ -1091,51 +1118,6 @@ namespace L4H.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("RejectionReason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("StartDate");
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("CannlawCases");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Case", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("AssignedStaffId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AttorneySelectedVisaTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsInterviewLocked")
                         .HasColumnType("bit");
 
@@ -1145,8 +1127,21 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("LastActivityAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<int?>("PackageId")
                         .HasColumnType("int");
+
+                    b.Property<string>("RejectionReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -1239,8 +1234,8 @@ namespace L4H.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CaseId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CaseId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ChangedAt")
                         .HasColumnType("datetime2");
@@ -1672,77 +1667,6 @@ namespace L4H.Infrastructure.Migrations
                     b.ToTable("CitizenshipTestResults");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Client", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("AssignedAttorneyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CountryOfOrigin")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignedAttorneyId");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("Email");
-
-                    b.ToTable("Clients");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.ContactMessage", b =>
                 {
                     b.Property<int>("Id")
@@ -1961,9 +1885,6 @@ namespace L4H.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -2017,17 +1938,99 @@ namespace L4H.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Category");
-
-                    b.HasIndex("ClientId");
 
                     b.HasIndex("IsConfidential");
 
                     b.HasIndex("UploadDate");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("L4H.Infrastructure.Entities.DocumentPool", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AssignedCaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AssignedUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("InternalNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StorageFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UploadedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("VerifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("VerifiedByStaffId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedCaseId");
+
+                    b.HasIndex("AssignedUserId");
+
+                    b.HasIndex("VerifiedByStaffId");
+
+                    b.ToTable("DocumentPool");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.EmailVerificationToken", b =>
@@ -2170,6 +2173,49 @@ namespace L4H.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("FormFields");
+                });
+
+            modelBuilder.Entity("L4H.Infrastructure.Entities.FormFieldMapping", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DefaultValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FieldType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("FormId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FoxlinDataKey")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsReadOnly")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PdfFieldId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FormId");
+
+                    b.ToTable("FormFieldMappings");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.FormInstance", b =>
@@ -3775,11 +3821,12 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<Guid>("CaseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -3789,11 +3836,14 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<decimal>("Duration")
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<DateTime>("EndTime")
+                    b.Property<DateTime?>("EndTime")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("HourlyRate")
                         .HasColumnType("decimal(10,2)");
+
+                    b.Property<bool>("IsBillable")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsBilled")
                         .HasColumnType("bit");
@@ -3803,8 +3853,22 @@ namespace L4H.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -3812,11 +3876,11 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasIndex("CaseId");
 
-                    b.HasIndex("ClientId");
-
                     b.HasIndex("IsBilled");
 
                     b.HasIndex("StartTime");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("TimeEntries");
                 });
@@ -3965,7 +4029,10 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("AttorneyId")
+                    b.Property<int?>("AssignedAttorneyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AttorneyProfileId")
                         .HasColumnType("int");
 
                     b.Property<string>("Citizenship")
@@ -4062,7 +4129,9 @@ namespace L4H.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AttorneyId");
+                    b.HasIndex("AssignedAttorneyId");
+
+                    b.HasIndex("AttorneyProfileId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -4826,6 +4895,17 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Staff");
                 });
 
+            modelBuilder.Entity("L4H.Infrastructure.Entities.AttorneyImage", b =>
+                {
+                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "Attorney")
+                        .WithMany("Images")
+                        .HasForeignKey("AttorneyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attorney");
+                });
+
             modelBuilder.Entity("L4H.Infrastructure.Entities.AuditLog", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.User", "ActorUser")
@@ -4856,17 +4936,6 @@ namespace L4H.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Attorney");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CannlawCase", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Client", "Client")
-                        .WithMany("Cases")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Case", b =>
@@ -4914,7 +4983,7 @@ namespace L4H.Infrastructure.Migrations
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.CaseStatusHistory", b =>
                 {
-                    b.HasOne("L4H.Infrastructure.Entities.CannlawCase", "Case")
+                    b.HasOne("L4H.Infrastructure.Entities.Case", "Case")
                         .WithMany("StatusHistory")
                         .HasForeignKey("CaseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4975,16 +5044,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("CitizenshipCase");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Client", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "AssignedAttorney")
-                        .WithMany("AssignedClients")
-                        .HasForeignKey("AssignedAttorneyId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("AssignedAttorney");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.CountryVisaType", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.Country", "Country")
@@ -5017,13 +5076,33 @@ namespace L4H.Infrastructure.Migrations
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Document", b =>
                 {
-                    b.HasOne("L4H.Infrastructure.Entities.Client", "Client")
+                    b.HasOne("L4H.Infrastructure.Entities.User", "User")
                         .WithMany("Documents")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("Client");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("L4H.Infrastructure.Entities.DocumentPool", b =>
+                {
+                    b.HasOne("L4H.Infrastructure.Entities.Case", "AssignedCase")
+                        .WithMany()
+                        .HasForeignKey("AssignedCaseId");
+
+                    b.HasOne("L4H.Infrastructure.Entities.User", "AssignedUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedUserId");
+
+                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "VerifiedByStaff")
+                        .WithMany()
+                        .HasForeignKey("VerifiedByStaffId");
+
+                    b.Navigation("AssignedCase");
+
+                    b.Navigation("AssignedUser");
+
+                    b.Navigation("VerifiedByStaff");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.EmailVerificationToken", b =>
@@ -5092,6 +5171,17 @@ namespace L4H.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("L4H.Infrastructure.Entities.FormFieldMapping", b =>
+                {
+                    b.HasOne("L4H.Infrastructure.Entities.USCISFormEntity", "Form")
+                        .WithMany()
+                        .HasForeignKey("FormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Form");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.FormInstance", b =>
@@ -5473,17 +5563,16 @@ namespace L4H.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("L4H.Infrastructure.Entities.Client", "Client")
+                    b.HasOne("L4H.Infrastructure.Entities.User", "User")
                         .WithMany("TimeEntries")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Attorney");
 
                     b.Navigation("Case");
 
-                    b.Navigation("Client");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.USCISFormEntity", b =>
@@ -5516,12 +5605,19 @@ namespace L4H.Infrastructure.Migrations
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.User", b =>
                 {
-                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "Attorney")
-                        .WithMany()
-                        .HasForeignKey("AttorneyId")
+                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "AssignedAttorney")
+                        .WithMany("AssignedUsers")
+                        .HasForeignKey("AssignedAttorneyId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Attorney");
+                    b.HasOne("L4H.Infrastructure.Entities.Attorney", "AttorneyProfile")
+                        .WithMany()
+                        .HasForeignKey("AttorneyProfileId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("AssignedAttorney");
+
+                    b.Navigation("AttorneyProfile");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.UserNotificationPreference", b =>
@@ -5722,16 +5818,13 @@ namespace L4H.Infrastructure.Migrations
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Attorney", b =>
                 {
-                    b.Navigation("AssignedClients");
+                    b.Navigation("AssignedUsers");
 
                     b.Navigation("BillingRates");
 
-                    b.Navigation("TimeEntries");
-                });
+                    b.Navigation("Images");
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.CannlawCase", b =>
-                {
-                    b.Navigation("StatusHistory");
+                    b.Navigation("TimeEntries");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.Case", b =>
@@ -5752,6 +5845,8 @@ namespace L4H.Infrastructure.Migrations
 
                     b.Navigation("PriceSnapshots");
 
+                    b.Navigation("StatusHistory");
+
                     b.Navigation("TimeEntries");
 
                     b.Navigation("Uploads");
@@ -5766,15 +5861,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("TestResults");
-                });
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.Client", b =>
-                {
-                    b.Navigation("Cases");
-
-                    b.Navigation("Documents");
-
-                    b.Navigation("TimeEntries");
                 });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.FormField", b =>
@@ -5852,6 +5938,8 @@ namespace L4H.Infrastructure.Migrations
 
                     b.Navigation("DigestQueues");
 
+                    b.Navigation("Documents");
+
                     b.Navigation("EmailVerificationTokens");
 
                     b.Navigation("GuardianLinks");
@@ -5867,6 +5955,8 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("SentMessages");
 
                     b.Navigation("StaffAppointments");
+
+                    b.Navigation("TimeEntries");
 
                     b.Navigation("UserSessions");
 

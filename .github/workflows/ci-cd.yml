@@ -88,22 +88,22 @@ jobs:
         ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
 
     - name: Run API Tests
-      run: dotnet test tests/api.tests/L4H.Api.Tests.csproj --no-build --configuration Release --verbosity normal /p:TreatWarningsAsErrors=false
+      run: dotnet test tests/unit/api.tests/L4H.Api.Tests.csproj --no-build --configuration Release --verbosity normal /p:TreatWarningsAsErrors=false
       env:
         ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
 
     - name: Run Scraper Tests
-      run: dotnet test tests/scraper.tests/L4H.Scraper.Tests.csproj --no-build --configuration Release --verbosity normal /p:TreatWarningsAsErrors=false
+      run: dotnet test tests/integration/scraper.tests/L4H.Scraper.Tests.csproj --no-build --configuration Release --verbosity normal /p:TreatWarningsAsErrors=false
       env:
         ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
 
     - name: Run Upload Gateway Tests
-      run: dotnet test tests/upload-gateway.tests/L4H.UploadGateway.Tests.csproj --no-build --configuration Release --verbosity normal /p:TreatWarningsAsErrors=false
+      run: dotnet test tests/integration/upload-gateway.tests/L4H.UploadGateway.Tests.csproj --no-build --configuration Release --verbosity normal /p:TreatWarningsAsErrors=false
       env:
         ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
 
     - name: Run Infra Tests
-      run: dotnet test tests/Infra.Tests/L4H.Infra.Tests.csproj --no-build --configuration Release --verbosity normal /p:TreatWarningsAsErrors=false
+      run: dotnet test tests/unit/Infra.Tests/L4H.Infra.Tests.csproj --no-build --configuration Release --verbosity normal /p:TreatWarningsAsErrors=false
       env:
         ConnectionStrings__SqlServer: "Server=localhost,14333;Database=L4H_Test;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True"
 

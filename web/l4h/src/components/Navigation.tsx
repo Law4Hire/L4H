@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth, getUserDisplayName } from '../hooks/useAuth'
 import { useIdleTimeout } from '../hooks/useIdleTimeout'
+import { useSiteConfig } from '../hooks/useSiteConfig'
 import { performLogout } from '../utils/auth'
 
 export const Navigation: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { isAuthenticated, user, isLoading } = useAuth()
+  const { siteConfig } = useSiteConfig()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
 
@@ -91,6 +93,13 @@ export const Navigation: React.FC = () => {
           >
             Pricing
           </button>
+
+          {siteConfig?.primaryPhone && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4b5563', fontSize: '0.875rem', padding: '0 1rem', borderLeft: '1px solid #e5e7eb' }}>
+              <span style={{ fontWeight: 'bold' }}>Call:</span>
+              <a href={`tel:${siteConfig.primaryPhone}`} style={{ color: '#2563eb', textDecoration: 'none' }}>{siteConfig.primaryPhone}</a>
+            </div>
+          )}
           
           {isLoading ? (
             <div style={{ padding: '0.5rem 1rem', color: '#666' }}>Loading...</div>

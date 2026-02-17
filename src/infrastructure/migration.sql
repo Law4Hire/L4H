@@ -1,4 +1,4 @@
-﻿IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
 BEGIN
     CREATE TABLE [__EFMigrationsHistory] (
         [MigrationId] nvarchar(150) NOT NULL,
@@ -1642,7 +1642,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250903183811_InitialCreateNoSetNull', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250903183811_InitialCreateNoSetNull', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -1663,7 +1663,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250904213636_AddIsStaffColumn', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250904213636_AddIsStaffColumn', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -1690,7 +1690,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250905024541_IncreaseDailyDigestQueueItemsJsonSize', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250905024541_IncreaseDailyDigestQueueItemsJsonSize', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -1717,7 +1717,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250905024652_UpdateDailyDigestQueueModel', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250905024652_UpdateDailyDigestQueueModel', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -1806,7 +1806,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250907152117_SecurityHardeningInit', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250907152117_SecurityHardeningInit', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -1835,7 +1835,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250909171120_AddUserFirstLastName', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250909171120_AddUserFirstLastName', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -1936,7 +1936,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250913043719_AddUserProfileFields', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250913043719_AddUserProfileFields', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -1957,7 +1957,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250918225438_AddUserIsActiveField', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250918225438_AddUserIsActiveField', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -1997,7 +1997,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250920001746_AddApprovedDoctorEntity', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250920001746_AddApprovedDoctorEntity', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -2018,7 +2018,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20250930035242_AddGenderToUser', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20250930035242_AddGenderToUser', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -2072,7 +2072,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251007181732_AddCountryVisaTypes', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251007181732_AddCountryVisaTypes', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -2118,7 +2118,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251008140455_AddCategoryClassTable', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251008140455_AddCategoryClassTable', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3052,7 +3052,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251014153546_AddUserLegalProfessionalFields', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251014153546_AddUserLegalProfessionalFields', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3065,7 +3065,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251023165811_RemoveTranslationMonitoringEntities', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251023165811_RemoveTranslationMonitoringEntities', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3223,7 +3223,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251110164502_UpdateInterviewProcessChanges', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251110164502_UpdateInterviewProcessChanges', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3324,7 +3324,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251115013501_AddVisaEvaluationAndAnonymousToken', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251115013501_AddVisaEvaluationAndAnonymousToken', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3351,7 +3351,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251122212306_PhotoUrlToNullableAndCollectionFixes', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251122212306_PhotoUrlToNullableAndCollectionFixes', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3372,7 +3372,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251125150209_AddRequiresLawyerToPackages', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251125150209_AddRequiresLawyerToPackages', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3393,7 +3393,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251125150944_AddProfessionalTypeToAttorney', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251125150944_AddProfessionalTypeToAttorney', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3406,7 +3406,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251125153433_SyncPendingModelChanges', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251125153433_SyncPendingModelChanges', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3569,7 +3569,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251125160741_FixShadowPropertiesAndPrecision', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251125160741_FixShadowPropertiesAndPrecision', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3590,7 +3590,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251125173307_AddIsPersistentToRememberMeToken', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251125173307_AddIsPersistentToRememberMeToken', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3677,7 +3677,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251201032450_AddAdminPathsTable', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251201032450_AddAdminPathsTable', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3810,7 +3810,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251203194410_AddInterviewQuestionTables', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251203194410_AddInterviewQuestionTables', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -3847,7 +3847,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251204153248_AddQuestionHierarchy', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251204153248_AddQuestionHierarchy', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -4101,7 +4101,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251207182703_AddUSCISFormsManagement', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251207182703_AddUSCISFormsManagement', N'10.0.3.107');
 END;
 
 COMMIT;
@@ -4179,7 +4179,7 @@ IF NOT EXISTS (
 )
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20251212042259_AddPageConfigAndInterviewDocuments', N'10.0.0-rc.2.25502.107');
+    VALUES (N'20251212042259_AddPageConfigAndInterviewDocuments', N'10.0.3.107');
 END;
 
 COMMIT;

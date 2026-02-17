@@ -80,6 +80,27 @@ spec:
             port: 80
           initialDelaySeconds: 3
           periodSeconds: 5
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/l4h
+          name: web-l4h
+          readOnly: true
+        - mountPath: /usr/share/nginx/html/cannlaw
+          name: web-cannlaw
+          readOnly: true
+        - mountPath: /etc/nginx/conf.d
+          name: nginx-config
+          readOnly: true
+      volumes:
+      - name: web-l4h
+        persistentVolumeClaim:
+          claimName: web-l4h
+      - name: web-cannlaw
+        persistentVolumeClaim:
+          claimName: web-cannlaw
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+          defaultMode: 420
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -118,7 +139,7 @@ data:
         }
 
         # Proxy API requests
-        location /api/ {
+        location /api {
             proxy_pass http://api:8080;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -133,7 +154,7 @@ data:
         # Health check
         location /health {
             access_log off;
-            return 200 "healthy\n";
+            return 200 "HEALTHY-STABLE\n";
             add_header Content-Type text/plain;
         }
     }
@@ -168,7 +189,7 @@ data:
         }
 
         # Proxy API requests
-        location /api/ {
+        location /api {
             proxy_pass http://api:8080;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -183,7 +204,7 @@ data:
         # Health check
         location /health {
             access_log off;
-            return 200 "healthy\n";
+            return 200 "HEALTHY-STABLE\n";
             add_header Content-Type text/plain;
         }
     }
@@ -196,8 +217,21 @@ data:
         # Health check
         location /health {
             access_log off;
-            return 200 "healthy\n";
+            return 200 "HEALTHY-STABLE\n";
             add_header Content-Type text/plain;
+        }
+
+        # Proxy API requests (fallback for all hosts)
+        location /api {
+            proxy_pass http://api:8080;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
         }
 
         # All other requests return 404
