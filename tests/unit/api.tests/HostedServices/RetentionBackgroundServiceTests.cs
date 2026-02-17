@@ -54,6 +54,9 @@ public sealed class RetentionBackgroundServiceTests : IDisposable
         _serviceProvider = services.BuildServiceProvider();
         _context = _serviceProvider.GetRequiredService<L4HDbContext>();
 
+        // Ensure database is up to date
+        _context.Database.Migrate();
+
         // Setup scope factory mock
         _mockScope = new Mock<IServiceScope>();
         _mockScope.Setup(x => x.ServiceProvider).Returns(_serviceProvider);

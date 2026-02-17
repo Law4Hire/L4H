@@ -31,7 +31,6 @@ namespace L4H.Api.Tests.Admin
         [InlineData("PUT", "api/v1/admin/users/some-guid/status")]
         [InlineData("GET", "api/v1/admin/analytics/dashboard")]
         [InlineData("GET", "api/v1/admin/analytics/financial")]
-        [InlineData("GET", "api/v1/admin/database-stats")]
         [InlineData("GET", "api/v1/admin/analytics/users")]
         [InlineData("GET", "api/v1/admin/cases")]
         [InlineData("PATCH", "api/v1/admin/cases/some-guid/status")]

@@ -9,8 +9,8 @@ public class CaddyfileValidates
     public void Caddyfile_ShouldContainRequiredEnvironmentVariables()
     {
         // Arrange
-        // Get the project root directory (go up from bin/Debug/net9.0 to project root)
-        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", ".."));
+        // Get the project root directory (go up from bin/Debug/net10.0/unit/Infra.Tests to project root)
+        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", ".."));
         var caddyfilePath = Path.Combine(projectRoot, "ops", "caddy", "Caddyfile.prod");
         var caddyfileContent = File.ReadAllText(caddyfilePath);
 
@@ -24,8 +24,8 @@ public class CaddyfileValidates
     public void Caddyfile_ShouldContainRequiredRoutes()
     {
         // Arrange
-        // Get the project root directory (go up from bin/Debug/net9.0 to project root)
-        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", ".."));
+        // Get the project root directory (go up from bin/Debug/net10.0/unit/Infra.Tests to project root)
+        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", ".."));
         var caddyfilePath = Path.Combine(projectRoot, "ops", "caddy", "Caddyfile.prod");
         var caddyfileContent = File.ReadAllText(caddyfilePath);
 
@@ -40,8 +40,8 @@ public class CaddyfileValidates
     public void Caddyfile_ShouldHaveCorrectStaticFileConfiguration()
     {
         // Arrange
-        // Get the project root directory (go up from bin/Debug/net9.0 to project root)
-        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", ".."));
+        // Get the project root directory (go up from bin/Debug/net10.0/unit/Infra.Tests to project root)
+        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", ".."));
         var caddyfilePath = Path.Combine(projectRoot, "ops", "caddy", "Caddyfile.prod");
         var caddyfileContent = File.ReadAllText(caddyfilePath);
 
@@ -56,8 +56,8 @@ public class CaddyfileValidates
     public void Caddyfile_ShouldHaveAutoHttpsConfiguration()
     {
         // Arrange
-        // Get the project root directory (go up from bin/Debug/net9.0 to project root)
-        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", ".."));
+        // Get the project root directory (go up from bin/Debug/net10.0/unit/Infra.Tests to project root)
+        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", ".."));
         var caddyfilePath = Path.Combine(projectRoot, "ops", "caddy", "Caddyfile.prod");
         var caddyfileContent = File.ReadAllText(caddyfilePath);
 
@@ -72,8 +72,8 @@ public class CaddyfileValidates
         Skip.IfNot(CanRunDocker(), "Docker is not available or CAN_RUN_DOCKER is not set to 1");
 
         // Arrange
-        // Get the project root directory (go up from bin/Debug/net9.0 to project root)
-        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", ".."));
+        // Get the project root directory (go up from bin/Debug/net10.0/unit/Infra.Tests to project root)
+        var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", ".."));
         var caddyfilePath = Path.Combine(projectRoot, "ops", "caddy", "Caddyfile.prod");
         var tempDir = Path.GetTempPath();
         var tempCaddyfile = Path.Combine(tempDir, "Caddyfile.prod");
