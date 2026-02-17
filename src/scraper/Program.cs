@@ -31,6 +31,7 @@ builder.Services.AddScoped<IWorkflowSource, FakeWorkflowSource>();
 builder.Services.AddScoped<IWorkflowNormalizer, WorkflowNormalizer>();
 builder.Services.AddScoped<IWorkflowDiff, WorkflowDiffEngine>();
 builder.Services.AddScoped<WorkflowScraperService>();
+builder.Services.AddScoped<IUscisVersionSentinelService, UscisVersionSentinelService>();
 
 // Add HTTP client for live sources (when implemented)
 builder.Services.AddHttpClient();

@@ -1,5 +1,5 @@
 # Build stage - Using .NET 10 RC2 SDK
-FROM mcr.microsoft.com/dotnet/sdk:10.0.100-rc.2 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy project files
@@ -23,7 +23,7 @@ RUN dotnet build "L4H.Api.csproj" -c Release -o /app/build
 RUN dotnet publish "L4H.Api.csproj" -c Release -o /app/publish --no-restore
 
 # Runtime stage - Using .NET 10 RC2 runtime
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.0-rc.2 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.3 AS runtime
 WORKDIR /app
 
 # Install curl for healthcheck

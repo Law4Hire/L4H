@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.Shared", "src\shared\L4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.Infrastructure", "src\infrastructure\L4H.Infrastructure.csproj", "{C44B1E90-55A5-0C2F-E088-61F4E690E229}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.Api.Tests", "tests\api.tests\L4H.Api.Tests.csproj", "{5C8CA915-DE94-BB4A-DC6A-801A3AEA8BC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.Api.Tests", "tests\unit\api.tests\L4H.Api.Tests.csproj", "{5C8CA915-DE94-BB4A-DC6A-801A3AEA8BC0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
@@ -21,15 +21,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.ScraperWorker", "src\sc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scraper.tests", "scraper.tests", "{F470D34E-50FC-3D67-87EB-49AAB6BE44EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.Scraper.Tests", "tests\scraper.tests\L4H.Scraper.Tests.csproj", "{303D422C-E6A9-4CAF-9979-85BCEF767D35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.Scraper.Tests", "tests\integration\scraper.tests\L4H.Scraper.Tests.csproj", "{303D422C-E6A9-4CAF-9979-85BCEF767D35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.UploadGateway.Tests", "tests\upload-gateway.tests\L4H.UploadGateway.Tests.csproj", "{C0B09550-6543-42F8-89F1-80AC109A8BF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.UploadGateway.Tests", "tests\integration\upload-gateway.tests\L4H.UploadGateway.Tests.csproj", "{C0B09550-6543-42F8-89F1-80AC109A8BF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.UI.E2E.Tests", "tests\ui.e2e\L4H.UI.E2E.Tests.csproj", "{D1E20661-7654-43F9-9A02-91BD220B9CF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.UI.E2E.Tests", "tests\e2e\ui.e2e\L4H.UI.E2E.Tests.csproj", "{D1E20661-7654-43F9-9A02-91BD220B9CF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.UI.Wrap.Tests", "tests\ui.wrap\L4H.UI.Wrap.Tests.csproj", "{BD65E079-7CC8-4630-8063-2FF51904C038}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.UI.Wrap.Tests", "tests\e2e\ui.wrap\L4H.UI.Wrap.Tests.csproj", "{BD65E079-7CC8-4630-8063-2FF51904C038}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.Infra.Tests", "tests\Infra.Tests\L4H.Infra.Tests.csproj", "{F3A4B5C6-D7E8-90F1-2345-6789ABCDEF01}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L4H.Infra.Tests", "tests\unit\Infra.Tests\L4H.Infra.Tests.csproj", "{F3A4B5C6-D7E8-90F1-2345-6789ABCDEF01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

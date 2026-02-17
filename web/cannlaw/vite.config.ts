@@ -48,10 +48,12 @@ export default defineConfig({
   server: {
     port: 5174,
     proxy: {
+    proxy: {
       '/api': {
-        target: 'http://localhost:8765',
+        target: 'http://localhost:8766',
         changeOrigin: true
-      },
+      }
+    },
       '/uploads': {
         target: 'http://localhost:8765',
         changeOrigin: true
@@ -65,10 +67,12 @@ export default defineConfig({
   preview: {
     port: 5174,
     proxy: {
+    proxy: {
       '/api': {
-        target: 'http://localhost:8765',
+        target: 'http://localhost:8766',
         changeOrigin: true
-      },
+      }
+    },
       '/uploads': {
         target: 'http://localhost:8765',
         changeOrigin: true

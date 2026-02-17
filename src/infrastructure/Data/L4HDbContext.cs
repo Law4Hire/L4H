@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
+using L4H.Shared.Enums;
 
 namespace L4H.Infrastructure.Data;
 
@@ -49,6 +50,7 @@ public class L4HDbContext : DbContext
 
     // USCIS Forms management entities
     public DbSet<USCISFormEntity> USCISForms { get; set; }
+    public DbSet<FormFieldMapping> FormFieldMappings { get; set; }
     public DbSet<FormPricingEntity> FormPricing { get; set; }
     public DbSet<FormVisaTypeMappingEntity> FormVisaTypeMappings { get; set; }
     public DbSet<FormDependencyEntity> FormDependencies { get; set; }
@@ -73,14 +75,16 @@ public class L4HDbContext : DbContext
     public DbSet<ServiceCategory> ServiceCategories { get; set; }
     public DbSet<LegalService> LegalServices { get; set; }
     public DbSet<Attorney> Attorneys { get; set; }
+    public DbSet<AttorneyImage> AttorneyImages { get; set; }
     
     // Cannlaw client billing system entities
-    public DbSet<Client> Clients { get; set; }
-    public DbSet<CannlawCase> CannlawCases { get; set; }
+    // public DbSet<Client> Clients { get; set; } // Consolidated into Users
+    // public DbSet<CannlawCase> CannlawCases { get; set; } // Consolidated into Cases
     public DbSet<CaseStatusHistory> CaseStatusHistories { get; set; }
     public DbSet<TimeEntry> TimeEntries { get; set; }
     public DbSet<BillingRate> BillingRates { get; set; }
     public DbSet<Document> Documents { get; set; }
+    public DbSet<DocumentPool> DocumentPool { get; set; }
     
     // Notification system entities
     public DbSet<Notification> Notifications { get; set; }
@@ -139,9 +143,15 @@ public class L4HDbContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(500);
             
             // Configure Attorney relationship for legal professionals
-            entity.HasOne(e => e.Attorney)
+            entity.HasOne(e => e.AttorneyProfile)
                 .WithMany()
-                .HasForeignKey(e => e.AttorneyId)
+                .HasForeignKey(e => e.AttorneyProfileId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Configure Assigned Attorney relationship (Client -> Attorney)
+            entity.HasOne(e => e.AssignedAttorney)
+                .WithMany(e => e.AssignedUsers)
+                .HasForeignKey(e => e.AssignedAttorneyId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
 
@@ -1532,6 +1542,7 @@ public class L4HDbContext : DbContext
         });
 
         // Configure Cannlaw client billing system entities
+        /* Consolidated into User and Case
         modelBuilder.Entity<Client>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -1573,6 +1584,7 @@ public class L4HDbContext : DbContext
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.StartDate);
         });
+        */
 
         modelBuilder.Entity<CaseStatusHistory>(entity =>
         {
@@ -1611,10 +1623,10 @@ public class L4HDbContext : DbContext
                 .HasForeignKey(e => e.CaseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(e => e.Client)
+            entity.HasOne(e => e.User)
                 .WithMany(e => e.TimeEntries)
-                .HasForeignKey(e => e.ClientId)
-                .OnDelete(DeleteBehavior.NoAction); // Change to NoAction to avoid cycles if Case deletes Client
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             entity.HasOne(e => e.Attorney)
                 .WithMany(e => e.TimeEntries)
@@ -1622,7 +1634,7 @@ public class L4HDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.CaseId);
-            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.AttorneyId);
             entity.HasIndex(e => e.StartTime);
             entity.HasIndex(e => e.IsBilled);
@@ -1660,12 +1672,12 @@ public class L4HDbContext : DbContext
             entity.Property(e => e.AccessNotes).HasMaxLength(500);
             entity.Property(e => e.LastAccessedBy).HasMaxLength(255);
 
-            entity.HasOne(e => e.Client)
+            entity.HasOne(e => e.User)
                 .WithMany(e => e.Documents)
-                .HasForeignKey(e => e.ClientId)
+                .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.Category);
             entity.HasIndex(e => e.UploadDate);
             entity.HasIndex(e => e.IsConfidential);

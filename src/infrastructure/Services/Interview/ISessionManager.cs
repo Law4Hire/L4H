@@ -12,12 +12,12 @@ public interface ISessionManager
     /// Creates a new anonymous interview session
     /// </summary>
     /// <returns>Session with anonymous token</returns>
-    Task<InterviewSession> CreateAnonymousSessionAsync(string? languageCode = null);
+    Task<InterviewSession> CreateAnonymousSessionAsync();
 
     /// <summary>
     /// Creates a new authenticated interview session linked to a case
     /// </summary>
-    Task<InterviewSession> CreateAuthenticatedSessionAsync(CaseId caseId, UserId userId, string? languageCode = null);
+    Task<InterviewSession> CreateAuthenticatedSessionAsync(CaseId caseId, UserId userId);
 
     /// <summary>
     /// Gets an active session by anonymous token

@@ -157,15 +157,12 @@ export function formatRelativeTime(
   }
 }
 
-// Get current locale from i18n
 function getCurrentLocale(): string {
-  // Try to get from i18n first
-  if (typeof window !== 'undefined' && window.i18n) {
-    return window.i18n.language
+  if (typeof navigator !== 'undefined') {
+    if (navigator.language) return navigator.language
+    if (navigator.languages && navigator.languages.length > 0) return navigator.languages[0]
   }
-  
-  // Fallback to browser locale
-  return navigator.language || 'en-US'
+  return 'en-US'
 }
 
 // File size formatting

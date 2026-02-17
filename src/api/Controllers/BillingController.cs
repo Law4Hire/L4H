@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
+using L4H.Shared.Models;
 using System.Text;
 
 namespace L4H.Api.Controllers;
@@ -41,20 +42,20 @@ public class BillingController : ControllerBase
                 AttorneyName = a.Name,
                 DefaultHourlyRate = a.DefaultHourlyRate,
                 TotalHours = a.TimeEntries
-                    .Where(te => te.StartTime >= startDate && te.StartTime <= endDate && te.EndTime != default)
+                    .Where(te => te.StartTime >= startDate && te.StartTime <= endDate && te.EndTime != null)
                     .Sum(te => te.Duration),
                 BillableAmount = a.TimeEntries
-                    .Where(te => te.StartTime >= startDate && te.StartTime <= endDate && te.EndTime != default)
+                    .Where(te => te.StartTime >= startDate && te.StartTime <= endDate && te.EndTime != null)
                     .Sum(te => te.BillableAmount),
                 BilledAmount = a.TimeEntries
                     .Where(te => te.StartTime >= startDate && te.StartTime <= endDate && te.IsBilled)
                     .Sum(te => te.BillableAmount),
                 UnbilledAmount = a.TimeEntries
-                    .Where(te => te.StartTime >= startDate && te.StartTime <= endDate && te.EndTime != default && !te.IsBilled)
+                    .Where(te => te.StartTime >= startDate && te.StartTime <= endDate && te.EndTime != null && !te.IsBilled)
                     .Sum(te => te.BillableAmount),
-                ClientCount = a.AssignedClients.Count,
+                ClientCount = a.AssignedUsers.Count,
                 TimeEntryCount = a.TimeEntries
-                    .Count(te => te.StartTime >= startDate && te.StartTime <= endDate && te.EndTime != default)
+                    .Count(te => te.StartTime >= startDate && te.StartTime <= endDate && te.EndTime != null)
             })
             .ToArrayAsync();
 
@@ -65,7 +66,7 @@ public class BillingController : ControllerBase
             TotalBilledAmount = attorneySummaries.Sum(a => a.BilledAmount),
             TotalUnbilledAmount = attorneySummaries.Sum(a => a.UnbilledAmount),
             TotalAttorneys = attorneySummaries.Length,
-            TotalClients = await _context.Clients.CountAsync(),
+            TotalClients = await _context.Users.CountAsync(u => u.AssignedAttorneyId != null), // Count users assigned to attorneys
             TotalTimeEntries = attorneySummaries.Sum(a => a.TimeEntryCount)
         };
 
@@ -101,19 +102,19 @@ public class BillingController : ControllerBase
         endDate ??= startDate.Value.AddMonths(1).AddDays(-1);
 
         var timeEntries = await _context.TimeEntries
-            .Include(te => te.Client)
+            .Include(te => te.User)
             .Where(te => te.AttorneyId == attorneyId && 
                         te.StartTime >= startDate && 
                         te.StartTime <= endDate && 
-                        te.EndTime != default)
+                        te.EndTime != null)
             .OrderByDescending(te => te.StartTime)
             .ToArrayAsync();
 
         var clientBreakdown = timeEntries
-            .GroupBy(te => new { te.ClientId, te.Client.FirstName, te.Client.LastName })
+            .GroupBy(te => new { te.UserId, te.User.FirstName, te.User.LastName })
             .Select(g => new ClientBillingBreakdown
             {
-                ClientId = g.Key.ClientId,
+                UserId = g.Key.UserId?.Value ?? Guid.Empty,
                 ClientName = $"{g.Key.FirstName} {g.Key.LastName}",
                 TotalHours = g.Sum(te => te.Duration),
                 TotalAmount = g.Sum(te => te.BillableAmount),
@@ -268,11 +269,11 @@ public class BillingController : ControllerBase
         endDate ??= startDate.Value.AddMonths(1).AddDays(-1);
 
         var query = _context.TimeEntries
-            .Include(te => te.Client)
+            .Include(te => te.User)
             .Include(te => te.Attorney)
             .Where(te => te.StartTime >= startDate && 
                         te.StartTime <= endDate && 
-                        te.EndTime != default);
+                        te.EndTime != null);
 
         if (attorneyId.HasValue)
         {
@@ -295,7 +296,7 @@ public class BillingController : ControllerBase
 
         foreach (var entry in timeEntries)
         {
-            csv.AppendLine($"\"{entry.Attorney.Name}\",\"{entry.Client.FirstName} {entry.Client.LastName}\"," +
+            csv.AppendLine($"\"{entry.Attorney.Name}\",\"{entry.User.FirstName} {entry.User.LastName}\"," +
                           $"\"{entry.StartTime:yyyy-MM-dd HH:mm}\",\"{entry.EndTime:yyyy-MM-dd HH:mm}\"," +
                           $"{entry.Duration},{entry.Description},{entry.HourlyRate:C}," +
                           $"{entry.BillableAmount:C},{entry.IsBilled}," +
@@ -323,10 +324,10 @@ public class BillingController : ControllerBase
 
         var timeEntries = await _context.TimeEntries
             .Include(te => te.Attorney)
-            .Include(te => te.Client)
+            .Include(te => te.User)
             .Where(te => te.StartTime >= startDate && 
                         te.StartTime <= endDate && 
-                        te.EndTime != default)
+                        te.EndTime != null)
             .ToArrayAsync();
 
         // Monthly trends
@@ -355,7 +356,7 @@ public class BillingController : ControllerBase
                 TotalHours = g.Sum(te => te.Duration),
                 TotalRevenue = g.Sum(te => te.BillableAmount),
                 AverageHourlyRate = g.Average(te => te.HourlyRate),
-                ClientCount = g.Select(te => te.ClientId).Distinct().Count(),
+                ClientCount = g.Select(te => te.UserId).Distinct().Count(),
                 TimeEntryCount = g.Count()
             })
             .OrderByDescending(a => a.TotalRevenue)
@@ -424,7 +425,7 @@ public class AttorneyBillingDetail
 
 public class ClientBillingBreakdown
 {
-    public int ClientId { get; set; }
+    public Guid UserId { get; set; }
     public string ClientName { get; set; } = string.Empty;
     public decimal TotalHours { get; set; }
     public decimal TotalAmount { get; set; }

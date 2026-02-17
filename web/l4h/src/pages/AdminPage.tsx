@@ -28,6 +28,7 @@ const AdminPage: React.FC = () => {
     { name: 'USCIS Forms', path: '/admin/uscis-forms', description: 'Manage immigration forms, pricing, and dependencies', displayOrder: 6 },
     { name: 'Visa Library', path: '/admin/visa-library', description: 'Manage visa library categories and assign visa types', displayOrder: 7 },
     { name: 'Legal Professionals', path: '/admin/attorneys', description: 'Manage legal professional accounts', displayOrder: 8 },
+    { name: 'Document Pool', path: '/admin/document-pool', description: 'Verify and assign uploaded documents', displayOrder: 9 },
     { name: 'Reports & Analytics', path: '/admin/reports', description: 'View platform statistics and reports', displayOrder: 1000 },
     { name: 'System Settings', path: '/admin/system-settings', description: 'Configure platform settings including phone number', displayOrder: 1001 },
   ]

@@ -25,6 +25,12 @@ export default function UploadsPage() {
     queryFn: () => uploads.list('current-case-id') // TODO: Get actual case ID
   })
 
+  // Fetch verified legal documents from the pool
+  const { data: verifiedDocs = [], isLoading: isLoadingPool } = useQuery({
+    queryKey: ['verified-docs'],
+    queryFn: () => apiClient.getMyVerifiedDocuments()
+  })
+
   // Upload file mutation
   const uploadFileMutation = useMutation({
     mutationFn: async (file: File) => {
@@ -172,6 +178,33 @@ export default function UploadsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{'File Uploads'}</h1>
       </div>
+
+      {/* Verified Legal Documents */}
+      {verifiedDocs.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">{'Verified Legal Documents'}</h2>
+          <Card>
+            <div className="space-y-4">
+              {verifiedDocs.map((doc: any) => (
+                <div key={doc.id} className="flex items-center justify-between p-4 border-l-4 border-green-500 bg-green-50/30 rounded-r-lg">
+                  <div className="flex items-center space-x-4">
+                    <File className="h-8 w-8 text-green-600" />
+                    <div>
+                      <h3 className="font-medium text-gray-900">{doc.originalFileName}</h3>
+                      <div className="text-sm text-gray-500">
+                        {'Verified on '} {format(new Date(doc.verifiedAt), 'MMM d, yyyy')}
+                      </div>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => window.open(doc.fileUrl, '_blank')}>
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Upload Area */}
       <Card className="mb-6">

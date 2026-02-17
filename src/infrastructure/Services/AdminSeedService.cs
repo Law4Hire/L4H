@@ -101,8 +101,16 @@ public class AdminSeedService : IAdminSeedService
 
         if (existingUser != null)
         {
-            Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] User {email} already exists, skipping");
-            _logger.LogDebug("User {Email} already exists, skipping seed", email);
+            Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] User {email} already exists, ensuring roles are correct");
+            _logger.LogDebug("User {Email} already exists, updating roles", email);
+            
+            existingUser.IsAdmin = isAdmin;
+            existingUser.IsStaff = isStaff;
+            existingUser.IsLegalProfessional = isStaff; // Synonymous for now
+            existingUser.IsActive = true;
+            existingUser.EmailVerified = true;
+            
+            await _context.SaveChangesAsync().ConfigureAwait(false);
             return;
         }
 
@@ -129,8 +137,9 @@ public class AdminSeedService : IAdminSeedService
             FailedLoginCount = 0,
             IsAdmin = isAdmin,
             IsStaff = isStaff,
+            IsLegalProfessional = isStaff, // Sync with IsStaff
             IsActive = true, // Seeded users should be active
-            AttorneyId = attorneyId
+            AttorneyProfileId = attorneyId
         };
 
         Console.WriteLine($"[AdminSeedService.SeedUserIfNotExists] Adding user to context");

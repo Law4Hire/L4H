@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { Card, Button, Input, Modal, useToast } from '@l4h/shared-ui'
 import { 
   X, User, Mail, Edit, AlertTriangle, 
-  Camera, MapPin, Briefcase, RefreshCw 
+  Camera, MapPin, Briefcase, RefreshCw, CheckCircle, RotateCcw
 } from 'lucide-react'
 import { useAttorneys } from '../../hooks/useAttorneys'
+import { AttorneyPhotoManager } from '../../components/admin/AttorneyPhotoManager'
 
 interface AttorneyFormData {
   name: string
@@ -58,6 +59,8 @@ const AttorneyManagementPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDeactivateModal, setShowDeactivateModal] = useState(false)
   const [attorneyToDeactivate, setAttorneyToDeactivate] = useState<Attorney | null>(null)
+  const [showPhotoManager, setShowPhotoManager] = useState(false)
+  const [activePhotoAttorney, setActivePhotoAttorney] = useState<Attorney | null>(null)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [pendingPhotoFile, setPendingPhotoFile] = useState<File | null>(null)
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string>('')
@@ -83,6 +86,31 @@ const AttorneyManagementPage: React.FC = () => {
     isManagingAttorney: false,
     displayOrder: 1
   })
+
+  const handleReactivate = async (attorney: Attorney) => {
+    setIsSubmitting(true)
+    try {
+      const token = localStorage.getItem('jwt_token')
+      const response = await fetch(`/api/v1/attorneys/${attorney.id}/reactivate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to reactivate attorney')
+      }
+
+      success('Attorney profile reactivated')
+      await fetchAttorneys()
+    } catch (err) {
+      console.error('Error reactivating attorney:', err)
+      error('Failed to reactivate attorney')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   // Set photoPreviewUrl when editing an attorney
   useEffect(() => {
@@ -628,22 +656,38 @@ const AttorneyManagementPage: React.FC = () => {
           <div
             key={attorney.id}
             className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border-t-4 transition-all hover:shadow-xl ${
-              attorney.isActive ? 'border-t-blue-600' : 'border-t-gray-400 opacity-75'
+              attorney.isActive ? 'border-t-blue-600' : 'border-t-red-500 opacity-90 bg-red-50/30 dark:bg-red-900/10'
             }`}
           >
             <div className="p-6">
+              {!attorney.isActive && (
+                <div className="mb-4 flex items-center justify-center py-1 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-[10px] font-bold uppercase tracking-[0.2em] rounded">
+                  Deactivated Profile
+                </div>
+              )}
               <div className="flex items-center space-x-4 mb-4">
-                {attorney.photoUrl ? (
-                  <img
-                    src={attorney.photoUrl}
-                    alt={attorney.name}
-                    className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700 shadow-sm"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400">
-                    <User size={32} />
-                  </div>
-                )}
+                <div className="relative group/photo">
+                  {attorney.photoUrl ? (
+                    <img
+                      src={attorney.photoUrl}
+                      alt={attorney.name}
+                      className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700 shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400">
+                      <User size={32} />
+                    </div>
+                  )}
+                  {attorney.isActive && (
+                    <button 
+                      onClick={() => { setActivePhotoAttorney(attorney); setShowPhotoManager(true); }}
+                      className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover/photo:opacity-100 transition-opacity text-white"
+                      title="Manage Photos"
+                    >
+                      <Camera size={16} />
+                    </button>
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">{attorney.name}</h3>
                   <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest truncate">{attorney.title}</p>
@@ -666,34 +710,63 @@ const AttorneyManagementPage: React.FC = () => {
               </div>
 
               <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEdit(attorney)}
-                  className="flex items-center gap-1 dark:border-gray-600"
-                >
-                  <Edit size={14} /> Edit
-                </Button>
-
                 {attorney.isActive ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(attorney)}
+                      className="flex items-center gap-1 dark:border-gray-600"
+                    >
+                      <Edit size={14} /> Edit
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => { setAttorneyToDeactivate(attorney); setShowDeactivateModal(true); }}
+                      className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:border-gray-600"
+                    >
+                      Deactivate
+                    </Button>
+                  </>
+                ) : (
                   <Button
                     size="sm"
-                    variant="outline"
-                    onClick={() => { setAttorneyToDeactivate(attorney); setShowDeactivateModal(true); }}
-                    className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:border-gray-600"
+                    variant="primary"
+                    onClick={() => handleReactivate(attorney)}
+                    className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700"
                   >
-                    Deactivate
+                    <RotateCcw size={14} /> Reactivate Profile
                   </Button>
-                ) : (
-                  <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 rounded-full text-xs font-bold uppercase tracking-tighter">
-                    Inactive
-                  </span>
                 )}
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Photo Manager Modal */}
+      <Modal
+        open={showPhotoManager}
+        onClose={() => { setShowPhotoManager(false); setActivePhotoAttorney(null); fetchAttorneys(); }}
+        title="Attorney Photo Management"
+        size="lg"
+      >
+        {activePhotoAttorney && (
+          <AttorneyPhotoManager
+            attorneyId={activePhotoAttorney.id}
+            attorneyName={activePhotoAttorney.name}
+            currentPhotoUrl={activePhotoAttorney.photoUrl}
+            onPhotoSelected={() => {}} // fetchAttorneys handles this via onClose
+          />
+        )}
+        <div className="mt-8 flex justify-end">
+          <Button variant="primary" onClick={() => { setShowPhotoManager(false); setActivePhotoAttorney(null); fetchAttorneys(); }}>
+            Done
+          </Button>
+        </div>
+      </Modal>
 
       {/* Deactivation Confirmation Modal */}
       <Modal

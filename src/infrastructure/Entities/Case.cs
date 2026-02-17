@@ -1,5 +1,6 @@
 using L4H.Shared.Models;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -13,6 +14,22 @@ public class Case
     public int? PackageId { get; set; }
     public int? AssignedStaffId { get; set; }
     public bool IsInterviewLocked { get; set; }
+
+    // Unified Cannlaw Fields
+    [MaxLength(1000)]
+    public string Description { get; set; } = string.Empty;
+    
+    [MaxLength(2000)]
+    public string Notes { get; set; } = string.Empty;
+    
+    [MaxLength(100)]
+    public string GovernmentCaseNumber { get; set; } = string.Empty;
+    
+    [MaxLength(500)]
+    public string RejectionReason { get; set; } = string.Empty;
+
+    public DateTime? StartDate { get; set; }
+    public DateTime? CompletionDate { get; set; }
 
     // Attorney lock-in fields
     public int? AttorneySelectedVisaTypeId { get; set; }
@@ -36,6 +53,9 @@ public class Case
     [JsonIgnore]
 
     public Package? Package { get; set; }
+    [JsonIgnore]
+
+    public ICollection<CaseStatusHistory> StatusHistory { get; set; } = new List<CaseStatusHistory>();
     [JsonIgnore]
 
     public ICollection<CasePriceSnapshot> PriceSnapshots { get; set; } = new List<CasePriceSnapshot>();

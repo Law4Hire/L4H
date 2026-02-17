@@ -97,6 +97,14 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
             Providing Comprehensive Immigration Law Services Since 2002
          </div>
          <div className="flex items-center space-x-6 ml-auto">
+            {siteConfig?.corporatePhone && siteConfig.corporatePhone !== siteConfig.primaryPhone && (
+              <span className="text-[10px] uppercase text-gold-500 font-bold hidden md:inline">Corporate:</span>
+            )}
+            {siteConfig?.corporatePhone && siteConfig.corporatePhone !== siteConfig.primaryPhone && (
+              <a href={`tel:${siteConfig.corporatePhone}`} className="hover:text-gold-400 transition-colors flex items-center mr-2">
+                 {siteConfig.corporatePhone}
+              </a>
+            )}
             <a href={`tel:${siteConfig?.primaryPhone || '(410) 988-0123'}`} className="hover:text-gold-400 transition-colors flex items-center">
                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M20 22.621l-3.521-6.795c-.008.004-1.974.97-2.064 1.011-2.24 1.086-6.799-7.82-4.609-8.994l2.083-1.026-3.493-6.817-2.106 1.039C5.438 1.487 3.235 2.573 2.147 4.604c-1.09 2.031-1.049 4.453.072 6.641 1.637 3.193 4.887 6.443 8.08 8.08 2.188 1.121 4.61 1.162 6.641.072 2.031-1.088 3.117-3.291 3.564-6.148l1.039-2.106-6.817-3.493-1.026 2.083c-1.174 2.19-10.08 6.749-8.994 4.609.041-.09 1.007-2.056 1.011-2.064L22.621 20z"/></svg>
                {siteConfig?.primaryPhone || '(410) 988-0123'}

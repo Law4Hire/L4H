@@ -48,6 +48,7 @@ public class USCISFormEntity
     public User? CreatedByUser { get; set; }
     public User? UpdatedByUser { get; set; }
     public ICollection<FormPricingEntity> Pricing { get; set; } = new List<FormPricingEntity>();
+    public ICollection<FormFieldMapping> FormFieldMappings { get; set; } = new List<FormFieldMapping>();
     public ICollection<FormVisaTypeMappingEntity> VisaTypeMappings { get; set; } = new List<FormVisaTypeMappingEntity>();
 
     // Dependencies where this form is the parent (requires other forms)

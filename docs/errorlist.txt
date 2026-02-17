@@ -1,20 +1,25 @@
 CannLaw
 
-2) Creating a message from the contact page generates a 400 Bad Request and there were one or more validation errors that occurred. If someone clicks on the create message, it should be sending to the admin users. All the admin users. If they want to create a case and assign it, they can.
-8) In the Clients page, clicking on the filters button shows there are 4 search boxes that the dark mode doesn't work.
-9) Clicking the Sync clients shows a pop-up saying it was successful, but the console shows a 403 Forbidden.
-10) Going to the billing page has a slew of issues. The dark mode isn't working properly on the notes, the header for the Recent Time Entries (the text is black on a dark background) and the bar that has Date and client and more which is still white. The 403 error for the call to the clients API is still there. There are three API calls to 3 different time-tracking endpoints, active, entries and stats that all give a 400 Bad Request. Given the nature of all the failures on the time-tracking API, it may not actually be implemeted.
-11) On the Messages, the recepients endpoint, I am getting a 500 error and it tells us it's a LINQ error for the DbSet<User> query where it's saying translation of 'string.Format' is failing.
-12) Clicking on a message, it gives a 405 Method Not Allowed and fails.
-13) In the profile, uploading a new picture says it works, and the console gives me a 404 error and the picture isn't there anymore. Denise's "new" picture isn't showing in the staff page, but the old picture is still there.
-14) Hovering over the Visa Library or the Hello dropdown the dark mode colors disappear, and it's white on white.
-
+1) In the Messages page, you STILL can't select a specific message. 
+2) Somehow, we reverted. Now, if you hover over the Visa Library link in the dashboard or the Hello link in the dashboard, the text is now NOT properly colored. It now uses a white background, and that's not correct on a dark mode. 
+3) When you change the picture in the profile page, you DON'T see a pop-up to see what pictures are already downloaded and you get the file selector. When you pick it, it says it's uploaded, but then gives a 404 error. When you go to the Attorney/Staff page, it shows the original picture and in the console, it gives a 404 error for the new picture. 
+4) In the Billing page, it STILL doesn't filter or give a check box. I said put a check box for Admin users, but the DEFAULT MUST BE just the assigned cases. 
+5) In the Billing page, it FINALLY saves the changes to the billing, but the dashboard for the billing page doesn't reflect the saved information. So, the summary at the bottom for hours and dollars stays the old value. If I exit out of the page, and re-enter, it works. If you start, get to a billed amount and save, it does update properly.
+6) In the Settings, the dark mode is extremely off. Multiple white background boxes and multiple black text on dark background.
+7) In the Attorneys/Staff page, the bio does not go to full screen with a click on the bio. 
 
 Law4Hire
 
-1) I refreshed even thouugh we'd set up about 10 builds that I was just testing on Cannlaw, I was still logged in as Denise. That's not supposed to be able to happen. When the user hasn't been in the site and they're not saved for 2 weeks should not have them still logged in. New builds should refresh the cookie. So, with Cannlaw and Law4Hire that you have the version number for Cannlaw, let's put that same build number on Law4Hire and if we're not on the right version, expire and delete the cookie.
-2) On the pricing page from the dashboard there are 2 initial consultations with different pricing. There's one that's 162 and one that's 150. It should be configured from the admin package page.
-3) On the Appointments page, we're going to rebuild, but not yet. There are a bunch of issues with it. So, let's disable the button for now, while leaving it on the screen. Just make it disabled.
+1) In the Packages page, when deleting a package, there's a 405 error on the console and it fails. 
+2) On the Case Summary page, we need to not have Legal Professionals actually have a case assigned to them, so they shouldn't be showing up in the display.
+3) I went to the Pricing Management screen and it says failed to load. 
+4) I get the same on the Package management.
+5) I have massive failures on the Messages page. 
+
+It appears the server just isn't running properly. You have SSH access, please go forward and check the server logs and then do a local UI test to determine if this pages are giving errors. 
+
+All of the remaining items on the list, I cannot verify as I am getting too many errors to continue testing. 
+
 4) On the messages page, all the failures we saw on Cannlaw, are not there, except the 500 error for the recepients.
 5) In the admin panel, we have the system settings (We're at the admin, and there were only 4 things on the rest of the site I found, so that means we're doing great on l4h), there's settings page and there needs to be a Stripe configuration for our payment system we're going to add to Cannlaw later. (DO NOT ADD TO CANNLAW YET).
 6) In the settings, if I change the data, I get a 401 error on save. After I cleared the cookies, it went away.

@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using L4H.Infrastructure.Data;
+using L4H.Infrastructure.Services;
 using L4H.Infrastructure.Entities;
+using L4H.Shared.Models;
+using L4H.Api.DTOs;
 using System.Security.Claims;
-using L4H.Api.Authorization;
-using L4H.Shared.Models; // Added missing using directive
 
 namespace L4H.Api.Controllers;
 
@@ -15,457 +14,149 @@ namespace L4H.Api.Controllers;
 [Tags("Clients")]
 public class ClientsController : ControllerBase
 {
-    private readonly L4HDbContext _context;
+    private readonly ICannlawUserService _userService;
+    private readonly ILogger<ClientsController> _logger;
 
-    public ClientsController(L4HDbContext context)
+    public ClientsController(ICannlawUserService userService, ILogger<ClientsController> logger)
     {
-        _context = context;
+        _userService = userService;
+        _logger = logger;
     }
 
     /// <summary>
     /// Get clients based on user role - admins see all, legal professionals see assigned
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(Client[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<Client[]>> GetClients(
+    [ProducesResponseType(typeof(ClientDto[]), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ClientDto[]>> GetClients(
         [FromQuery] string? search = null,
         [FromQuery] int? attorneyId = null,
-        [FromQuery] CaseStatus? caseStatus = null,
+        [FromQuery] string? status = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
-        // Sync removed for stability
-        // await SyncUsersToClients();
-
-        var query = _context.Clients
-            .Include(c => c.AssignedAttorney)
-            .Include(c => c.Cases)
-            .AsQueryable();
-
-        // Role-based filtering
         var isAdmin = User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase));
+        var userRole = isAdmin ? "Admin" : "LegalProfessional";
+        
+        int? userAttorneyId = null;
         if (!isAdmin)
         {
-            // Legal professionals only see their assigned clients
-            int? userAttorneyId = null;
-            var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
-            
+            var attorneyIdClaim = User.FindFirst("AttorneyId")?.Value;
             if (int.TryParse(attorneyIdClaim, out var id))
             {
                 userAttorneyId = id;
             }
-            else
-            {
-                // Fallback: Look up user in DB to get AttorneyId if claim is missing
-                var userIdClaim = User.FindFirst("sub")?.Value;
-                if (Guid.TryParse(userIdClaim, out var userId))
-                {
-                    var user = await _context.Users.FindAsync(new UserId(userId));
-                    userAttorneyId = user?.AttorneyId;
-                }
-            }
-
-            if (userAttorneyId.HasValue)
-            {
-                // Find clients directly assigned OR clients with cases assigned to this attorney
-                // Case -> User -> Email -> Client
-                var assignedCaseUserEmails = _context.Cases
-                    .Where(c => c.AssignedStaffId == userAttorneyId.Value)
-                    .Select(c => c.User.Email);
-
-                query = query.Where(c => 
-                    c.AssignedAttorneyId == userAttorneyId.Value || 
-                    assignedCaseUserEmails.Contains(c.Email));
-            }
-            else
-            {
-                return Ok(Array.Empty<Client>());
-            }
         }
 
-        // Apply search filters
-        if (!string.IsNullOrWhiteSpace(search))
+        var users = await _userService.SearchClientsAsync(search, attorneyId ?? userAttorneyId, status);
+        
+        // Manual mapping for now, should use AutoMapper later
+        var dtos = users.Select(u => new ClientDto
         {
-            var searchLower = search.ToLowerInvariant();
-            query = query.Where(c => 
-                c.FirstName.ToLowerInvariant().Contains(searchLower) || 
-                c.LastName.ToLowerInvariant().Contains(searchLower) || 
-                c.Email.ToLowerInvariant().Contains(searchLower));
-        }
+            Id = u.Id,
+            Email = u.Email,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            PhoneNumber = u.PhoneNumber,
+            Address = $"{u.StreetAddress} {u.City}".Trim(),
+            Country = u.Country,
+            AssignedAttorneyId = u.AssignedAttorneyId,
+            AssignedAttorneyName = u.AssignedAttorney?.Name,
+            Cases = u.Cases.Select(c => new ClientCaseDto
+            {
+                Id = c.Id,
+                Status = c.Status,
+                VisaType = c.VisaType?.Name,
+                CreatedAt = c.CreatedAt
+            }).ToList()
+        }).ToArray();
 
-        if (attorneyId.HasValue)
-        {
-            query = query.Where(c => c.AssignedAttorneyId == attorneyId.Value);
-        }
-
-        if (caseStatus.HasValue)
-        {
-            query = query.Where(c => c.Cases.Any(cs => cs.Status == caseStatus.Value));
-        }
-
-        // Apply pagination
-        var totalCount = await query.CountAsync();
-        var clients = await query
-            .OrderBy(c => c.LastName)
-            .ThenBy(c => c.FirstName)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToArrayAsync();
-
-        Response.Headers.Append("X-Total-Count", totalCount.ToString());
-        Response.Headers.Append("X-Page", page.ToString());
-        Response.Headers.Append("X-Page-Size", pageSize.ToString());
-
-        return Ok(clients);
+        return Ok(dtos);
     }
 
     /// <summary>
-    /// Sync clients from user accounts (Admin only)
-    /// </summary>
-    [HttpPost("sync")]
-    [Authorize(Policy = "IsAdmin")]
-    public async Task<IActionResult> SyncClients()
-    {
-        await SyncUsersToClients();
-        return Ok(new { message = "Client sync completed." });
-    }
-
-    private async Task SyncUsersToClients()
-    {
-        try
-        {
-            // Optimize: Use DB-side filtering to find missing clients
-            var missingUsers = await _context.Users
-                .Where(u => !u.IsStaff && !u.IsAdmin)
-                .Where(u => !_context.Clients.Any(c => c.Email == u.Email))
-                .ToListAsync();
-
-            if (missingUsers.Any())
-            {
-                var newClients = missingUsers.Select(u => new Client
-                {
-                    FirstName = u.FirstName ?? "Unknown",
-                    LastName = u.LastName ?? "Unknown",
-                    Email = u.Email,
-                    Phone = u.PhoneNumber ?? "",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    CreatedBy = "System (Sync)"
-                }).ToList();
-
-                _context.Clients.AddRange(newClients);
-                await _context.SaveChangesAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            // Log error but don't fail the request
-            Console.WriteLine($"Error syncing clients: {ex.Message}");
-        }
-    }    
-/// <summary>
-    /// Get a specific client by ID with role-based access
+    /// Get a specific client by ID
     /// </summary>
     [HttpGet("{id}")]
-    [ClientAccessAuthorization]
-    [Authorize(Policy = "IsAdminOrLegalProfessional")]
-    [ProducesResponseType(typeof(Client), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ClientDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<Client>> GetClient(int id)
+    public async Task<ActionResult<ClientDto>> GetClient(Guid id)
     {
-        var query = _context.Clients
-            .Include(c => c.AssignedAttorney)
-            .Include(c => c.Cases)
-                .ThenInclude(cs => cs.StatusHistory)
-            .Include(c => c.Documents)
-            .Include(c => c.TimeEntries)
-                .ThenInclude(te => te.Attorney)
-            .AsQueryable();
+        var userId = new UserId(id);
+        var user = await _userService.GetClientByIdAsync(userId);
 
-        // Role-based filtering (though ClientAccessAuthorization attribute handles this too)
-        var isAdmin = User.HasClaim("is_admin", "true") || User.HasClaim("is_admin", "True");
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        // Access check
+        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase));
         if (!isAdmin)
         {
-            var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
-            if (int.TryParse(attorneyIdClaim, out var attorneyId))
-            {
-                // Clients can be associated to this attorney either directly (AssignedAttorneyId)
-                // or via cases where the case's user email matches the client's email.
-                // Using a subquery instead of materializing list to avoid N+1 performance issue.
-                query = query.Where(c =>
-                    c.AssignedAttorneyId == attorneyId ||
-                    _context.Cases.Any(cs =>
-                        cs.AssignedStaffId == attorneyId &&
-                        cs.User.Email == c.Email));
-            }
-            else
+            var attorneyIdClaim = User.FindFirst("AttorneyId")?.Value;
+            if (!int.TryParse(attorneyIdClaim, out var attorneyId) || user.AssignedAttorneyId != attorneyId)
             {
                 return Forbid();
             }
         }
 
-        var client = await query.FirstOrDefaultAsync(c => c.Id == id);
-
-        if (client == null)
+        var dto = new ClientDto
         {
-            return NotFound();
-        }
+            Id = user.Id,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber,
+            Address = $"{user.StreetAddress} {user.City}".Trim(),
+            Country = user.Country,
+            AssignedAttorneyId = user.AssignedAttorneyId,
+            AssignedAttorneyName = user.AssignedAttorney?.Name,
+            Cases = user.Cases.Select(c => new ClientCaseDto
+            {
+                Id = c.Id,
+                Status = c.Status,
+                VisaType = c.VisaType?.Name,
+                CreatedAt = c.CreatedAt
+            }).ToList()
+        };
 
-        return Ok(client);
-    }
-
-    /// <summary>
-    /// Create a new client (Admin only)
-    /// </summary>
-    [HttpPost]
-    [Authorize(Policy = "IsAdmin")]
-    [ProducesResponseType(typeof(Client), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Client>> CreateClient([FromBody] Client client)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        // Set audit fields
-        var userEmail = User.FindFirst("email")?.Value ?? "system";
-        client.CreatedBy = userEmail;
-        client.UpdatedBy = userEmail;
-        client.CreatedAt = DateTime.UtcNow;
-        client.UpdatedAt = DateTime.UtcNow;
-
-        _context.Clients.Add(client);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetClient), new { id = client.Id }, client);
+        return Ok(dto);
     }
 
     /// <summary>
     /// Update client information
     /// </summary>
     [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult> UpdateClient(int id, [FromBody] Client clientUpdate)
+    public async Task<ActionResult> UpdateClient(Guid id, [FromBody] UpdateClientRequest request)
     {
-        var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
-        if (existingClient == null)
-        {
-            return NotFound();
-        }
+        var userId = new UserId(id);
+        var existing = await _userService.GetClientByIdAsync(userId);
+        if (existing == null) return NotFound();
 
-        // Role-based access check
-        var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value == "true" || c.Value == "True"));
-        if (!isAdmin)
-        {
-            var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
-            if (!int.TryParse(attorneyIdClaim, out var attorneyId) || existingClient.AssignedAttorneyId != attorneyId)
-            {
-                return Forbid();
-            }
-        }
+        // Update properties
+        if (request.FirstName != null) existing.FirstName = request.FirstName;
+        if (request.LastName != null) existing.LastName = request.LastName;
+        if (request.Email != null) existing.Email = request.Email;
+        if (request.Phone != null) existing.PhoneNumber = request.Phone;
+        if (request.DateOfBirth != null) existing.DateOfBirth = request.DateOfBirth;
 
-        // Update fields
-        existingClient.FirstName = clientUpdate.FirstName;
-        existingClient.LastName = clientUpdate.LastName;
-        existingClient.Email = clientUpdate.Email;
-        existingClient.Phone = clientUpdate.Phone;
-        existingClient.Address = clientUpdate.Address;
-        existingClient.DateOfBirth = clientUpdate.DateOfBirth;
-        existingClient.CountryOfOrigin = clientUpdate.CountryOfOrigin;
-        existingClient.UpdatedAt = DateTime.UtcNow;
-        existingClient.UpdatedBy = User.FindFirst("email")?.Value ?? "system";
+        var updatedBy = User.FindFirst(ClaimTypes.Email)?.Value ?? "system";
+        await _userService.UpdateClientAsync(existing, updatedBy);
 
-        // Sync changes to linked User account if exists
-        var linkedUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == existingClient.Email);
-        if (linkedUser != null)
-        {
-            linkedUser.FirstName = clientUpdate.FirstName;
-            linkedUser.LastName = clientUpdate.LastName ?? ""; // Ensure not null
-            // We do not update User email here to avoid locking user out without verification
-        }
-
-        await _context.SaveChangesAsync();
         return Ok();
     }
 
     /// <summary>
-    /// Assign or reassign client to attorney (Admin only)
-    /// </summary>
-    [HttpPut("{id}/assign")]
-    [Authorize(Policy = "IsAdmin")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> AssignClient(int id, [FromBody] AssignClientRequest request)
-    {
-        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
-        if (client == null)
-        {
-            return NotFound("Client not found");
-        }
-
-        // Validate attorney exists and is active
-        var attorney = await _context.Attorneys.FirstOrDefaultAsync(a => a.Id == request.AttorneyId && a.IsActive);
-        if (attorney == null)
-        {
-            return BadRequest("Attorney not found or inactive");
-        }
-
-        client.AssignedAttorneyId = request.AttorneyId;
-        client.UpdatedAt = DateTime.UtcNow;
-        client.UpdatedBy = User.FindFirst("email")?.Value ?? "system";
-
-        await _context.SaveChangesAsync();
-        return Ok();
-    }
-
-    /// <summary>
-    /// Get time entries for a specific client
-    /// </summary>
-    [HttpGet("{id}/time-entries")]
-    [Authorize(Policy = "IsAdminOrLegalProfessional")]
-    public async Task<ActionResult<IEnumerable<TimeEntry>>> GetClientTimeEntries(int id)
-    {
-        var entries = await _context.TimeEntries
-            .Include(te => te.Attorney)
-            .Where(te => te.ClientId == id)
-            .OrderByDescending(te => te.StartTime)
-            .ToListAsync();
-
-        return Ok(entries);
-    }
-
-    /// <summary>
-    /// Get documents for a specific client
-    /// </summary>
-    [HttpGet("{id}/documents")]
-    [Authorize(Policy = "IsAdminOrLegalProfessional")]
-    public async Task<ActionResult<IEnumerable<Document>>> GetClientDocuments(int id)
-    {
-        var docs = await _context.Documents
-            .Where(d => d.ClientId == id)
-            .OrderByDescending(d => d.UploadDate)
-            .ToListAsync();
-
-        return Ok(docs);
-    }
-
-    /// <summary>
-    /// Search clients with advanced filtering (Admin only)
-    /// </summary>
-    [HttpGet("search")]
-    [Authorize(Policy = "IsAdmin")]
-    [ProducesResponseType(typeof(Client[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<Client[]>> SearchClients(
-        [FromQuery] string? name = null,
-        [FromQuery] string? email = null,
-        [FromQuery] int? attorneyId = null,
-        [FromQuery] CaseStatus? status = null,
-        [FromQuery] string? countryOfOrigin = null,
-        [FromQuery] DateTime? createdAfter = null,
-        [FromQuery] DateTime? createdBefore = null,
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 50)
-    {
-        var query = _context.Clients
-            .Include(c => c.AssignedAttorney)
-            .Include(c => c.Cases)
-            .AsQueryable();
-
-        // Apply filters
-                if (!string.IsNullOrWhiteSpace(name))
-                {
-                    var nameLower = name.ToLowerInvariant();
-                    query = query.Where(c => 
-                        c.FirstName.ToLowerInvariant().Contains(nameLower) || 
-                        c.LastName.ToLowerInvariant().Contains(nameLower));
-                }
-        
-                if (!string.IsNullOrWhiteSpace(email))
-                {
-                    query = query.Where(c => c.Email.ToLowerInvariant().Contains(email.ToLowerInvariant()));
-                }
-        
-                if (attorneyId.HasValue)
-                {
-                    query = query.Where(c => c.AssignedAttorneyId == attorneyId.Value);
-                }
-        
-                if (status.HasValue)
-                {
-                    query = query.Where(c => c.Cases.Any(cs => cs.Status == status.Value));
-                }
-        
-                if (!string.IsNullOrWhiteSpace(countryOfOrigin))
-                {
-                    query = query.Where(c => c.CountryOfOrigin.ToLowerInvariant().Contains(countryOfOrigin.ToLowerInvariant()));
-                }
-        if (createdAfter.HasValue)
-        {
-            query = query.Where(c => c.CreatedAt >= createdAfter.Value);
-        }
-
-        if (createdBefore.HasValue)
-        {
-            query = query.Where(c => c.CreatedAt <= createdBefore.Value);
-        }
-
-        var totalCount = await query.CountAsync();
-        var clients = await query
-            .OrderBy(c => c.LastName)
-            .ThenBy(c => c.FirstName)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToArrayAsync();
-
-        Response.Headers.Append("X-Total-Count", totalCount.ToString());
-        return Ok(clients);
-    }
-
-    /// <summary>
-    /// Delete a client (Admin only)
+    /// Delete a client
     /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Policy = "IsAdmin")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> DeleteClient(int id)
+    public async Task<ActionResult> DeleteClient(Guid id)
     {
-        var client = await _context.Clients
-            .Include(c => c.Cases)
-            .Include(c => c.TimeEntries)
-            .Include(c => c.Documents)
-            .FirstOrDefaultAsync(c => c.Id == id);
-
-        if (client == null)
-        {
-            return NotFound();
-        }
-
-        // Check if client has active cases or time entries
-        if (client.Cases.Any(c => c.Status != CaseStatus.Complete && c.Status != CaseStatus.ClosedRejected))
-        {
-            return BadRequest("Cannot delete client with active cases");
-        }
-
-        if (client.TimeEntries.Any(te => !te.IsBilled))
-        {
-            return BadRequest("Cannot delete client with unbilled time entries");
-        }
-
-        _context.Clients.Remove(client);
-        await _context.SaveChangesAsync();
-
+        var userId = new UserId(id);
+        var success = await _userService.DeleteClientAsync(userId);
+        if (!success) return NotFound();
         return Ok();
     }
-}
-
-public class AssignClientRequest
-{
-    public int AttorneyId { get; set; }
 }

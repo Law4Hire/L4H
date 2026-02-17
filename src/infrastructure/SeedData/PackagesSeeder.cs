@@ -20,11 +20,17 @@ public class PackagesSeeder : ISeedTask
 
     public async Task ExecuteAsync()
     {
-        // Check if packages already exist
-        if (await _context.Packages.AnyAsync().ConfigureAwait(false))
-        {
-            _logger.LogInformation("[SEED] Packages already exist, checking for missing ones...");
-        }
+        _logger.LogInformation("[SEED] Cleaning up existing packages and pricing rules...");
+        
+        // Remove all pricing rules first due to FK
+        var existingRules = await _context.PricingRules.ToListAsync().ConfigureAwait(false);
+        _context.PricingRules.RemoveRange(existingRules);
+        
+        // Remove all packages
+        var existingPackages = await _context.Packages.ToListAsync().ConfigureAwait(false);
+        _context.Packages.RemoveRange(existingPackages);
+        
+        await _context.SaveChangesAsync().ConfigureAwait(false);
 
         var packages = new List<Package>
         {
@@ -32,49 +38,37 @@ public class PackagesSeeder : ISeedTask
             {
                 Code = "CONSULT",
                 DisplayName = "Initial Consultation",
-                Description = "One-hour strategy session with a legal professional",
+                Description = "One-hour strategy session with an attorney to evaluate eligibility and plan your case.",
                 SortOrder = 1,
-                IsActive = true
+                IsActive = true,
+                RequiresLawyer = true
             },
             new()
             {
-                Code = "BASIC",
-                DisplayName = "Basic Filing",
-                Description = "Essential form preparation and document review",
+                Code = "LAWYER_FULL",
+                DisplayName = "Full Representation (Lawyer-Led)",
+                Description = "The whole thing with a money-back guarantee. Full attorney management, drafting, and filing.",
                 SortOrder = 2,
-                IsActive = true
+                IsActive = true,
+                RequiresLawyer = true
             },
             new()
             {
-                Code = "PREMIUM",
-                DisplayName = "Premium Service",
-                Description = "Full-service representation with priority support",
+                Code = "PARALEGAL_ASSIST",
+                DisplayName = "Paralegal-Assisted Filing",
+                Description = "Preparation by a senior paralegal with attorney oversight. Cost-effective professional assistance.",
                 SortOrder = 3,
-                IsActive = true
+                IsActive = true,
+                RequiresLawyer = false
             },
             new()
             {
-                Code = "PKG_DEAL",
-                DisplayName = "Package Deal",
-                Description = "Bundle multiple services for a discounted flat rate",
+                Code = "SELF_REVIEW",
+                DisplayName = "Self-Filing with Legal Review",
+                Description = "You prepare the forms using our platform, and we perform a final expert legal review before you file.",
                 SortOrder = 4,
-                IsActive = true
-            },
-            new()
-            {
-                Code = "H1B_BASIC",
-                DisplayName = "H-1B Basic Package",
-                Description = "Essential H-1B visa services for skilled workers",
-                SortOrder = 10,
-                IsActive = true
-            },
-            new()
-            {
-                Code = "EB2_NIW",
-                DisplayName = "EB-2 NIW Package",
-                Description = "National Interest Waiver petition and green card application",
-                SortOrder = 11,
-                IsActive = true
+                IsActive = true,
+                RequiresLawyer = false
             }
         };
 
@@ -130,10 +124,10 @@ public class PackagesSeeder : ISeedTask
         AddRule("CONSULT", "B-1", 150m);
         AddRule("CONSULT", "B-2", 150m);
         AddRule("CONSULT", "H-1B", 250m);
-        AddRule("BASIC", "B-1", 1200m);
-        AddRule("BASIC", "H-1B", 2500m);
-        AddRule("PREMIUM", "H-1B", 4500m);
-        AddRule("PKG_DEAL", "H-1B", 6000m);
+        AddRule("LAWYER_FULL", "B-1", 2500m);
+        AddRule("LAWYER_FULL", "H-1B", 4500m);
+        AddRule("PARALEGAL_ASSIST", "H-1B", 2500m);
+        AddRule("SELF_REVIEW", "H-1B", 1200m);
         AddRule("CONSULT", "NATZ", 200m);
         AddRule("CONSULT", "ADOP", 300m);
         AddRule("CONSULT", "IR-4", 250m);

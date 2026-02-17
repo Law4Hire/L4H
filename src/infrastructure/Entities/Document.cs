@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using L4H.Shared.Models;
 
 namespace L4H.Infrastructure.Entities;
 
@@ -6,10 +8,9 @@ public class Document
 {
     public int Id { get; set; }
     
-    public int ClientId { get; set; }
-    public Client Client { get; set; } = null!;
-    
-    [Required]
+    public UserId? UserId { get; set; }
+    public User? User { get; set; }
+
     [MaxLength(255)]
     public string FileName { get; set; } = string.Empty;
     

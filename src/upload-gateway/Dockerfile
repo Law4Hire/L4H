@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.0-rc.2 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.3 AS base
 WORKDIR /app
 EXPOSE 7070
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0.100-rc.2 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY ["src/upload-gateway/L4H.UploadGateway.csproj", "upload-gateway/"]
 COPY ["src/shared/L4H.Shared.csproj", "shared/"]

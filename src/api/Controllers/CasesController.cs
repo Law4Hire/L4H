@@ -79,9 +79,9 @@ public class CasesController : ControllerBase
         {
             // Legal professionals only see cases assigned to them
             var currentUser = await _context.Users.FindAsync(userId);
-            if (currentUser?.AttorneyId != null)
+            if (currentUser?.AttorneyProfileId != null)
             {
-                query = query.Where(c => c.AssignedStaffId == currentUser.AttorneyId);
+                query = query.Where(c => c.AssignedStaffId == currentUser.AttorneyProfileId);
             }
             else
             {
@@ -136,7 +136,7 @@ public class CasesController : ControllerBase
         var response = cases.Select(c => new CaseDashboardResponse
         {
             Id = c.Id.Value,
-            ClientId = _context.Clients.Where(cl => cl.Email == c.User.Email).Select(cl => (int?)cl.Id).FirstOrDefault(),
+            UserId = c.User.Id.Value,
             ClientFirstName = c.User.FirstName ?? "",
             ClientLastName = c.User.LastName ?? "",
             ClientEmail = c.User.Email,
@@ -466,7 +466,7 @@ public class CasesController : ControllerBase
         // Send notification to the assigned attorney if they have notifications enabled
         if (request.StaffId.HasValue)
         {
-            var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.AttorneyId == request.StaffId);
+            var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.AttorneyProfileId == request.StaffId);
             if (assignedUser != null)
             {
                 var notificationPrefs = await _context.UserNotificationPreferences
@@ -524,7 +524,7 @@ public class CasesController : ControllerBase
 
         // Check access: admin or assigned legal professional
         var currentUser = await _context.Users.FindAsync(userId);
-        var isAssignedProfessional = currentUser?.AttorneyId != null && caseEntity.AssignedStaffId == currentUser.AttorneyId;
+        var isAssignedProfessional = currentUser?.AttorneyProfileId != null && caseEntity.AssignedStaffId == currentUser.AttorneyProfileId;
 
         if (!isAdmin && !isAssignedProfessional)
         {
@@ -690,7 +690,7 @@ public class SetPackageRequest
 public class CaseDashboardResponse
 {
     public Guid Id { get; set; }
-    public int? ClientId { get; set; }
+    public Guid UserId { get; set; }
     public string ClientFirstName { get; set; } = string.Empty;
     public string ClientLastName { get; set; } = string.Empty;
     public string ClientEmail { get; set; } = string.Empty;

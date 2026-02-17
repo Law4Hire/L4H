@@ -2,6 +2,9 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
+ARG VITE_API_BASE_URL=/api
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Copy shared-ui first
 COPY web/shared-ui ./web/shared-ui
 WORKDIR /app/web/shared-ui

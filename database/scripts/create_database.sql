@@ -1,0 +1,5 @@
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'L4H')
+BEGIN
+    CREATE DATABASE L4H;
+END
+GO

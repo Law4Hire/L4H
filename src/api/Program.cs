@@ -230,6 +230,14 @@ builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IQuestionEngine
 builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.ISessionManager, L4H.Infrastructure.Services.Interview.SessionManager>();
 builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IVisaEvaluationEngine, L4H.Infrastructure.Services.Interview.VisaEvaluationEngine>();
 
+// Epic #24: Document Intelligence & Compliance
+builder.Services.AddScoped<L4H.Infrastructure.Interfaces.IPdfFieldExtractor, PdfFieldExtractorService>();
+builder.Services.AddScoped<L4H.Infrastructure.Interfaces.IPdfInjectionService, PdfInjectionService>();
+builder.Services.AddScoped<L4H.Infrastructure.Interfaces.IDocumentPoolService, DocumentPoolService>();
+builder.Services.AddScoped<L4H.Infrastructure.Interfaces.IDocumentInterviewService, DocumentInterviewService>();
+builder.Services.AddScoped<L4H.Infrastructure.Services.IAttorneyPhotoService, AttorneyPhotoService>();
+builder.Services.AddHttpClient();
+
 // builder.Services.AddScoped<ICitizenshipCaseService, CitizenshipCaseService>();
 builder.Services.AddScoped<IAdoptionCaseService, AdoptionCaseService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
@@ -237,7 +245,7 @@ builder.Services.AddScoped<L4H.Infrastructure.Services.IInterviewDocumentService
 builder.Services.AddScoped<CannlawConfigurationService>();
 
 // Cannlaw client billing services
-builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<ICannlawUserService, CannlawUserService>();
 builder.Services.AddScoped<ITimeTrackingService, TimeTrackingService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
@@ -290,7 +298,6 @@ builder.Services.AddScoped<ISeedTask, VisaTypesSeeder>();
 builder.Services.AddScoped<ISeedTask, CategoryClassSeeder>();
 builder.Services.AddScoped<ISeedTask, CountryVisaTypesSeeder>();
 builder.Services.AddScoped<ISeedTask, AttorneysSeeder>();
-builder.Services.AddScoped<ISeedTask, CannlawClientBillingSeeder>();
 builder.Services.AddScoped<ISeedTask, CannlawConfigurationSeeder>();
 builder.Services.AddScoped<ISeedTask, InterviewCategoriesSeeder>();
 builder.Services.AddScoped<ISeedTask, InterviewQuestionsSeeder>();
@@ -429,7 +436,9 @@ Console.WriteLine("[STARTUP] Authorization configured");
 
 Console.WriteLine("[STARTUP] Mapping controllers...");
 // Map controllers based on their [Route] attributes
-app.MapControllers().RequireHost("*:*"); // Allow all hosts in development
+// NOTE: DO NOT add .RequireHost("*:*") here. It is invalid syntax in .NET 10 and causes 404s for all requests.
+// For development/local-k8s accessibility, the CORS policy "AllowAll" above is sufficient.
+app.MapControllers(); 
 Console.WriteLine("[STARTUP] Controllers mapped");
 
 // Health endpoint is handled by HealthController

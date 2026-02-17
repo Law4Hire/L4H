@@ -943,17 +943,29 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
-    /// Get comprehensive platform analytics and reports
+    /// Get combined platform analytics (consolidated endpoint)
     /// </summary>
-    /// <returns>Platform analytics dashboard data</returns>
-    [HttpGet("analytics/dashboard")]
-    [ProducesResponseType(typeof(AdminAnalyticsDashboardResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<AdminAnalyticsDashboardResponse>> GetAnalyticsDashboard()
+    [HttpGet("analytics")]
+    [ProducesResponseType(typeof(CombinedAnalyticsResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CombinedAnalyticsResponse>> GetAnalytics()
+    {
+        var dashboard = await GetAnalyticsDashboardInternal().ConfigureAwait(false);
+        var financial = await GetFinancialAnalyticsInternal(null, null).ConfigureAwait(false);
+        var users = await GetUserAnalyticsInternal().ConfigureAwait(false);
+
+        return Ok(new CombinedAnalyticsResponse
+        {
+            DashboardData = dashboard,
+            FinancialData = financial,
+            UserAnalytics = users
+        });
+    }
+
+    private async Task<AdminAnalyticsDashboardResponse> GetAnalyticsDashboardInternal()
     {
         var now = DateTime.UtcNow;
         var startOfMonth = new DateTime(now.Year, now.Month, 1);
-        var startOfYear = new DateTime(now.Year, 1, 1);
+        var lastMonthStart = startOfMonth.AddMonths(-1);
         var thirtyDaysAgo = now.AddDays(-30);
         var sevenDaysAgo = now.AddDays(-7);
 
@@ -968,6 +980,9 @@ public class AdminController : ControllerBase
         // Growth metrics
         var newUsersThisMonth = await _context.Users
             .CountAsync(u => u.CreatedAt >= startOfMonth).ConfigureAwait(false);
+        var usersLastMonth = await _context.Users
+            .CountAsync(u => u.CreatedAt >= lastMonthStart && u.CreatedAt < startOfMonth).ConfigureAwait(false);
+        
         var newCasesThisMonth = await _context.Cases
             .CountAsync(c => c.CreatedAt >= startOfMonth).ConfigureAwait(false);
         var revenueThisMonth = await _context.Invoices
@@ -1010,56 +1025,47 @@ public class AdminController : ControllerBase
         var paidInvoices = await _context.Invoices.CountAsync(i => i.Status == "paid").ConfigureAwait(false);
         var pendingInvoices = await _context.Invoices.CountAsync(i => i.Status == "draft").ConfigureAwait(false);
 
-        var response = new AdminAnalyticsDashboardResponse
+        return new AdminAnalyticsDashboardResponse
         {
-            // Core metrics
             TotalUsers = totalUsers,
             TotalCases = totalCases,
             ActiveCases = activeCases,
             TotalRevenue = totalRevenue,
-
-            // Growth metrics
             NewUsersThisMonth = newUsersThisMonth,
             NewCasesThisMonth = newCasesThisMonth,
             RevenueThisMonth = revenueThisMonth,
-
-            // Activity metrics
+            UserGrowthRate = usersLastMonth > 0 ? (decimal)newUsersThisMonth / usersLastMonth : 0,
+            CaseConversionRate = totalUsers > 0 ? (decimal)totalCases / totalUsers : 0,
             RecentUserRegistrations = recentUserRegistrations,
             RecentCaseActivity = recentCaseActivity,
-
-            // Payment metrics
             TotalInvoices = totalInvoices,
             PaidInvoices = paidInvoices,
             PendingInvoices = pendingInvoices,
             PaymentSuccessRate = totalInvoices > 0 ? Math.Round((decimal)paidInvoices / totalInvoices * 100, 2) : 0,
-
-            // Distributions
             CaseStatusCounts = caseStatusCounts,
             PopularVisaTypes = popularVisaTypes,
-
-            // Metadata
             GeneratedAt = now
         };
+    }
 
-        // Audit log
+    /// <summary>
+    /// Get comprehensive platform analytics and reports
+    /// </summary>
+    /// <returns>Platform analytics dashboard data</returns>
+    [HttpGet("analytics/dashboard")]
+    [ProducesResponseType(typeof(AdminAnalyticsDashboardResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<AdminAnalyticsDashboardResponse>> GetAnalyticsDashboard()
+    {
+        var response = await GetAnalyticsDashboardInternal().ConfigureAwait(false);
+        
         await LogAuditAsync("admin", "analytics_dashboard_view", "Analytics", "dashboard", 
-            new { timestamp = now }).ConfigureAwait(false);
+            new { timestamp = response.GeneratedAt }).ConfigureAwait(false);
 
         return Ok(response);
     }
 
-    /// <summary>
-    /// Get detailed financial analytics and revenue reports
-    /// </summary>
-    /// <param name="startDate">Start date for the report (optional)</param>
-    /// <param name="endDate">End date for the report (optional)</param>
-    /// <returns>Financial analytics data</returns>
-    [HttpGet("analytics/financial")]
-    [ProducesResponseType(typeof(AdminFinancialAnalyticsResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<AdminFinancialAnalyticsResponse>> GetFinancialAnalytics(
-        [FromQuery] DateTime? startDate = null,
-        [FromQuery] DateTime? endDate = null)
+    private async Task<AdminFinancialAnalyticsResponse> GetFinancialAnalyticsInternal(DateTime? startDate, DateTime? endDate)
     {
         var now = DateTime.UtcNow;
         var start = startDate ?? now.AddDays(-90); // Default to last 90 days
@@ -1080,8 +1086,8 @@ public class AdminController : ControllerBase
         var revenueByVisaType = await _context.Invoices
             .Include(i => i.Case)
                 .ThenInclude(c => c.VisaType)
-            .Where(i => i.Status == "paid" && i.CreatedAt >= start && i.CreatedAt <= end && i.Case.VisaType != null)
-            .GroupBy(i => new { i.Case.VisaType!.Code, i.Case.VisaType.Name })
+            .Where(i => i.Status == "paid" && i.CreatedAt >= start && i.CreatedAt <= end && i.Case != null && i.Case.VisaType != null)
+            .GroupBy(i => new { i.Case!.VisaType!.Code, i.Case.VisaType.Name })
             .Select(g => new AdminRevenueByTypeResponse
             {
                 VisaTypeCode = g.Key.Code,
@@ -1107,7 +1113,7 @@ public class AdminController : ControllerBase
             .ThenBy(r => r.Month)
             .ToListAsync().ConfigureAwait(false);
 
-        var response = new AdminFinancialAnalyticsResponse
+        return new AdminFinancialAnalyticsResponse
         {
             StartDate = start,
             EndDate = end,
@@ -1120,58 +1126,30 @@ public class AdminController : ControllerBase
             MonthlyRevenue = monthlyRevenue,
             GeneratedAt = DateTime.UtcNow
         };
-
-        // Audit log
-        await LogAuditAsync("admin", "financial_analytics_view", "Analytics", "financial",
-            new { start, end, revenue = totalRevenue }).ConfigureAwait(false);
-
-        return Ok(response);
     }
 
     /// <summary>
-    /// Get database statistics for admin overview
+    /// Get detailed financial analytics and revenue reports
     /// </summary>
-    /// <returns>Database statistics</returns>
-    [HttpGet("database-stats")]
-    [ProducesResponseType(typeof(DatabaseStatsResponse), StatusCodes.Status200OK)]
+    /// <param name="startDate">Start date for the report (optional)</param>
+    /// <param name="endDate">End date for the report (optional)</param>
+    /// <returns>Financial analytics data</returns>
+    [HttpGet("analytics/financial")]
+    [ProducesResponseType(typeof(AdminFinancialAnalyticsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<DatabaseStatsResponse>> GetDatabaseStats()
+    public async Task<ActionResult<AdminFinancialAnalyticsResponse>> GetFinancialAnalytics(
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null)
     {
-        var totalUsers = await _context.Users.CountAsync().ConfigureAwait(false);
-        var totalCases = await _context.Cases.CountAsync().ConfigureAwait(false);
-        var usersWithAssignedVisas = await _context.Cases
-            .Where(c => c.VisaType != null)
-            .Select(c => c.UserId)
-            .Distinct()
-            .CountAsync().ConfigureAwait(false);
-        var totalVisaTypes = await _context.VisaTypes.CountAsync().ConfigureAwait(false);
-        var activeVisaTypes = await _context.VisaTypes.CountAsync(v => v.IsActive).ConfigureAwait(false);
+        var response = await GetFinancialAnalyticsInternal(startDate, endDate).ConfigureAwait(false);
 
-        var response = new DatabaseStatsResponse
-        {
-            TotalUsers = totalUsers,
-            TotalCases = totalCases,
-            UsersWithAssignedVisas = usersWithAssignedVisas,
-            TotalVisaTypes = totalVisaTypes,
-            ActiveVisaTypes = activeVisaTypes,
-            GeneratedAt = DateTime.UtcNow
-        };
-
-        // Audit log
-        await LogAuditAsync("admin", "database_stats_view", "Database", "stats",
-            new { totalUsers, totalCases, usersWithAssignedVisas }).ConfigureAwait(false);
+        await LogAuditAsync("admin", "financial_analytics_view", "Analytics", "financial",
+            new { start = response.StartDate, end = response.EndDate, revenue = response.TotalRevenue }).ConfigureAwait(false);
 
         return Ok(response);
     }
 
-    /// <summary>
-    /// Get user activity and engagement analytics
-    /// </summary>
-    /// <returns>User activity analytics data</returns>
-    [HttpGet("analytics/users")]
-    [ProducesResponseType(typeof(AdminUserAnalyticsResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<AdminUserAnalyticsResponse>> GetUserAnalytics()
+    private async Task<AdminUserAnalyticsResponse> GetUserAnalyticsInternal()
     {
         var now = DateTime.UtcNow;
         var thirtyDaysAgo = now.AddDays(-30);
@@ -1215,7 +1193,7 @@ public class AdminController : ControllerBase
             .Distinct()
             .CountAsync().ConfigureAwait(false);
 
-        var response = new AdminUserAnalyticsResponse
+        return new AdminUserAnalyticsResponse
         {
             TotalUsers = totalUsers,
             ActiveUsers7Days = activeUsers7Days,
@@ -1226,10 +1204,21 @@ public class AdminController : ControllerBase
             UsersByCountry = usersByCountry,
             GeneratedAt = now
         };
+    }
 
-        // Audit log
+    /// <summary>
+    /// Get user activity and engagement analytics
+    /// </summary>
+    /// <returns>User activity analytics data</returns>
+    [HttpGet("analytics/users")]
+    [ProducesResponseType(typeof(AdminUserAnalyticsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<AdminUserAnalyticsResponse>> GetUserAnalytics()
+    {
+        var response = await GetUserAnalyticsInternal().ConfigureAwait(false);
+
         await LogAuditAsync("admin", "user_analytics_view", "Analytics", "users",
-            new { totalUsers, activeUsers7Days, activeUsers30Days }).ConfigureAwait(false);
+            new { totalUsers = response.TotalUsers, activeUsers7Days = response.ActiveUsers7Days, activeUsers30Days = response.ActiveUsers30Days }).ConfigureAwait(false);
 
         return Ok(response);
     }
@@ -1687,6 +1676,8 @@ public class AdminAnalyticsDashboardResponse
     public int NewUsersThisMonth { get; set; }
     public int NewCasesThisMonth { get; set; }
     public decimal RevenueThisMonth { get; set; }
+    public decimal UserGrowthRate { get; set; }
+    public decimal CaseConversionRate { get; set; }
 
     // Activity metrics
     public int RecentUserRegistrations { get; set; }
@@ -1704,6 +1695,13 @@ public class AdminAnalyticsDashboardResponse
 
     // Metadata
     public DateTime GeneratedAt { get; set; }
+}
+
+public class CombinedAnalyticsResponse
+{
+    public AdminAnalyticsDashboardResponse DashboardData { get; set; } = new();
+    public AdminFinancialAnalyticsResponse FinancialData { get; set; } = new();
+    public AdminUserAnalyticsResponse UserAnalytics { get; set; } = new();
 }
 
 public class AdminFinancialAnalyticsResponse

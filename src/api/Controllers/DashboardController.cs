@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using System.Security.Claims;
-using L4H.Shared.Models; // Add this using directive for UserId
+using L4H.Shared.Models;
 
 namespace L4H.Api.Controllers;
 
@@ -35,14 +35,11 @@ public class DashboardController : ControllerBase
 
         var user = await _context.Users.FindAsync(new UserId(userId));
         var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase))) || (user?.IsAdmin ?? false);
-        var attorneyId = user?.AttorneyId;
+        var attorneyId = user?.AttorneyProfileId;
 
         if (!isAdmin && attorneyId == null)
         {
-            // If not admin and not linked to attorney, they might be staff. 
-            // We should still allow them to see general stats if they pass the policy.
-            // But for now, let's keep the restriction or broaden it.
-            _logger.LogWarning("User {UserId} accessed stats but has no AttorneyId and is not Admin", userId);
+            _logger.LogWarning("User {UserId} accessed stats but has no AttorneyProfileId and is not Admin", userId);
         }
 
         var now = DateTime.UtcNow;
@@ -50,7 +47,10 @@ public class DashboardController : ControllerBase
         var startOfLastMonth = startOfMonth.AddMonths(-1);
 
         // Base queries
-        var clientsQuery = _context.Clients.AsQueryable();
+        var usersQuery = _context.Users
+            .Where(u => !u.IsStaff && !u.IsAdmin && !u.IsLegalProfessional)
+            .AsQueryable();
+            
         var casesQuery = _context.Cases.Include(c => c.User).AsQueryable(); 
         var appointmentsQuery = _context.Appointments.AsQueryable();
         var timeEntriesQuery = _context.TimeEntries.AsQueryable();
@@ -60,7 +60,7 @@ public class DashboardController : ControllerBase
         {
             if (attorneyId.HasValue)
             {
-                clientsQuery = clientsQuery.Where(c => c.AssignedAttorneyId == attorneyId.Value);
+                usersQuery = usersQuery.Where(u => u.AssignedAttorneyId == attorneyId.Value);
                 casesQuery = casesQuery.Where(c => c.AssignedStaffId == attorneyId.Value); 
                 appointmentsQuery = appointmentsQuery.Where(a => a.StaffUserId == new UserId(userId)); 
                 timeEntriesQuery = timeEntriesQuery.Where(t => t.AttorneyId == attorneyId.Value);
@@ -98,7 +98,7 @@ public class DashboardController : ControllerBase
             .SumAsync(t => t.BillableAmount);
 
         // 5. New Clients (This Month)
-        var newClients = await clientsQuery.CountAsync(c => c.CreatedAt >= startOfMonth);
+        var newClients = await usersQuery.CountAsync(c => c.CreatedAt >= startOfMonth);
 
         // 6. Completed Cases (This Month)
         var completedCases = await casesQuery.CountAsync(c => c.Status == "Complete");
@@ -126,7 +126,7 @@ public class DashboardController : ControllerBase
 
         var user = await _context.Users.FindAsync(new UserId(userId));
         var isAdmin = User.HasClaim(c => c.Type == "is_admin" && (c.Value.Equals("true", StringComparison.OrdinalIgnoreCase))) || (user?.IsAdmin ?? false);
-        var attorneyId = user?.AttorneyId;
+        var attorneyId = user?.AttorneyProfileId;
 
         if (!isAdmin && attorneyId == null && !(user?.IsStaff ?? false))
         {
@@ -135,12 +135,15 @@ public class DashboardController : ControllerBase
 
         var activityLimit = 10;
 
-        // 1. New Clients
-        var clientsQuery = _context.Clients.AsQueryable();
+        // 1. New Clients (Users)
+        var usersQuery = _context.Users
+            .Where(u => !u.IsStaff && !u.IsAdmin && !u.IsLegalProfessional)
+            .AsQueryable();
+            
         if (!isAdmin && attorneyId.HasValue) 
-            clientsQuery = clientsQuery.Where(c => c.AssignedAttorneyId == attorneyId.Value);
+            usersQuery = usersQuery.Where(u => u.AssignedAttorneyId == attorneyId.Value);
         
-        var recentClients = await clientsQuery
+        var recentClients = await usersQuery
             .OrderByDescending(c => c.CreatedAt)
             .Take(5)
             .Select(c => new ActivityItem 
@@ -176,7 +179,7 @@ public class DashboardController : ControllerBase
 
         // 3. Time Entries
         var timeEntriesQuery = _context.TimeEntries
-            .Include(t => t.Client)
+            .Include(t => t.User)
             .AsQueryable();
         if (!isAdmin && attorneyId.HasValue) 
             timeEntriesQuery = timeEntriesQuery.Where(t => t.AttorneyId == attorneyId.Value);
@@ -190,7 +193,7 @@ public class DashboardController : ControllerBase
             .Select(t => new ActivityItem
             {
                 Type = "time_entry",
-                Message = $"Logged {t.Duration:F1}h for {t.Client?.FirstName ?? "Unknown"} {t.Client?.LastName ?? "Client"}",
+                Message = $"Logged {t.Duration:F1}h for {t.User?.FirstName ?? "Unknown"} {t.User?.LastName ?? "Client"}",
                 Time = t.CreatedAt.ToString("o")
             })
             .ToList();
