@@ -179,7 +179,7 @@ public class AuthService : IAuthService
         return Result<AuthResponse>.Success(response);
     }
 
-    public async Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token)
+    public async Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         var result = await _rememberMeTokenService.ValidateAndRotateTokenAsync(token).ConfigureAwait(false);
         
@@ -198,14 +198,14 @@ public class AuthService : IAuthService
             Token = jwtToken,
             UserId = user.Id,
             IsProfileComplete = IsProfileComplete(user),
-            IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
+            IsInterviewComplete = await IsInterviewCompleteAsync(user, cancellationToken).ConfigureAwait(false),
             IsStaff = user.IsStaff,
             IsAdmin = user.IsAdmin,
             IsPersistent = isPersistent
         });
     }
 
-    public async Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request)
+    public async Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request, CancellationToken cancellationToken = default)
     {
         var resetToken = await _passwordResetService.CreatePasswordResetTokenAsync(request.Email).ConfigureAwait(false);
 
@@ -219,7 +219,7 @@ public class AuthService : IAuthService
             new MessageResponse { Message = "If an account with that email exists, a password reset link has been sent." });
     }
 
-    public async Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request)
+    public async Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default)
     {
         // Validate new password policy
         var policyResult = _passwordPolicy.ValidatePassword(request.NewPassword);
@@ -238,7 +238,7 @@ public class AuthService : IAuthService
         var userId = tokenValidation.Value!;
 
         // Get user
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken).ConfigureAwait(false);
         if (user == null)
         {
             return Result<MessageResponse>.Failure("User not found");
@@ -256,22 +256,22 @@ public class AuthService : IAuthService
         // Revoke all remember-me tokens for security
         await _rememberMeTokenService.RevokeAllTokensForUserAsync(userId).ConfigureAwait(false);
 
-        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return Result<MessageResponse>.Success(
             new MessageResponse { Message = "Password has been reset successfully." });
     }
 
-    public async Task<bool> UserExistsAsync(string email)
+    public async Task<bool> UserExistsAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _context.Users
-            .AnyAsync(u => u.Email == email).ConfigureAwait(false);
+            .AnyAsync(u => u.Email == email, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<Result<MessageResponse>> UpdateProfileAsync(UserId userId, UpdateProfileRequest request)
+    public async Task<Result<MessageResponse>> UpdateProfileAsync(UserId userId, UpdateProfileRequest request, CancellationToken cancellationToken = default)
     {
         var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken).ConfigureAwait(false);
 
         if (user == null)
         {
@@ -309,7 +309,7 @@ public class AuthService : IAuthService
         if (!string.IsNullOrEmpty(request.Gender))
             user.Gender = request.Gender;
 
-        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return Result<MessageResponse>.Success(
             new MessageResponse { Message = "Profile updated successfully" });

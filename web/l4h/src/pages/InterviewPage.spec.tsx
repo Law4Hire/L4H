@@ -14,6 +14,8 @@ vi.mock('@l4h/shared-ui', async () => {
         interview: {
             startAnonymous: vi.fn(),
             submitAnswer: vi.fn(),
+            getEvaluations: vi.fn(),
+            complete: vi.fn(),
         },
     };
 });
