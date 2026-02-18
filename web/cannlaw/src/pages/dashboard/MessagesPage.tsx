@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Card, Button, EmptyState, useToast, fetchJson } from '@l4h/shared-ui'
 import { MessageSquare, Send, User, Search, Clock, ChevronRight, Plus, X, Check } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface MessageThread {
   id: string

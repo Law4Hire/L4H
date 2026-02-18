@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface ClientProtectedRouteProps {
   children: React.ReactNode

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Card, Button, Input, useToast, fetchJson, apiClient } from '@l4h/shared-ui'
 import { User, Mail, Phone, MapPin, Camera } from 'lucide-react'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface AttorneyProfile {
   id: number

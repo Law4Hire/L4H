@@ -4,7 +4,7 @@ import { Card, Button, Input, useToast } from '@l4h/shared-ui' // Added useToast
 import { User, Mail, Phone, Calendar, Edit, Save, X, Plus, Download, Clock, CheckCircle, AlertCircle } from '@l4h/shared-ui'
 import { useClients } from '../../hooks/useClients'
 import { useAttorneys } from '../../hooks/useAttorneys'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 import { useDocuments } from '../../hooks/useDocuments'
 import { useTimeEntries } from '../../hooks/useTimeEntries'
 

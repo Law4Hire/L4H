@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ThemeProvider, QueryProvider } from '@l4h/shared-ui'
-import { AuthProvider } from './hooks/useAuth'
+import { ThemeProvider, QueryProvider, AuthProvider } from '@l4h/shared-ui'
 import App from './App'
 import './index.css'
 

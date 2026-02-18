@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { useAuth } from './useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 export interface NotificationTemplate {
   id: number

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button, useToast } from '@l4h/shared-ui'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate()

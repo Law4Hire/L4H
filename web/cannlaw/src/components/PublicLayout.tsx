@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Button, VersionStamp } from '@l4h/shared-ui'
 import { Menu, X, Sun, Moon, Share2, Facebook, Twitter, Instagram, Linkedin, MessageCircle, Phone, Shield } from 'lucide-react'
 import { useSiteConfig } from '../hooks/useSiteConfig'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 import { ThemeToggle } from './ThemeToggle'
 
 interface PublicLayoutProps {

@@ -5,8 +5,8 @@ import { useToast } from './Toast'
 import { fetchJson } from '../api-client'
 
 interface TimeTrackerProps {
-  caseId: string
-  clientName: string
+  caseId?: string
+  clientName?: string
 }
 
 interface TimeEntry {
@@ -61,18 +61,17 @@ export const TimeTracker: React.FC<TimeTrackerProps> = ({ caseId, clientName }) 
   }
 
   const handleStart = async () => {
-    if (!caseId) {
-      error('No case selected')
-      return
-    }
-
     try {
       setIsLoading(true)
+      const description = caseId 
+        ? `Working on case for ${clientName || 'Client'}`
+        : 'General / Administrative Work';
+
       const entry = await fetchJson<TimeEntry>('/v1/time-tracking/start', {
         method: 'POST',
         body: JSON.stringify({
-          caseId: caseId, 
-          description: `Working on case for ${clientName}`
+          caseId: caseId || null, 
+          description
         })
       })
       setActiveEntry(entry)

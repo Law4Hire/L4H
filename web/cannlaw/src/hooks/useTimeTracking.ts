@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useAuth } from './useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface TimeEntry {
   id: number

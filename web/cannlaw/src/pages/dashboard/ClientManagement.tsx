@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button, Input, Modal, useToast } from '@l4h/shared-ui'
 import { Search, Filter, User, Phone, Calendar, Edit, AlertCircle, CheckCircle, Clock, Plus, RotateCw } from 'lucide-react'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import { useClients } from '../../hooks/useClients'
 

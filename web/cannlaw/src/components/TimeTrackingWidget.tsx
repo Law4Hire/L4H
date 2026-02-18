@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Card, Button, Input, Modal, fetchJson } from '@l4h/shared-ui'
 import { Clock, Edit, Save, Plus } from 'lucide-react'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface TimeEntry {
   id: number
