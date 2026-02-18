@@ -111,7 +111,7 @@ public class BillingController : ControllerBase
             .ToArrayAsync();
 
         var clientBreakdown = timeEntries
-            .GroupBy(te => new { te.UserId, te.User.FirstName, te.User.LastName })
+            .GroupBy(te => new { te.UserId, FirstName = te.User?.FirstName ?? "Unknown", LastName = te.User?.LastName ?? "User" })
             .Select(g => new ClientBillingBreakdown
             {
                 UserId = g.Key.UserId?.Value ?? Guid.Empty,
@@ -296,7 +296,7 @@ public class BillingController : ControllerBase
 
         foreach (var entry in timeEntries)
         {
-            csv.AppendLine($"\"{entry.Attorney.Name}\",\"{entry.User.FirstName} {entry.User.LastName}\"," +
+            csv.AppendLine($"\"{entry.Attorney?.Name ?? "N/A"}\",\"{entry.User?.FirstName ?? "Unknown"} {entry.User?.LastName ?? "User"}\"," +
                           $"\"{entry.StartTime:yyyy-MM-dd HH:mm}\",\"{entry.EndTime:yyyy-MM-dd HH:mm}\"," +
                           $"{entry.Duration},{entry.Description},{entry.HourlyRate:C}," +
                           $"{entry.BillableAmount:C},{entry.IsBilled}," +

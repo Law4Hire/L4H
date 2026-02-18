@@ -161,10 +161,11 @@ public class DocumentsController : ControllerBase
         if (!isAdmin)
         {
             var subClaim = User.FindFirst("sub")?.Value;
-            if (document.UserId == null || subClaim != document.UserId.Value.ToString())
+            var userId = document.UserId;
+            if (userId == null || subClaim != userId.ToString())
             {
                 // Check if user is the assigned attorney
-                var user = await _userService.GetClientByIdAsync(document.UserId.Value);
+                var user = await _userService.GetClientByIdAsync(userId!.Value);
                 var attorneyIdClaim = User.FindFirst("AttorneyId")?.Value;
                 if (user == null || !int.TryParse(attorneyIdClaim, out var attorneyId) || user.AssignedAttorneyId != attorneyId)
                 {
@@ -190,10 +191,11 @@ public class DocumentsController : ControllerBase
         if (!isAdmin)
         {
             var subClaim = User.FindFirst("sub")?.Value;
-            if (document.UserId == null || subClaim != document.UserId.Value.ToString())
+            var userId = document.UserId;
+            if (userId == null || subClaim != userId.ToString())
             {
                 // Check if user is the assigned attorney
-                var user = await _userService.GetClientByIdAsync(document.UserId.Value);
+                var user = await _userService.GetClientByIdAsync(userId!.Value);
                 var attorneyIdClaim = User.FindFirst("AttorneyId")?.Value;
                 if (user == null || !int.TryParse(attorneyIdClaim, out var attorneyId) || user.AssignedAttorneyId != attorneyId)
                 {

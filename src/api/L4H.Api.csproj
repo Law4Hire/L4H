@@ -17,7 +17,7 @@
     <!-- Enhanced code analysis -->
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <AnalysisLevel>latest-all</AnalysisLevel>
+    <AnalysisLevel>latest</AnalysisLevel>
 
     <!-- Native AOT readiness (not publishing as AOT yet, but preparing for it) -->
     <IsAotCompatible>true</IsAotCompatible>

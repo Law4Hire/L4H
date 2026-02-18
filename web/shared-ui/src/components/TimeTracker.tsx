@@ -124,7 +124,7 @@ export const TimeTracker: React.FC<TimeTrackerProps> = ({ caseId, clientName }) 
       
       {activeEntry ? (
             <Button
-              variant="error"
+              variant="destructive"
               size="sm"
               onClick={handleStop}
               loading={isLoading}
