@@ -22,6 +22,22 @@ export { apiClient, ApiClient } from './Api'
 export type { Case, Appointment, Message, Upload, Pricing, ApiResponse } from './Api'
 export { authClient, AuthClient } from './AuthClient'
 
+// Theme
+export { ThemeProvider, useTheme } from './ThemeProvider'
+
+// Auth & Config
+export { AuthProvider, useAuth } from './hooks/useAuth'
+export type { User } from './hooks/useAuth'
+export { useSiteConfig } from './hooks/useSiteConfig'
+export type { SiteConfiguration } from './hooks/useSiteConfig'
+
+// Route Guard
+export { RouteGuard } from './RouteGuard'
+
+// React Query
+export { QueryProvider, queryClient } from './query-provider'
+export { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
 // Component exports
 export { Button } from './components/Button'
 export { Input } from './components/Input'
@@ -31,23 +47,16 @@ export type { SearchableSelectOption, SearchableSelectProps } from './components
 export { Modal } from './components/Modal'
 export { Card } from './components/Card'
 export { Layout } from './components/Layout'
+export { VersionStamp } from './components/VersionStamp'
 export { Container } from './components/Container'
 export { EmptyState } from './components/EmptyState'
 export { Toast, ToastContainer, useToast, ToastProvider } from './components/Toast'
+export { TimeTracker } from './components/TimeTracker'
+export { NextSteps } from './components/NextSteps'
 
 // Icons
 export { Icon } from './Icon'
 export * from './Icon'
-
-// Theme
-export { ThemeProvider, useTheme } from './ThemeProvider'
-
-// Route Guard
-export { RouteGuard } from './RouteGuard'
-
-// React Query
-export { QueryProvider, queryClient } from './query-provider'
-export { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Formatters
 export {
@@ -61,5 +70,9 @@ export {
   formatPercentage,
   formatList,
 } from './formatters'
+
+// Pages
+export { SettingsHub } from './pages/SettingsHub'
+export { UnifiedDashboard } from './pages/UnifiedDashboard'
 
 // I18n - removed singleton export, each app should create its own i18n instance

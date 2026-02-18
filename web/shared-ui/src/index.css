@@ -9,4 +9,12 @@
 
 @layer utilities {
   /* Utility classes will go here */
+  .no-wheel-scroll::-webkit-inner-spin-button,
+  .no-wheel-scroll::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .no-wheel-scroll {
+    -moz-appearance: textfield;
+  }
 }

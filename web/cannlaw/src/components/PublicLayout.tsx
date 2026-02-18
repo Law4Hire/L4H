@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Button } from '@l4h/shared-ui'
+import { Button, VersionStamp } from '@l4h/shared-ui'
 import { Menu, X, Sun, Moon, Share2, Facebook, Twitter, Instagram, Linkedin, MessageCircle, Phone, Shield } from 'lucide-react'
 import { useSiteConfig } from '../hooks/useSiteConfig'
 import { useAuth } from '../hooks/useAuth'
@@ -366,10 +366,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
         </div>
       </footer>
 
-      {/* Version Tag for Deployment Verification */}
-      <div className="fixed bottom-2 left-2 z-[100] bg-black/50 text-white text-[10px] px-2 py-1 rounded-md pointer-events-none backdrop-blur-sm border border-white/10 font-mono">
-        {__APP_VERSION__}
-      </div>
+      <VersionStamp />
     </div>
   )
 }

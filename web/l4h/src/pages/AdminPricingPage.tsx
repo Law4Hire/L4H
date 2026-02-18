@@ -372,7 +372,14 @@ const AdminPricingPage: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Base Price (USD)</label>
-                    <Input type="number" placeholder="0.00" value={newRuleData.basePrice} onChange={e => setNewRuleData({...newRuleData, basePrice: e.target.value})} />
+                    <Input 
+                      type="number" 
+                      step="0.01"
+                      placeholder="0.00" 
+                      value={newRuleData.basePrice} 
+                      onChange={e => setNewRuleData({...newRuleData, basePrice: e.target.value})} 
+                      className="no-wheel-scroll"
+                    />
                   </div>
                 </div>
                 <div className="flex gap-3 justify-end">
@@ -424,14 +431,18 @@ const AdminPricingPage: React.FC = () => {
               <Input
                 label="Base Price (USD)"
                 type="number"
+                step="0.01"
                 value={editingPackage.basePrice}
                 onChange={e => setEditingPackage({...editingPackage, basePrice: e.target.value})}
+                className="no-wheel-scroll"
               />
               <Input
                 label="Tax Rate %"
                 type="number"
+                step="0.01"
                 value={editingPackage.taxRate}
                 onChange={e => setEditingPackage({...editingPackage, taxRate: e.target.value})}
+                className="no-wheel-scroll"
               />
               <div className="flex items-center gap-2">
                 <input

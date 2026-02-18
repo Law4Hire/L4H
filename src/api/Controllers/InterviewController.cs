@@ -13,12 +13,12 @@ namespace L4H.Api.Controllers;
 [Tags("Interview")]
 public class InterviewController : ControllerBase
 {
-    private readonly IInterviewOrchestrator _orchestrator;
+    private readonly IAgentOrchestrator _orchestrator;
     private readonly L4HDbContext _context;
     private readonly ILogger<InterviewController> _logger;
 
     public InterviewController(
-        IInterviewOrchestrator orchestrator,
+        IAgentOrchestrator orchestrator,
         L4HDbContext context,
         ILogger<InterviewController> logger)
     {

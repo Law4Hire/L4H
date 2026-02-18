@@ -145,9 +145,9 @@ export default function AdminPricingPage() {
           />
           <Input
             label={t('admin.price')}
-            type="number"
+            type="text"
             value={newEntry.price || ''}
-            onChange={(e) => setNewEntry(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
+            onChange={(e) => setNewEntry(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
             placeholder="0.00"
             className="dark:bg-navy-900 dark:text-white dark:border-navy-600"
           />
@@ -216,7 +216,7 @@ export default function AdminPricingPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {editingEntry?.id === entry.id ? (
                       <Input
-                        type="number"
+                        type="text"
                         value={editingEntry.price}
                         onChange={(e) => setEditingEntry({...editingEntry, price: parseFloat(e.target.value)})}
                         className="dark:bg-navy-900 dark:text-white"

@@ -55,8 +55,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
   }
 
   const onSubmit = async (data: LoginFormData) => {
+    // Immediately prevent double-submission
+    if (loading) return
+    
     setLoading(true)
     setError('')
+    console.log('[AUTH] Login attempt started for:', data.email)
 
     try {
       const result = await auth.login({
@@ -65,11 +69,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         rememberMe: data.remember
       })
       
+      console.log('[AUTH] Login promise resolved')
+
       if (result && result.token) {
         setJwtToken(result.token)
         // Dispatch custom event to notify auth state change
         window.dispatchEvent(new Event('jwt-token-changed'))
-        success('Login' + ' ' + 'Success')
+        success('Login Success')
         if (onSuccess) {
           onSuccess()
         } else {
@@ -91,13 +97,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       } else {
         setError('Login Failed')
         showError('Login Failed')
+        console.warn('[AUTH] Login result empty or missing token')
       }
     } catch (err) {
+      console.error('[AUTH] CRITICAL: Login promise orphaned or failed:', err)
       const errorMessage = err instanceof Error ? err.message : 'Login Failed'
       setError(errorMessage)
       showError('Login Failed', errorMessage)
     } finally {
       setLoading(false)
+      console.log('[AUTH] Login attempt finalized')
     }
   }
 

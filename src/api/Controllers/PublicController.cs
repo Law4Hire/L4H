@@ -89,6 +89,8 @@ public class PublicController : ControllerBase
     /// Submit a contact form inquiry
     /// </summary>
     [HttpPost("contact")]
+    [HttpPost("~/v1/public/contact")]
+    [AllowAnonymous]
     [ProducesResponseType<ContactFormResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SubmitContactForm([FromBody] ContactFormRequest request)
@@ -130,15 +132,16 @@ public class PublicController : ControllerBase
             };
 
             _context.ContactMessages.Add(message);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             // 2. Get recipient emails (All Admins + Site Config Email)
             var adminEmails = await _context.Users
                 .Where(u => u.IsAdmin && !string.IsNullOrEmpty(u.Email))
                 .Select(u => u.Email)
-                .ToListAsync();
+                .ToListAsync()
+                .ConfigureAwait(false);
 
-            var siteConfig = await _context.SiteConfigurations.FirstOrDefaultAsync();
+            var siteConfig = await _context.SiteConfigurations.FirstOrDefaultAsync().ConfigureAwait(false);
             if (!string.IsNullOrEmpty(siteConfig?.Email) && !adminEmails.Contains(siteConfig.Email))
             {
                 adminEmails.Add(siteConfig.Email);
@@ -168,7 +171,7 @@ public class PublicController : ControllerBase
             {
                 try 
                 {
-                    await _mailService.SendEmailAsync(email, staffSubject, staffBody);
+                    await _mailService.SendEmailAsync(email, staffSubject, staffBody).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -190,7 +193,7 @@ public class PublicController : ControllerBase
 
             try
             {
-                await _mailService.SendEmailAsync(request.Email, userSubject, userBody);
+                await _mailService.SendEmailAsync(request.Email, userSubject, userBody).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

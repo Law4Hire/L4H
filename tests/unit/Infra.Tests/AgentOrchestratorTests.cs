@@ -12,11 +12,11 @@ using FluentAssertions;
 
 namespace L4H.Infra.Tests;
 
-public class InterviewOrchestratorTests
+public class AgentOrchestratorTests
 {
     private readonly DbContextOptions<L4HDbContext> _dbOptions;
 
-    public InterviewOrchestratorTests()
+    public AgentOrchestratorTests()
     {
         _dbOptions = new DbContextOptionsBuilder<L4HDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -63,7 +63,7 @@ public class InterviewOrchestratorTests
         context.InterviewSessions.Add(session);
         await context.SaveChangesAsync();
 
-        var orchestrator = new InterviewOrchestrator(
+        var orchestrator = new AgentOrchestrator(
             new Mock<ISessionManager>().Object,
             new Mock<IQuestionEngine>().Object,
             new Mock<IVisaEvaluationEngine>().Object,
@@ -112,7 +112,7 @@ public class InterviewOrchestratorTests
         context.InterviewSessions.Add(session);
         await context.SaveChangesAsync();
 
-        var orchestrator = new InterviewOrchestrator(
+        var orchestrator = new AgentOrchestrator(
             new Mock<ISessionManager>().Object,
             new Mock<IQuestionEngine>().Object,
             new Mock<IVisaEvaluationEngine>().Object,

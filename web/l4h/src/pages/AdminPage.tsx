@@ -2,15 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, Button, useToast } from '@l4h/shared-ui'
 
-interface AdminPath {
-  id: string
-  name: string
-  path: string
-  description?: string
-  icon?: string
-  displayOrder: number
-}
-
 const AdminPage: React.FC = () => {
   const navigate = useNavigate()
 

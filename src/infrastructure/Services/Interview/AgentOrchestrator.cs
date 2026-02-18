@@ -9,25 +9,28 @@ namespace L4H.Infrastructure.Services.Interview;
 /// <summary>
 /// Orchestrates the complete interview process, coordinating all interview services
 /// </summary>
-public class InterviewOrchestrator : IInterviewOrchestrator
+public class AgentOrchestrator : IAgentOrchestrator
 {
     private readonly ISessionManager _sessionManager;
     private readonly IQuestionEngine _questionEngine;
     private readonly IVisaEvaluationEngine _evaluationEngine;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly L4H.Infrastructure.Interfaces.IAIService _aiService;
     private readonly L4HDbContext _context;
 
-    public InterviewOrchestrator(
+    public AgentOrchestrator(
         ISessionManager sessionManager,
         IQuestionEngine questionEngine,
         IVisaEvaluationEngine evaluationEngine,
         IPasswordHasher passwordHasher,
+        L4H.Infrastructure.Interfaces.IAIService aiService,
         L4HDbContext context)
     {
         _sessionManager = sessionManager;
         _questionEngine = questionEngine;
         _evaluationEngine = evaluationEngine;
         _passwordHasher = passwordHasher;
+        _aiService = aiService;
         _context = context;
     }
 
@@ -127,10 +130,17 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         // Get updated answers
         var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
 
-        // Always get the next question to determine if we're done
-        var nextQuestion = await _questionEngine.GetNextQuestionAsync(session, answers);
+        // AI-driven orchestration: Try to get next question via AI Agent
+        var remainingVisasForAI = await _evaluationEngine.GetRemainingVisasAsync(answers);
+        var nextQuestion = await _aiService.GetNextAIQuestionAsync(session, answers, remainingVisasForAI);
 
-        // If there's no next question, the interview is complete
+        // Fallback to rules-based engine if AI is inconclusive
+        if (nextQuestion == null)
+        {
+            nextQuestion = await _questionEngine.GetNextQuestionAsync(session, answers);
+        }
+
+        // If there's still no next question, the interview is complete
         var isComplete = nextQuestion == null;
 
         // Check if we just completed a checklist
@@ -180,8 +190,14 @@ public class InterviewOrchestrator : IInterviewOrchestrator
         // Get all answers
         var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
 
-        // Evaluate all visas
-        var evaluationResults = await _evaluationEngine.EvaluateAllVisasAsync(answers);
+        // Run AI-driven eligibility analysis
+        var evaluationResults = await _aiService.AnalyzeEligibilityAsync(answers);
+
+        // If AI results are empty, fallback to rules engine
+        if (evaluationResults == null || evaluationResults.Count == 0)
+        {
+            evaluationResults = await _evaluationEngine.EvaluateAllVisasAsync(answers);
+        }
 
         // Convert to VisaEvaluation entities
         var evaluationEntities = evaluationResults.Select(result => new VisaEvaluation

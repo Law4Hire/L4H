@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Layout, RouteGuard, ToastProvider } from '@l4h/shared-ui'
+import { Layout, RouteGuard, ToastProvider, UnifiedDashboard, SettingsHub, AuthProvider } from '@l4h/shared-ui'
 import { InterviewProvider } from './InterviewContext';
 import { useAuth } from './hooks/useAuth'
 
@@ -8,7 +8,7 @@ import { useAuth } from './hooks/useAuth'
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const SinglePageRegistration = lazy(() => import('./pages/SinglePageRegistration'))
-const DashboardPage = lazy(() => import('./pages/DashboardPage'))
+// const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const PricingPage = lazy(() => import('./pages/PricingPage'))
 const SchedulingPage = lazy(() => import('./pages/SchedulingPage'))
 const AppointmentsPage = lazy(() => import('./pages/AppointmentsPage'))
@@ -24,7 +24,6 @@ const AdminPage = lazy(() => import('./pages/AdminPage'))
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
 const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
 const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
-const AdminPathsPage = lazy(() => import('./pages/AdminPathsPage'))
 const AdminInterviewQuestionsPage = lazy(() => import('./pages/AdminInterviewQuestionsPage'))
 const AdminPackagesPage = lazy(() => import('./pages/AdminPackagesPage'))
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
@@ -32,7 +31,7 @@ const AdminUSCISFormsPage = lazy(() => import('./pages/AdminUSCISFormsPage'))
 const AdminVisaLibraryPage = lazy(() => import('./pages/AdminVisaLibraryPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
-const SystemSettingsPage = lazy(() => import('./pages/admin/SystemSettingsPage'))
+// const SystemSettingsPage = lazy(() => import('./pages/admin/SystemSettingsPage'))
 const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
 const DocumentPoolPage = lazy(() => import('./pages/admin/DocumentPoolPage'))
 
@@ -78,6 +77,7 @@ function App() {
   }, []);
 
   return (
+    <AuthProvider>
     <ToastProvider>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
@@ -151,7 +151,7 @@ function App() {
                 user={user} 
                 isAuthenticated={isAuthenticated}
               >
-                <DashboardPage />
+                <UnifiedDashboard />
               </Layout>
             </RouteGuard>
           } 
@@ -365,21 +365,6 @@ function App() {
           }
         />
         <Route
-          path="/admin/paths"
-          element={
-            <RouteGuard>
-              <Layout
-                title={'Admin Paths Management'}
-                showUserMenu={true}
-                user={user}
-                isAuthenticated={isAuthenticated}
-              >
-                <AdminPathsPage />
-              </Layout>
-            </RouteGuard>
-          }
-        />
-        <Route
           path="/admin/interview-questions"
           element={
             <RouteGuard>
@@ -464,7 +449,7 @@ function App() {
                 user={user}
                 isAuthenticated={isAuthenticated}
               >
-                <SystemSettingsPage />
+                <SettingsHub />
               </Layout>
             </RouteGuard>
           }
@@ -518,6 +503,7 @@ function App() {
         </Routes>
       </Suspense>
     </ToastProvider>
+    </AuthProvider>
   )
 }
 
