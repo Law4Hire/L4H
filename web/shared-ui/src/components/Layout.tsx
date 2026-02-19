@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useTheme } from '../ThemeProvider'
 import { Sun, Moon } from '../Icon'
 import { Button } from './Button'
+import { VersionStamp } from './VersionStamp'
 
 interface User {
   email: string
@@ -224,10 +225,7 @@ export const Layout: React.FC<LayoutProps> = ({
         {children}
       </main>
 
-      {/* Version Tag for Deployment Verification */}
-      <div className="fixed bottom-2 left-2 z-[100] bg-black/50 text-white text-[10px] px-2 py-1 rounded-md pointer-events-none backdrop-blur-sm border border-white/10 font-mono">
-        {typeof window !== 'undefined' ? localStorage.getItem('app_version') || 'v1.0.40-shared' : 'v1.0.40-shared'}
-      </div>
+      <VersionStamp />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, Button, fetchJson, useTheme } from '@l4h/shared-ui'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 import { useCases } from '../../hooks/useCases'
 import { useAttorneys } from '../../hooks/useAttorneys'
 import { formatDistanceToNow, format } from 'date-fns'

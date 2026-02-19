@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Card, Button, Input, useToast } from '@l4h/shared-ui'
 import { Download, User, Clock, CheckCircle, AlertCircle } from '@l4h/shared-ui'
 import { RefreshCw } from 'lucide-react'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface BillingSummary {
   attorneyId: number

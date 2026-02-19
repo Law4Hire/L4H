@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useAuth } from './useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface DocumentViewerState {
   isOpen: boolean

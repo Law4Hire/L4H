@@ -90,7 +90,7 @@ describe('DashboardPage', () => {
     renderWithProviders(<DashboardPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Start Interview')).toBeInTheDocument()
+      expect(screen.getByText('Start AI Interview')).toBeInTheDocument()
       expect(screen.getByText('View Pricing')).toBeInTheDocument()
       expect(screen.getByText('Messages')).toBeInTheDocument()
     })

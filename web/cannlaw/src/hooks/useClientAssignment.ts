@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAuth } from './useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface AssignmentResult {
   success: boolean

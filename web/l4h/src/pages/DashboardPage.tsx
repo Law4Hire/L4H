@@ -170,8 +170,8 @@ const DashboardPage: React.FC = () => {
             className="h-20 flex flex-col items-center justify-center"
             onClick={handleStartInterview}
           >
-            <div className="text-lg mb-1">🎤</div>
-            <div className="text-sm">{'Start Interview'}</div>
+            <div className="text-lg mb-1">🤖</div>
+            <div className="text-sm">{'Start AI Interview'}</div>
           </Button>
           
           <Button

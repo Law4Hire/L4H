@@ -18,12 +18,12 @@ namespace L4H.Api.Controllers;
 [Authorize(Roles = "Attorney,LegalProfessional,Admin")]
 public class ProfessionalInterviewController : ControllerBase
 {
-    private readonly IInterviewOrchestrator _orchestrator;
+    private readonly IAgentOrchestrator _orchestrator;
     private readonly L4HDbContext _context;
     private readonly ILogger<ProfessionalInterviewController> _logger;
 
     public ProfessionalInterviewController(
-        IInterviewOrchestrator orchestrator,
+        IAgentOrchestrator orchestrator,
         L4HDbContext context,
         ILogger<ProfessionalInterviewController> logger)
     {

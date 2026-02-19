@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate, Link } from 'react-router-dom'
-import { RouteGuard, ToastProvider, Button } from '@l4h/shared-ui'
+import { RouteGuard, ToastProvider, Button, UnifiedDashboard, SettingsHub, AuthProvider } from '@l4h/shared-ui'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ClientProtectedRoute } from './components/ClientProtectedRoute'
 import DashboardLayout from './components/DashboardLayout'
@@ -22,7 +22,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'))
 import PublicLayout from './components/PublicLayout'
 
 // Legal Professional Dashboard
-const LegalDashboard = lazy(() => import('./pages/dashboard/LegalDashboard'))
+// const LegalDashboard = lazy(() => import('./pages/dashboard/LegalDashboard'))
 const ClientManagement = lazy(() => import('./pages/dashboard/ClientManagement'))
 const ClientProfilePage = lazy(() => import('./pages/dashboard/ClientProfilePage'))
 const TimeTrackingPage = lazy(() => import('./pages/dashboard/TimeTrackingPage'))
@@ -39,7 +39,7 @@ const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
 const AdminWorkflowsPage = lazy(() => import('./pages/AdminWorkflowsPage'))
 const AdminTimeEntriesPage = lazy(() => import('./pages/AdminTimeEntriesPage'))
 const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
-const SiteConfigPage = lazy(() => import('./pages/admin/SiteConfigPage'))
+// const SiteConfigPage = lazy(() => import('./pages/admin/SiteConfigPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
 const ServicesManagementPage = lazy(() => import('./pages/admin/ServicesManagementPage'))
 const VisaLibraryManagementPage = lazy(() => import('./pages/admin/VisaLibraryManagementPage'))
@@ -92,6 +92,7 @@ function App() {
   }, []);
 
   return (
+    <AuthProvider>
     <ToastProvider>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
@@ -120,7 +121,7 @@ function App() {
           element={
             <ProtectedRoute requireLegalProfessional>
               <DashboardLayout title="Legal Dashboard">
-                <LegalDashboard />
+                <UnifiedDashboard />
               </DashboardLayout>
             </ProtectedRoute>
           } 
@@ -224,7 +225,7 @@ function App() {
           element={
             <ProtectedRoute requireAdmin>
               <DashboardLayout title="Site Configuration">
-                <SiteConfigPage />
+                <SettingsHub />
               </DashboardLayout>
             </ProtectedRoute>
           } 
@@ -368,6 +369,7 @@ function App() {
         </Routes>
       </Suspense>
     </ToastProvider>
+    </AuthProvider>
   )
 }
 

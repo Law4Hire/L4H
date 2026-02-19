@@ -78,7 +78,7 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var userExists = await _authService.UserExistsAsync(email).ConfigureAwait(false);
+        var userExists = await _authService.UserExistsAsync(email, HttpContext.RequestAborted).ConfigureAwait(false);
         return Ok(new { exists = userExists });
     }
 
@@ -95,7 +95,7 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _authService.SignupAsync(request).ConfigureAwait(false);
+        var result = await _authService.SignupAsync(request, HttpContext.RequestAborted).ConfigureAwait(false);
         
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
@@ -149,7 +149,7 @@ public class AuthController : ControllerBase
             });
         }
 
-        var result = await _authService.LoginAsync(request).ConfigureAwait(false);
+        var result = await _authService.LoginAsync(request, HttpContext.RequestAborted).ConfigureAwait(false);
         
         if (!result.IsSuccess)
         {
@@ -246,7 +246,7 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _authService.LoginAsync(request).ConfigureAwait(false);
+        var result = await _authService.LoginAsync(request, HttpContext.RequestAborted).ConfigureAwait(false);
         
         if (!result.IsSuccess)
         {
@@ -311,7 +311,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { error = "Remember token not found" });
         }
 
-        var result = await _authService.RefreshFromRememberTokenAsync(rememberToken).ConfigureAwait(false);
+        var result = await _authService.RefreshFromRememberTokenAsync(rememberToken, HttpContext.RequestAborted).ConfigureAwait(false);
 
         if (!result.IsSuccess)
         {

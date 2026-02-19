@@ -10,13 +10,13 @@ namespace L4H.Infrastructure.Services;
 
 public interface IAuthService
 {
-    Task<Result<AuthResponse>> SignupAsync(SignupRequest request);
-    Task<Result<AuthResponse>> LoginAsync(LoginRequest request);
-    Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token);
-    Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request);
-    Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request);
-    Task<bool> UserExistsAsync(string email);
-    Task<Result<MessageResponse>> UpdateProfileAsync(UserId userId, UpdateProfileRequest request);
+    Task<Result<AuthResponse>> SignupAsync(SignupRequest request, CancellationToken cancellationToken = default);
+    Task<Result<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
+    Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token, CancellationToken cancellationToken = default);
+    Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request, CancellationToken cancellationToken = default);
+    Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default);
+    Task<bool> UserExistsAsync(string email, CancellationToken cancellationToken = default);
+    Task<Result<MessageResponse>> UpdateProfileAsync(UserId userId, UpdateProfileRequest request, CancellationToken cancellationToken = default);
 }
 
 public class AuthService : IAuthService
@@ -50,7 +50,7 @@ public class AuthService : IAuthService
         _supportOptions = supportOptions.Value;
     }
 
-    public async Task<Result<AuthResponse>> SignupAsync(SignupRequest request)
+    public async Task<Result<AuthResponse>> SignupAsync(SignupRequest request, CancellationToken cancellationToken = default)
     {
         // Validate password policy
         var policyResult = _passwordPolicy.ValidatePassword(request.Password);
@@ -61,7 +61,7 @@ public class AuthService : IAuthService
 
         // Check if user already exists
         var existingUser = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Email).ConfigureAwait(false);
+            .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken).ConfigureAwait(false);
 
         if (existingUser != null)
         {
@@ -87,7 +87,7 @@ public class AuthService : IAuthService
         
         // Create a case for the new user if none exists
         var existingCase = await _context.Cases
-            .FirstOrDefaultAsync(c => c.UserId == user.Id).ConfigureAwait(false);
+            .FirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken).ConfigureAwait(false);
 
         if (existingCase == null)
         {
@@ -101,7 +101,7 @@ public class AuthService : IAuthService
             _context.Cases.Add(newCase);
         }
 
-        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         // Generate JWT token
         var token = _jwtTokenService.GenerateAccessToken(user);
@@ -111,16 +111,16 @@ public class AuthService : IAuthService
             Token = token,
             UserId = user.Id,
             IsProfileComplete = IsProfileComplete(user),
-            IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
+            IsInterviewComplete = await IsInterviewCompleteAsync(user, cancellationToken).ConfigureAwait(false),
             IsStaff = user.IsStaff,
             IsAdmin = user.IsAdmin
         });
     }
 
-    public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request)
+    public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
         var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Email).ConfigureAwait(false);
+            .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken).ConfigureAwait(false);
 
         if (user == null)
         {
@@ -153,14 +153,14 @@ public class AuthService : IAuthService
                     user.Email, user.FailedLoginCount);
             }
             
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return Result<AuthResponse>.Failure("Invalid email or password");
         }
 
         // Reset failed login count on successful login
         user.FailedLoginCount = 0;
         user.LockoutUntil = null;
-        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         // Generate JWT token
         var token = _jwtTokenService.GenerateAccessToken(user);
@@ -170,7 +170,7 @@ public class AuthService : IAuthService
             Token = token,
             UserId = user.Id,
             IsProfileComplete = IsProfileComplete(user),
-            IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
+            IsInterviewComplete = await IsInterviewCompleteAsync(user, cancellationToken).ConfigureAwait(false),
             IsStaff = user.IsStaff,
             IsAdmin = user.IsAdmin,
             IsPersistent = request.RememberMe
@@ -179,7 +179,7 @@ public class AuthService : IAuthService
         return Result<AuthResponse>.Success(response);
     }
 
-    public async Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token)
+    public async Task<Result<AuthResponse>> RefreshFromRememberTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         var result = await _rememberMeTokenService.ValidateAndRotateTokenAsync(token).ConfigureAwait(false);
         
@@ -198,14 +198,14 @@ public class AuthService : IAuthService
             Token = jwtToken,
             UserId = user.Id,
             IsProfileComplete = IsProfileComplete(user),
-            IsInterviewComplete = await IsInterviewCompleteAsync(user).ConfigureAwait(false),
+            IsInterviewComplete = await IsInterviewCompleteAsync(user, cancellationToken).ConfigureAwait(false),
             IsStaff = user.IsStaff,
             IsAdmin = user.IsAdmin,
             IsPersistent = isPersistent
         });
     }
 
-    public async Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request)
+    public async Task<Result<MessageResponse>> ForgotPasswordAsync(ForgotPasswordRequest request, CancellationToken cancellationToken = default)
     {
         var resetToken = await _passwordResetService.CreatePasswordResetTokenAsync(request.Email).ConfigureAwait(false);
 
@@ -219,7 +219,7 @@ public class AuthService : IAuthService
             new MessageResponse { Message = "If an account with that email exists, a password reset link has been sent." });
     }
 
-    public async Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request)
+    public async Task<Result<MessageResponse>> ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default)
     {
         // Validate new password policy
         var policyResult = _passwordPolicy.ValidatePassword(request.NewPassword);
@@ -238,7 +238,7 @@ public class AuthService : IAuthService
         var userId = tokenValidation.Value!;
 
         // Get user
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken).ConfigureAwait(false);
         if (user == null)
         {
             return Result<MessageResponse>.Failure("User not found");
@@ -256,22 +256,22 @@ public class AuthService : IAuthService
         // Revoke all remember-me tokens for security
         await _rememberMeTokenService.RevokeAllTokensForUserAsync(userId).ConfigureAwait(false);
 
-        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return Result<MessageResponse>.Success(
             new MessageResponse { Message = "Password has been reset successfully." });
     }
 
-    public async Task<bool> UserExistsAsync(string email)
+    public async Task<bool> UserExistsAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _context.Users
-            .AnyAsync(u => u.Email == email).ConfigureAwait(false);
+            .AnyAsync(u => u.Email == email, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<Result<MessageResponse>> UpdateProfileAsync(UserId userId, UpdateProfileRequest request)
+    public async Task<Result<MessageResponse>> UpdateProfileAsync(UserId userId, UpdateProfileRequest request, CancellationToken cancellationToken = default)
     {
         var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken).ConfigureAwait(false);
 
         if (user == null)
         {
@@ -309,7 +309,7 @@ public class AuthService : IAuthService
         if (!string.IsNullOrEmpty(request.Gender))
             user.Gender = request.Gender;
 
-        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return Result<MessageResponse>.Success(
             new MessageResponse { Message = "Profile updated successfully" });
@@ -328,17 +328,12 @@ public class AuthService : IAuthService
                user.DateOfBirth.HasValue;
     }
 
-    private async Task<bool> IsInterviewCompleteAsync(User user)
+    private async Task<bool> IsInterviewCompleteAsync(User user, CancellationToken cancellationToken = default)
     {
         // Check if user has any completed interview sessions with visa recommendations
-        var completedInterview = await _context.InterviewSessions
-            .Where(s => s.UserId == user.Id && s.Status == "completed")
-            .Join(_context.VisaRecommendations,
-                session => session.CaseId,
-                recommendation => recommendation.CaseId,
-                (session, recommendation) => new { session, recommendation })
-            .AnyAsync().ConfigureAwait(false);
-
-        return completedInterview;
+        return await _context.InterviewSessions
+            .AnyAsync(s => s.UserId == user.Id && 
+                           s.Status == "completed" && 
+                           _context.VisaRecommendations.Any(r => r.CaseId == s.CaseId), cancellationToken);
     }
 }

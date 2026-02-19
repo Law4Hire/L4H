@@ -17,76 +17,10 @@ namespace L4H.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0-rc.2.25502.107")
+                .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("L4H.Infrastructure.Entities.AdminPath", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Icon")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid?>("ParentPathId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("RequiredRole")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("DisplayOrder");
-
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("ParentPathId");
-
-                    b.HasIndex("Path");
-
-                    b.HasIndex("UpdatedByUserId");
-
-                    b.ToTable("AdminPaths");
-                });
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.AdminPricingEntry", b =>
                 {
@@ -4813,30 +4747,6 @@ namespace L4H.Infrastructure.Migrations
                     b.ToTable("WorkflowVersions");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.AdminPath", b =>
-                {
-                    b.HasOne("L4H.Infrastructure.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("L4H.Infrastructure.Entities.AdminPath", "ParentPath")
-                        .WithMany("ChildPaths")
-                        .HasForeignKey("ParentPathId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("L4H.Infrastructure.Entities.User", "UpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("ParentPath");
-
-                    b.Navigation("UpdatedByUser");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.AdminSettings", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.User", "UpdatedByUser")
@@ -5176,7 +5086,7 @@ namespace L4H.Infrastructure.Migrations
             modelBuilder.Entity("L4H.Infrastructure.Entities.FormFieldMapping", b =>
                 {
                     b.HasOne("L4H.Infrastructure.Entities.USCISFormEntity", "Form")
-                        .WithMany()
+                        .WithMany("FormFieldMappings")
                         .HasForeignKey("FormId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -5804,11 +5714,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Navigation("VisaType");
                 });
 
-            modelBuilder.Entity("L4H.Infrastructure.Entities.AdminPath", b =>
-                {
-                    b.Navigation("ChildPaths");
-                });
-
             modelBuilder.Entity("L4H.Infrastructure.Entities.Appointment", b =>
                 {
                     b.Navigation("Meeting");
@@ -5919,6 +5824,8 @@ namespace L4H.Infrastructure.Migrations
 
             modelBuilder.Entity("L4H.Infrastructure.Entities.USCISFormEntity", b =>
                 {
+                    b.Navigation("FormFieldMappings");
+
                     b.Navigation("Pricing");
 
                     b.Navigation("RequiredByForms");

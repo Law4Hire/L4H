@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAuth } from './useAuth'
+import { useAuth } from '@l4h/shared-ui'
 import { useFileUpload } from './useFileUpload'
 
 interface AttorneyPhoto {

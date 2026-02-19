@@ -1,6 +1,6 @@
 import React from 'react'
 import { Layout } from '@l4h/shared-ui'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 interface DashboardLayoutProps {
   children: React.ReactNode

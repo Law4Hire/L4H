@@ -13,11 +13,11 @@ namespace L4H.Api.Controllers;
 [AllowAnonymous]
 public class AnonymousInterviewController : ControllerBase
 {
-    private readonly IInterviewOrchestrator _orchestrator;
+    private readonly IAgentOrchestrator _orchestrator;
     private readonly ILogger<AnonymousInterviewController> _logger;
 
     public AnonymousInterviewController(
-        IInterviewOrchestrator orchestrator,
+        IAgentOrchestrator orchestrator,
         ILogger<AnonymousInterviewController> logger)
     {
         _orchestrator = orchestrator;

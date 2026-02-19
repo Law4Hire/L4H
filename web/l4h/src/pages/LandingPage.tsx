@@ -20,7 +20,7 @@ const LandingPage: React.FC = () => {
               onClick={() => navigate('/interview')}
               className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border-none rounded-lg px-8 py-4 text-lg cursor-pointer transition-colors duration-200"
             >
-              Start My Case
+              Start AI Interview
             </button>
             <button
               onClick={() => navigate('/visa-library')}

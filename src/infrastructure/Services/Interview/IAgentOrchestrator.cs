@@ -6,7 +6,7 @@ namespace L4H.Infrastructure.Services.Interview;
 /// <summary>
 /// Orchestrates the complete interview process, coordinating all interview services
 /// </summary>
-public interface IInterviewOrchestrator
+public interface IAgentOrchestrator
 {
     /// <summary>
     /// Starts a new anonymous interview session

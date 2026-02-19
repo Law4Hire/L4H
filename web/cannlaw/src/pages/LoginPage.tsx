@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button, useToast } from '@l4h/shared-ui'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@l4h/shared-ui'
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate()
@@ -31,11 +31,15 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (loading) return
+    
     setLoading(true)
     setError('')
+    console.log('[AUTH] Associate login attempt started:', email)
 
     try {
       const result = await loginAsProfessional(email, password)
+      console.log('[AUTH] Associate login promise resolved')
       
       if (!result.success) {
         setError(result.error || 'Login failed')
@@ -43,10 +47,11 @@ const LoginPage: React.FC = () => {
       }
       // If success, useEffect will handle redirect
     } catch (err) {
-      console.error('Login error:', err)
+      console.error('[AUTH] CRITICAL: Associate login promise orphaned or failed:', err)
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)
+      console.log('[AUTH] Associate login attempt finalized')
     }
   }
 
