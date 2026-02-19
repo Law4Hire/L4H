@@ -160,7 +160,7 @@ jobs:
           set -e
           VERSION=${{ github.event.inputs.version }}
 
-          echo "🚀 Deploying to PRODUCTION environment (namespace: l4h-prod)..."
+          echo "🚀 Deploying to PRODUCTION environment (namespace: l4h)..."
           echo "📦 Version: $VERSION"
 
           # Copy manifests
@@ -168,7 +168,7 @@ jobs:
           cp -r /tmp/l4h-deploy-prod/ops/k8s/* ~/ops/k8s-prod/
 
           # Create/update PROD namespace
-          kubectl create namespace l4h-prod --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace l4h --dry-run=client -o yaml | kubectl apply -f -
 
           # Update PROD secrets
           export SQL_SA_PASSWORD='${{ secrets.SQL_SA_PASSWORD_PROD }}'
@@ -184,7 +184,7 @@ jobs:
             --from-literal=jwt-signing-key="${JWT_SIGNING_KEY}" \
             --from-literal=uploads-token-signing-key="${UPLOADS_TOKEN_SIGNING_KEY}" \
             --from-literal=admin-seed-password="${ADMIN_SEED_PASSWORD}" \
-            --namespace=l4h-prod \
+            --namespace=l4h \
             --dry-run=client -o yaml | kubectl apply -f -
           SCRIPT
 
@@ -197,32 +197,32 @@ jobs:
 
           # Update images to versioned PROD tags
           GH_ORG_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          kubectl set image deployment/api api=ghcr.io/${GH_ORG_LOWER}/l4h-api:${VERSION} -n l4h-prod
-          kubectl set image deployment/upload-gateway upload-gateway=ghcr.io/${GH_ORG_LOWER}/l4h-upload-gateway:${VERSION} -n l4h-prod
-          kubectl set image deployment/scraper scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${VERSION} -n l4h-prod
+          kubectl set image deployment/api api=ghcr.io/${GH_ORG_LOWER}/l4h-api:${VERSION} -n l4h
+          kubectl set image deployment/upload-gateway upload-gateway=ghcr.io/${GH_ORG_LOWER}/l4h-upload-gateway:${VERSION} -n l4h
+          kubectl set image deployment/scraper scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${VERSION} -n l4h
 
           # Wait for PVCs
-          kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/web-l4h-prod -n l4h-prod --timeout=120s || echo "⚠️ PVC not ready"
-          kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/web-cannlaw-prod -n l4h-prod --timeout=120s || echo "⚠️ PVC not ready"
+          kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/web-l4h -n l4h --timeout=120s || echo "⚠️ PVC not ready"
+          kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/web-cannlaw -n l4h --timeout=120s || echo "⚠️ PVC not ready"
 
           # Copy l4h PROD UI
-          kubectl run copy-l4h-prod --image=alpine --restart=Never -n l4h-prod \
-            --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-l4h-prod"}}]}}' || true
-          kubectl wait --for=condition=Ready pod/copy-l4h-prod -n l4h-prod --timeout=120s || true
-          kubectl exec copy-l4h-prod -n l4h-prod -- sh -c "rm -rf /data/*" || true
-          kubectl cp /tmp/l4h-deploy-prod/web/l4h/dist/. l4h-prod/copy-l4h-prod:/data/ || true
-          kubectl delete pod copy-l4h-prod -n l4h-prod || true
+          kubectl run copy-l4h-prod --image=alpine --restart=Never -n l4h \
+            --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-l4h"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-l4h-prod -n l4h --timeout=120s || true
+          kubectl exec copy-l4h-prod -n l4h -- sh -c "rm -rf /data/*" || true
+          kubectl cp /tmp/l4h-deploy-prod/web/l4h/dist/. l4h/copy-l4h-prod:/data/ || true
+          kubectl delete pod copy-l4h-prod -n l4h || true
 
           # Copy cannlaw PROD UI
-          kubectl run copy-cannlaw-prod --image=alpine --restart=Never -n l4h-prod \
-            --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-cannlaw-prod"}}]}}' || true
-          kubectl wait --for=condition=Ready pod/copy-cannlaw-prod -n l4h-prod --timeout=120s || true
-          kubectl exec copy-cannlaw-prod -n l4h-prod -- sh -c "rm -rf /data/*" || true
-          kubectl cp /tmp/l4h-deploy-prod/web/cannlaw/dist/. l4h-prod/copy-cannlaw-prod:/data/ || true
-          kubectl delete pod copy-cannlaw-prod -n l4h-prod || true
+          kubectl run copy-cannlaw-prod --image=alpine --restart=Never -n l4h \
+            --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-cannlaw"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-cannlaw-prod -n l4h --timeout=120s || true
+          kubectl exec copy-cannlaw-prod -n l4h -- sh -c "rm -rf /data/*" || true
+          kubectl cp /tmp/l4h-deploy-prod/web/cannlaw/dist/. l4h/copy-cannlaw-prod:/data/ || true
+          kubectl delete pod copy-cannlaw-prod -n l4h || true
 
           # Restart web deployment
-          kubectl rollout restart deployment/web -n l4h-prod
+          kubectl rollout restart deployment/web -n l4h
 
           # Wait for PROD rollout
           kubectl wait --for=condition=available --timeout=600s \
@@ -231,7 +231,7 @@ jobs:
             deployment/upload-gateway \
             deployment/scraper \
             deployment/web \
-            -n l4h-prod || echo "⚠️ Rollout taking longer than expected"
+            -n l4h || echo "⚠️ Rollout taking longer than expected"
 
           # Cleanup
           rm -rf /tmp/l4h-deploy-prod
@@ -252,9 +252,9 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY_PROD }}
         script: |
           echo "🔍 Verifying PRODUCTION deployment..."
-          kubectl get pods -n l4h-prod
-          kubectl get deployments -n l4h-prod
-          kubectl get ingress -n l4h-prod
+          kubectl get pods -n l4h
+          kubectl get deployments -n l4h
+          kubectl get ingress -n l4h
 
           # Test PROD endpoints
           sleep 15
