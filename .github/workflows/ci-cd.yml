@@ -304,6 +304,25 @@ jobs:
           kubectl set image deployment/scraper scraper=ghcr.io/${GH_ORG_LOWER}/l4h-scraper:${{ github.sha }} -n l4h
           kubectl set image deployment/web nginx=ghcr.io/${GH_ORG_LOWER}/l4h-web:${{ github.sha }} -n l4h
 
+          # Copy UI files to PVCs
+          echo "📂 Syncing UI artifacts to PVCs..."
+          
+          # Copy l4h UI
+          kubectl run copy-l4h-test --image=alpine --restart=Never -n l4h \
+            --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-l4h"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-l4h-test -n l4h --timeout=120s || true
+          kubectl exec copy-l4h-test -n l4h -- sh -c "rm -rf /data/*" || true
+          kubectl cp /tmp/l4h-deploy-test/web/l4h/dist/. l4h/copy-l4h-test:/data/ || true
+          kubectl delete pod copy-l4h-test -n l4h || true
+
+          # Copy cannlaw UI
+          kubectl run copy-cannlaw-test --image=alpine --restart=Never -n l4h \
+            --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-cannlaw"}}]}}' || true
+          kubectl wait --for=condition=Ready pod/copy-cannlaw-test -n l4h --timeout=120s || true
+          kubectl exec copy-cannlaw-test -n l4h -- sh -c "rm -rf /data/*" || true
+          kubectl cp /tmp/l4h-deploy-test/web/cannlaw/dist/. l4h/copy-cannlaw-test:/data/ || true
+          kubectl delete pod copy-cannlaw-test -n l4h || true
+
           # Restart web deployment (redundant now but safe)
           kubectl rollout restart deployment/web -n l4h
 
