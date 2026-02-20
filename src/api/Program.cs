@@ -21,6 +21,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using L4H.Api.Validators;
 using Scalar.AspNetCore;
+using L4H.Api.Infrastructure.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -174,7 +176,7 @@ else
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("IsAdmin", policy => policy.RequireClaim("is_admin", "true", "True"));
+    options.AddPolicy("IsAdmin", policy => policy.Requirements.Add(new AdminOrBridgeRequirement()));
     options.AddPolicy("IsLegalProfessional", policy => policy.RequireClaim("is_legal_professional", "true", "True"));
     options.AddPolicy("IsAdminOrLegalProfessional", policy => 
         policy.RequireAssertion(context => 
@@ -263,9 +265,9 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<IPiiMaskingService, PiiMaskingService>();
             builder.Services.AddScoped<IRateLimitingService, RateLimitingService>();
             builder.Services.AddScoped<IAccountLockoutService, AccountLockoutService>();
-
-// Register Infrastructure services for testing and production
-
+            builder.Services.AddSingleton<IAuthorizationHandler, AdminOrBridgeHandler>();
+            
+            // Register Infrastructure services for testing and production
 // Configure provider options
 builder.Services.Configure<L4H.Api.Configuration.PaymentsOptions>(builder.Configuration.GetSection("Payments"));
 
