@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Button, Input, auth, setJwtToken, useToast, cases, interview } from '@l4h/shared-ui'
+import { Button, Input, setJwtToken, useToast, cases, interview, useAuth } from '@l4h/shared-ui'
 
 interface LoginFormData {
   email: string
@@ -15,6 +15,7 @@ interface LoginPageProps {
 
 const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
   const navigate = useNavigate()
+  const { login: authLogin } = useAuth()
   const { success, error: showError } = useToast()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -63,44 +64,27 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
     console.log('[AUTH] Login attempt started for:', data.email)
 
     try {
-      const result = await auth.login({
-        email: data.email,
-        password: data.password,
-        rememberMe: data.remember
-      })
+      const result = await authLogin(data.email, data.password, data.remember)
       
-      console.log('[AUTH] Login promise resolved')
+      console.log('[AUTH] Login result:', result)
 
-      if (result && result.token) {
-        setJwtToken(result.token)
-        // Dispatch custom event to notify auth state change
-        window.dispatchEvent(new Event('jwt-token-changed'))
+      if (result.success) {
         success('Login Success')
         if (onSuccess) {
           onSuccess()
         } else {
-          // Determine redirect path based on user type and completion status
-          if (result.isStaff || result.isAdmin) {
-            // Staff and admin users always go to dashboard
-            navigate('/dashboard')
-          } else if (!result.isProfileComplete) {
-            // Regular users with incomplete profile go to profile completion
-            navigate('/profile-completion')
-          } else if (!result.isInterviewComplete) {
-            // Regular users with complete profile but incomplete interview go to interview
-            await startInterviewSession()
-          } else {
-            // Regular users with complete profile and interview go to dashboard
-            navigate('/dashboard')
-          }
+          // After successful login, the useAuth hook should have updated the user state
+          // Navigate to dashboard - UnifiedDashboard will handle role-based routing
+          navigate('/dashboard')
         }
       } else {
-        setError('Login Failed')
-        showError('Login Failed')
-        console.warn('[AUTH] Login result empty or missing token')
+        const errorMessage = result.error || 'Login Failed'
+        setError(errorMessage)
+        showError('Login Failed', errorMessage)
+        console.warn('[AUTH] Login failed:', errorMessage)
       }
     } catch (err) {
-      console.error('[AUTH] CRITICAL: Login promise orphaned or failed:', err)
+      console.error('[AUTH] CRITICAL: Login error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Login Failed'
       setError(errorMessage)
       showError('Login Failed', errorMessage)

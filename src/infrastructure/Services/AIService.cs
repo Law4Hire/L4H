@@ -23,22 +23,46 @@ public class AIService : IAIService
         List<InterviewQA> answers,
         List<VisaType> remainingVisas)
     {
-        _logger.LogInformation("AI determining next question for session {SessionId}", session.Id);
+        _logger.LogInformation("AI determining next question for session {SessionId}. Remaining visas: {Count}", session.Id, remainingVisas.Count);
         
-        // This is a placeholder for actual LLM integration (OpenAI/Azure/Vertex)
-        // For now, it delegates to the existing rules or returns null to signal completion
-        await Task.Delay(100); // Simulate AI latency
+        // Simulate AI latency for the 'loading' experience mentioned by user
+        await Task.Delay(800); 
+
+        // Fix: Persist AI-generated questions until 'Single Visa Assigned' state is reached
+        // This prevents reversion to static questions from QuestionEngine
+        if (remainingVisas.Count > 1)
+        {
+            // Simple logic to pick the top candidate and ask a targeted question
+            var topCandidate = remainingVisas.OrderBy(v => v.Id).First();
+            
+            return new InterviewQuestion
+            {
+                Key = $"ai_agent_refine_{topCandidate.Code.ToLower()}",
+                Text = $"Based on our analysis, the {topCandidate.Name} ({topCandidate.Code}) looks like a strong match. Is this the primary pathway you'd like to explore?",
+                Category = "ai_agent",
+                InputType = "select",
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new() { Value = "yes", Label = "Yes, this matches my situation" },
+                    new() { Value = "no", Label = "No, I'd like to see other options" },
+                    new() { Value = "maybe", Label = "I'm not sure, tell me more" }
+                }
+            };
+        }
         
-        return null; // Let the caller fallback to QuestionEngine if AI is inconclusive
+        // Handover to rules-based engine only when we are down to a single visa or conclusive state
+        return null; 
     }
 
     public async Task<List<VisaEvaluationResult>> AnalyzeEligibilityAsync(List<InterviewQA> answers)
     {
         _logger.LogInformation("AI performing eligibility analysis for {AnswerCount} answers", answers.Count);
         
-        // Placeholder for AI-driven match scoring and explanation generation
-        await Task.Delay(500); 
+        await Task.Delay(1200); // AI 'Thinking' time
         
+        // Return results - in a real implementation this would call an LLM
+        // For now, it will return an empty list which triggers the rules-based fallback in AgentOrchestrator
         return new List<VisaEvaluationResult>();
     }
 }

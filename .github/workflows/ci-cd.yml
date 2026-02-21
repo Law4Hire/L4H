@@ -290,7 +290,7 @@ jobs:
           
           # Force delete deployments to handle immutable selector changes (fixes "No available server")
           echo "🧹 Cleaning up old deployments to ensure selector updates..."
-          kubectl delete deployment api upload-gateway scraper web sqlserver -n l4h --ignore-not-found=true --wait=true
+          kubectl delete deployment api upload-gateway scraper web -n l4h --ignore-not-found=true --wait=true
           
           # Ensure they are gone before applying
           sleep 5
@@ -311,16 +311,18 @@ jobs:
           kubectl run copy-l4h-test --image=alpine --restart=Never -n l4h \
             --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-l4h"}}]}}' || true
           kubectl wait --for=condition=Ready pod/copy-l4h-test -n l4h --timeout=120s || true
-          kubectl exec copy-l4h-test -n l4h -- sh -c "rm -rf /data/*" || true
-          kubectl cp /tmp/l4h-deploy-test/web/l4h/dist/. l4h/copy-l4h-test:/data/ || true
+          kubectl exec copy-l4h-test -n l4h -- sh -c "mkdir -p /data/backup && mv /data/* /data/backup/ 2>/dev/null || true" || true
+          kubectl cp /tmp/l4h-deploy-test/web/l4h/dist/. l4h/copy-l4h-test:/data/ || (kubectl exec copy-l4h-test -n l4h -- sh -c "mv /data/backup/* /data/ 2>/dev/null || true" && exit 1)
+          kubectl exec copy-l4h-test -n l4h -- sh -c "rm -rf /data/backup" || true
           kubectl delete pod copy-l4h-test -n l4h || true
 
           # Copy cannlaw UI
           kubectl run copy-cannlaw-test --image=alpine --restart=Never -n l4h \
             --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-cannlaw"}}]}}' || true
           kubectl wait --for=condition=Ready pod/copy-cannlaw-test -n l4h --timeout=120s || true
-          kubectl exec copy-cannlaw-test -n l4h -- sh -c "rm -rf /data/*" || true
-          kubectl cp /tmp/l4h-deploy-test/web/cannlaw/dist/. l4h/copy-cannlaw-test:/data/ || true
+          kubectl exec copy-cannlaw-test -n l4h -- sh -c "mkdir -p /data/backup && mv /data/* /data/backup/ 2>/dev/null || true" || true
+          kubectl cp /tmp/l4h-deploy-test/web/cannlaw/dist/. l4h/copy-cannlaw-test:/data/ || (kubectl exec copy-cannlaw-test -n l4h -- sh -c "mv /data/backup/* /data/ 2>/dev/null || true" && exit 1)
+          kubectl exec copy-cannlaw-test -n l4h -- sh -c "rm -rf /data/backup" || true
           kubectl delete pod copy-cannlaw-test -n l4h || true
 
           # Restart web deployment (redundant now but safe)

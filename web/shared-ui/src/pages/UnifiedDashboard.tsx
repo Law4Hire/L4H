@@ -7,7 +7,7 @@ const LegalProWorkbasket = lazy(() => import('./dashboards/LegalProWorkbasket'))
 const ClientDashboard = lazy(() => import('./dashboards/ClientDashboard'))
 
 export const UnifiedDashboard: React.FC = () => {
-  const { user, isStaff, isLoading } = useAuth()
+  const { user, isStaff, isAdmin, isLoading } = useAuth()
 
   if (isLoading) {
     return (
@@ -23,7 +23,7 @@ export const UnifiedDashboard: React.FC = () => {
         <Spinner size="lg" />
       </div>
     }>
-      {isStaff ? <LegalProWorkbasket /> : <ClientDashboard />}
+      {isStaff || isAdmin ? <LegalProWorkbasket /> : <ClientDashboard />}
     </Suspense>
   )
 }

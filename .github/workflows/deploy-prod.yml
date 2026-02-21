@@ -209,16 +209,18 @@ jobs:
           kubectl run copy-l4h-prod --image=alpine --restart=Never -n l4h-prod \
             --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-l4h-prod"}}]}}' || true
           kubectl wait --for=condition=Ready pod/copy-l4h-prod -n l4h-prod --timeout=120s || true
-          kubectl exec copy-l4h-prod -n l4h-prod -- sh -c "rm -rf /data/*" || true
-          kubectl cp /tmp/l4h-deploy-prod/web/l4h/dist/. l4h-prod/copy-l4h-prod:/data/ || true
+          kubectl exec copy-l4h-prod -n l4h-prod -- sh -c "mkdir -p /data/backup && mv /data/* /data/backup/ 2>/dev/null || true" || true
+          kubectl cp /tmp/l4h-deploy-prod/web/l4h/dist/. l4h-prod/copy-l4h-prod:/data/ || (kubectl exec copy-l4h-prod -n l4h-prod -- sh -c "mv /data/backup/* /data/ 2>/dev/null || true" && exit 1)
+          kubectl exec copy-l4h-prod -n l4h-prod -- sh -c "rm -rf /data/backup" || true
           kubectl delete pod copy-l4h-prod -n l4h-prod || true
 
           # Copy cannlaw PROD UI
           kubectl run copy-cannlaw-prod --image=alpine --restart=Never -n l4h-prod \
             --overrides='{"spec":{"containers":[{"name":"copy","image":"alpine","command":["sleep","300"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"web-cannlaw-prod"}}]}}' || true
           kubectl wait --for=condition=Ready pod/copy-cannlaw-prod -n l4h-prod --timeout=120s || true
-          kubectl exec copy-cannlaw-prod -n l4h-prod -- sh -c "rm -rf /data/*" || true
-          kubectl cp /tmp/l4h-deploy-prod/web/cannlaw/dist/. l4h-prod/copy-cannlaw-prod:/data/ || true
+          kubectl exec copy-cannlaw-prod -n l4h-prod -- sh -c "mkdir -p /data/backup && mv /data/* /data/backup/ 2>/dev/null || true" || true
+          kubectl cp /tmp/l4h-deploy-prod/web/cannlaw/dist/. l4h-prod/copy-cannlaw-prod:/data/ || (kubectl exec copy-cannlaw-prod -n l4h-prod -- sh -c "mv /data/backup/* /data/ 2>/dev/null || true" && exit 1)
+          kubectl exec copy-cannlaw-prod -n l4h-prod -- sh -c "rm -rf /data/backup" || true
           kubectl delete pod copy-cannlaw-prod -n l4h-prod || true
 
           # Restart web deployment
