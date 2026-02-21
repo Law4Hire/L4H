@@ -106,6 +106,18 @@ function App() {
           } 
         />
         <Route 
+          path="/register" 
+          element={
+            <Layout 
+              showUserMenu={false} 
+              user={user} 
+              isAuthenticated={isAuthenticated}
+            >
+              <SinglePageRegistration />
+            </Layout>
+          } 
+        />
+        <Route 
           path="/register-interview" 
           element={
             <Layout 

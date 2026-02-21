@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Button, Input, useToast } from '@l4h/shared-ui';
+import { Button, Input, useToast, auth } from '@l4h/shared-ui';
 import { interview } from '@l4h/shared-ui';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -32,19 +32,23 @@ const SinglePageRegistration: React.FC = () => {
   const [showSignupPrompt, setShowSignupPrompt] = React.useState(false);
 
   const onSubmit = async (data: RegistrationFormValues) => {
-    if (!sessionToken) {
-        showError("No session token found. Please complete the interview first.");
-        navigate('/interview');
-        return;
-    }
-
     try {
-      // The API expects a different structure, this is a placeholder
-      // for the call to interview.registerWithInterview
-      await interview.registerWithInterview({
-        anonymousToken: sessionToken,
-        ...data,
-      });
+      if (sessionToken) {
+        // Register with interview session link
+        await interview.registerWithInterview({
+          anonymousToken: sessionToken,
+          ...data,
+        });
+      } else {
+        // General signup
+        await auth.signup({
+          email: data.email,
+          password: data.password,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          // Other fields if supported by backend signup DTO
+        });
+      }
 
       showSuccess("Registration successful!");
       setShowSignupPrompt(true);
