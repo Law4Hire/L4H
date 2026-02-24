@@ -325,6 +325,28 @@ jobs:
           kubectl exec copy-cannlaw-test -n l4h -- sh -c "rm -rf /data/backup" || true
           kubectl delete pod copy-cannlaw-test -n l4h || true
 
+          # Final Verification of arrival
+          echo "🔍 Verifying UI arrival in PVCs..."
+          kubectl run verify-arrival --image=alpine --restart=Never -n l4h \
+            --overrides='{"spec":{"containers":[{"name":"verify","image":"alpine","command":["sh","-c","ls -la /l4h/index.html && ls -la /cannlaw/index.html"],"volumeMounts":[{"name":"l4h","mountPath":"/l4h"},{"name":"cannlaw","mountPath":"/cannlaw"}]}],"volumes":[{"name":"l4h","persistentVolumeClaim":{"claimName":"web-l4h"}},{"name":"cannlaw","persistentVolumeClaim":{"claimName":"web-cannlaw"}}]}}'
+          
+          # Wait for verification pod to finish
+          for i in {1..30}; do
+            STATUS=$(kubectl get pod verify-arrival -n l4h -o jsonpath='{.status.phase}')
+            if [ "$STATUS" == "Succeeded" ]; then
+              echo "✅ UI arrival verified successfully!"
+              kubectl delete pod verify-arrival -n l4h
+              break
+            elif [ "$STATUS" == "Failed" ]; then
+              echo "❌ UI arrival verification FAILED! Files missing."
+              kubectl logs verify-arrival -n l4h
+              kubectl delete pod verify-arrival -n l4h
+              exit 1
+            fi
+            echo "Waiting for verification... ($i/30)"
+            sleep 2
+          done
+
           # Restart web deployment (redundant now but safe)
           kubectl rollout restart deployment/web -n l4h
 
