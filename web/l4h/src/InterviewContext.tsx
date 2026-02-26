@@ -45,10 +45,15 @@ export const InterviewProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true);
       setError(null);
+      // Clear stale local data
+      setSessionToken(null);
+      setCurrentQuestion(null);
+      setVisaEvaluations([]);
+      setIsComplete(false);
+
       const response = await interview.startAnonymous();
       setSessionToken(response.sessionToken);
       setCurrentQuestion(response.firstQuestion);
-      setIsComplete(false);
     } catch (err: any) {
       setError(err.message || 'Failed to start interview');
     } finally {

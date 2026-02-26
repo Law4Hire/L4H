@@ -93,16 +93,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         if (user.DateOfBirth.HasValue)
         {
             var age = CalculateAge(user.DateOfBirth.Value);
-
-            // Example: some visas have age restrictions
-            // filtered = filtered.Where(v => !v.HasAgeRestriction || age >= v.MinAge && age <= v.MaxAge).ToList();
-        }
-
-        // Nationality-based filtering
-        if (!string.IsNullOrEmpty(user.Nationality))
-        {
-            // Example: some visas are not available to certain nationalities
-            // filtered = filtered.Where(v => IsNationalityEligible(v, user.Nationality)).ToList();
+            // Future age filtering logic here
         }
 
         return filtered;
@@ -119,16 +110,34 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             KeyBenefits = GetKeyBenefits(visa)
         };
 
-        // Extract answer values for easy access
-        var answerDict = answers.ToDictionary(
-            a => a.QuestionKey,
-            a => a.AnswerValue,
-            StringComparer.OrdinalIgnoreCase);
+        // Code-Review Regression Fix: Filter null AnswerValues before conversion
+        var answerDict = answers
+            .Where(a => a.AnswerValue != null)
+            .ToDictionary(
+                a => a.QuestionKey,
+                a => a.AnswerValue!,
+                StringComparer.OrdinalIgnoreCase);
 
-        // Logic Alignment: Treat 'ai_agent_initial_purpose' as an alias for 'purpose'
-        if (answerDict.TryGetValue("ai_agent_initial_purpose", out var aiPurpose) && !answerDict.ContainsKey("purpose"))
+        // Logic Alignment: Map AI-captured intents and Category selections to Legal Vocabulary
+        if (answerDict.TryGetValue("ai_agent_initial_purpose", out var aiPurpose) || 
+            answerDict.TryGetValue("intent_purpose", out aiPurpose) ||
+            answerDict.TryGetValue("category", out aiPurpose))
         {
-            answerDict["purpose"] = aiPurpose;
+            // Vocabulary Harmonization
+            string mappedPurpose = aiPurpose.ToLower() switch
+            {
+                "work" or "work_visa" or "green_card_employment" => "professional",
+                "study" or "student_visa" => "student",
+                "tourism" or "visit" or "vacation" or "visitor_visa" => "visitor",
+                "investment" or "eb5" or "investor" => "investor",
+                "family" or "green_card_family" or "family_petition" => "family",
+                _ => aiPurpose
+            };
+            
+            if (!answerDict.ContainsKey("purpose"))
+            {
+                answerDict["purpose"] = mappedPurpose;
+            }
         }
 
         // Evaluate based on visa code
@@ -198,22 +207,22 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
     {
         var result = new VisaEvaluationResult { MatchScore = 40 };
 
+        // Code-Review Regression Fix: Remove redundant 'tourism' comparison
         bool hasVisitPurpose = answers.TryGetValue("purpose", out var purpose) &&
-            (purpose.Contains("tourism", StringComparison.OrdinalIgnoreCase) ||
+            (purpose.Contains("visitor", StringComparison.OrdinalIgnoreCase) ||
              purpose.Contains("visit", StringComparison.OrdinalIgnoreCase) ||
-             purpose.Contains("vacation", StringComparison.OrdinalIgnoreCase) ||
-             purpose.Contains("tourism", StringComparison.OrdinalIgnoreCase));
+             purpose.Contains("vacation", StringComparison.OrdinalIgnoreCase));
 
         // Fix B-1 bias: Only give high score if explicitly for tourism/visit and NOT for work/study
         bool hasOtherIntent = answers.TryGetValue("purpose", out var p) && 
-            (p.Contains("work", StringComparison.OrdinalIgnoreCase) || 
-             p.Contains("study", StringComparison.OrdinalIgnoreCase) ||
-             p.Contains("invest", StringComparison.OrdinalIgnoreCase));
+            (p.Contains("professional", StringComparison.OrdinalIgnoreCase) || 
+             p.Contains("student", StringComparison.OrdinalIgnoreCase) ||
+             p.Contains("investor", StringComparison.OrdinalIgnoreCase));
 
         if (hasVisitPurpose && !hasOtherIntent)
         {
             result.Status = EligibilityStatus.Eligible;
-            result.MatchScore = 85; // Lowered from 95 to allow specialized visas to compete
+            result.MatchScore = 85; 
             result.Explanation = "You are visiting the US for tourism/vacation purposes.";
         }
         else if (hasVisitPurpose)
@@ -237,9 +246,9 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         var result = new VisaEvaluationResult { MatchScore = 30 };
 
         bool hasWorkPurpose = answers.TryGetValue("purpose", out var purpose) &&
-            (purpose.Contains("work", StringComparison.OrdinalIgnoreCase) || 
+            (purpose.Contains("professional", StringComparison.OrdinalIgnoreCase) || 
              purpose.Contains("employment", StringComparison.OrdinalIgnoreCase) ||
-             purpose.Contains("professional", StringComparison.OrdinalIgnoreCase));
+             purpose.Contains("work", StringComparison.OrdinalIgnoreCase));
 
         bool hasEmployerSponsor = answers.TryGetValue("employer_sponsor", out var sponsor) &&
             (sponsor.Equals("yes", StringComparison.OrdinalIgnoreCase) || sponsor.Equals("true", StringComparison.OrdinalIgnoreCase));
@@ -259,7 +268,6 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         }
         else if (hasWorkPurpose)
         {
-            // Fix exclusion: If intent is work, it's at least Potential, even if we don't know about sponsor/edu yet
             result.Status = EligibilityStatus.Potential;
             result.MatchScore = hasEmployerSponsor || hasBachelors ? 75 : 55;
             result.Explanation = "H-1B is a primary option for professional employment. We need to verify your employer sponsorship and education level.";
@@ -282,8 +290,8 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         var result = new VisaEvaluationResult { MatchScore = 30 };
 
         bool hasStudyPurpose = answers.TryGetValue("purpose", out var purpose) &&
-            (purpose.Contains("study", StringComparison.OrdinalIgnoreCase) ||
-             purpose.Contains("student", StringComparison.OrdinalIgnoreCase) ||
+            (purpose.Contains("student", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("study", StringComparison.OrdinalIgnoreCase) ||
              purpose.Contains("education", StringComparison.OrdinalIgnoreCase));
 
         if (hasStudyPurpose)
@@ -292,11 +300,10 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             result.MatchScore = 92;
             result.Explanation = "You are coming to study in the US, making the F-1 student visa your primary option.";
         }
-        else if (answers.TryGetValue("status", out var status) && status.Contains("student", StringComparison.OrdinalIgnoreCase))
+        else if (answers.TryGetValue("intent_type", out var intent) && intent.Contains("nonimmigrant", StringComparison.OrdinalIgnoreCase) && hasStudyPurpose)
         {
-            result.Status = EligibilityStatus.Potential;
-            result.MatchScore = 70;
-            result.Explanation = "Since you identified as a student, the F-1 visa is a strong potential match.";
+            result.Status = EligibilityStatus.Eligible;
+            result.MatchScore = 92;
         }
         else
         {
@@ -313,7 +320,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         var result = new VisaEvaluationResult { MatchScore = 20 };
 
         bool hasWorkPurpose = answers.TryGetValue("purpose", out var purpose) &&
-            purpose.Contains("work", StringComparison.OrdinalIgnoreCase);
+            (purpose.Contains("professional", StringComparison.OrdinalIgnoreCase) || purpose.Contains("work", StringComparison.OrdinalIgnoreCase));
 
         bool hasExtraordinaryAbility = answers.TryGetValue("extraordinary_ability", out var ability) &&
             ability.Equals("yes", StringComparison.OrdinalIgnoreCase);
@@ -328,14 +335,14 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         {
             result.Status = EligibilityStatus.Potential;
             result.MatchScore = 45;
-            result.Explanation = "O-1 visa is for individuals with extraordinary ability. You'll need to demonstrate sustained national or international acclaim.";
-            result.MissingInformation.Add("Evidence of extraordinary ability (awards, recognition, publications, etc.)");
+            result.Explanation = "O-1 visa is for individuals with extraordinary ability.";
+            result.MissingInformation.Add("Evidence of extraordinary ability");
         }
         else
         {
             result.Status = EligibilityStatus.NotEligible;
             result.MatchScore = 10;
-            result.Explanation = "O-1 visa is for work requiring extraordinary ability. Your purpose does not match this category.";
+            result.Explanation = "O-1 visa is for work requiring extraordinary ability.";
         }
 
         return result;
@@ -346,7 +353,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         var result = new VisaEvaluationResult { MatchScore = 20 };
 
         bool hasInvestmentPurpose = answers.TryGetValue("purpose", out var purpose) &&
-            purpose.Contains("invest", StringComparison.OrdinalIgnoreCase);
+            (purpose.Contains("investor", StringComparison.OrdinalIgnoreCase) || purpose.Contains("invest", StringComparison.OrdinalIgnoreCase));
 
         bool hasInvestmentCapital = answers.TryGetValue("investment_capital", out var capital) &&
             (capital.Contains("800000", StringComparison.OrdinalIgnoreCase) ||
@@ -363,14 +370,14 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         {
             result.Status = EligibilityStatus.Potential;
             result.MatchScore = 50;
-            result.Explanation = "EB-5 requires investment of $800,000 (TEA) or $1,050,000 (non-TEA) and creating 10 full-time jobs.";
-            result.MissingInformation.Add("Investment capital availability ($800K-$1.05M)");
+            result.Explanation = "EB-5 requires investment of $800,000 (TEA) or $1,050,000 (non-TEA).";
+            result.MissingInformation.Add("Investment capital availability");
         }
         else
         {
             result.Status = EligibilityStatus.NotEligible;
             result.MatchScore = 10;
-            result.Explanation = "EB-5 is for immigrant investors. Your purpose does not match this category.";
+            result.Explanation = "EB-5 is for immigrant investors.";
         }
 
         return result;
@@ -390,20 +397,20 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         {
             result.Status = EligibilityStatus.Eligible;
             result.MatchScore = 95;
-            result.Explanation = "You are married to a US citizen, making you eligible for an immediate relative immigrant visa (IR-1/CR-1).";
+            result.Explanation = "You are married to a US citizen, making you eligible for an immediate relative immigrant visa.";
         }
         else if (hasFamilyPurpose)
         {
             result.Status = EligibilityStatus.Potential;
             result.MatchScore = 55;
-            result.Explanation = "Family-based immigration requires a qualifying family relationship with a US citizen or permanent resident.";
+            result.Explanation = "Family-based immigration requires a qualifying family relationship.";
             result.MissingInformation.Add("US citizen or permanent resident family relationship");
         }
         else
         {
             result.Status = EligibilityStatus.NotEligible;
             result.MatchScore = 15;
-            result.Explanation = "This is a family-based visa. Your purpose does not match this category.";
+            result.Explanation = "This is a family-based visa.";
         }
 
         return result;
@@ -420,7 +427,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         {
             result.Status = EligibilityStatus.Eligible;
             result.MatchScore = 90;
-            result.Explanation = "You are adopting a child from another country. Adoption visas (IR-3/IR-4) facilitate this process.";
+            result.Explanation = "You are adopting a child from another country.";
         }
         else
         {
@@ -446,13 +453,13 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         {
             result.Status = EligibilityStatus.Eligible;
             result.MatchScore = 85;
-            result.Explanation = "You may be eligible for US citizenship through naturalization (N-400) if you've been a permanent resident for 3-5 years.";
+            result.Explanation = "You may be eligible for US citizenship through naturalization.";
         }
         else
         {
             result.Status = EligibilityStatus.NotEligible;
             result.MatchScore = 10;
-            result.Explanation = "Citizenship/naturalization requires existing permanent resident status or other qualifying circumstances.";
+            result.Explanation = "Citizenship/naturalization requires existing permanent resident status.";
         }
 
         return result;
@@ -460,15 +467,14 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
 
     private VisaEvaluationResult EvaluateGeneric(VisaType visa, Dictionary<string, string> answers, User? user)
     {
-        // Generic scoring based on visa category
         var result = new VisaEvaluationResult
         {
             Status = EligibilityStatus.Potential,
             MatchScore = 50,
-            Explanation = $"{visa.Name} may be an option depending on your specific circumstances. Further evaluation needed."
+            Explanation = $"{visa.Name} may be an option depending on your specific circumstances."
         };
 
-        result.MissingInformation.Add("Detailed information about your specific situation");
+        result.MissingInformation.Add("Detailed information about your situation");
 
         return result;
     }
@@ -477,50 +483,21 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
 
     private List<string> GetRequiredDocuments(VisaType visa)
     {
-        // This would ideally come from database configuration
-        // For now, return common documents based on visa type
-
         var docs = new List<string> { "Valid Passport", "Passport Photos", "Application Form" };
 
         switch (visa.Code.ToUpper(CultureInfo.InvariantCulture))
         {
             case "H-1B":
-                docs.AddRange(new[] {
-                    "Labor Condition Application (LCA)",
-                    "Form I-129 Petition",
-                    "Educational Credentials",
-                    "Employment Letter",
-                    "Resume/CV"
-                });
+                docs.AddRange(new[] { "LCA", "Form I-129", "Educational Credentials", "Resume/CV" });
                 break;
-
             case "F-1":
-                docs.AddRange(new[] {
-                    "Form I-20",
-                    "SEVIS Fee Receipt",
-                    "Academic Transcripts",
-                    "Financial Support Evidence",
-                    "Acceptance Letter"
-                });
+                docs.AddRange(new[] { "Form I-20", "SEVIS Receipt", "Academic Transcripts", "Acceptance Letter" });
                 break;
-
             case "B-2":
-                docs.AddRange(new[] {
-                    "Travel Itinerary",
-                    "Proof of Ties to Home Country",
-                    "Financial Statements",
-                    "Return Ticket"
-                });
+                docs.AddRange(new[] { "Travel Itinerary", "Proof of Ties", "Financial Statements" });
                 break;
-
             case "EB-5":
-                docs.AddRange(new[] {
-                    "Form I-526 Petition",
-                    "Source of Funds Documentation",
-                    "Business Plan",
-                    "Economic Analysis",
-                    "Investment Documents"
-                });
+                docs.AddRange(new[] { "Form I-526", "Source of Funds", "Business Plan" });
                 break;
         }
 
@@ -534,58 +511,16 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         switch (visa.Code.ToUpper(CultureInfo.InvariantCulture))
         {
             case "H-1B":
-                benefits.AddRange(new[] {
-                    "Work authorization for up to 6 years",
-                    "Dual intent (can pursue green card)",
-                    "Spouse can apply for work authorization (H-4 EAD)",
-                    "Renewable in 3-year increments"
-                });
+                benefits.AddRange(new[] { "Work up to 6 years", "Dual intent", "H-4 EAD for spouse" });
                 break;
-
             case "F-1":
-                benefits.AddRange(new[] {
-                    "Study at US educational institutions",
-                    "On-campus employment allowed",
-                    "Optional Practical Training (OPT) available",
-                    "STEM OPT extension possible (24 months)"
-                });
+                benefits.AddRange(new[] { "Study in US", "On-campus work", "OPT/STEM OPT" });
                 break;
-
             case "B-2":
-                benefits.AddRange(new[] {
-                    "Stay up to 6 months per visit",
-                    "Multiple entry possible",
-                    "Tourism and family visits",
-                    "Medical treatment allowed"
-                });
+                benefits.AddRange(new[] { "Stay up to 6 months", "Tourism/Visit", "Medical treatment" });
                 break;
-
             case "EB-5":
-                benefits.AddRange(new[] {
-                    "Direct path to permanent residence",
-                    "No employer sponsor required",
-                    "Family members included",
-                    "Live and work anywhere in US"
-                });
-                break;
-
-            case "O-1":
-                benefits.AddRange(new[] {
-                    "For individuals with extraordinary ability",
-                    "No annual cap or lottery",
-                    "Initially up to 3 years",
-                    "Unlimited 1-year extensions"
-                });
-                break;
-
-            case "IR-1":
-            case "CR-1":
-                benefits.AddRange(new[] {
-                    "Immediate permanent residence",
-                    "No waiting period for work authorization",
-                    "Path to citizenship after 3 years",
-                    "Sponsor is immediate family member"
-                });
+                benefits.AddRange(new[] { "Green Card", "No sponsor needed", "Family included" });
                 break;
         }
 

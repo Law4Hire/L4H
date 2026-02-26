@@ -73,7 +73,19 @@ const InterviewPage: React.FC = () => {
     }
 
     if (!currentQuestion) {
-      return <div className="text-center dark:text-gray-300"><p>No question to display.</p></div>;
+      return (
+        <div className="text-center dark:text-gray-300">
+          <p className="mb-6 text-lg font-medium text-gray-600 dark:text-gray-400">
+            No question available to display.
+          </p>
+          <button
+            onClick={startInterview}
+            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-lg transition-all transform hover:scale-105"
+          >
+            Restart Interview
+          </button>
+        </div>
+      );
     }
 
     // Route to appropriate component based on input type

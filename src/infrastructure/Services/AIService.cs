@@ -28,23 +28,20 @@ public class AIService : IAIService
         // Simulate AI latency for the 'loading' experience mentioned by user
         await Task.Delay(800); 
 
-        // If no answers yet, start with a foundation question from AI Agent
+        // If no answers yet, start with the 'Denise Fork' classification
         if (answers.Count == 0)
         {
             return new InterviewQuestion
             {
-                Key = "ai_agent_initial_purpose",
-                Text = "Welcome to Law4Hire. To provide you with the most accurate guidance, I'll need to ask a few targeted questions. What is your primary objective for visiting or remaining in the United States?",
+                Key = "intent_type",
+                Text = "Welcome to Law4Hire. To provide you with the most accurate legal guidance, we must first determine your primary objective. Are you seeking to move to the United States permanently (Immigrant), or are you planning a temporary stay (Non-Immigrant)?",
                 Category = "ai_agent",
                 InputType = "select",
                 IsRequired = true,
                 Options = new List<QuestionOption>
                 {
-                    new() { Value = "work", Label = "Work or Professional Employment" },
-                    new() { Value = "investment", Label = "Investment or Business Ownership" },
-                    new() { Value = "family", Label = "Joining Family Members" },
-                    new() { Value = "study", Label = "Education or Exchange Programs" },
-                    new() { Value = "tourism", Label = "Tourism, Medical, or Short-term Visit" }
+                    new() { Value = "immigrant", Label = "Immigrant - Permanent Residency / Green Card" },
+                    new() { Value = "nonimmigrant", Label = "Non-Immigrant - Temporary Stay (Work, Study, Visit)" }
                 }
             };
         }
