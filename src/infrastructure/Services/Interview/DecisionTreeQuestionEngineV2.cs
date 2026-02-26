@@ -47,7 +47,13 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
 
         var category = answers["category"];
 
-        // Step 4: Subcategory question (if applicable for this category)
+        // Step 4: Mandatory Education check (RESTORE LOGIC GUARDRAILS)
+        if (!answers.ContainsKey("education_level"))
+        {
+            return GetEducationQuestion();
+        }
+
+        // Step 5: Subcategory question (if applicable for this category)
         if (RequiresSubcategory(status, category) && !answers.ContainsKey("subcategory"))
         {
             return GetSubcategoryQuestion(status, category);
@@ -76,6 +82,16 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         List<VisaType> remainingVisas,
         int questionsAnswered)
     {
+        // Completion is reached ONLY if mandatory logic guardrails are met
+        // Required: location, status (intent), education_level
+        // We'll check for these implicitly by ensuring GetNextQuestionAsync would return null
+        
+        // If we haven't asked many questions yet, keep going to ensure 3-5 discerning questions
+        if (questionsAnswered < 3)
+        {
+            return false;
+        }
+
         // Completion is reached if:
         // 1. We have narrowed down to a single visa (conclusive)
         if (remainingVisas.Count == 1)
@@ -97,6 +113,32 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
 
         return false;
     }
+
+    #region Mandatory Question: Education
+
+    private InterviewQuestion GetEducationQuestion()
+    {
+        return new InterviewQuestion
+        {
+            Key = "education_level",
+            Text = "What is your highest level of education?",
+            Category = "foundation",
+            InputType = "select",
+            Order = 10,
+            IsRequired = true,
+            Options = new List<QuestionOption>
+            {
+                new() { Value = "high_school", Label = "High School or equivalent" },
+                new() { Value = "associate", Label = "Associate's Degree" },
+                new() { Value = "bachelor", Label = "Bachelor's Degree" },
+                new() { Value = "master", Label = "Master's Degree" },
+                new() { Value = "doctorate", Label = "Doctorate / PhD" },
+                new() { Value = "professional", Label = "Professional Degree (JD, MD, etc.)" }
+            }
+        };
+    }
+
+    #endregion
 
     #region Step 1: Location Question
 

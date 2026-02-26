@@ -196,22 +196,37 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
 
     private VisaEvaluationResult EvaluateB2(VisaType visa, Dictionary<string, string> answers, User? user)
     {
-        var result = new VisaEvaluationResult();
+        var result = new VisaEvaluationResult { MatchScore = 40 };
 
-        if (answers.TryGetValue("purpose", out var purpose) &&
+        bool hasVisitPurpose = answers.TryGetValue("purpose", out var purpose) &&
             (purpose.Contains("tourism", StringComparison.OrdinalIgnoreCase) ||
              purpose.Contains("visit", StringComparison.OrdinalIgnoreCase) ||
-             purpose.Contains("vacation", StringComparison.OrdinalIgnoreCase)))
+             purpose.Contains("vacation", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("tourism", StringComparison.OrdinalIgnoreCase));
+
+        // Fix B-1 bias: Only give high score if explicitly for tourism/visit and NOT for work/study
+        bool hasOtherIntent = answers.TryGetValue("purpose", out var p) && 
+            (p.Contains("work", StringComparison.OrdinalIgnoreCase) || 
+             p.Contains("study", StringComparison.OrdinalIgnoreCase) ||
+             p.Contains("invest", StringComparison.OrdinalIgnoreCase));
+
+        if (hasVisitPurpose && !hasOtherIntent)
         {
             result.Status = EligibilityStatus.Eligible;
-            result.MatchScore = 95;
-            result.Explanation = "You are visiting the US for tourism/vacation purposes, which is the primary use case for a B-2 visitor visa.";
+            result.MatchScore = 85; // Lowered from 95 to allow specialized visas to compete
+            result.Explanation = "You are visiting the US for tourism/vacation purposes.";
+        }
+        else if (hasVisitPurpose)
+        {
+            result.Status = EligibilityStatus.Potential;
+            result.MatchScore = 60;
+            result.Explanation = "B-2 is an option for temporary visits, but your other stated goals might be better served by a specialized visa.";
         }
         else
         {
             result.Status = EligibilityStatus.NotEligible;
-            result.MatchScore = 20;
-            result.Explanation = "B-2 visa is for tourism and temporary visits. Your purpose does not match this category.";
+            result.MatchScore = 10;
+            result.Explanation = "B-2 visa is for tourism and temporary visits.";
         }
 
         return result;
@@ -222,46 +237,41 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         var result = new VisaEvaluationResult { MatchScore = 30 };
 
         bool hasWorkPurpose = answers.TryGetValue("purpose", out var purpose) &&
-            purpose.Contains("work", StringComparison.OrdinalIgnoreCase);
+            (purpose.Contains("work", StringComparison.OrdinalIgnoreCase) || 
+             purpose.Contains("employment", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("professional", StringComparison.OrdinalIgnoreCase));
 
         bool hasEmployerSponsor = answers.TryGetValue("employer_sponsor", out var sponsor) &&
             (sponsor.Equals("yes", StringComparison.OrdinalIgnoreCase) || sponsor.Equals("true", StringComparison.OrdinalIgnoreCase));
-
-        bool isPermanent = answers.TryGetValue("duration", out var duration) &&
-            (duration.Contains("permanent", StringComparison.OrdinalIgnoreCase) || duration.Contains("long", StringComparison.OrdinalIgnoreCase));
 
         bool hasBachelors = answers.TryGetValue("education_level", out var education) &&
             (education.Contains("bachelor", StringComparison.OrdinalIgnoreCase) ||
              education.Contains("master", StringComparison.OrdinalIgnoreCase) ||
              education.Contains("phd", StringComparison.OrdinalIgnoreCase) ||
-             education.Contains("doctorate", StringComparison.OrdinalIgnoreCase));
+             education.Contains("doctorate", StringComparison.OrdinalIgnoreCase) ||
+             education.Contains("professional", StringComparison.OrdinalIgnoreCase));
 
         if (hasWorkPurpose && hasEmployerSponsor && hasBachelors)
         {
             result.Status = EligibilityStatus.Eligible;
-            result.MatchScore = 90;
-            result.Explanation = "You have a US employer sponsor and a bachelor's degree or higher, making you eligible for an H-1B visa for specialty occupation employment.";
-        }
-        else if (hasWorkPurpose && hasEmployerSponsor)
-        {
-            result.Status = EligibilityStatus.Potential;
-            result.MatchScore = 65;
-            result.Explanation = "You have a US employer sponsor. H-1B requires a bachelor's degree or equivalent for specialty occupations.";
-            result.MissingInformation.Add("Education level (bachelor's degree or higher required)");
+            result.MatchScore = 95;
+            result.Explanation = "You have a US employer sponsor and a bachelor's degree or higher, making you highly eligible for an H-1B visa.";
         }
         else if (hasWorkPurpose)
         {
+            // Fix exclusion: If intent is work, it's at least Potential, even if we don't know about sponsor/edu yet
             result.Status = EligibilityStatus.Potential;
-            result.MatchScore = 40;
-            result.Explanation = "H-1B visa requires a US employer sponsor and bachelor's degree for specialty occupations.";
-            result.MissingInformation.Add("US employer sponsorship");
+            result.MatchScore = hasEmployerSponsor || hasBachelors ? 75 : 55;
+            result.Explanation = "H-1B is a primary option for professional employment. We need to verify your employer sponsorship and education level.";
+            
+            if (!hasEmployerSponsor) result.MissingInformation.Add("US employer sponsorship");
             if (!hasBachelors) result.MissingInformation.Add("Bachelor's degree or higher");
         }
         else
         {
             result.Status = EligibilityStatus.NotEligible;
             result.MatchScore = 15;
-            result.Explanation = "H-1B visa is for professional work in specialty occupations. Your purpose does not match this category.";
+            result.Explanation = "H-1B visa is for professional work in specialty occupations.";
         }
 
         return result;
@@ -279,14 +289,20 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         if (hasStudyPurpose)
         {
             result.Status = EligibilityStatus.Eligible;
-            result.MatchScore = 90;
-            result.Explanation = "You are coming to study in the US, which makes you eligible for an F-1 student visa.";
+            result.MatchScore = 92;
+            result.Explanation = "You are coming to study in the US, making the F-1 student visa your primary option.";
+        }
+        else if (answers.TryGetValue("status", out var status) && status.Contains("student", StringComparison.OrdinalIgnoreCase))
+        {
+            result.Status = EligibilityStatus.Potential;
+            result.MatchScore = 70;
+            result.Explanation = "Since you identified as a student, the F-1 visa is a strong potential match.";
         }
         else
         {
             result.Status = EligibilityStatus.NotEligible;
             result.MatchScore = 15;
-            result.Explanation = "F-1 visa is for academic studies. Your purpose does not match this category.";
+            result.Explanation = "F-1 visa is for academic studies.";
         }
 
         return result;
