@@ -39,8 +39,13 @@ public class AgentOrchestrator : IAgentOrchestrator
         // Create new anonymous session
         var session = await _sessionManager.CreateAnonymousSessionAsync();
 
-        // Get first question
-        var firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());
+        // Get first question - try AI first to ensure AI-driven flow from the start
+        var firstQuestion = await _aiService.GetNextAIQuestionAsync(session, new List<InterviewQA>(), new List<VisaType>());
+
+        if (firstQuestion == null)
+        {
+            firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());
+        }
 
         if (firstQuestion == null)
         {
@@ -60,8 +65,13 @@ public class AgentOrchestrator : IAgentOrchestrator
         // Create new authenticated session linked to the case
         var session = await _sessionManager.CreateAuthenticatedSessionAsync(caseId, userId);
 
-        // Get first question
-        var firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());
+        // Get first question - try AI first to ensure AI-driven flow from the start
+        var firstQuestion = await _aiService.GetNextAIQuestionAsync(session, new List<InterviewQA>(), new List<VisaType>());
+
+        if (firstQuestion == null)
+        {
+            firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());
+        }
 
         if (firstQuestion == null)
         {

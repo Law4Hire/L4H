@@ -28,6 +28,27 @@ public class AIService : IAIService
         // Simulate AI latency for the 'loading' experience mentioned by user
         await Task.Delay(800); 
 
+        // If no answers yet, start with a foundation question from AI Agent
+        if (answers.Count == 0)
+        {
+            return new InterviewQuestion
+            {
+                Key = "ai_agent_initial_purpose",
+                Text = "Welcome to Law4Hire. To provide you with the most accurate guidance, I'll need to ask a few targeted questions. What is your primary objective for visiting or remaining in the United States?",
+                Category = "ai_agent",
+                InputType = "select",
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new() { Value = "work", Label = "Work or Professional Employment" },
+                    new() { Value = "investment", Label = "Investment or Business Ownership" },
+                    new() { Value = "family", Label = "Joining Family Members" },
+                    new() { Value = "study", Label = "Education or Exchange Programs" },
+                    new() { Value = "tourism", Label = "Tourism, Medical, or Short-term Visit" }
+                }
+            };
+        }
+
         // Fix: Persist AI-generated questions until 'Single Visa Assigned' state is reached
         // This prevents reversion to static questions from QuestionEngine
         if (remainingVisas.Count > 1)
