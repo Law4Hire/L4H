@@ -125,6 +125,12 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             a => a.AnswerValue,
             StringComparer.OrdinalIgnoreCase);
 
+        // Logic Alignment: Treat 'ai_agent_initial_purpose' as an alias for 'purpose'
+        if (answerDict.TryGetValue("ai_agent_initial_purpose", out var aiPurpose) && !answerDict.ContainsKey("purpose"))
+        {
+            answerDict["purpose"] = aiPurpose;
+        }
+
         // Evaluate based on visa code
         switch (visa.Code.ToUpper(CultureInfo.InvariantCulture))
         {

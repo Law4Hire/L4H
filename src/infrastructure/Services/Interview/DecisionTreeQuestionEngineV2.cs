@@ -76,7 +76,25 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         List<VisaType> remainingVisas,
         int questionsAnswered)
     {
-        // Completion is determined by GetNextQuestionAsync returning null
+        // Completion is reached if:
+        // 1. We have narrowed down to a single visa (conclusive)
+        if (remainingVisas.Count == 1)
+        {
+            return true;
+        }
+
+        // 2. No visas remain (disqualified)
+        if (remainingVisas.Count == 0)
+        {
+            return true;
+        }
+
+        // 3. We've asked many questions and should wrap up
+        if (questionsAnswered >= 15)
+        {
+            return true;
+        }
+
         return false;
     }
 
