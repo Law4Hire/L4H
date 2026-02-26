@@ -1,29 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, useToast } from '@l4h/shared-ui';
-import { interview } from '@l4h/shared-ui';
-import { ChevronLeft } from 'lucide-react';
+import { useToast, ChevronLeft } from '@l4h/shared-ui';
+import { useInterview } from '../InterviewContext';
 import { DocumentUploadQuestion } from '../components/interview/DocumentUploadQuestion';
 import { AttorneyQuestionPage } from '../components/interview/AttorneyQuestionPage';
-
-// Simplified Question interface to match the backend DTO
-interface Question {
-  key: string;
-  text: string;
-  category: string;
-  inputType: string;
-  pageConfig?: string;
-  options: Array<{ value: string; label: string }>;
-}
-
-interface VisaEvaluation {
-  visaName: string;
-  visaCode: string;
-  status: string;
-  matchScore: number;
-  explanation: string;
-  keyBenefits?: string[];
-}
 
 interface UploadedFile {
   id: string;
@@ -38,12 +18,18 @@ const InterviewPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { error: showError } = useToast();
 
-  // API-driven state
-  const [sessionToken, setSessionToken] = useState<string | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [isComplete, setIsComplete] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [visaEvaluations, setVisaEvaluations] = useState<VisaEvaluation[]>([]);
+  // Use centralized state and actions from the InterviewProvider (AgentOrchestrator stream)
+  const {
+    sessionToken,
+    currentQuestion,
+    visaEvaluations,
+    isComplete,
+    isLoading,
+    error: interviewError,
+    startInterview,
+    resumeInterview,
+    submitAnswer
+  } = useInterview();
 
   // Navigate to results page when interview is complete
   useEffect(() => {
@@ -52,49 +38,14 @@ const InterviewPage: React.FC = () => {
     }
   }, [isComplete, sessionToken, navigate]);
 
-  const startInterview = React.useCallback(async () => {
-    try {
-      setIsLoading(true);
-      // Use default language (English)
-      const response = await interview.startAnonymous();
-      setSessionToken(response.sessionToken);
-      setCurrentQuestion(response.firstQuestion);
-    } catch (error: any) {
-      console.error('Failed to start interview:', error);
-      showError(error.message || 'Failed to start the interview. Please try again.');
-    } finally {
-      setIsLoading(false);
+  // Sync provider errors with UI toasts
+  useEffect(() => {
+    if (interviewError) {
+      showError(interviewError);
     }
-  }, [showError]);
+  }, [interviewError, showError]);
 
-  const resumeInterview = React.useCallback(async (token: string) => {
-    try {
-      setIsLoading(true);
-      const response = await interview.resumeAnonymous(token);
-      setSessionToken(token);
-      
-      if (response.isComplete) {
-        // Fetch visa evaluations
-        try {
-          const evaluations = await interview.getEvaluations(token);
-          setVisaEvaluations(evaluations);
-        } catch (evalError) {
-          console.error('Failed to fetch visa evaluations:', evalError);
-        }
-        setIsComplete(true);
-      } else {
-        setCurrentQuestion(response.nextQuestion);
-      }
-    } catch (error: any) {
-      console.error('Failed to resume interview:', error);
-      // Fallback to starting a new interview if resume fails
-      startInterview();
-    } finally {
-      setIsLoading(false);
-    }
-  }, [startInterview]);
-
-  // Start or resume interview on load
+  // Initialize: Start or resume interview on load
   useEffect(() => {
     const token = searchParams.get('token');
     if (token) {
@@ -102,81 +53,26 @@ const InterviewPage: React.FC = () => {
     } else {
       startInterview();
     }
-  }, [searchParams, resumeInterview, startInterview]);
+    // Only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Function to handle the "jump-on" UX
-  const handleAnswer = async (answerValue: string) => {
-    if (!sessionToken || !currentQuestion) return;
-
-    try {
-      setIsLoading(true);
-      const response = await interview.submitAnswer(
-        sessionToken,
-        currentQuestion.key,
-        answerValue
-      );
-
-      if (response.isComplete) {
-        // Fetch visa evaluations before showing attorney question page
-        try {
-          const evaluations = await interview.getEvaluations(sessionToken);
-          setVisaEvaluations(evaluations);
-        } catch (evalError) {
-          console.error('Failed to fetch visa evaluations:', evalError);
-        }
-        setIsComplete(true);
-        setCurrentQuestion(null);
-      } else if (response.nextQuestion) {
-        setCurrentQuestion(response.nextQuestion);
-      }
-    } catch (error: any) {
-      console.error('Failed to submit answer:', error);
-      showError(error.message || 'Failed to submit answer. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDocumentUploadComplete = async (uploadedFiles: UploadedFile[]) => {
-    if (!sessionToken || !currentQuestion) return;
-
+  const handleDocumentUploadComplete = async (_uploadedFiles: UploadedFile[]) => {
     // Document upload acts as a regular question - proceed to next
-    // The "answer" is just that upload was completed
-    try {
-      setIsLoading(true);
-      const response = await interview.submitAnswer(
-        sessionToken,
-        currentQuestion.key,
-        'documents_uploaded'  // Special value indicating completion
-      );
-
-      if (response.isComplete) {
-        // Fetch visa evaluations
-        try {
-          const evaluations = await interview.getEvaluations(sessionToken);
-          setVisaEvaluations(evaluations);
-        } catch (evalError) {
-          console.error('Failed to fetch visa evaluations:', evalError);
-        }
-        setIsComplete(true);
-        setCurrentQuestion(null);
-      } else if (response.nextQuestion) {
-        setCurrentQuestion(response.nextQuestion);
-      }
-    } catch (error: any) {
-      showError('Failed to proceed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    await submitAnswer('documents_uploaded');
   };
 
   const renderQuestion = () => {
     if (isLoading) {
-      return <div className="text-center dark:text-gray-300"><p>Loading...</p></div>;
+      return (
+        <div className="text-center dark:text-gray-300">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-xl animate-pulse">AI Agent is thinking...</p>
+        </div>
+      );
     }
 
     if (!currentQuestion) {
-      // This case should ideally not be hit if not complete, but as a fallback:
       return <div className="text-center dark:text-gray-300"><p>No question to display.</p></div>;
     }
 
@@ -197,7 +93,7 @@ const InterviewPage: React.FC = () => {
             question={currentQuestion}
             sessionToken={sessionToken!}
             visaEvaluations={visaEvaluations}
-            onRetakeInterview={() => navigate('/interview')}
+            onRetakeInterview={startInterview}
             onRegister={() => navigate('/register', {
               state: { sessionToken, visaEvaluations }
             })}
@@ -213,18 +109,27 @@ const InterviewPage: React.FC = () => {
       case 'text':
       case 'textarea':
       default:
-        // Existing option button rendering
         return (
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{currentQuestion.text}</h2>
+            <div className="mb-8">
+              <span className="inline-block px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-4">
+                {currentQuestion.category || 'AI Analysis'}
+              </span>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+                {currentQuestion.text}
+              </h2>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {currentQuestion.options.map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => handleAnswer(option.value)}
-                  className="p-6 border-2 border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-600 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all text-left group"
+                  onClick={() => submitAnswer(option.value)}
+                  className="p-6 border-2 border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-600 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all text-left group flex flex-col"
                 >
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">{option.label}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {option.label}
+                  </h3>
                 </button>
               ))}
             </div>
@@ -236,10 +141,10 @@ const InterviewPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6 transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 md:p-12 transition-colors">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 md:p-12 transition-colors border border-white/10">
           {!isComplete && !isLoading && (
             <button
-              onClick={startInterview} // Back button restarts the interview for now
+              onClick={() => navigate(-1)}
               className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mb-6 font-semibold transition-colors"
             >
               <ChevronLeft size={20} className="mr-1" />
@@ -248,17 +153,24 @@ const InterviewPage: React.FC = () => {
           )}
           
           {isComplete ? (
-            <div className="text-center">
+            <div className="text-center py-10">
+              <div className="animate-bounce mb-6">
+                <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-green-500/20">
+                  <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Interview Complete!</h1>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                Navigating to your results...
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                Our AI Agent has finalized its analysis.
               </p>
             </div>
           ) : renderQuestion()}
         </div>
 
-        <div className="text-center mt-6 text-gray-600 dark:text-gray-400">
-          <p>© 2025 Immigration Law Firm. Confidential consultation.</p>
+        <div className="text-center mt-8 text-gray-500 dark:text-gray-500 text-sm">
+          <p>© 2026 Cann Legal Group. AI-Powered Immigration Orchestrator.</p>
         </div>
       </div>
     </div>

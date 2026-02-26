@@ -228,7 +228,7 @@ builder.Services.AddScoped<CountriesSeeder>();
 
 // Interview services - using QuestionEngine for anonymous eligibility-only questions
 builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IAgentOrchestrator, L4H.Infrastructure.Services.Interview.AgentOrchestrator>();
-builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IQuestionEngine, L4H.Infrastructure.Services.Interview.QuestionEngine>();
+builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IQuestionEngine, L4H.Infrastructure.Services.Interview.DecisionTreeQuestionEngineV2>();
 builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.ISessionManager, L4H.Infrastructure.Services.Interview.SessionManager>();
 builder.Services.AddScoped<L4H.Infrastructure.Services.Interview.IVisaEvaluationEngine, L4H.Infrastructure.Services.Interview.VisaEvaluationEngine>();
 
