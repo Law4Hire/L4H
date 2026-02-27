@@ -46,6 +46,14 @@ public class AIService : IAIService
             };
         }
 
+        var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue, StringComparer.OrdinalIgnoreCase);
+
+        // MANDATORY BRANCHING GUARD: Must verify location before any AI refinement
+        if (answers.Count > 0 && !answersDict.ContainsKey("location"))
+        {
+            return null; // Handover to rules engine to ask mandatory location question
+        }
+
         // Fix: Persist AI-generated questions until 'Single Visa Assigned' state is reached
         // This prevents reversion to static questions from QuestionEngine
         if (remainingVisas.Count > 1)

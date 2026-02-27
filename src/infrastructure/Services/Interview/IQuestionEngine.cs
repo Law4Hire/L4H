@@ -20,7 +20,8 @@ public interface IQuestionEngine
     /// </summary>
     Task<bool> IsCompleteAsync(
         List<VisaType> remainingVisas,
-        int questionsAnswered);
+        int questionsAnswered,
+        List<InterviewQA> answeredQuestions);
 }
 
 /// <summary>

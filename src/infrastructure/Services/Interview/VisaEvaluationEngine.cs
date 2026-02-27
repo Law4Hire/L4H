@@ -33,6 +33,13 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         // 2. Filter by user profile (age, nationality, etc.)
         var profileFiltered = FilterByUserProfile(allVisas, user);
 
+        // Logic Alignment: Filter by 'intent_type' if present
+        var intentType = answers.FirstOrDefault(a => a.QuestionKey.Equals("intent_type", StringComparison.OrdinalIgnoreCase))?.AnswerValue;
+        if (!string.IsNullOrEmpty(intentType))
+        {
+            profileFiltered = profileFiltered.Where(v => IsCompatibleWithIntent(v, intentType)).ToList();
+        }
+
         // 3. Evaluate each visa against answers
         var evaluated = new List<VisaEvaluationResult>();
 
@@ -525,6 +532,25 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         }
 
         return benefits;
+    }
+
+    private bool IsCompatibleWithIntent(VisaType visa, string intentType)
+    {
+        var code = visa.Code.ToUpper(CultureInfo.InvariantCulture);
+        bool isImmigrantIntent = intentType.Equals("immigrant", StringComparison.OrdinalIgnoreCase);
+
+        // List of Immigrant Visa Codes
+        var immigrantCodes = new[] { "IR-1", "CR-1", "EB-1", "EB-2", "EB-3", "EB-4", "EB-5", "N-400", "N-600", "NATZ", "ADOP" };
+        
+        bool isImmigrantVisa = immigrantCodes.Any(c => code.Contains(c));
+
+        // Note: Some codes like F1-IM are for family preference but might be handled specifically.
+        if (code.Contains("F1-IM") || code.Contains("F2A") || code.Contains("F2B") || code.Contains("F3-IM") || code.Contains("F4"))
+        {
+            isImmigrantVisa = true;
+        }
+
+        return isImmigrantIntent == isImmigrantVisa;
     }
 
     private int CalculateAge(DateTime dateOfBirth)

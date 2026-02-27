@@ -48,6 +48,19 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             return GetEducationQuestion();
         }
 
+        // Step 3.1: Branching Guard for Non-Immigrants
+        if (intentType.Equals("nonimmigrant", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!answers.ContainsKey("employment_status"))
+            {
+                return GetEmploymentStatusQuestion();
+            }
+            if (!answers.ContainsKey("educational_goals"))
+            {
+                return GetEducationalGoalsQuestion();
+            }
+        }
+
         // Step 4: Category question (branched based on intent_type)
         if (!answers.ContainsKey("category"))
         {
@@ -80,8 +93,23 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
 
     public async Task<bool> IsCompleteAsync(
         List<VisaType> remainingVisas,
-        int questionsAnswered)
+        int questionsAnswered,
+        List<InterviewQA> answeredQuestions)
     {
+        var answers = answeredQuestions.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue, StringComparer.OrdinalIgnoreCase);
+
+        // MANDATORY BRANCHING GUARD: Non-Immigrants must be vetted for Work/Study depth
+        if (answers.TryGetValue("intent_type", out var intent) && intent.Equals("nonimmigrant", StringComparison.OrdinalIgnoreCase))
+        {
+            bool hasEmploymentInfo = answers.ContainsKey("employment_status");
+            bool hasEducationGoals = answers.ContainsKey("educational_goals");
+
+            if (!hasEmploymentInfo && !hasEducationGoals)
+            {
+                return false; // Forbidden from completion
+            }
+        }
+
         // Completion is reached ONLY if mandatory legal fields are present
         // These are: intent_type, location, and education_level (guaranteed by engine flow)
         
@@ -98,8 +126,6 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             return true;
         }
 
-        // We removed the hardcoded 15-question limit. 
-        // The engine now relies on the presence of required fields determined by the fork.
         return false;
     }
 
@@ -173,6 +199,49 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
 
     #endregion
 
+    #region Step 3.1: Non-Immigrant Branching Guard Questions
+
+    private InterviewQuestion GetEmploymentStatusQuestion()
+    {
+        return new InterviewQuestion
+        {
+            Key = "employment_status",
+            Text = "What is your current employment status?",
+            Category = "nonimmigrant_refinement",
+            InputType = "select",
+            Order = 15,
+            IsRequired = true,
+            Options = new List<QuestionOption>
+            {
+                new() { Value = "employed_full", Label = "Employed Full-Time" },
+                new() { Value = "employed_part", Label = "Employed Part-Time" },
+                new() { Value = "self_employed", Label = "Self-Employed / Business Owner" },
+                new() { Value = "student", Label = "Student" },
+                new() { Value = "unemployed", Label = "Not Currently Employed" }
+            }
+        };
+    }
+
+    private InterviewQuestion GetEducationalGoalsQuestion()
+    {
+        return new InterviewQuestion
+        {
+            Key = "educational_goals",
+            Text = "Do you have any plans to enroll in a U.S. educational program or vocational training?",
+            Category = "nonimmigrant_refinement",
+            InputType = "radio",
+            Order = 16,
+            IsRequired = true,
+            Options = new List<QuestionOption>
+            {
+                new() { Value = "yes", Label = "Yes, I plan to study" },
+                new() { Value = "no", Label = "No, study is not my primary goal" }
+            }
+        };
+    }
+
+    #endregion
+
     #region Step 4: Category Question (Intent-Based)
 
     private InterviewQuestion GetCategoryQuestion(string intentType)
@@ -220,8 +289,8 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             {
                 new() { Value = "work_visa", Label = "Work Visa - H-1B, L-1, O-1, and other employment visas" },
                 new() { Value = "student_visa", Label = "Student Visa - F-1, M-1, J-1 student programs" },
-                new() { Value = "visitor_visa", Label = "Visitor/Tourist Visa - B-1 business, B-2 tourism" },
-                new() { Value = "adjust_status", Label = "Adjust to Permanent Status - Transition to green card" }
+                new() { Value = "adjust_status", Label = "Adjust to Permanent Status - Transition to green card" },
+                new() { Value = "visitor_visa", Label = "Visitor/Tourist Visa - B-1 business, B-2 tourism (FALLBACK)" }
             }
         };
     }
