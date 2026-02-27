@@ -151,10 +151,11 @@ public class AgentOrchestrator : IAgentOrchestrator
         }
 
         // If there's still no next question, the interview is complete
-        var isComplete = nextQuestion == null;
+        // Guardrail: Cannot be complete unless 'location' is verified
+        var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue);
+        var isComplete = nextQuestion == null && answersDict.ContainsKey("location");
 
         // Check if we just completed a checklist
-        var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue);
         bool isChecklistComplete = false;
         int? checklistProgress = null;
         int? checklistTotal = null;
