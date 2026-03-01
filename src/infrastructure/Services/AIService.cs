@@ -46,30 +46,11 @@ public class AIService : IAIService
             };
         }
 
-        // Fix: Persist AI-generated questions until 'Single Visa Assigned' state is reached
-        // This prevents reversion to static questions from QuestionEngine
-        if (remainingVisas.Count > 1)
-        {
-            // Simple logic to pick the top candidate and ask a targeted question
-            var topCandidate = remainingVisas.OrderBy(v => v.Id).First();
-            
-            return new InterviewQuestion
-            {
-                Key = $"ai_agent_refine_{topCandidate.Code.ToLower()}",
-                Text = $"Based on our analysis, the {topCandidate.Name} ({topCandidate.Code}) looks like a strong match. Is this the primary pathway you'd like to explore?",
-                Category = "ai_agent",
-                InputType = "select",
-                IsRequired = true,
-                Options = new List<QuestionOption>
-                {
-                    new() { Value = "yes", Label = "Yes, this matches my situation" },
-                    new() { Value = "no", Label = "No, I'd like to see other options" },
-                    new() { Value = "maybe", Label = "I'm not sure, tell me more" }
-                }
-            };
-        }
-        
-        // Handover to rules-based engine only when we are down to a single visa or conclusive state
+        // After the initial intent_type question, hand off to the rules-based engine.
+        // The visa type cannot be determined from the immigrant/non-immigrant answer alone —
+        // that single answer leaves all visas as Potential candidates, so picking a "top candidate"
+        // here only ever selects an arbitrary visa (the first one by database ID) rather than
+        // one informed by the user's actual situation.
         return null; 
     }
 
