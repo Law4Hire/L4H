@@ -161,7 +161,7 @@ const ClientDashboard: React.FC = () => {
         {error ? (
           <div className="text-red-600 text-center py-4">Error loading cases</div>
         ) : casesList.length === 0 ? (
-          <div className="text-gray-500 py-4 text-center">No cases found</div>
+          <div className="text-gray-500 py-4 text-center">No Assigned Cases</div>
         ) : (
           <div className="space-y-4">
             {casesList.map((caseItem: Case) => (
