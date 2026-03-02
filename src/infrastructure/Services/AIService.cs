@@ -48,31 +48,33 @@ public class AIService : IAIService
 
         var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue, StringComparer.OrdinalIgnoreCase);
 
-        // MANDATORY BRANCHING GUARD: Must verify location before any AI refinement
-        if (answers.Count > 0 && !answersDict.ContainsKey("location"))
+        // MANDATORY BRANCHING GUARD: Must verify location and intent depth before any AI refinement
+        // This ensures the rules-based engine gathers mandatory fields (location, education, employment) 
+        // before the AI attempts to pick a "top candidate".
+        if (answers.Count > 0 && (!answersDict.ContainsKey("location") || answers.Count < 4))
         {
-            return null; // Handover to rules engine to ask mandatory location question
+            return null; // Handover to rules engine to ask mandatory questions
         }
 
         // Fix: Persist AI-generated questions until 'Single Visa Assigned' state is reached
-        // This prevents reversion to static questions from QuestionEngine
+        // This prevents premature reversion to static questions when the situation is still ambiguous
         if (remainingVisas.Count > 1)
         {
-            // Simple logic to pick the top candidate and ask a targeted question
+            // Pick the top candidate based on ranking and ask a targeted refinement question
             var topCandidate = remainingVisas.OrderBy(v => v.Id).First();
             
             return new InterviewQuestion
             {
                 Key = $"ai_agent_refine_{topCandidate.Code.ToLower()}",
-                Text = $"Based on our analysis, the {topCandidate.Name} ({topCandidate.Code}) looks like a strong match. Is this the primary pathway you'd like to explore?",
+                Text = $"Based on our analysis, the {topCandidate.Name} ({topCandidate.Code}) looks like a strong match for your objectives. Does this align with what you are looking for?",
                 Category = "ai_agent",
                 InputType = "select",
                 IsRequired = true,
                 Options = new List<QuestionOption>
                 {
                     new() { Value = "yes", Label = "Yes, this matches my situation" },
-                    new() { Value = "no", Label = "No, I'd like to see other options" },
-                    new() { Value = "maybe", Label = "I'm not sure, tell me more" }
+                    new() { Value = "no", Label = "No, I'd like to explore other options" },
+                    new() { Value = "maybe", Label = "I'm not sure, I'd like more details" }
                 }
             };
         }
@@ -88,7 +90,6 @@ public class AIService : IAIService
         await Task.Delay(1200); // AI 'Thinking' time
         
         // Return results - in a real implementation this would call an LLM
-        // For now, it will return an empty list which triggers the rules-based fallback in AgentOrchestrator
         return new List<VisaEvaluationResult>();
     }
 }
