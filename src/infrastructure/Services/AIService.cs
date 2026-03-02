@@ -74,21 +74,42 @@ public class AIService : IAIService
             return null; // Handover to rules engine to complete mandatory flow
         }
 
-        // Fix: Persist AI-generated questions until 'Single Visa Assigned' state is reached
-        // This prevents premature reversion to static questions when the situation is still ambiguous
         if (remainingVisas.Count > 1)
         {
-            // Prefer the user's explicitly chosen subcategory; remainingVisas is already
-            // ranked by eligibility + score from EvaluateAllVisasAsync, so First() is correct
-            // fallback when no subcategory has been selected.
+            // If the user already confirmed a visa, the interview can proceed to completion
+            if (answersDict.Any(kvp =>
+                    kvp.Key.StartsWith("ai_agent_refine_", StringComparison.OrdinalIgnoreCase) &&
+                    kvp.Value.Equals("yes", StringComparison.OrdinalIgnoreCase)))
+            {
+                return null;
+            }
+
+            // Collect visa codes that have already been presented as a refine question
+            var alreadyRefined = answersDict.Keys
+                .Where(k => k.StartsWith("ai_agent_refine_", StringComparison.OrdinalIgnoreCase))
+                .Select(k => k["ai_agent_refine_".Length..])
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // Prefer the user's explicitly chosen subcategory if not yet asked;
+            // remainingVisas is already ranked by eligibility + score from EvaluateAllVisasAsync
             VisaType? topCandidate = null;
-            if (answersDict.TryGetValue("subcategory", out var subcategoryCode) && !string.IsNullOrEmpty(subcategoryCode))
+            if (answersDict.TryGetValue("subcategory", out var subcategoryCode) &&
+                !string.IsNullOrEmpty(subcategoryCode) &&
+                !alreadyRefined.Contains(subcategoryCode))
             {
                 topCandidate = remainingVisas.FirstOrDefault(v =>
                     v.Code.Equals(subcategoryCode, StringComparison.OrdinalIgnoreCase));
             }
-            topCandidate ??= remainingVisas.First();
-            
+
+            // Fallback: first remaining visa not yet asked about
+            topCandidate ??= remainingVisas.FirstOrDefault(v => !alreadyRefined.Contains(v.Code));
+
+            // All remaining visas have been presented — let the interview complete
+            if (topCandidate == null)
+            {
+                return null;
+            }
+
             return new InterviewQuestion
             {
                 Key = $"ai_agent_refine_{topCandidate.Code.ToLower()}",

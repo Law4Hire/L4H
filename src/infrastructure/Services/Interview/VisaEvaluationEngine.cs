@@ -641,21 +641,46 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         return benefits;
     }
 
+    // Visas that lead to permanent residency / green card
+    private static readonly HashSet<string> ImmigrantVisaCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        // Immediate Relatives of US Citizens (IR-1 through IR-5)
+        "IR-1", "IR-2", "IR-3", "IR-4", "IR-5",
+        // Conditional Resident
+        "CR-1",
+        // Employment-Based
+        "EB-1", "EB-2", "EB-3", "EB-4", "EB-5",
+        // National Interest Waiver (EB-2 subcategory)
+        "NIW",
+        // Family Preference
+        "F1-IM", "F2A", "F2B", "F3-IM", "F4",
+        // Diversity Lottery
+        "DIVERSITY",
+        // Humanitarian / Special
+        "ASYL", "VAWA", "SIJ", "ADOP", "PARL",
+        // Naturalization / Citizenship
+        "NATZ", "N-400", "N-600",
+    };
+
+    // Visas that apply regardless of immigrant vs. nonimmigrant intent
+    // (defensive, status-based, or dual-use humanitarian categories)
+    private static readonly HashSet<string> NeutralVisaCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "WAV", "DEP", "TPS",
+        "U-1", "U-2", "U-3", "U-4", "U-5",
+        "T-1", "T-2", "T-3", "T-4", "T-5", "T-6",
+    };
+
     private bool IsCompatibleWithIntent(VisaType visa, string intentType)
     {
-        var code = visa.Code.ToUpper(CultureInfo.InvariantCulture);
+        var code = visa.Code;
+
+        // Humanitarian / protective / defensive visas are shown on both paths
+        if (NeutralVisaCodes.Contains(code))
+            return true;
+
         bool isImmigrantIntent = intentType.Equals("immigrant", StringComparison.OrdinalIgnoreCase);
-
-        // List of Immigrant Visa Codes
-        var immigrantCodes = new[] { "IR-1", "CR-1", "EB-1", "EB-2", "EB-3", "EB-4", "EB-5", "N-400", "N-600", "NATZ", "ADOP" };
-        
-        bool isImmigrantVisa = immigrantCodes.Any(c => code.Contains(c));
-
-        // Note: Some codes like F1-IM are for family preference but might be handled specifically.
-        if (code.Contains("F1-IM") || code.Contains("F2A") || code.Contains("F2B") || code.Contains("F3-IM") || code.Contains("F4"))
-        {
-            isImmigrantVisa = true;
-        }
+        bool isImmigrantVisa = ImmigrantVisaCodes.Contains(code);
 
         return isImmigrantIntent == isImmigrantVisa;
     }
