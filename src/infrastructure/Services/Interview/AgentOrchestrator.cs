@@ -96,7 +96,7 @@ public class AgentOrchestrator : IAgentOrchestrator
 
         var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
         var remainingVisas = await _evaluationEngine.GetRemainingVisasAsync(answers);
-        var isComplete = await _questionEngine.IsCompleteAsync(remainingVisas, answers.Count);
+        var isComplete = await _questionEngine.IsCompleteAsync(remainingVisas, answers.Count, answers);
 
         InterviewQuestion? nextQuestion = null;
         List<VisaEvaluationResult>? evaluations = null;
@@ -140,19 +140,29 @@ public class AgentOrchestrator : IAgentOrchestrator
         // Get updated answers
         var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
 
-        // AI-driven orchestration: Try to get next question via AI Agent
-        var remainingVisasForAI = await _evaluationEngine.GetRemainingVisasAsync(answers);
-        var nextQuestion = await _aiService.GetNextAIQuestionAsync(session, answers, remainingVisasForAI);
+        // Rules-engine-first: structural questions (intent, location, education, employment,
+        // educational_goals, category, subcategory, checklists) must all be answered before
+        // the AI is allowed to take over for refinement. This prevents the AI from intercepting
+        // mid-checklist and skipping mandatory eligibility questions.
+        var nextQuestion = await _questionEngine.GetNextQuestionAsync(session, answers);
 
-        // Fallback to rules-based engine if AI is inconclusive
+        // AI refinement: only fires after the rules engine has no more structural questions
         if (nextQuestion == null)
         {
-            nextQuestion = await _questionEngine.GetNextQuestionAsync(session, answers);
+            var remainingVisasForAI = await _evaluationEngine.GetRemainingVisasAsync(answers);
+            nextQuestion = await _aiService.GetNextAIQuestionAsync(session, answers, remainingVisasForAI);
         }
 
         // If there's still no next question, the interview is complete
         // Guardrail: Cannot be complete unless 'location' is verified
-        var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue);
+        var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue, StringComparer.OrdinalIgnoreCase);
+        
+        // Trace Logging for Logic Debugging
+        string intent = answersDict.TryGetValue("intent_type", out var i) ? i : "None";
+        string category = answersDict.TryGetValue("category", out var c) ? c : "None";
+        string pendingFields = nextQuestion?.Key ?? "Complete";
+        Console.WriteLine($"Current Path: {intent} -> {category} -> {pendingFields}");
+
         var isComplete = nextQuestion == null && answersDict.ContainsKey("location");
 
         // Check if we just completed a checklist

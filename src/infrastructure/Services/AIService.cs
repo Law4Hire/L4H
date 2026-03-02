@@ -46,11 +46,87 @@ public class AIService : IAIService
             };
         }
 
-        // After the initial intent_type question, hand off to the rules-based engine.
-        // The visa type cannot be determined from the immigrant/non-immigrant answer alone —
-        // that single answer leaves all visas as Potential candidates, so picking a "top candidate"
-        // here only ever selects an arbitrary visa (the first one by database ID) rather than
-        // one informed by the user's actual situation.
+        var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue, StringComparer.OrdinalIgnoreCase);
+
+        // MANDATORY BRANCHING GUARD: AI must not intercept until ALL rules-engine mandatory fields
+        // are satisfied. Using a raw answer count (< 4) is wrong because:
+        //   - It fires at count=4 which is BEFORE educational_goals (step 3.1b) is asked
+        //   - It lets the AI skip the "category" question entirely, which is what sets purpose
+        // The correct gate is: hand back to rules engine until category (and subcategory if
+        // required) have been answered. This ensures the evaluator always has a purpose signal.
+        bool allMandatoryFieldsPresent =
+            answersDict.ContainsKey("location") &&
+            answersDict.ContainsKey("education_level") &&
+            answersDict.ContainsKey("category");
+
+        // Also enforce the nonimmigrant discerning-question requirement
+        if (answersDict.TryGetValue("intent_type", out var intentCheck) &&
+            intentCheck.Equals("nonimmigrant", StringComparison.OrdinalIgnoreCase))
+        {
+            allMandatoryFieldsPresent =
+                allMandatoryFieldsPresent &&
+                answersDict.ContainsKey("employment_status") &&
+                answersDict.ContainsKey("educational_goals");
+        }
+
+        if (!allMandatoryFieldsPresent)
+        {
+            return null; // Handover to rules engine to complete mandatory flow
+        }
+
+        if (remainingVisas.Count > 1)
+        {
+            // If the user already confirmed a visa, the interview can proceed to completion
+            if (answersDict.Any(kvp =>
+                    kvp.Key.StartsWith("ai_agent_refine_", StringComparison.OrdinalIgnoreCase) &&
+                    kvp.Value.Equals("yes", StringComparison.OrdinalIgnoreCase)))
+            {
+                return null;
+            }
+
+            // Collect visa codes that have already been presented as a refine question
+            var alreadyRefined = answersDict.Keys
+                .Where(k => k.StartsWith("ai_agent_refine_", StringComparison.OrdinalIgnoreCase))
+                .Select(k => k["ai_agent_refine_".Length..])
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // Prefer the user's explicitly chosen subcategory if not yet asked;
+            // remainingVisas is already ranked by eligibility + score from EvaluateAllVisasAsync
+            VisaType? topCandidate = null;
+            if (answersDict.TryGetValue("subcategory", out var subcategoryCode) &&
+                !string.IsNullOrEmpty(subcategoryCode) &&
+                !alreadyRefined.Contains(subcategoryCode))
+            {
+                topCandidate = remainingVisas.FirstOrDefault(v =>
+                    v.Code.Equals(subcategoryCode, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Fallback: first remaining visa not yet asked about
+            topCandidate ??= remainingVisas.FirstOrDefault(v => !alreadyRefined.Contains(v.Code));
+
+            // All remaining visas have been presented — let the interview complete
+            if (topCandidate == null)
+            {
+                return null;
+            }
+
+            return new InterviewQuestion
+            {
+                Key = $"ai_agent_refine_{topCandidate.Code.ToLower()}",
+                Text = $"Based on our analysis, the {topCandidate.Name} ({topCandidate.Code}) looks like a strong match for your objectives. Does this align with what you are looking for?",
+                Category = "ai_agent",
+                InputType = "select",
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new() { Value = "yes", Label = "Yes, this matches my situation" },
+                    new() { Value = "no", Label = "No, I'd like to explore other options" },
+                    new() { Value = "maybe", Label = "I'm not sure, I'd like more details" }
+                }
+            };
+        }
+        
+        // Handover to rules-based engine only when we are down to a single visa or conclusive state
         return null; 
     }
 
@@ -61,7 +137,6 @@ public class AIService : IAIService
         await Task.Delay(1200); // AI 'Thinking' time
         
         // Return results - in a real implementation this would call an LLM
-        // For now, it will return an empty list which triggers the rules-based fallback in AgentOrchestrator
         return new List<VisaEvaluationResult>();
     }
 }

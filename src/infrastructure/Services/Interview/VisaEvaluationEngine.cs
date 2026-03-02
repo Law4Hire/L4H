@@ -33,6 +33,13 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         // 2. Filter by user profile (age, nationality, etc.)
         var profileFiltered = FilterByUserProfile(allVisas, user);
 
+        // Logic Alignment: Filter by 'intent_type' if present
+        var intentType = answers.FirstOrDefault(a => a.QuestionKey.Equals("intent_type", StringComparison.OrdinalIgnoreCase))?.AnswerValue;
+        if (!string.IsNullOrEmpty(intentType))
+        {
+            profileFiltered = profileFiltered.Where(v => IsCompatibleWithIntent(v, intentType)).ToList();
+        }
+
         // 3. Evaluate each visa against answers
         var evaluated = new List<VisaEvaluationResult>();
 
@@ -119,11 +126,11 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
                 StringComparer.OrdinalIgnoreCase);
 
         // Logic Alignment: Map AI-captured intents and Category selections to Legal Vocabulary
-        if (answerDict.TryGetValue("ai_agent_initial_purpose", out var aiPurpose) || 
+        if (answerDict.TryGetValue("ai_agent_initial_purpose", out var aiPurpose) ||
             answerDict.TryGetValue("intent_purpose", out aiPurpose) ||
             answerDict.TryGetValue("category", out aiPurpose))
         {
-            // Vocabulary Harmonization
+            // Vocabulary Harmonization: category values → purpose
             string mappedPurpose = aiPurpose.ToLower() switch
             {
                 "work" or "work_visa" or "green_card_employment" => "professional",
@@ -133,18 +140,64 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
                 "family" or "green_card_family" or "family_petition" => "family",
                 _ => aiPurpose
             };
-            
+
             if (!answerDict.ContainsKey("purpose"))
             {
                 answerDict["purpose"] = mappedPurpose;
             }
         }
 
+        // Vocabulary Mismatch Fix: map employment_status and educational_goals to purpose
+        // when category hasn't been answered yet — prevents incorrect NotEligible verdicts
+        // for H-1B/F-1 at the employment/education branching stage.
+        if (!answerDict.ContainsKey("purpose"))
+        {
+            if (answerDict.TryGetValue("educational_goals", out var eduGoal) &&
+                eduGoal.Equals("yes", StringComparison.OrdinalIgnoreCase))
+            {
+                answerDict["purpose"] = "student";
+            }
+            else if (answerDict.TryGetValue("employment_status", out var empStatus) &&
+                     empStatus is "employed_full" or "employed_part" or "self_employed")
+            {
+                answerDict["purpose"] = "professional";
+            }
+            else if (answerDict.TryGetValue("employment_status", out var empStatus2) &&
+                     empStatus2.Equals("student", StringComparison.OrdinalIgnoreCase))
+            {
+                answerDict["purpose"] = "student";
+            }
+        }
+
+        // Guard: if category/purpose not yet established, no specific evaluator can fire
+        // correctly — keep every compatible visa as Potential rather than eliminating it.
+        // This prevents the "B-1 singularity" where B-1 wins by default because all
+        // specifically-evaluated visas return NotEligible before purpose is known.
+        if (!answerDict.ContainsKey("purpose"))
+        {
+            result.Status = EligibilityStatus.Potential;
+            result.MatchScore = 40;
+            result.Explanation = $"{visa.Name} is being evaluated — more information needed.";
+            result.MissingInformation.Add("Category / purpose not yet specified");
+            result.VisaType = visa;
+            result.RequiredDocuments = GetRequiredDocuments(visa);
+            result.KeyBenefits = GetKeyBenefits(visa);
+            return result;
+        }
+
         // Evaluate based on visa code
         switch (visa.Code.ToUpper(CultureInfo.InvariantCulture))
         {
+            case "B-1": // Business Visitor (must be evaluated explicitly — not via EvaluateGeneric)
+                result = EvaluateB1(visa, answerDict, user);
+                break;
+
             case "B-2": // Tourist/Visitor
                 result = EvaluateB2(visa, answerDict, user);
+                break;
+
+            case "B-1/B-2": // Combined
+                result = EvaluateB1B2(visa, answerDict, user);
                 break;
 
             case "H-1B": // Skilled Worker
@@ -202,6 +255,67 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
     }
 
     #region Visa-Specific Evaluations
+
+    private VisaEvaluationResult EvaluateB1(VisaType visa, Dictionary<string, string> answers, User? user)
+    {
+        var result = new VisaEvaluationResult { MatchScore = 40 };
+
+        bool hasBusinessPurpose = answers.TryGetValue("purpose", out var purpose) &&
+            (purpose.Contains("visitor", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("business", StringComparison.OrdinalIgnoreCase));
+
+        bool hasOtherIntent = answers.TryGetValue("purpose", out var p) &&
+            (p.Contains("professional", StringComparison.OrdinalIgnoreCase) ||
+             p.Contains("student", StringComparison.OrdinalIgnoreCase) ||
+             p.Contains("investor", StringComparison.OrdinalIgnoreCase));
+
+        if (hasBusinessPurpose && !hasOtherIntent)
+        {
+            result.Status = EligibilityStatus.Eligible;
+            result.MatchScore = 80;
+            result.Explanation = "You are visiting for temporary business activities (meetings, conferences, negotiations).";
+        }
+        else if (hasBusinessPurpose)
+        {
+            result.Status = EligibilityStatus.Potential;
+            result.MatchScore = 55;
+            result.Explanation = "B-1 is for business visits, but your other stated goals may require a specialized visa.";
+        }
+        else
+        {
+            result.Status = EligibilityStatus.NotEligible;
+            result.MatchScore = 10;
+            result.Explanation = "B-1 visa is for temporary business visitors only.";
+        }
+
+        return result;
+    }
+
+    private VisaEvaluationResult EvaluateB1B2(VisaType visa, Dictionary<string, string> answers, User? user)
+    {
+        var result = new VisaEvaluationResult { MatchScore = 40 };
+
+        bool hasVisitorPurpose = answers.TryGetValue("purpose", out var purpose) &&
+            (purpose.Contains("visitor", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("visit", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("vacation", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("business", StringComparison.OrdinalIgnoreCase));
+
+        if (hasVisitorPurpose)
+        {
+            result.Status = EligibilityStatus.Potential;
+            result.MatchScore = 70;
+            result.Explanation = "B-1/B-2 combined visa may cover both business and tourism purposes.";
+        }
+        else
+        {
+            result.Status = EligibilityStatus.NotEligible;
+            result.MatchScore = 10;
+            result.Explanation = "B-1/B-2 combined visa is for business and/or tourism visits.";
+        }
+
+        return result;
+    }
 
     private VisaEvaluationResult EvaluateB2(VisaType visa, Dictionary<string, string> answers, User? user)
     {
@@ -525,6 +639,50 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         }
 
         return benefits;
+    }
+
+    // Visas that lead to permanent residency / green card
+    private static readonly HashSet<string> ImmigrantVisaCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        // Immediate Relatives of US Citizens (IR-1 through IR-5)
+        "IR-1", "IR-2", "IR-3", "IR-4", "IR-5",
+        // Conditional Resident
+        "CR-1",
+        // Employment-Based
+        "EB-1", "EB-2", "EB-3", "EB-4", "EB-5",
+        // National Interest Waiver (EB-2 subcategory)
+        "NIW",
+        // Family Preference
+        "F1-IM", "F2A", "F2B", "F3-IM", "F4",
+        // Diversity Lottery
+        "DIVERSITY",
+        // Humanitarian / Special
+        "ASYL", "VAWA", "SIJ", "ADOP", "PARL",
+        // Naturalization / Citizenship
+        "NATZ", "N-400", "N-600",
+    };
+
+    // Visas that apply regardless of immigrant vs. nonimmigrant intent
+    // (defensive, status-based, or dual-use humanitarian categories)
+    private static readonly HashSet<string> NeutralVisaCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "WAV", "DEP", "TPS",
+        "U-1", "U-2", "U-3", "U-4", "U-5",
+        "T-1", "T-2", "T-3", "T-4", "T-5", "T-6",
+    };
+
+    private bool IsCompatibleWithIntent(VisaType visa, string intentType)
+    {
+        var code = visa.Code;
+
+        // Humanitarian / protective / defensive visas are shown on both paths
+        if (NeutralVisaCodes.Contains(code))
+            return true;
+
+        bool isImmigrantIntent = intentType.Equals("immigrant", StringComparison.OrdinalIgnoreCase);
+        bool isImmigrantVisa = ImmigrantVisaCodes.Contains(code);
+
+        return isImmigrantIntent == isImmigrantVisa;
     }
 
     private int CalculateAge(DateTime dateOfBirth)

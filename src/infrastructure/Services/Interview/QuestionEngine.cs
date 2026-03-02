@@ -281,4 +281,8 @@ public class QuestionEngine : IQuestionEngine
 
         return refinementQuestions.FirstOrDefault();
     }
+
+    // Stub — this engine is superseded by DecisionTreeQuestionEngineV2.
+    public Task<bool> IsCompleteAsync(List<VisaType> remainingVisas, int questionsAnswered, List<InterviewQA> answeredQuestions)
+        => Task.FromResult(false);
 }
