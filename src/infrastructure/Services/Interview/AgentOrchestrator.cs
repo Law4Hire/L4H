@@ -140,14 +140,17 @@ public class AgentOrchestrator : IAgentOrchestrator
         // Get updated answers
         var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
 
-        // AI-driven orchestration: Try to get next question via AI Agent
-        var remainingVisasForAI = await _evaluationEngine.GetRemainingVisasAsync(answers);
-        var nextQuestion = await _aiService.GetNextAIQuestionAsync(session, answers, remainingVisasForAI);
+        // Rules-engine-first: structural questions (intent, location, education, employment,
+        // educational_goals, category, subcategory, checklists) must all be answered before
+        // the AI is allowed to take over for refinement. This prevents the AI from intercepting
+        // mid-checklist and skipping mandatory eligibility questions.
+        var nextQuestion = await _questionEngine.GetNextQuestionAsync(session, answers);
 
-        // Fallback to rules-based engine if AI is inconclusive
+        // AI refinement: only fires after the rules engine has no more structural questions
         if (nextQuestion == null)
         {
-            nextQuestion = await _questionEngine.GetNextQuestionAsync(session, answers);
+            var remainingVisasForAI = await _evaluationEngine.GetRemainingVisasAsync(answers);
+            nextQuestion = await _aiService.GetNextAIQuestionAsync(session, answers, remainingVisasForAI);
         }
 
         // If there's still no next question, the interview is complete

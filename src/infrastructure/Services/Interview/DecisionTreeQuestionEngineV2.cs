@@ -98,29 +98,39 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
     {
         var answers = answeredQuestions.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue, StringComparer.OrdinalIgnoreCase);
 
-        // MANDATORY BRANCHING GUARD: Non-Immigrants must be vetted for Work/Study depth
-        if (answers.TryGetValue("intent_type", out var intent) && intent.Equals("nonimmigrant", StringComparison.OrdinalIgnoreCase))
+        // PREREQUISITE GUARD: foundational fields must exist before trusting visa counts.
+        // Without category, the evaluator has no purpose signal — remaining visa counts
+        // are meaningless (all specific visas show NotEligible while generic ones show
+        // Potential, creating a false singularity that triggers premature completion).
+        if (!answers.ContainsKey("location") ||
+            !answers.ContainsKey("education_level") ||
+            !answers.ContainsKey("category"))
+        {
+            return false;
+        }
+
+        // DENISE FORK GUARD: Non-Immigrants must complete BOTH discerning questions
+        // before the interview can conclude (employment AND educational_goals — not just one).
+        if (answers.TryGetValue("intent_type", out var intent) &&
+            intent.Equals("nonimmigrant", StringComparison.OrdinalIgnoreCase))
         {
             bool hasEmploymentInfo = answers.ContainsKey("employment_status");
             bool hasEducationGoals = answers.ContainsKey("educational_goals");
 
-            if (!hasEmploymentInfo && !hasEducationGoals)
+            if (!hasEmploymentInfo || !hasEducationGoals) // both required, not either-or
             {
-                return false; // Forbidden from completion
+                return false;
             }
         }
 
-        // Completion is reached ONLY if mandatory legal fields are present
-        // These are: intent_type, location, and education_level (guaranteed by engine flow)
-        
-        // Logical completion triggers:
-        // 1. Conclusive result (1 visa)
+        // Logical completion triggers (only reachable once prerequisites are satisfied):
+        // 1. Conclusive result — narrowed to a single visa
         if (remainingVisas.Count == 1)
         {
             return true;
         }
 
-        // 2. Disqualified state (0 visas) - but only after minimum depth
+        // 2. Disqualified state — all visas eliminated after sufficient depth
         if (remainingVisas.Count == 0 && questionsAnswered >= 3)
         {
             return true;

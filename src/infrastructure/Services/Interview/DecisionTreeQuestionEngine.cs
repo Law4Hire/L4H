@@ -780,5 +780,10 @@ public class DecisionTreeQuestionEngine : IQuestionEngine
         return null; // All contact info collected
     }
 
+    // Stub — this V1 engine is superseded by DecisionTreeQuestionEngineV2 which is the
+    // registered implementation. Completion logic lives exclusively in V2.
+    public Task<bool> IsCompleteAsync(List<VisaType> remainingVisas, int questionsAnswered, List<InterviewQA> answeredQuestions)
+        => Task.FromResult(false);
+
     #endregion
 }

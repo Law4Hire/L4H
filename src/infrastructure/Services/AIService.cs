@@ -48,20 +48,46 @@ public class AIService : IAIService
 
         var answersDict = answers.ToDictionary(qa => qa.QuestionKey, qa => qa.AnswerValue, StringComparer.OrdinalIgnoreCase);
 
-        // MANDATORY BRANCHING GUARD: Must verify location and intent depth before any AI refinement
-        // This ensures the rules-based engine gathers mandatory fields (location, education, employment) 
-        // before the AI attempts to pick a "top candidate".
-        if (answers.Count > 0 && (!answersDict.ContainsKey("location") || answers.Count < 4))
+        // MANDATORY BRANCHING GUARD: AI must not intercept until ALL rules-engine mandatory fields
+        // are satisfied. Using a raw answer count (< 4) is wrong because:
+        //   - It fires at count=4 which is BEFORE educational_goals (step 3.1b) is asked
+        //   - It lets the AI skip the "category" question entirely, which is what sets purpose
+        // The correct gate is: hand back to rules engine until category (and subcategory if
+        // required) have been answered. This ensures the evaluator always has a purpose signal.
+        bool allMandatoryFieldsPresent =
+            answersDict.ContainsKey("location") &&
+            answersDict.ContainsKey("education_level") &&
+            answersDict.ContainsKey("category");
+
+        // Also enforce the nonimmigrant discerning-question requirement
+        if (answersDict.TryGetValue("intent_type", out var intentCheck) &&
+            intentCheck.Equals("nonimmigrant", StringComparison.OrdinalIgnoreCase))
         {
-            return null; // Handover to rules engine to ask mandatory questions
+            allMandatoryFieldsPresent =
+                allMandatoryFieldsPresent &&
+                answersDict.ContainsKey("employment_status") &&
+                answersDict.ContainsKey("educational_goals");
+        }
+
+        if (!allMandatoryFieldsPresent)
+        {
+            return null; // Handover to rules engine to complete mandatory flow
         }
 
         // Fix: Persist AI-generated questions until 'Single Visa Assigned' state is reached
         // This prevents premature reversion to static questions when the situation is still ambiguous
         if (remainingVisas.Count > 1)
         {
-            // Pick the top candidate based on ranking and ask a targeted refinement question
-            var topCandidate = remainingVisas.OrderBy(v => v.Id).First();
+            // Prefer the user's explicitly chosen subcategory; remainingVisas is already
+            // ranked by eligibility + score from EvaluateAllVisasAsync, so First() is correct
+            // fallback when no subcategory has been selected.
+            VisaType? topCandidate = null;
+            if (answersDict.TryGetValue("subcategory", out var subcategoryCode) && !string.IsNullOrEmpty(subcategoryCode))
+            {
+                topCandidate = remainingVisas.FirstOrDefault(v =>
+                    v.Code.Equals(subcategoryCode, StringComparison.OrdinalIgnoreCase));
+            }
+            topCandidate ??= remainingVisas.First();
             
             return new InterviewQuestion
             {
