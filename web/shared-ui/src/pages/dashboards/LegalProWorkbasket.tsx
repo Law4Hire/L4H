@@ -37,15 +37,12 @@ const LegalProWorkbasket: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('jwt_token')
-        const authHeader: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
-
         // Admins see ALL cases (assigned + unassigned); staff see only their own
-        const casesEndpoint = isAdmin ? '/api/v1/admin/cases' : '/v1/cases'
+        const casesPath = isAdmin ? '/v1/admin/cases' : '/v1/cases'
 
         const [statsData, casesData, appointData] = await Promise.all([
           fetchJson('/v1/dashboard/stats'),
-          fetch(casesEndpoint, { headers: authHeader }).then(r => r.ok ? r.json() : []),
+          fetchJson<CaseItem[]>(casesPath),
           fetchJson('/v1/meetings/my-appointments')
         ])
         setStats(statsData)
