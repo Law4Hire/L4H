@@ -454,14 +454,24 @@ const AttorneyManagementPage: React.FC = () => {
                     )}
                     <button
                       type="button"
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={() => {
+                        if (editingAttorney) {
+                          // Existing attorney: open the photo manager modal
+                          setActivePhotoAttorney(editingAttorney)
+                          setShowPhotoManager(true)
+                        } else {
+                          // New attorney (no ID yet): use the file selector
+                          fileInputRef.current?.click()
+                        }
+                      }}
                       disabled={uploadingPhoto}
                       className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      title={uploadingPhoto ? "Uploading..." : "Upload Photo"}
+                      title="Manage Photos"
                     >
                       {uploadingPhoto ? <RefreshCw size={16} className="animate-spin" /> : <Camera size={16} />}
                     </button>
                   </div>
+                  {/* File input: only used when creating a new attorney */}
                   <input
                     ref={fileInputRef}
                     type="file"

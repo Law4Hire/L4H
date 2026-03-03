@@ -662,6 +662,54 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         "NATZ", "N-400", "N-600",
     };
 
+    // All standard nonimmigrant (temporary) visa categories from visa_types.json
+    private static readonly HashSet<string> NonImmigrantVisaCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        // Diplomatic / Government
+        "A-1", "A-2", "A-3",
+        // Visitor / Business
+        "B-1", "B-2", "B-1/B-2",
+        // Transit / Crewmember
+        "C-1", "C-1/D", "C-2", "C-3", "D",
+        // CNMI Workers
+        "CW-1", "CW-2",
+        // Treaty Traders / Investors / Specialty
+        "E-1", "E-2", "E-2C", "E-3", "E-3D", "E-3R",
+        // Students
+        "F-1", "F-2", "F-3",
+        // International Organizations
+        "G-1", "G-2", "G-3", "G-4", "G-5",
+        // Specialty Occupation / Temporary Workers
+        "H-1B", "H-1B1", "H-1C", "H-2A", "H-2B", "H-3", "H-4",
+        // Foreign Media
+        "I",
+        // Exchange Visitors
+        "J-1", "J-2",
+        // Fiancé(e) / Spouse (nonimmigrant status; leads to AOS but issued as NI)
+        "K-1", "K-2", "K-3", "K-4",
+        // Intracompany Transferees
+        "L-1A", "L-1B", "L-2",
+        // Vocational Students
+        "M-1", "M-2", "M-3",
+        // Special immigrant-related nonimmigrant (parent/child of SK)
+        "N-8", "N-9",
+        // NATO
+        "NATO-1", "NATO-2", "NATO-3", "NATO-4", "NATO-5", "NATO-6", "NATO-7",
+        // Extraordinary Ability / Athletes / Artists
+        "O-1", "O-2", "O-3",
+        "P-1", "P-2", "P-3", "P-4",
+        // Cultural Exchange
+        "Q-1",
+        // Religious Workers
+        "R-1", "R-2",
+        // Informants
+        "S-5", "S-6", "S-7",
+        // NAFTA / Trade
+        "TN", "TD",
+        // LIFE Act (LPR spouse/child awaiting visa number)
+        "V-1", "V-2", "V-3",
+    };
+
     // Visas that apply regardless of immigrant vs. nonimmigrant intent
     // (defensive, status-based, or dual-use humanitarian categories)
     private static readonly HashSet<string> NeutralVisaCodes = new(StringComparer.OrdinalIgnoreCase)
@@ -680,9 +728,12 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             return true;
 
         bool isImmigrantIntent = intentType.Equals("immigrant", StringComparison.OrdinalIgnoreCase);
-        bool isImmigrantVisa = ImmigrantVisaCodes.Contains(code);
 
-        return isImmigrantIntent == isImmigrantVisa;
+        if (isImmigrantIntent)
+            return ImmigrantVisaCodes.Contains(code);
+
+        // Nonimmigrant path: use explicit list; unknown codes also shown (safe fallback)
+        return NonImmigrantVisaCodes.Contains(code) || !ImmigrantVisaCodes.Contains(code);
     }
 
     private int CalculateAge(DateTime dateOfBirth)
