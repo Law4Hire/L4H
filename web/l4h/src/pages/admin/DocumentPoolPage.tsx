@@ -56,7 +56,7 @@ const DocumentPoolPage: React.FC = () => {
   const handleVerify = async (id: string, approve: boolean) => {
     try {
       const res = await fetch(`/api/v1/documentpool/${id}/verify`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ approve, internalNotes: 'Verified via admin panel' }),
       });

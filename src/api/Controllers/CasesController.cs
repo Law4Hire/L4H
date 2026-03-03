@@ -496,13 +496,24 @@ public class CasesController : ControllerBase
     }
 
     /// <summary>
-    /// Request reassignment of a case (legal professionals only — creates a notification for admins)
+    /// Request reassignment of a case. Only the legal professional currently assigned to the
+    /// case may submit this request; admins are not permitted (they can reassign directly).
     /// </summary>
     [HttpPost("{id}/request-reassignment")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RequestReassignment(Guid id, [FromBody] ReassignmentRequestBody request)
+    public async Task<IActionResult> RequestReassignment(Guid id, [FromBody] ReassignmentRequestBody? request)
     {
+        // 1. Null-body guard
+        if (request == null)
+            return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Request body is required." });
+
+        // 2. Only legal professionals (non-admin staff) may use this endpoint
+        if (!IsLegalProfessional() || IsAdmin())
+            return Forbid();
+
         var caseId = new CaseId(id);
         var caseEntity = await _context.Cases
             .Include(c => c.User)
@@ -511,6 +522,12 @@ public class CasesController : ControllerBase
 
         if (caseEntity == null)
             return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Case not found." });
+
+        // 3. Ownership check — caller must be the attorney assigned to this case
+        var callerId = GetCurrentUserId();
+        var callerUser = await _context.Users.FindAsync(callerId).ConfigureAwait(false);
+        if (callerUser?.AttorneyProfileId == null || caseEntity.AssignedStaffId != callerUser.AttorneyProfileId)
+            return Forbid();
 
         var requesterName = User.FindFirst(ClaimTypes.Name)?.Value
             ?? User.FindFirst(ClaimTypes.Email)?.Value
