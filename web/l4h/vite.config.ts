@@ -55,6 +55,10 @@ export default defineConfig(({ mode }) => {
       '/api': {
         target: 'http://localhost:8766',
         changeOrigin: true
+      },
+      '/uploads': {
+        target: 'http://localhost:8766',
+        changeOrigin: true
       }
     }
   },
@@ -62,6 +66,10 @@ export default defineConfig(({ mode }) => {
     port: 5173,
     proxy: {
       '/api': {
+        target: 'http://localhost:8766',
+        changeOrigin: true
+      },
+      '/uploads': {
         target: 'http://localhost:8766',
         changeOrigin: true
       }

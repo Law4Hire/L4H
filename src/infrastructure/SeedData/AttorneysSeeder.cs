@@ -207,6 +207,32 @@ public class AttorneysSeeder : ISeedTask
         }
 
         await _context.SaveChangesAsync();
+
+        // Seed AttorneyImage records for any attorney that has a PhotoUrl but no images yet
+        var attorneysWithPhoto = await _context.Attorneys
+            .Where(a => a.PhotoUrl != null)
+            .ToListAsync();
+
+        foreach (var attorney in attorneysWithPhoto)
+        {
+            var hasImages = await _context.AttorneyImages.AnyAsync(i => i.AttorneyId == attorney.Id);
+            if (!hasImages && attorney.PhotoUrl != null)
+            {
+                var photoUrl = attorney.PhotoUrl.ToString();
+                var fileName = Path.GetFileName(photoUrl);
+                _context.AttorneyImages.Add(new AttorneyImage
+                {
+                    AttorneyId = attorney.Id,
+                    FileUrl = photoUrl,
+                    FileName = fileName,
+                    IsPrimary = true,
+                    CreatedAt = DateTime.UtcNow
+                });
+                _logger.LogInformation("Seeded AttorneyImage for {Name}", attorney.Name);
+            }
+        }
+
+        await _context.SaveChangesAsync();
         _logger.LogInformation("Attorneys seeding completed.");
     }
 }

@@ -21,7 +21,7 @@ public interface IFileUploadService
 
     Task<string> UploadUSCISFormAsync(IFormFile file, string formNumber);
 
-    Task<string> UploadAttorneyPhotoAsync(IFormFile file, string attorneyName);
+    Task<string> UploadAttorneyPhotoAsync(IFormFile file);
 
     bool IsValidImageFile(IFormFile file);
 
