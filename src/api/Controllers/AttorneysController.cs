@@ -297,8 +297,8 @@ public class AttorneysController : ControllerBase
 
         try
         {
-            var photoUrl = await _fileUploadService.UploadAttorneyPhotoAsync(photo, attorney.Name);
-            
+            var photoUrl = await _fileUploadService.UploadAttorneyPhotoAsync(photo);
+
             // Add to AttorneyImages table
             var attorneyImage = new AttorneyImage
             {
@@ -315,7 +315,8 @@ public class AttorneysController : ControllerBase
             if (!hasImages)
             {
                 attorneyImage.IsPrimary = true;
-                attorney.PhotoUrl = new Uri(photoUrl, UriKind.RelativeOrAbsolute);
+                if (System.Uri.TryCreate(photoUrl, System.UriKind.RelativeOrAbsolute, out var parsedUri))
+                    attorney.PhotoUrl = parsedUri;
             }
 
             _context.AttorneyImages.Add(attorneyImage);

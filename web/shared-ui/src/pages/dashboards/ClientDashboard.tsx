@@ -133,7 +133,7 @@ const ClientDashboard: React.FC = () => {
             onClick={handleStartInterview}
           >
             <div className="text-lg mb-1">🤖</div>
-            <div className="text-sm">{'Start AI Interview'}</div>
+            <div className="text-sm">{'Start Interview'}</div>
           </Button>
           
           <Button
@@ -152,8 +152,18 @@ const ClientDashboard: React.FC = () => {
           
           <Button variant="outline" className="h-20 flex flex-col items-center justify-center" onClick={() => navigate('/messages')}>
             <div className="text-lg mb-1">💬</div>
-            <div className="text-sm">{'Messages'}</div>
+            <div className="text-sm">{'General Messages'}</div>
           </Button>
+          {casesList.length > 0 && (
+            <Button
+              variant="outline"
+              className="h-20 flex flex-col items-center justify-center"
+              onClick={() => navigate(`/messages?caseId=${casesList[0].id}`)}
+            >
+              <div className="text-lg mb-1">📨</div>
+              <div className="text-sm">{'Message My Attorney'}</div>
+            </Button>
+          )}
         </div>
       </Card>
 

@@ -24,7 +24,6 @@ const AdminPage = lazy(() => import('./pages/AdminPage'))
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
 const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
 const AdminPricingPage = lazy(() => import('./pages/AdminPricingPage'))
-const AdminInterviewQuestionsPage = lazy(() => import('./pages/AdminInterviewQuestionsPage'))
 const AdminPackagesPage = lazy(() => import('./pages/AdminPackagesPage'))
 const AdminCaseManagementPage = lazy(() => import('./pages/AdminCaseManagementPage'))
 const AdminUSCISFormsPage = lazy(() => import('./pages/AdminUSCISFormsPage'))
@@ -372,21 +371,6 @@ function App() {
                 isAuthenticated={isAuthenticated}
               >
                 <AdminPackagesPage />
-              </Layout>
-            </RouteGuard>
-          }
-        />
-        <Route
-          path="/admin/interview-questions"
-          element={
-            <RouteGuard>
-              <Layout
-                title={'Interview Questions Management'}
-                showUserMenu={true}
-                user={user}
-                isAuthenticated={isAuthenticated}
-              >
-                <AdminInterviewQuestionsPage />
               </Layout>
             </RouteGuard>
           }

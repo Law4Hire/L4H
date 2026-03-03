@@ -710,6 +710,39 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         "V-1", "V-2", "V-3",
     };
 
+    // Citizenship, Adoption, and Naturalization
+    private static readonly HashSet<string> CitizenshipVisaCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "N-400", "N-600", "NATZ", "ADOP",
+        // IR-3/IR-4 cover children being adopted by U.S. citizens
+        "IR-3", "IR-4",
+        // Immediate relatives often on the citizenship path
+        "IR-1", "IR-2", "IR-5", "CR-1",
+    };
+
+    // Refugee, Asylum, and Removal Defense
+    private static readonly HashSet<string> RefugeeVisaCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "ASYL", "PARL", "VAWA", "SIJ",
+        // Neutral/humanitarian visas are also shown here (TPS, U, T, WAV, DEP)
+        "TPS", "WAV", "DEP",
+        "U-1", "U-2", "U-3", "U-4", "U-5",
+        "T-1", "T-2", "T-3", "T-4", "T-5", "T-6",
+    };
+
+    // Investor and Business Immigration
+    private static readonly HashSet<string> InvestorVisaCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        // Non-immigrant treaty / investor
+        "E-1", "E-2", "E-2C", "E-3", "E-3D", "E-3R",
+        // Immigrant investor
+        "EB-5", "EB-1", "EB-2", "NIW",
+        // Intracompany / specialty often used by business owners
+        "L-1A", "L-1B", "L-2",
+        "O-1", "O-2", "O-3",
+        "H-1B", "H-1B1",
+    };
+
     // Visas that apply regardless of immigrant vs. nonimmigrant intent
     // (defensive, status-based, or dual-use humanitarian categories)
     private static readonly HashSet<string> NeutralVisaCodes = new(StringComparer.OrdinalIgnoreCase)
@@ -723,17 +756,15 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
     {
         var code = visa.Code;
 
-        // Humanitarian / protective / defensive visas are shown on both paths
-        if (NeutralVisaCodes.Contains(code))
-            return true;
-
-        bool isImmigrantIntent = intentType.Equals("immigrant", StringComparison.OrdinalIgnoreCase);
-
-        if (isImmigrantIntent)
-            return ImmigrantVisaCodes.Contains(code);
-
-        // Nonimmigrant path: use explicit list; unknown codes also shown (safe fallback)
-        return NonImmigrantVisaCodes.Contains(code) || !ImmigrantVisaCodes.Contains(code);
+        return intentType.ToLowerInvariant() switch
+        {
+            "immigrant"    => ImmigrantVisaCodes.Contains(code) || NeutralVisaCodes.Contains(code),
+            "nonimmigrant" => NonImmigrantVisaCodes.Contains(code) || (!ImmigrantVisaCodes.Contains(code) && !NeutralVisaCodes.Contains(code)),
+            "citizenship"  => CitizenshipVisaCodes.Contains(code),
+            "refugee"      => RefugeeVisaCodes.Contains(code),
+            "investor"     => InvestorVisaCodes.Contains(code),
+            _              => true  // Unknown intent: show all (safe fallback)
+        };
     }
 
     private int CalculateAge(DateTime dateOfBirth)

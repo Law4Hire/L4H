@@ -50,7 +50,7 @@ public class AttorneyPhotoService : IAttorneyPhotoService
             throw new ArgumentException("Invalid image file format.");
         }
 
-        var fileUrl = await _fileUploadService.UploadAttorneyPhotoAsync(file, attorney.Name);
+        var fileUrl = await _fileUploadService.UploadAttorneyPhotoAsync(file);
 
         var image = new AttorneyImage
         {

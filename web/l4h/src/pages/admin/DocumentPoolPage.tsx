@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, useToast, Spinner } from '@l4h/shared-ui';
-import { apiClient } from '../../apiClient';
+import { Card, Button, useToast } from '@l4h/shared-ui';
 
 interface DocumentPoolDoc {
   id: string;
@@ -16,49 +15,56 @@ interface DocumentPoolDoc {
   internalNotes?: string;
 }
 
+const getStatusLabel = (status: number) => {
+  switch (status) {
+    case 0: return 'Pending';
+    case 1: return 'Verified';
+    case 2: return 'Rejected';
+    case 3: return 'Unassigned';
+    default: return 'Unknown';
+  }
+};
+
+const authHeaders = (): Record<string, string> => {
+  const token = localStorage.getItem('jwt_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const DocumentPoolPage: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentPoolDoc[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusStatusFilter] = useState<number>(0); // 0 = Pending
-  const { addToast } = useToast();
+  const [statusFilter, setStatusFilter] = useState<number>(0);
+  const { success, error } = useToast();
 
   const fetchDocuments = async () => {
     setLoading(true);
     try {
-      const data = await apiClient.getDocumentPoolByStatus(statusFilter);
-      setDocuments(data);
+      const res = await fetch(`/api/v1/documentpool/status/${statusFilter}`, {
+        headers: authHeaders(),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setDocuments(await res.json());
     } catch (err) {
-      addToast('Error', 'Failed to fetch documents', 'error');
+      error('Failed to load documents');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchDocuments();
-  }, [statusFilter]);
+  useEffect(() => { fetchDocuments(); }, [statusFilter]);
 
   const handleVerify = async (id: string, approve: boolean) => {
     try {
-      await apiClient.verifyDocument(id, {
-        approve,
-        staffId: 1, // Placeholder for logged in staff ID
-        internalNotes: 'Verified via admin panel'
+      const res = await fetch(`/api/v1/documentpool/${id}/verify`, {
+        method: 'PATCH',
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approve, internalNotes: 'Verified via admin panel' }),
       });
-      addToast('Success', `Document ${approve ? 'verified' : 'rejected'}`, 'success');
+      if (!res.ok) throw new Error(`${res.status}`);
+      success(`Document ${approve ? 'verified' : 'rejected'}`);
       fetchDocuments();
     } catch (err) {
-      addToast('Error', 'Failed to verify document', 'error');
-    }
-  };
-
-  const getStatusLabel = (status: number) => {
-    switch (status) {
-      case 0: return 'Pending';
-      case 1: return 'Verified';
-      case 2: return 'Rejected';
-      case 3: return 'Unassigned';
-      default: return 'Unknown';
+      error(`Failed to ${approve ? 'verify' : 'reject'} document`);
     }
   };
 
@@ -68,11 +74,11 @@ const DocumentPoolPage: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Document Pool Management</h1>
         <div className="flex space-x-2">
           {[0, 1, 2, 3].map(s => (
-            <Button 
-              key={s} 
+            <Button
+              key={s}
               variant={statusFilter === s ? 'primary' : 'outline'}
               size="sm"
-              onClick={() => setStatusStatusFilter(s)}
+              onClick={() => setStatusFilter(s)}
             >
               {getStatusLabel(s)}
             </Button>
@@ -81,7 +87,9 @@ const DocumentPoolPage: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><Spinner size="lg" /></div>
+        <div className="flex justify-center py-12">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {documents.length === 0 ? (
@@ -96,12 +104,12 @@ const DocumentPoolPage: React.FC = () => {
                   <p className="text-sm text-gray-500">
                     Uploaded by {doc.uploadedBy} on {new Date(doc.uploadedAt).toLocaleDateString()}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">ID: {doc.id}</p>
+                  <p className="text-xs text-gray-400 mt-1">Status: {getStatusLabel(doc.status)}</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <a 
-                    href={doc.fileUrl} 
-                    target="_blank" 
+                  <a
+                    href={doc.fileUrl}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline text-sm px-2"
                   >
@@ -109,8 +117,8 @@ const DocumentPoolPage: React.FC = () => {
                   </a>
                   {doc.status === 0 && (
                     <>
-                      <Button variant="success" size="sm" onClick={() => handleVerify(doc.id, true)}>Verify</Button>
-                      <Button variant="danger" size="sm" onClick={() => handleVerify(doc.id, false)}>Reject</Button>
+                      <Button variant="primary" size="sm" onClick={() => handleVerify(doc.id, true)}>Verify</Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleVerify(doc.id, false)}>Reject</Button>
                     </>
                   )}
                 </div>

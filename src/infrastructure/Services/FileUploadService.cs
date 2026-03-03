@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using L4H.Infrastructure.Data;
 using L4H.Infrastructure.Entities;
 using L4H.Shared.Models;
+using System.Text.RegularExpressions;
 
 namespace L4H.Infrastructure.Services;
 
@@ -141,10 +142,13 @@ public class FileUploadService : IFileUploadService
         return "/uploads/" + relativePath.Replace("\\", "/");
     }
 
-    public async Task<string> UploadAttorneyPhotoAsync(IFormFile file, string attorneyName)
+    public async Task<string> UploadAttorneyPhotoAsync(IFormFile file)
     {
-        var safeFileName = $"attorney_{attorneyName.Replace(" ", "_").ToLower()}{Path.GetExtension(file.FileName)}";
-        var relativePath = Path.Combine("images", "attorneys", safeFileName);
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var baseName = Path.GetFileNameWithoutExtension(file.FileName);
+        var safeBase = Regex.Replace(baseName, @"[^a-zA-Z0-9\-_]", "_");
+        var uniqueName = $"{DateTimeOffset.UtcNow:yyyyMMddHHmmssff}_{safeBase}{ext}";
+        var relativePath = Path.Combine("images", "attorneys", uniqueName);
         var fullPath = Path.Combine(_uploadPath, relativePath);
 
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);

@@ -496,6 +496,70 @@ public class CasesController : ControllerBase
     }
 
     /// <summary>
+    /// Request reassignment of a case. Only the legal professional currently assigned to the
+    /// case may submit this request; admins are not permitted (they can reassign directly).
+    /// </summary>
+    [HttpPost("{id}/request-reassignment")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RequestReassignment(Guid id, [FromBody] ReassignmentRequestBody? request)
+    {
+        // 1. Null-body guard
+        if (request == null)
+            return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Request body is required." });
+
+        // 2. Only legal professionals (non-admin staff) may use this endpoint
+        if (!IsLegalProfessional() || IsAdmin())
+            return Forbid();
+
+        var caseId = new CaseId(id);
+        var caseEntity = await _context.Cases
+            .Include(c => c.User)
+            .FirstOrDefaultAsync(c => c.Id == caseId)
+            .ConfigureAwait(false);
+
+        if (caseEntity == null)
+            return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Case not found." });
+
+        // 3. Ownership check — caller must be the attorney assigned to this case
+        var callerId = GetCurrentUserId();
+        var callerUser = await _context.Users.FindAsync(callerId).ConfigureAwait(false);
+        if (callerUser?.AttorneyProfileId == null || caseEntity.AssignedStaffId != callerUser.AttorneyProfileId)
+            return Forbid();
+
+        var requesterName = User.FindFirst(ClaimTypes.Name)?.Value
+            ?? User.FindFirst(ClaimTypes.Email)?.Value
+            ?? "Legal Professional";
+
+        // Create an in-app notification for all admin users
+        var adminUsers = await _context.Users
+            .Where(u => u.IsAdmin)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        foreach (var admin in adminUsers)
+        {
+            _context.Notifications.Add(new Notification
+            {
+                UserId = admin.Id,
+                Title = "Reassignment Request",
+                Message = $"Reassignment requested for case {id.ToString()[..8]}... by {requesterName}. Reason: {request.Reason ?? "Not specified"}",
+                Priority = NotificationPriority.Normal,
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow,
+            });
+        }
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await LogAuditAsync("case", "reassignment_request", "Case", id.ToString(),
+            new { requesterName, reason = request.Reason }).ConfigureAwait(false);
+
+        return Ok(new { message = "Reassignment request sent to administrators" });
+    }
+
+    /// <summary>
     /// Update visa types for a case (legal professionals can update for assigned cases)
     /// </summary>
     /// <param name="id">Case ID</param>
@@ -714,6 +778,11 @@ public class CaseVisaTypeInfo
 public class AssignCaseRequest
 {
     public int? StaffId { get; set; }
+}
+
+public class ReassignmentRequestBody
+{
+    public string? Reason { get; set; }
 }
 
 public class UpdateCaseVisaTypesRequest
