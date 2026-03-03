@@ -41,7 +41,10 @@ public class AIService : IAIService
                 Options = new List<QuestionOption>
                 {
                     new() { Value = "immigrant", Label = "Immigrant - Permanent Residency / Green Card" },
-                    new() { Value = "nonimmigrant", Label = "Non-Immigrant - Temporary Stay (Work, Study, Visit)" }
+                    new() { Value = "nonimmigrant", Label = "Non-Immigrant - Temporary Stay (Work, Study, Visit)" },
+                    new() { Value = "citizenship", Label = "Citizenship, Adoption & Naturalization - Become a U.S. citizen or complete an adoption" },
+                    new() { Value = "refugee", Label = "Refugee & Removal Defense - Asylum, refugee status, or fighting deportation" },
+                    new() { Value = "investor", Label = "Investor - Investment-based visa or business immigration" }
                 }
             };
         }

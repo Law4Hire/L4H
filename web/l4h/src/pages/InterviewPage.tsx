@@ -67,7 +67,7 @@ const InterviewPage: React.FC = () => {
       return (
         <div className="text-center dark:text-gray-300">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-xl animate-pulse">AI Agent is thinking...</p>
+          <p className="text-xl animate-pulse">Law4Hire Agent is thinking...</p>
         </div>
       );
     }

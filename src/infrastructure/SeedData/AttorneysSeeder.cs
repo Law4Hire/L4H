@@ -188,21 +188,9 @@ public class AttorneysSeeder : ISeedTask
             }
             else
             {
-                // UPSERT: Update existing fields to match our accurate source of truth
-                existing.Name = attorney.Name;
-                existing.Title = attorney.Title;
-                existing.Bio = attorney.Bio;
-                existing.Phone = attorney.Phone;
-                existing.DirectPhone = attorney.DirectPhone;
-                existing.DirectEmail = attorney.DirectEmail;
-                existing.OfficeLocation = attorney.OfficeLocation;
-                existing.Credentials = attorney.Credentials;
-                existing.PracticeAreas = attorney.PracticeAreas;
-                existing.Languages = attorney.Languages;
-                // Enforce local photo paths
-                existing.PhotoUrl = attorney.PhotoUrl; 
-                existing.UpdatedAt = DateTime.UtcNow;
-                _logger.LogInformation("Updated attorney: {Name}", attorney.Name);
+                // Record already exists — do NOT overwrite admin-managed fields.
+                // Only log that we skipped it.
+                _logger.LogInformation("Attorney already exists, skipping: {Name}", attorney.Name);
             }
         }
 

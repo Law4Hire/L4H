@@ -154,7 +154,10 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             Options = new List<QuestionOption>
             {
                 new() { Value = "immigrant", Label = "Immigrant - Permanent Residency / Green Card" },
-                new() { Value = "nonimmigrant", Label = "Non-Immigrant - Temporary Stay (Work, Study, Visit)" }
+                new() { Value = "nonimmigrant", Label = "Non-Immigrant - Temporary Stay (Work, Study, Visit)" },
+                new() { Value = "citizenship", Label = "Citizenship, Adoption & Naturalization - Become a U.S. citizen or complete an adoption" },
+                new() { Value = "refugee", Label = "Refugee & Removal Defense - Asylum, refugee status, or fighting deportation" },
+                new() { Value = "investor", Label = "Investor - Investment-based visa or business immigration" }
             }
         };
     }
@@ -256,10 +259,13 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
 
     private InterviewQuestion GetCategoryQuestion(string intentType)
     {
-        return intentType.ToLower() switch
+        return intentType.ToLowerInvariant() switch
         {
-            "immigrant" => GetImmigrantCategoryQuestion(),
+            "immigrant"    => GetImmigrantCategoryQuestion(),
             "nonimmigrant" => GetNonimmigrantCategoryQuestion(),
+            "citizenship"  => GetCitizenshipCategoryQuestion(),
+            "refugee"      => GetRefugeeCategoryQuestion(),
+            "investor"     => GetInvestorCategoryQuestion(),
             _ => throw new ArgumentException($"Unknown intent type: {intentType}")
         };
     }
@@ -305,6 +311,65 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         };
     }
 
+    private InterviewQuestion GetCitizenshipCategoryQuestion()
+    {
+        return new InterviewQuestion
+        {
+            Key = "category",
+            Text = "What type of citizenship or adoption assistance do you need?",
+            Category = "citizenship",
+            InputType = "select",
+            Order = 4,
+            IsRequired = true,
+            Options = new List<QuestionOption>
+            {
+                new() { Value = "naturalization", Label = "Naturalization (N-400) - Apply to become a U.S. citizen" },
+                new() { Value = "citizenship_certificate", Label = "Certificate of Citizenship (N-600) - Claim citizenship through a U.S. citizen parent" },
+                new() { Value = "adoption", Label = "Adoption - Bring an adopted child to the United States" }
+            }
+        };
+    }
+
+    private InterviewQuestion GetRefugeeCategoryQuestion()
+    {
+        return new InterviewQuestion
+        {
+            Key = "category",
+            Text = "What type of refugee or removal assistance do you need?",
+            Category = "refugee",
+            InputType = "select",
+            Order = 4,
+            IsRequired = true,
+            Options = new List<QuestionOption>
+            {
+                new() { Value = "asylum_app", Label = "Asylum - Protection from persecution in your home country" },
+                new() { Value = "refugee", Label = "Refugee Status - Resettlement as a recognized refugee" },
+                new() { Value = "tps", Label = "Temporary Protected Status (TPS) - Protection for nationals of designated countries" },
+                new() { Value = "deportation_defense", Label = "Removal / Deportation Defense - Fighting removal proceedings" },
+                new() { Value = "vawa", Label = "VAWA - Protection for victims of domestic violence or abuse" }
+            }
+        };
+    }
+
+    private InterviewQuestion GetInvestorCategoryQuestion()
+    {
+        return new InterviewQuestion
+        {
+            Key = "category",
+            Text = "What type of investor or business immigration do you need?",
+            Category = "investor",
+            InputType = "select",
+            Order = 4,
+            IsRequired = true,
+            Options = new List<QuestionOption>
+            {
+                new() { Value = "investor_nonimmigrant", Label = "Treaty Investor / Trader Visa (E-1/E-2) - Temporary visa for investors and treaty traders" },
+                new() { Value = "investor_immigrant", Label = "EB-5 Immigrant Investor - Permanent residence through qualifying investment" },
+                new() { Value = "work_visa", Label = "Business Work Visa (L-1, H-1B, O-1) - Intracompany transfer or specialty occupation for business owners" }
+            }
+        };
+    }
+
     #endregion
 
     #region Step 5: Subcategory Question
@@ -317,7 +382,13 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             "green_card_family", "renew_replace", "citizenship", "removal",
             "adjust_status", "fiance_visa", "consular_processing",
             "asylum_app", "refugee", "tps",
-            "daca", "adjustment_options", "deportation_defense", "waiver"
+            "daca", "adjustment_options", "deportation_defense", "waiver",
+            // Citizenship / Adoption / Naturalization
+            "naturalization", "citizenship_certificate", "adoption",
+            // Refugee & Removal
+            "vawa",
+            // Investor
+            "investor_nonimmigrant", "investor_immigrant"
         };
 
         return !skipSubcategory.Contains(category.ToLower());

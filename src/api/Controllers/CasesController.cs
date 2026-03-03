@@ -496,6 +496,53 @@ public class CasesController : ControllerBase
     }
 
     /// <summary>
+    /// Request reassignment of a case (legal professionals only — creates a notification for admins)
+    /// </summary>
+    [HttpPost("{id}/request-reassignment")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RequestReassignment(Guid id, [FromBody] ReassignmentRequestBody request)
+    {
+        var caseId = new CaseId(id);
+        var caseEntity = await _context.Cases
+            .Include(c => c.User)
+            .FirstOrDefaultAsync(c => c.Id == caseId)
+            .ConfigureAwait(false);
+
+        if (caseEntity == null)
+            return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Case not found." });
+
+        var requesterName = User.FindFirst(ClaimTypes.Name)?.Value
+            ?? User.FindFirst(ClaimTypes.Email)?.Value
+            ?? "Legal Professional";
+
+        // Create an in-app notification for all admin users
+        var adminUsers = await _context.Users
+            .Where(u => u.IsAdmin)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        foreach (var admin in adminUsers)
+        {
+            _context.Notifications.Add(new Notification
+            {
+                UserId = admin.Id,
+                Title = "Reassignment Request",
+                Message = $"Reassignment requested for case {id.ToString()[..8]}... by {requesterName}. Reason: {request.Reason ?? "Not specified"}",
+                Priority = NotificationPriority.Normal,
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow,
+            });
+        }
+
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+        await LogAuditAsync("case", "reassignment_request", "Case", id.ToString(),
+            new { requesterName, reason = request.Reason }).ConfigureAwait(false);
+
+        return Ok(new { message = "Reassignment request sent to administrators" });
+    }
+
+    /// <summary>
     /// Update visa types for a case (legal professionals can update for assigned cases)
     /// </summary>
     /// <param name="id">Case ID</param>
@@ -714,6 +761,11 @@ public class CaseVisaTypeInfo
 public class AssignCaseRequest
 {
     public int? StaffId { get; set; }
+}
+
+public class ReassignmentRequestBody
+{
+    public string? Reason { get; set; }
 }
 
 public class UpdateCaseVisaTypesRequest
