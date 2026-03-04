@@ -429,7 +429,12 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(basePath),
     RequestPath = "/uploads"
 });
-Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads");
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(Path.Combine(basePath, "images")),
+    RequestPath = "/images"
+});
+Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads and {Path.Combine(basePath, "images")} -> /images");
 
 app.UseAuthentication();
 Console.WriteLine("[STARTUP] Authentication configured");

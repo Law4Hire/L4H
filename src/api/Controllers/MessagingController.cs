@@ -216,8 +216,13 @@ public class MessagingController : ControllerBase
             }
             else if (IsStaff())
             {
-                // Staff sees threads directed specifically to them
-                threadsQuery = threadsQuery.Where(t => t.RecipientUserId == userId);
+                // Staff sees threads directed specifically to them, or threads for cases they are assigned to
+                var attorneyId = (await _context.Users.FindAsync(userId))?.AttorneyProfileId;
+                threadsQuery = threadsQuery.Where(t => 
+                    t.RecipientUserId == userId || 
+                    (attorneyId.HasValue && t.Case.AssignedStaffId == attorneyId.Value) ||
+                    t.Messages.Any(m => m.SenderUserId == userId)
+                );
             }
             else
             {
@@ -1131,13 +1136,22 @@ public class MessagingController : ControllerBase
 
         if (isAdmin)
         {
-            // Admins see everything (General threads and case-specific threads)
-            // No additional filter
+            // Admins see "General" threads (no specific recipient) or threads directed specifically to them.
+            // Requirement 1: Admins must see all messages not assigned to a specific professional + the General Mailbox.
+            query = query.Where(t => t.RecipientUserId == null || t.RecipientUserId == userId);
         }
         else if (isStaff)
         {
-            // Staff see General threads or threads directed to them
-            query = query.Where(t => t.RecipientUserId == null || t.RecipientUserId == userId);
+            // Requirement 3: Legal Professionals see threads directed to them, 
+            // and we also allow them to see threads for cases they are assigned to.
+            // If they sent a message to "General", they should also see that thread.
+            var attorneyId = (await _context.Users.FindAsync(userId))?.AttorneyProfileId;
+
+            query = query.Where(t => 
+                t.RecipientUserId == userId || 
+                (attorneyId.HasValue && t.Case.AssignedStaffId == attorneyId.Value) ||
+                t.Messages.Any(m => m.SenderUserId == userId)
+            );
         }
         else
         {
@@ -1247,14 +1261,24 @@ public class MessagingController : ControllerBase
         var result = users
             .Select(u => new 
             { 
-                id = u.Id.Value, 
+                id = u.Id.Value.ToString(), 
                 label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
                 description = u.IsAdmin ? "Administrator" : (u.IsStaff ? "Legal Professional" : "Client")
             })
-            .OrderBy(u => u.label)
             .ToList();
 
-        return Ok(result);
+        // Add "General / All Admins" option for non-admin staff and clients
+        if (!isAdmin)
+        {
+            result.Insert(0, new 
+            { 
+                id = "null", 
+                label = "General / All Admins",
+                description = "General Mailbox"
+            });
+        }
+
+        return Ok(result.OrderBy(u => u.label == "General / All Admins" ? 0 : 1).ThenBy(u => u.label));
     }
 
     private bool IsMessageRead(Message m, UserId userId)

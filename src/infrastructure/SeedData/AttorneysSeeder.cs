@@ -213,6 +213,7 @@ public class AttorneysSeeder : ISeedTask
                     AttorneyId = attorney.Id,
                     FileUrl = photoUrl,
                     FileName = fileName,
+                    AltText = $"Photo of {attorney.Name}, {attorney.Title}",
                     IsPrimary = true,
                     CreatedAt = DateTime.UtcNow
                 });

@@ -11,7 +11,7 @@ namespace L4H.Infrastructure.Services;
 public interface IAttorneyPhotoService
 {
     Task<IEnumerable<AttorneyImage>> GetPhotosAsync(int attorneyId);
-    Task<AttorneyImage> UploadPhotoAsync(int attorneyId, IFormFile file);
+    Task<AttorneyImage> UploadPhotoAsync(int attorneyId, IFormFile file, string? altText = null);
     Task<AttorneyImage> SetPrimaryPhotoAsync(int attorneyId, Guid photoId);
     Task DeletePhotoAsync(int attorneyId, Guid photoId);
 }
@@ -40,7 +40,7 @@ public class AttorneyPhotoService : IAttorneyPhotoService
             .ToListAsync();
     }
 
-    public async Task<AttorneyImage> UploadPhotoAsync(int attorneyId, IFormFile file)
+    public async Task<AttorneyImage> UploadPhotoAsync(int attorneyId, IFormFile file, string? altText = null)
     {
         var attorney = await _context.Attorneys.FindAsync(attorneyId)
             ?? throw new KeyNotFoundException($"Attorney {attorneyId} not found.");
@@ -57,6 +57,7 @@ public class AttorneyPhotoService : IAttorneyPhotoService
             AttorneyId = attorneyId,
             FileUrl = fileUrl,
             FileName = file.FileName,
+            AltText = altText ?? file.FileName,
             IsPrimary = !await _context.AttorneyImages.AnyAsync(i => i.AttorneyId == attorneyId)
         };
 
