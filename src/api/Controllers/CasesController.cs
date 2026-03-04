@@ -59,8 +59,8 @@ public class CasesController : ControllerBase
             .Include(c => c.User)
             .Include(c => c.CaseVisaTypes)
                 .ThenInclude(cvt => cvt.VisaType)
-            .Where(c => !c.User.IsAdmin && !c.User.IsStaff && !c.User.IsLegalProfessional)
-            .AsQueryable();
+            .FilterActive()
+            .FilterForClients();
 
         // Filter by assignment based on user role
         if (isAdmin)

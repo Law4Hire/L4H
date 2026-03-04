@@ -77,7 +77,7 @@ public class DashboardController : ControllerBase
         }
 
         // 1. Active Cases
-        var activeCases = await casesQuery.CountAsync(c => c.Status != "Complete" && c.Status != "Closed (US Government Rejected)");
+        var activeCasesCount = await casesQuery.FilterActive().FilterForClients().CountAsync().ConfigureAwait(false);
 
         // 2. Pending Tasks (Using Cases with "In Progress" status as proxy for now)
         var pendingTasks = await casesQuery.CountAsync(c => c.Status == "In Progress");
@@ -105,7 +105,7 @@ public class DashboardController : ControllerBase
 
         return Ok(new DashboardStats
         {
-            ActiveCases = activeCases,
+            ActiveCases = activeCasesCount,
             PendingTasks = pendingTasks,
             UpcomingAppointments = upcomingAppointments,
             MonthlyRevenue = currentMonthRevenue,

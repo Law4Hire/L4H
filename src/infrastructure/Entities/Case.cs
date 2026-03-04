@@ -9,6 +9,7 @@ public class Case
     public CaseId Id { get; set; } = CaseId.New();
     public UserId UserId { get; set; }
     public string Status { get; set; } = string.Empty;
+    public bool IsDeleted { get; set; }
     public DateTimeOffset LastActivityAt { get; set; } = DateTimeOffset.UtcNow;
     public int? VisaTypeId { get; set; }
     public int? PackageId { get; set; }

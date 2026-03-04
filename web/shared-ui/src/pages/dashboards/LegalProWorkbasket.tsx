@@ -16,8 +16,8 @@ interface CaseItem {
   userName?: string
   visaTypeCode?: string
   visaTypeName?: string
-  assignedAttorneyId?: string | null
-  assignedAttorneyName?: string | null
+  assignedStaffId?: number | null
+  assignedStaffName?: string | null
 }
 
 interface AttorneyOption {
@@ -42,7 +42,7 @@ const LegalProWorkbasket: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const casesPath = isAdmin ? '/v1/admin/cases' : '/v1/cases'
+      const casesPath = isAdmin ? '/v1/admin/cases' : '/v1/cases/dashboard'
       const fetches: Promise<any>[] = [
         fetchJson('/v1/dashboard/stats'),
         fetchJson<CaseItem[]>(casesPath),
@@ -200,7 +200,7 @@ const LegalProWorkbasket: React.FC = () => {
                     <td className="px-6 py-4 text-sm">
                       {isAdmin ? (
                         <select
-                          defaultValue={c.assignedAttorneyId ?? ''}
+                          defaultValue={c.assignedStaffId ?? ''}
                           disabled={assigningCaseId === c.id}
                           onChange={e => handleAssignCase(c.id, e.target.value)}
                           className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -211,8 +211,8 @@ const LegalProWorkbasket: React.FC = () => {
                           ))}
                         </select>
                       ) : (
-                        c.assignedAttorneyName
-                          ? <span className="text-green-700 dark:text-green-400">{c.assignedAttorneyName}</span>
+                        c.assignedStaffName
+                          ? <span className="text-green-700 dark:text-green-400">{c.assignedStaffName}</span>
                           : <span className="text-amber-600 dark:text-amber-400 italic">Unassigned</span>
                       )}
                     </td>
