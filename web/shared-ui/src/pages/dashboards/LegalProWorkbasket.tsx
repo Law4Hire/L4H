@@ -5,6 +5,14 @@ import { useAuth } from '../../hooks/useAuth'
 import { formatDistanceToNow, format } from 'date-fns'
 import { MessageSquare, Search } from 'lucide-react'
 
+interface CaseVisaTypeInfo {
+  visaTypeId: number
+  visaTypeCode: string
+  visaTypeName: string
+  isPrimary: boolean
+  displayOrder: number
+}
+
 interface CaseItem {
   id: string
   status: string
@@ -14,8 +22,7 @@ interface CaseItem {
   clientLastName?: string
   userEmail?: string
   userName?: string
-  visaTypeCode?: string
-  visaTypeName?: string
+  visaTypes?: CaseVisaTypeInfo[]
   assignedStaffId?: number | null
   assignedStaffName?: string | null
 }
@@ -191,7 +198,11 @@ const LegalProWorkbasket: React.FC = () => {
                 {filteredCases.map(c => (
                   <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                     <td className="px-6 py-4 font-medium">{getClientName(c)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{c.visaTypeCode || c.visaTypeName || '—'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {c.visaTypes && c.visaTypes.length > 0 
+                        ? (c.visaTypes.find(v => v.isPrimary)?.visaTypeCode || c.visaTypes[0].visaTypeCode)
+                        : (c.visaTypeCode || c.visaTypeName || '—')}
+                    </td>
                     <td className="px-6 py-4">
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-xs">
                         {c.status}
