@@ -283,7 +283,7 @@ public class AttorneysController : ControllerBase
 
     [HttpPost("{id}/photo")]
     [Authorize]
-    public async Task<ActionResult> UploadAttorneyPhoto(int id, IFormFile photo)
+    public async Task<ActionResult> UploadAttorneyPhoto(int id, IFormFile photo, [FromForm] string? altText = null)
     {
         var attorney = await _context.Attorneys.FindAsync(id);
         if (attorney == null) return NotFound();
@@ -306,6 +306,7 @@ public class AttorneysController : ControllerBase
                 AttorneyId = id,
                 FileUrl = photoUrl,
                 FileName = photo.FileName,
+                AltText = altText ?? photo.FileName,
                 IsPrimary = false, // Not primary by default when uploading to a list
                 CreatedAt = DateTime.UtcNow
             };
@@ -328,6 +329,25 @@ public class AttorneysController : ControllerBase
         {
             return BadRequest($"Failed to upload photo: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Update attorney image metadata (Admin only)
+    /// </summary>
+    [HttpPatch("{id}/images/{imageId}")]
+    [Authorize(Policy = "IsAdmin")]
+    public async Task<ActionResult> UpdateAttorneyImage(int id, Guid imageId, [FromBody] AttorneyImageUpdateDto request)
+    {
+        var image = await _context.AttorneyImages
+            .FirstOrDefaultAsync(i => i.Id == imageId && i.AttorneyId == id)
+            .ConfigureAwait(false);
+
+        if (image == null) return NotFound();
+
+        if (request.AltText != null) image.AltText = request.AltText;
+
+        await _context.SaveChangesAsync();
+        return Ok(image);
     }
 
     /// <summary>

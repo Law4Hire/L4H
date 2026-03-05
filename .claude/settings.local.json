@@ -76,7 +76,16 @@
       "Bash(docker volume rm:*)",
       "Bash(docker run:*)",
       "Bash(export:*)",
-      "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet ef database update:*)"
+      "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet ef database update:*)",
+      "Bash(\"/c/Program Files/dotnet/dotnet\" run:*)",
+      "Bash(sqlcmd:*)",
+      "Bash(ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__SqlServer=\"Server=localhost,14333;Database=L4HDb;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;\" dotnet ef:*)",
+      "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet ef:*)",
+      "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet run:*)",
+      "Bash(cmd:*)",
+      "Bash(xargs -r kill -9)",
+      "Bash(python3:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

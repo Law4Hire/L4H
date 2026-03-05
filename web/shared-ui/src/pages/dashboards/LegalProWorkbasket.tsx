@@ -5,6 +5,14 @@ import { useAuth } from '../../hooks/useAuth'
 import { formatDistanceToNow, format } from 'date-fns'
 import { MessageSquare, Search } from 'lucide-react'
 
+interface CaseVisaTypeInfo {
+  visaTypeId: number
+  visaTypeCode: string
+  visaTypeName: string
+  isPrimary: boolean
+  displayOrder: number
+}
+
 interface CaseItem {
   id: string
   status: string
@@ -16,8 +24,9 @@ interface CaseItem {
   userName?: string
   visaTypeCode?: string
   visaTypeName?: string
-  assignedAttorneyId?: string | null
-  assignedAttorneyName?: string | null
+  visaTypes?: CaseVisaTypeInfo[]
+  assignedStaffId?: number | null
+  assignedStaffName?: string | null
 }
 
 interface AttorneyOption {
@@ -42,7 +51,7 @@ const LegalProWorkbasket: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const casesPath = isAdmin ? '/v1/admin/cases' : '/v1/cases'
+      const casesPath = isAdmin ? '/v1/admin/cases' : '/v1/cases/dashboard'
       const fetches: Promise<any>[] = [
         fetchJson('/v1/dashboard/stats'),
         fetchJson<CaseItem[]>(casesPath),
@@ -191,7 +200,11 @@ const LegalProWorkbasket: React.FC = () => {
                 {filteredCases.map(c => (
                   <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                     <td className="px-6 py-4 font-medium">{getClientName(c)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{c.visaTypeCode || c.visaTypeName || '—'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {c.visaTypes && c.visaTypes.length > 0 
+                        ? (c.visaTypes.find(v => v.isPrimary)?.visaTypeCode || c.visaTypes[0].visaTypeCode)
+                        : ((c as any).visaTypeCode || (c as any).visaTypeName || '—')}
+                    </td>
                     <td className="px-6 py-4">
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-xs">
                         {c.status}
@@ -200,10 +213,10 @@ const LegalProWorkbasket: React.FC = () => {
                     <td className="px-6 py-4 text-sm">
                       {isAdmin ? (
                         <select
-                          defaultValue={c.assignedAttorneyId ?? ''}
+                          defaultValue={c.assignedStaffId ?? ''}
                           disabled={assigningCaseId === c.id}
                           onChange={e => handleAssignCase(c.id, e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:white"
                         >
                           <option value="">— Unassigned —</option>
                           {attorneys.map(a => (
@@ -211,8 +224,8 @@ const LegalProWorkbasket: React.FC = () => {
                           ))}
                         </select>
                       ) : (
-                        c.assignedAttorneyName
-                          ? <span className="text-green-700 dark:text-green-400">{c.assignedAttorneyName}</span>
+                        c.assignedStaffName
+                          ? <span className="text-green-700 dark:text-green-400">{c.assignedStaffName}</span>
                           : <span className="text-amber-600 dark:text-amber-400 italic">Unassigned</span>
                       )}
                     </td>

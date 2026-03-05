@@ -27,6 +27,8 @@ interface AdminCaseResponse {
   latestPriceSnapshot?: AdminPriceSnapshotResponse
   interviewSessionId?: string
   isVisaLockedByAttorney: boolean
+  assignedStaffId?: number
+  assignedStaffName?: string
 }
 
 interface VisaEvaluation {
@@ -256,6 +258,9 @@ const AdminCaseManagementPage: React.FC = () => {
                     Price
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Assigned To
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Last Activity
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -305,6 +310,9 @@ const AdminCaseManagementPage: React.FC = () => {
                       ) : (
                         <div className="text-sm text-gray-500 dark:text-gray-400">No pricing</div>
                       )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {caseItem.assignedStaffName || <span className="text-amber-600 dark:text-amber-400 italic">Unassigned</span>}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {formatDate(caseItem.lastActivityAt)}

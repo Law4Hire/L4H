@@ -24,11 +24,11 @@ public class AttorneyPhotoController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<ActionResult<AttorneyImage>> UploadPhoto(int attorneyId, IFormFile file)
+    public async Task<ActionResult<AttorneyImage>> UploadPhoto(int attorneyId, IFormFile file, [FromForm] string? altText = null)
     {
         try
         {
-            var image = await _photoService.UploadPhotoAsync(attorneyId, file);
+            var image = await _photoService.UploadPhotoAsync(attorneyId, file, altText);
             return Ok(image);
         }
         catch (KeyNotFoundException) { return NotFound(); }

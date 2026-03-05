@@ -1247,14 +1247,19 @@ public class AdminController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<AdminCaseResponse[]>> GetAdminCases()
     {
+        var attorneys = await _context.Attorneys
+            .Where(a => a.IsActive)
+            .ToDictionaryAsync(a => a.Id, a => a.Name)
+            .ConfigureAwait(false);
+
         var cases = await _context.Cases
             .Include(c => c.User)
             .Include(c => c.VisaType)
             .Include(c => c.Package)
             .Include(c => c.PriceSnapshots.OrderByDescending(p => p.CreatedAt))
             .Include(c => c.InterviewSessions)
-            // Filter out cases belonging to legal professionals/staff - they shouldn't appear in case summary
-            .Where(c => !c.User.IsStaff && !c.User.IsLegalProfessional)
+            .FilterActive()
+            .FilterForClients()
             .OrderByDescending(c => c.LastActivityAt)
             .ToListAsync().ConfigureAwait(false);
 
@@ -1270,6 +1275,8 @@ public class AdminController : ControllerBase
             VisaTypeName = c.VisaType?.Name,
             PackageCode = c.Package?.Code,
             PackageDisplayName = c.Package?.DisplayName,
+            AssignedStaffId = c.AssignedStaffId,
+            AssignedStaffName = (c.AssignedStaffId.HasValue && attorneys.ContainsKey(c.AssignedStaffId.Value)) ? attorneys[c.AssignedStaffId.Value] : null,
             InterviewSessionId = c.InterviewSessions.OrderByDescending(s => s.StartedAt).FirstOrDefault()?.Id,
             IsVisaLockedByAttorney = c.IsVisaLockedByAttorney,
             LatestPriceSnapshot = c.PriceSnapshots.FirstOrDefault() != null 
@@ -1641,6 +1648,8 @@ public class AdminCaseResponse
     public string? VisaTypeName { get; set; }
     public string? PackageCode { get; set; }
     public string? PackageDisplayName { get; set; }
+    public int? AssignedStaffId { get; set; }
+    public string? AssignedStaffName { get; set; }
     public AdminPriceSnapshotResponse? LatestPriceSnapshot { get; set; }
     public Guid? InterviewSessionId { get; set; }
     public bool IsVisaLockedByAttorney { get; set; }

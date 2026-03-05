@@ -20,6 +20,9 @@ public class AttorneyImage
     [MaxLength(255)]
     public string FileName { get; set; } = string.Empty;
     
+    [MaxLength(255)]
+    public string AltText { get; set; } = string.Empty;
+    
     public bool IsPrimary { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

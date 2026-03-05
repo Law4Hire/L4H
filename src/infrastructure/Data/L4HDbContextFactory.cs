@@ -13,6 +13,9 @@ public class L4HDbContextFactory : IDesignTimeDbContextFactory<L4HDbContext>
         // Try to get connection string from environment or configuration
         var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__SqlServer") 
                               ?? Environment.GetEnvironmentVariable("ConnectionStrings:SqlServer")
+                              ?? Environment.GetEnvironmentVariable("SqlServer__ConnectionString")
+                              ?? Environment.GetEnvironmentVariable("SqlServer:ConnectionString")
+                              ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
                               ?? "Server=localhost,14333;Database=L4H;User Id=sa;Password=SecureTest123!;TrustServerCertificate=True;";
         
         optionsBuilder.UseSqlServer(connectionString);
