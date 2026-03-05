@@ -1,13 +1,17 @@
 using L4H.Shared.Models;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace L4H.Infrastructure.Entities;
 
 public class MessageThread
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public CaseId CaseId { get; set; }
+    public CaseId? CaseId { get; set; }
+    
+    [MaxLength(200)]
     public string? Subject { get; set; }
+    
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastMessageAt { get; set; } = DateTime.UtcNow;
 
@@ -19,12 +23,11 @@ public class MessageThread
 
     // Navigation properties
     [JsonIgnore]
-
-    public Case Case { get; set; } = null!;
+    public Case? Case { get; set; }
+    
     [JsonIgnore]
-
     public User? RecipientUser { get; set; }
+    
     [JsonIgnore]
-
     public ICollection<Message> Messages { get; set; } = new List<Message>();
 }

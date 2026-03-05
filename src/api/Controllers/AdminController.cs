@@ -786,8 +786,9 @@ public class AdminController : ControllerBase
             _context.InterviewSessions.RemoveRange(user.InterviewSessions);
 
             // Delete message threads and messages
+            var userCaseIds = user.Cases.Select(c => c.Id).ToList();
             var messageThreads = await _context.MessageThreads
-                .Where(mt => user.Cases.Select(c => c.Id).Contains(mt.CaseId))
+                .Where(mt => mt.CaseId != null && userCaseIds.Contains(mt.CaseId.Value))
                 .Include(mt => mt.Messages)
                 .ToListAsync().ConfigureAwait(false);
 

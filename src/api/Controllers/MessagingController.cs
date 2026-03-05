@@ -96,21 +96,27 @@ public class MessagingController : ControllerBase
             }
         }
 
+        /* 
         if (caseId == null)
         {
             return BadRequest(new ProblemDetails { Title = "Case Required", Detail = "A case must be associated with the thread." });
         }
+        */
 
-        // Fetch case entity to update last activity
-        var caseEntity = await _context.Cases.FindAsync(caseId.Value).ConfigureAwait(false);
-        if (caseEntity == null)
+        // Fetch case entity to update last activity if present
+        Case? caseEntity = null;
+        if (caseId != null)
         {
-            return BadRequest(new ProblemDetails { Title = "Case Not Found", Detail = "The associated case could not be found." });
+            caseEntity = await _context.Cases.FindAsync(caseId.Value).ConfigureAwait(false);
+            if (caseEntity == null)
+            {
+                return BadRequest(new ProblemDetails { Title = "Case Not Found", Detail = "The associated case could not be found." });
+            }
         }
 
         var thread = new MessageThread
         {
-            CaseId = caseId.Value,
+            CaseId = caseId,
             Subject = title,
             RecipientUserId = recipientUserId,
             CreatedAt = DateTime.UtcNow,
@@ -138,14 +144,17 @@ public class MessagingController : ControllerBase
             _context.Messages.Add(initialMessageEntity);
         }
 
-        // Update case activity
-        caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+        // Update case activity if present
+        if (caseEntity != null)
+        {
+            caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+        }
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         // Log audit event
         LogAudit("messages", "create_thread", "MessageThread", thread.Id.ToString(),
-            new { caseId = caseId.Value, subject = title, hasInitialMessage = initialMessageEntity != null });
+            new { caseId = caseId?.Value, subject = title, hasInitialMessage = initialMessageEntity != null });
 
         // Return a JSON object that matches test expectations
         var response = new
@@ -282,7 +291,7 @@ public class MessagingController : ControllerBase
 
         return Ok(threads.Select(t => new {
             id = t.Id,
-            sender = $"{t.Case.User.FirstName} {t.Case.User.LastName}",
+            sender = t.Case?.User != null ? $"{t.Case.User.FirstName} {t.Case.User.LastName}" : "General Support",
             subject = t.Subject,
             snippet = t.Messages.FirstOrDefault()?.Body ?? "No messages",
             time = t.LastMessageAt.ToString("O")
@@ -319,13 +328,31 @@ public class MessagingController : ControllerBase
         }
 
         // Verify case ownership or staff access
-        if (thread.Case.UserId != userId && !IsStaff())
+        // If thread is not linked to a case, visibility is determined by sender/recipient or staff role
+        if (thread.Case != null)
         {
-            return StatusCode(403, new ProblemDetails
+            if (thread.Case.UserId != userId && !IsStaff())
             {
-                Title = "Forbidden",
-                Detail = "Access denied to this message thread."
-            });
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this message thread."
+                });
+            }
+        }
+        else
+        {
+            // Caseless thread: Sender, Recipient, or Staff can see it
+            var isSender = thread.Messages.Any(m => m.SenderUserId == userId);
+            var isRecipient = thread.RecipientUserId == userId;
+            if (!isSender && !isRecipient && !IsStaff())
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this message thread."
+                });
+            }
         }
 
         var messages = thread.Messages.Select(m =>
@@ -401,13 +428,31 @@ public class MessagingController : ControllerBase
         }
 
         // Verify case ownership or staff access
-        if (thread.Case.UserId != userId && !IsStaff())
+        // If thread is not linked to a case, visibility is determined by sender/recipient or staff role
+        if (thread.Case != null)
         {
-            return StatusCode(403, new ProblemDetails
+            if (thread.Case.UserId != userId && !IsStaff())
             {
-                Title = "Forbidden",
-                Detail = "Access denied to this message thread."
-            });
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this message thread."
+                });
+            }
+        }
+        else
+        {
+            // Caseless thread: Sender, Recipient, or Staff can see it
+            var isSender = thread.Messages.Any(m => m.SenderUserId == userId);
+            var isRecipient = thread.RecipientUserId == userId;
+            if (!isSender && !isRecipient && !IsStaff())
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this message thread."
+                });
+            }
         }
 
         var messages = thread.Messages.Select(m =>
@@ -470,6 +515,7 @@ public class MessagingController : ControllerBase
         // Verify thread exists and user has access
         var thread = await _context.MessageThreads
             .Include(t => t.Case)
+            .Include(t => t.Messages)
             .FirstOrDefaultAsync(t => t.Id == threadId).ConfigureAwait(false);
 
         if (thread == null)
@@ -482,13 +528,31 @@ public class MessagingController : ControllerBase
         }
 
         // Verify case ownership or staff access
-        if (thread.Case.UserId != userId && !IsStaff())
+        // If thread is not linked to a case, visibility is determined by sender/recipient or staff role
+        if (thread.Case != null)
         {
-            return StatusCode(403, new ProblemDetails
+            if (thread.Case.UserId != userId && !IsStaff())
             {
-                Title = "Forbidden",
-                Detail = "Access denied to this message thread."
-            });
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this message thread."
+                });
+            }
+        }
+        else
+        {
+            // Caseless thread: Sender, Recipient, or Staff can see it
+            var isSender = thread.Messages.Any(m => m.SenderUserId == userId);
+            var isRecipient = thread.RecipientUserId == userId;
+            if (!isSender && !isRecipient && !IsStaff())
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this message thread."
+                });
+            }
         }
 
         var message = new Message
@@ -509,17 +573,31 @@ public class MessagingController : ControllerBase
         // Update thread last message time
         thread.LastMessageAt = DateTime.UtcNow;
 
-        // Update case activity
-        thread.Case.LastActivityAt = DateTimeOffset.UtcNow;
+        // Update case activity if present
+        if (thread.Case != null)
+        {
+            thread.Case.LastActivityAt = DateTimeOffset.UtcNow;
+        }
 
         // Queue for daily digest (exclude sender from receiving their own message)
-        await QueueForDigest(thread.Case.UserId.Equals(userId) ? null : thread.Case.UserId, message).ConfigureAwait(false);
+        // If thread is linked to a case, notify the client. Otherwise, notify the explicit recipient or admins.
+        UserId? digestRecipient = null;
+        if (thread.Case != null)
+        {
+            digestRecipient = thread.Case.UserId.Equals(userId) ? null : thread.Case.UserId;
+        }
+        else if (thread.RecipientUserId != null)
+        {
+            digestRecipient = thread.RecipientUserId.Equals(userId) ? null : thread.RecipientUserId;
+        }
+
+        await QueueForDigest(digestRecipient, message).ConfigureAwait(false);
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
         // Log audit event
         LogAudit("messages", "send", "Message", message.Id.ToString(),
-            new { threadId = threadId, caseId = thread.CaseId.Value, channel = message.Channel });
+            new { threadId = threadId, caseId = thread.CaseId?.Value, channel = message.Channel });
 
         var response = new
         {
@@ -562,13 +640,31 @@ public class MessagingController : ControllerBase
         }
 
         // Verify case ownership or staff access
-        if (thread.Case.UserId != userId && !IsStaff())
+        // If thread is not linked to a case, visibility is determined by sender/recipient or staff role
+        if (thread.Case != null)
         {
-            return StatusCode(403, new ProblemDetails
+            if (thread.Case.UserId != userId && !IsStaff())
             {
-                Title = "Forbidden",
-                Detail = "Access denied to this message thread."
-            });
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this message thread."
+                });
+            }
+        }
+        else
+        {
+            // Caseless thread: Sender, Recipient, or Staff can see it
+            var isSender = thread.Messages.Any(m => m.SenderUserId == userId);
+            var isRecipient = thread.RecipientUserId == userId;
+            if (!isSender && !isRecipient && !IsStaff())
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Access denied to this message thread."
+                });
+            }
         }
 
         var readAt = DateTime.UtcNow;
@@ -640,13 +736,21 @@ public class MessagingController : ControllerBase
         }
 
         // Verify user has access to the message thread
-        if (message.Thread.Case.UserId != userId && !IsStaff())
+        if (message.Thread.Case != null)
         {
-            return StatusCode(403, new ProblemDetails
+            if (message.Thread.Case.UserId != userId && !IsStaff())
             {
-                Title = "Forbidden",
-                Detail = "Access denied"
-            });
+                return StatusCode(403, new ProblemDetails { Title = "Forbidden", Detail = "Access denied" });
+            }
+        }
+        else
+        {
+            var isSender = message.SenderUserId == userId;
+            var isRecipient = message.Thread.RecipientUserId == userId;
+            if (!isSender && !isRecipient && !IsStaff())
+            {
+                return StatusCode(403, new ProblemDetails { Title = "Forbidden", Detail = "Access denied" });
+            }
         }
 
         var readBy = new Dictionary<string, DateTime>();
@@ -794,7 +898,18 @@ public class MessagingController : ControllerBase
 
         // Verify user has access to all message threads
         var unauthorizedMessages = messages.Where(m => 
-            m.Thread.Case.UserId != userId && !IsStaff());
+        {
+            if (m.Thread.Case != null)
+            {
+                return m.Thread.Case.UserId != userId && !IsStaff();
+            }
+            else
+            {
+                var isSender = m.SenderUserId == userId;
+                var isRecipient = m.Thread.RecipientUserId == userId;
+                return !isSender && !isRecipient && !IsStaff();
+            }
+        });
 
         if (unauthorizedMessages.Any())
         {
@@ -903,7 +1018,7 @@ public class MessagingController : ControllerBase
 
         // Log audit event
         LogAudit("messages", "delete_thread", "MessageThread", threadId.ToString(),
-            new { caseId = thread.CaseId.Value, messageCount });
+            new { caseId = thread.CaseId?.Value, messageCount });
 
         return Ok(new { success = true, deletedMessageCount = messageCount });
     }
@@ -1078,7 +1193,7 @@ public class MessagingController : ControllerBase
         {
             messageId = message.Id,
             threadId = message.ThreadId,
-            caseId = message.Thread?.CaseId.Value,
+            caseId = message.Thread?.CaseId?.Value,
             senderName = "New message", // Will be populated by digest service
             body = message.Body.Length > 100 ? message.Body.Substring(0, 100) + "..." : message.Body,
             sentAt = message.SentAt,
@@ -1168,9 +1283,9 @@ public class MessagingController : ControllerBase
             var lastMsg = t.Messages.FirstOrDefault();
             return new {
                 threadId = t.Id.ToString(),
-                caseId = t.CaseId.Value,
+                caseId = t.CaseId?.Value,
                 title = t.Subject,
-                participantName = t.Case.User != null ? $"{t.Case.User.FirstName} {t.Case.User.LastName}" : "Unknown Client",
+                participantName = t.Case?.User != null ? $"{t.Case.User.FirstName} {t.Case.User.LastName}" : "General Support",
                 lastMessageSnippet = lastMsg?.Body ?? "No messages",
                 lastMessageTime = t.LastMessageAt.ToString("O"),
                 messageCount = t.Messages.Count(),

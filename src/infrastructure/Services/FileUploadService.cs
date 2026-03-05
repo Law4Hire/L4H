@@ -22,7 +22,9 @@ public class FileUploadService : IFileUploadService
     {
         _context = context;
         _logger = logger;
-        _uploadPath = configuration["Uploads:BasePath"] ?? "uploads";
+        _uploadPath = configuration["FileStorage:BasePath"] 
+                      ?? configuration["Uploads:BasePath"] 
+                      ?? Path.Combine(AppContext.BaseDirectory, "uploads");
     }
 
     public async Task<Document> SaveClientDocumentAsync(
