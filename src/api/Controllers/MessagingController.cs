@@ -1149,9 +1149,9 @@ public class MessagingController : ControllerBase
 
             query = query.Where(t => 
                 t.RecipientUserId == userId || 
-                (attorneyId.HasValue && t.Case.AssignedStaffId == attorneyId.Value) ||
+                (attorneyId.HasValue && t.Case != null && t.Case.AssignedStaffId == attorneyId.Value) ||
                 t.Messages.Any(m => m.SenderUserId == userId) ||
-                t.Case.UserId == userId
+                (t.Case != null && t.Case.UserId == userId)
             );
         }
         else
