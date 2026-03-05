@@ -86,6 +86,14 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             }
         }
 
+        // Step 6.1: Document Prerequisites (Parallel Qualification Flow)
+        // Collect master data for document pre-population before completion
+        var docPrereqQuestion = GetNextDocumentPrerequisiteQuestion(answers);
+        if (docPrereqQuestion != null)
+        {
+            return docPrereqQuestion;
+        }
+
         // Step 7: Evaluation happens here (handled by orchestrator)
         // Interview complete - all mandatory legal fields and branched logic satisfied
         return null;
@@ -134,6 +142,15 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         if (remainingVisas.Count == 0 && questionsAnswered >= 3)
         {
             return true;
+        }
+
+        // 3. Document Prerequisites check (MANDATORY before completion)
+        if (!answers.ContainsKey("doc_prefill_full_name") ||
+            !answers.ContainsKey("doc_prefill_dob") ||
+            !answers.ContainsKey("doc_prefill_nationality") ||
+            !answers.ContainsKey("doc_prefill_passport_number"))
+        {
+            return false;
         }
 
         return false;
@@ -488,6 +505,94 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
                 new() { Value = "EB-5", Label = "EB-5 Immigrant Investor - $800K-$1.05M investment creating 10+ jobs" }
             }
         };
+    }
+
+    #endregion
+
+    #region Step 6.1: Document Prerequisites
+
+    private InterviewQuestion? GetNextDocumentPrerequisiteQuestion(Dictionary<string, string> answers)
+    {
+        // 1. Full Legal Name
+        if (!answers.ContainsKey("doc_prefill_full_name"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "doc_prefill_full_name",
+                Text = "What is your full legal name? (As it appears on your passport)",
+                Category = "document_setup",
+                InputType = "text",
+                Order = 100,
+                IsRequired = true,
+                Options = new List<QuestionOption>()
+            };
+        }
+
+        // 2. Date of Birth
+        if (!answers.ContainsKey("doc_prefill_dob"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "doc_prefill_dob",
+                Text = "What is your date of birth?",
+                Category = "document_setup",
+                InputType = "date",
+                Order = 101,
+                IsRequired = true,
+                Options = new List<QuestionOption>()
+            };
+        }
+
+        // 3. Nationality
+        if (!answers.ContainsKey("doc_prefill_nationality"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "doc_prefill_nationality",
+                Text = "What is your country of citizenship/nationality?",
+                Category = "document_setup",
+                InputType = "select",
+                Order = 102,
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    // This should ideally be populated from a country service, but for now we use a placeholder select
+                    // UI will handle the actual country list rendering if InputType is 'select' and Category is 'country'
+                }
+            };
+        }
+
+        // 4. Passport Number
+        if (!answers.ContainsKey("doc_prefill_passport_number"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "doc_prefill_passport_number",
+                Text = "What is your passport number?",
+                Category = "document_setup",
+                InputType = "text",
+                Order = 103,
+                IsRequired = true,
+                Options = new List<QuestionOption>()
+            };
+        }
+
+        // 5. Passport Expiry
+        if (!answers.ContainsKey("doc_prefill_passport_expiry"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "doc_prefill_passport_expiry",
+                Text = "When does your passport expire?",
+                Category = "document_setup",
+                InputType = "date",
+                Order = 104,
+                IsRequired = true,
+                Options = new List<QuestionOption>()
+            };
+        }
+
+        return null;
     }
 
     #endregion

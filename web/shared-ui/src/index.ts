@@ -52,6 +52,7 @@ export { Container } from './components/Container'
 export { EmptyState } from './components/EmptyState'
 export { Toast, ToastContainer, useToast, ToastProvider } from './components/Toast'
 export { TimeTracker } from './components/TimeTracker'
+export { FastPathQuiz } from './components/FastPathQuiz'
 export { NextSteps } from './components/NextSteps'
 
 // Icons

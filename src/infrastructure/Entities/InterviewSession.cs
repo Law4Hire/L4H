@@ -13,6 +13,7 @@ public class InterviewSession
     public DateTime StartedAt { get; set; }
     public DateTime? FinishedAt { get; set; }
     public DateTime? LockedAt { get; set; }
+    public bool IsFastPath { get; set; }
 
     // Navigation properties
     [JsonIgnore]

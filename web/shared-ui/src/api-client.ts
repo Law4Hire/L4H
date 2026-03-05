@@ -523,7 +523,7 @@ export const interview = {
   },
 
   // Start a new anonymous interview
-  async startAnonymous(languageCode?: string) {
+  async startAnonymous(initialAnswers?: Record<string, string>, existingSessionId?: string, languageCode?: string) {
     return fetchJson<{
       sessionToken: string
       sessionId: string
@@ -538,7 +538,7 @@ export const interview = {
       }
     }>('/v1/interview/anonymous/start', {
       method: 'POST',
-      body: JSON.stringify({ languageCode })
+      body: JSON.stringify({ initialAnswers, existingSessionId, languageCode })
     })
   },
 

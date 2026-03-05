@@ -46,6 +46,13 @@ public class RetentionService
             RetentionAction.Delete,
             session => session.FinishedAt.HasValue).ConfigureAwait(false);
 
+        // Process abandoned FastPath quizzes (older than 24 hours)
+        itemsProcessed += await QueueExpiredItems<InterviewSession>(
+            "abandoned-quizzes",
+            processingTime.AddDays(-1),
+            RetentionAction.Delete,
+            session => session.IsFastPath && !session.FinishedAt.HasValue).ConfigureAwait(false);
+
         // Process medical documents (mask based on MIME type or name patterns)
         itemsProcessed += await QueueExpiredUploads(
             "medical",
