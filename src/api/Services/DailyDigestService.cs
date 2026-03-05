@@ -119,16 +119,35 @@ public class DailyDigestService : BackgroundService
         
         foreach (var message in recentMessages)
         {
-            if (message.Thread?.CaseId == null) continue;
-            
-            // Get all users associated with this case (excluding the sender)
-            var caseUsers = await context.Cases
-                .Where(c => c.Id == message.Thread.CaseId)
-                .Select(c => c.UserId.Value)
-                .Distinct()
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            // Get all users associated with this thread (excluding the sender)
+            var recipientUserIds = new List<Guid>();
 
-            foreach (var userId in caseUsers)
+            if (message.Thread?.CaseId != null)
+            {
+                // Case-linked thread: Get all users associated with this case
+                var caseUsers = await context.Cases
+                    .Where(c => c.Id == message.Thread.CaseId.Value)
+                    .Select(c => c.UserId.Value)
+                    .Distinct()
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                recipientUserIds.AddRange(caseUsers);
+            }
+            else if (message.Thread?.RecipientUserId != null)
+            {
+                // Caseless thread directed to specific user
+                recipientUserIds.Add(message.Thread.RecipientUserId.Value.Value);
+            }
+            else
+            {
+                // Caseless "General" thread: Notify all admins
+                var adminUserIds = await context.Users
+                    .Where(u => u.IsAdmin)
+                    .Select(u => u.Id.Value)
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                recipientUserIds.AddRange(adminUserIds);
+            }
+
+            foreach (var userId in recipientUserIds.Distinct())
             {
                 if (userId != message.SenderUserId.Value) // Don't send digest to sender
                 {
@@ -157,7 +176,7 @@ public class DailyDigestService : BackgroundService
             {
                 messageId = m.Id,
                 threadId = m.ThreadId,
-                caseId = m.Thread?.CaseId.Value,
+                caseId = m.Thread?.CaseId?.Value,
                 threadSubject = m.Thread?.Subject ?? "Unknown Thread",
                 senderName = m.Sender?.Email ?? "System",
                 body = m.Body.Length > 100 ? m.Body.Substring(0, 100) + "..." : m.Body,
@@ -204,7 +223,7 @@ public class DailyDigestService : BackgroundService
                         {
                             MessageId = rawItem.GetProperty("messageId").GetGuid(),
                             ThreadId = rawItem.GetProperty("threadId").GetGuid(),
-                            CaseId = rawItem.GetProperty("caseId").GetGuid(),
+                            CaseId = rawItem.TryGetProperty("caseId", out var cId) && cId.ValueKind != JsonValueKind.Null ? cId.GetGuid() : (Guid?)null,
                             SenderName = rawItem.TryGetProperty("senderName", out var sender) ? sender.GetString() ?? "Unknown" : "Unknown",
                             Body = rawItem.TryGetProperty("body", out var body) ? body.GetString() ?? "" : "",
                             SentAt = rawItem.TryGetProperty("sentAt", out var sentAt) ? sentAt.GetDateTime() : DateTime.UtcNow,
@@ -257,18 +276,18 @@ public class DailyDigestService : BackgroundService
         digestQueue.ItemsJson = "[]"; // Clear processed items
         digestQueue.LastSentAt = DateTime.UtcNow;
 
-        _logger.LogInformation("Processed daily digest for user {UserId}: {ItemCount} items from {CaseCount} cases",
+        _logger.LogInformation("Processed daily digest for user {UserId}: {ItemCount} items from {CaseCount} groups",
             digestQueue.UserId.Value, items.Count, itemsByCase.Count);
     }
 
-    private static string GenerateDigestContent(User user, List<IGrouping<Guid, DigestItem>> itemsByCase, List<DigestItem> allItems)
+    private static string GenerateDigestContent(User user, List<IGrouping<Guid?, DigestItem>> itemsByCase, List<DigestItem> allItems)
     {
         var content = $"Daily Legal Case Updates for {user.Email}\n\n";
-        content += $"You have {allItems.Count} new messages from {itemsByCase.Count} case(s).\n\n";
+        content += $"You have {allItems.Count} new messages from {itemsByCase.Count} group(s).\n\n";
 
         foreach (var caseGroup in itemsByCase)
         {
-            content += $"Case {caseGroup.Key}:\n";
+            content += caseGroup.Key.HasValue ? $"Case {caseGroup.Key}:\n" : "General Support Threads:\n";
             
             foreach (var item in caseGroup.OrderBy(i => i.SentAt))
             {
@@ -324,7 +343,7 @@ public class DailyDigestService : BackgroundService
     {
         public Guid MessageId { get; set; }
         public Guid ThreadId { get; set; }
-        public Guid CaseId { get; set; }
+        public Guid? CaseId { get; set; }
         public string SenderName { get; set; } = string.Empty;
         public string Body { get; set; } = string.Empty;
         public DateTime SentAt { get; set; }

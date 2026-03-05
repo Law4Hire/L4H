@@ -57,21 +57,33 @@ public class AttorneysController : ControllerBase
         try
         {
             var attorneys = await _context.Attorneys
+                .Include(a => a.Images)
                 .Where(a => a.IsActive)
                 .OrderBy(a => a.DisplayOrder)
                 .ThenBy(a => a.Name)
-                .ToArrayAsync()
+                .ToListAsync()
                 .ConfigureAwait(false);
 
             if (!attorneys.Any())
             {
                 await InitializeDefaultAttorney();
                 attorneys = await _context.Attorneys
+                    .Include(a => a.Images)
                     .Where(a => a.IsActive)
                     .OrderBy(a => a.DisplayOrder)
                     .ThenBy(a => a.Name)
-                    .ToArrayAsync()
+                    .ToListAsync()
                     .ConfigureAwait(false);
+            }
+
+            // Sync PhotoUrl from AttorneyImages (Source of Truth)
+            foreach (var a in attorneys)
+            {
+                var primaryImage = a.Images.FirstOrDefault(i => i.IsPrimary) ?? a.Images.FirstOrDefault();
+                if (primaryImage != null && Uri.TryCreate(primaryImage.FileUrl, UriKind.RelativeOrAbsolute, out var uri))
+                {
+                    a.PhotoUrl = uri;
+                }
             }
 
             return Ok(attorneys);
@@ -90,8 +102,10 @@ public class AttorneysController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Attorney>> GetMyProfile()
     {
-        var attorney = await GetCurrentAttorneyAsync();
+        var attorney = await GetCurrentAttorneyWithImagesAsync();
         if (attorney == null) return NotFound("Attorney profile not found for this user.");
+        
+        SyncPhotoUrl(attorney);
         return Ok(attorney);
     }
 
@@ -112,11 +126,14 @@ public class AttorneysController : ControllerBase
         attorney.DirectEmail = request.DirectEmail ?? attorney.DirectEmail;
         attorney.OfficeLocation = request.OfficeLocation ?? attorney.OfficeLocation;
         
+        // If photo URL is provided, we only update it if it's DIFFERENT from current
+        // and we should really be using the AttorneyImages API for this.
         if (!string.IsNullOrWhiteSpace(request.PhotoUrl))
         {
             if (Uri.TryCreate(request.PhotoUrl, UriKind.RelativeOrAbsolute, out var uri))
             {
-                attorney.PhotoUrl = uri;
+                if (attorney.PhotoUrl?.ToString() != request.PhotoUrl)
+                    attorney.PhotoUrl = uri;
             }
         }
 
@@ -140,11 +157,42 @@ public class AttorneysController : ControllerBase
         if (!string.IsNullOrEmpty(email))
         {
             return await _context.Attorneys
-                .FirstOrDefaultAsync(a => a.Email == email) // EF Core is case-insensitive by default in SQL usually
+                .FirstOrDefaultAsync(a => a.Email == email)
                 .ConfigureAwait(false);
         }
 
         return null;
+    }
+
+    private async Task<Attorney?> GetCurrentAttorneyWithImagesAsync()
+    {
+        var attorneyIdClaim = User.FindFirst("attorney_id")?.Value;
+        if (int.TryParse(attorneyIdClaim, out var attorneyId))
+        {
+            return await _context.Attorneys.Include(a => a.Images).FirstOrDefaultAsync(a => a.Id == attorneyId).ConfigureAwait(false);
+        }
+
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        if (!string.IsNullOrEmpty(email))
+        {
+            return await _context.Attorneys
+                .Include(a => a.Images)
+                .FirstOrDefaultAsync(a => a.Email == email)
+                .ConfigureAwait(false);
+        }
+
+        return null;
+    }
+
+    private void SyncPhotoUrl(Attorney attorney)
+    {
+        if (attorney.Images == null) return;
+        
+        var primaryImage = attorney.Images.FirstOrDefault(i => i.IsPrimary) ?? attorney.Images.FirstOrDefault();
+        if (primaryImage != null && Uri.TryCreate(primaryImage.FileUrl, UriKind.RelativeOrAbsolute, out var uri))
+        {
+            attorney.PhotoUrl = uri;
+        }
     }
 
     /// <summary>
@@ -156,11 +204,13 @@ public class AttorneysController : ControllerBase
     public async Task<ActionResult<Attorney>> GetAttorney(int id)
     {
         var attorney = await _context.Attorneys
+            .Include(a => a.Images)
             .FirstOrDefaultAsync(a => a.Id == id && a.IsActive)
             .ConfigureAwait(false);
 
         if (attorney == null) return NotFound();
 
+        SyncPhotoUrl(attorney);
         return Ok(attorney);
     }
 
@@ -250,7 +300,10 @@ public class AttorneysController : ControllerBase
             if (!string.IsNullOrWhiteSpace(request.PhotoUrl))
             {
                 if (Uri.TryCreate(request.PhotoUrl, UriKind.RelativeOrAbsolute, out var uri))
-                    existing.PhotoUrl = uri;
+                {
+                    if (existing.PhotoUrl?.ToString() != request.PhotoUrl)
+                        existing.PhotoUrl = uri;
+                }
             }
             
             existing.UpdatedAt = DateTime.UtcNow;

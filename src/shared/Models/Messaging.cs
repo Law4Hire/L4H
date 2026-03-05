@@ -3,7 +3,7 @@ namespace L4H.Shared.Models;
 // Message Thread DTOs
 public class MessageThreadCreateRequest
 {
-    public CaseId CaseId { get; set; }
+    public CaseId? CaseId { get; set; }
     public string Subject { get; set; } = string.Empty;
     public string? InitialMessage { get; set; }
 }
@@ -11,7 +11,7 @@ public class MessageThreadCreateRequest
 public class MessageThreadResponse
 {
     public Guid Id { get; set; }
-    public CaseId CaseId { get; set; }
+    public CaseId? CaseId { get; set; }
     public string Subject { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime LastMessageAt { get; set; }
@@ -63,7 +63,7 @@ public class MessageSummary
 public class MessageThreadDetailResponse
 {
     public Guid Id { get; set; }
-    public CaseId CaseId { get; set; }
+    public CaseId? CaseId { get; set; }
     public string Subject { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime LastMessageAt { get; set; }

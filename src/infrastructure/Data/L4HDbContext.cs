@@ -961,8 +961,8 @@ public class L4HDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.CaseId)
                 .HasConversion(
-                    v => v.Value,
-                    v => new CaseId(v));
+                    v => v.HasValue ? v.Value.Value : (Guid?)null,
+                    v => v.HasValue ? new CaseId(v.Value) : (CaseId?)null);
             entity.Property(e => e.RecipientUserId)
                 .HasConversion(
                     v => v.HasValue ? v.Value.Value : (Guid?)null,
