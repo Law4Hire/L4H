@@ -417,30 +417,48 @@ app.UseSerilogRequestLogging();
 Console.WriteLine("[STARTUP] Serilog request logging configured");
 
 // Configure static files for attorney photos and other uploads
-var basePath = builder.Configuration.GetValue<string>("FileStorage:BasePath") ?? "/data/uploads";
-// Create directory if it doesn't exist
-if (!Directory.Exists(basePath))
+var basePath = builder.Configuration.GetValue<string>("FileStorage:BasePath") 
+               ?? builder.Configuration.GetValue<string>("Uploads:BasePath")
+               ?? Path.Combine(AppContext.BaseDirectory, "uploads");
+
+try 
 {
-    Directory.CreateDirectory(basePath);
-    Console.WriteLine($"[STARTUP] Created uploads directory: {basePath}");
+    if (!Directory.Exists(basePath))
+    {
+        Directory.CreateDirectory(basePath);
+        Console.WriteLine($"[STARTUP] Created uploads directory: {basePath}");
+    }
+    var imagesPath = Path.Combine(basePath, "images");
+    if (!Directory.Exists(imagesPath))
+    {
+        Directory.CreateDirectory(imagesPath);
+        Console.WriteLine($"[STARTUP] Created images directory: {imagesPath}");
+    }
 }
-var imagesPath = Path.Combine(basePath, "images");
-if (!Directory.Exists(imagesPath))
+catch (Exception ex)
 {
-    Directory.CreateDirectory(imagesPath);
-    Console.WriteLine($"[STARTUP] Created images directory: {imagesPath}");
+    Console.WriteLine($"[STARTUP] WARNING: Could not create upload directories at {basePath}: {ex.Message}");
 }
-app.UseStaticFiles(new StaticFileOptions
+
+if (Directory.Exists(basePath))
 {
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(basePath),
-    RequestPath = "/uploads"
-});
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(imagesPath),
-    RequestPath = "/images"
-});
-Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads and {Path.Combine(basePath, "images")} -> /images");
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(basePath),
+        RequestPath = "/uploads"
+    });
+    
+    var imagesPath = Path.Combine(basePath, "images");
+    if (Directory.Exists(imagesPath))
+    {
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(imagesPath),
+            RequestPath = "/images"
+        });
+    }
+}
+Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads");
 
 app.UseAuthentication();
 Console.WriteLine("[STARTUP] Authentication configured");
