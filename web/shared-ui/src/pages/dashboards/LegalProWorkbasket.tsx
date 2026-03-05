@@ -22,6 +22,8 @@ interface CaseItem {
   clientLastName?: string
   userEmail?: string
   userName?: string
+  visaTypeCode?: string
+  visaTypeName?: string
   visaTypes?: CaseVisaTypeInfo[]
   assignedStaffId?: number | null
   assignedStaffName?: string | null
