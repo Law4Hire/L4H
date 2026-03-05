@@ -1276,7 +1276,7 @@ public class AdminController : ControllerBase
             PackageCode = c.Package?.Code,
             PackageDisplayName = c.Package?.DisplayName,
             AssignedStaffId = c.AssignedStaffId,
-            AssignedStaffName = c.AssignedStaffId.HasValue && attorneys.TryGetValue(c.AssignedStaffId.Value, out var name) ? name : null,
+            AssignedStaffName = (c.AssignedStaffId.HasValue && attorneys.ContainsKey(c.AssignedStaffId.Value)) ? attorneys[c.AssignedStaffId.Value] : null,
             InterviewSessionId = c.InterviewSessions.OrderByDescending(s => s.StartedAt).FirstOrDefault()?.Id,
             IsVisaLockedByAttorney = c.IsVisaLockedByAttorney,
             LatestPriceSnapshot = c.PriceSnapshots.FirstOrDefault() != null 

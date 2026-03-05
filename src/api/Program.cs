@@ -424,6 +424,12 @@ if (!Directory.Exists(basePath))
     Directory.CreateDirectory(basePath);
     Console.WriteLine($"[STARTUP] Created uploads directory: {basePath}");
 }
+var imagesPath = Path.Combine(basePath, "images");
+if (!Directory.Exists(imagesPath))
+{
+    Directory.CreateDirectory(imagesPath);
+    Console.WriteLine($"[STARTUP] Created images directory: {imagesPath}");
+}
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(basePath),
@@ -431,7 +437,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(Path.Combine(basePath, "images")),
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(imagesPath),
     RequestPath = "/images"
 });
 Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads and {Path.Combine(basePath, "images")} -> /images");
