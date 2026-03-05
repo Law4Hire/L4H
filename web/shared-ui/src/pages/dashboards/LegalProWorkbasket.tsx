@@ -203,7 +203,7 @@ const LegalProWorkbasket: React.FC = () => {
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {c.visaTypes && c.visaTypes.length > 0 
                         ? (c.visaTypes.find(v => v.isPrimary)?.visaTypeCode || c.visaTypes[0].visaTypeCode)
-                        : (c.visaTypeCode || c.visaTypeName || '—')}
+                        : ((c as any).visaTypeCode || (c as any).visaTypeName || '—')}
                     </td>
                     <td className="px-6 py-4">
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-xs">
@@ -216,7 +216,7 @@ const LegalProWorkbasket: React.FC = () => {
                           defaultValue={c.assignedStaffId ?? ''}
                           disabled={assigningCaseId === c.id}
                           onChange={e => handleAssignCase(c.id, e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:white"
                         >
                           <option value="">— Unassigned —</option>
                           {attorneys.map(a => (
