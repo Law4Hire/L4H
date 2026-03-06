@@ -456,20 +456,10 @@ if (Directory.Exists(basePath))
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(basePath),
-        RequestPath = "/uploads"
+        RequestPath = "/api/v1/uploads"
     });
-    
-    var imagesPath = Path.Combine(basePath, "images");
-    if (Directory.Exists(imagesPath))
-    {
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(imagesPath),
-            RequestPath = "/images"
-        });
-    }
 }
-Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads");
+Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /api/v1/uploads");
 
 app.UseAuthentication();
 Console.WriteLine("[STARTUP] Authentication configured");

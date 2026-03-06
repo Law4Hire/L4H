@@ -33,7 +33,7 @@ services:
       sqlserver:
         condition: service_healthy
     volumes:
-      - ./data/uploads:/app/uploads
+      - ./data/uploads:/data/uploads
     restart: unless-stopped
 
   upload-gateway:

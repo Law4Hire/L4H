@@ -141,7 +141,7 @@ public class FileUploadService : IFileUploadService
             await file.CopyToAsync(stream);
         }
 
-        return "/" + relativePath.Replace("\\", "/");
+        return "/api/v1/uploads/" + relativePath.Replace("\\", "/");
     }
 
     public async Task<string> UploadAttorneyPhotoAsync(IFormFile file)
@@ -160,7 +160,7 @@ public class FileUploadService : IFileUploadService
             await file.CopyToAsync(stream);
         }
 
-        return "/" + relativePath.Replace("\\", "/");
+        return "/api/v1/uploads/" + relativePath.Replace("\\", "/");
     }
 
     public bool IsValidImageFile(IFormFile file)
