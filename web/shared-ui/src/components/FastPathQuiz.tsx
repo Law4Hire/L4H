@@ -27,7 +27,7 @@ interface FastPathResult {
 }
 
 interface FastPathQuizProps {
-  onComplete: (answers: Record<string, string>) => void
+  onComplete: (answers: Record<string, string>, sessionId?: string) => void
 }
 
 interface QuizSession {

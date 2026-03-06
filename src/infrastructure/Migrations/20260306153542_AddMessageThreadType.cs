@@ -16,7 +16,7 @@ namespace L4H.Infrastructure.Migrations
                 type: "nvarchar(50)",
                 maxLength: 50,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: "general");
         }
 
         /// <inheritdoc />
