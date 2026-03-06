@@ -1,10 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FastPathQuiz, Button } from '@l4h/shared-ui'
+import { FastPathQuiz, Button, useAuth } from '@l4h/shared-ui'
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate()
+  const { isAuthenticated, isStaff } = useAuth()
   const [showQuiz, setShowQuiz] = useState(false)
+
+  // Redirect staff to dashboard immediately
+  useEffect(() => {
+    if (isAuthenticated && isStaff) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, isStaff, navigate])
 
   const handleQuizComplete = (answers: Record<string, string>, sessionId?: string) => {
     // Store answers and sessionId in session storage to be picked up by the interview page

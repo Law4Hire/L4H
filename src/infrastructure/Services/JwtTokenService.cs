@@ -33,27 +33,32 @@ public class JwtTokenService : IJwtTokenService
             new Claim(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
             new Claim("sub", user.Id.Value.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
+            new Claim("email", user.Email),
             new Claim("email_verified", user.EmailVerified.ToString().ToLowerInvariant()),
             new Claim("is_admin", user.IsAdmin.ToString().ToLowerInvariant()),
             new Claim("is_legal_professional", user.IsLegalProfessional.ToString().ToLowerInvariant()),
             new Claim("security_stamp", user.PasswordUpdatedAt.Ticks.ToString())
         };
 
-        // Add role claims for authorization
+        // Add role claims for authorization (both standard and legacy SOAP types)
         if (user.IsAdmin)
         {
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            claims.Add(new Claim("role", "Admin"));
         }
 
         if (user.IsLegalProfessional)
         {
             claims.Add(new Claim(ClaimTypes.Role, "LegalProfessional"));
+            claims.Add(new Claim("role", "LegalProfessional"));
             claims.Add(new Claim(ClaimTypes.Role, "Attorney")); // Alias for backward compatibility
+            claims.Add(new Claim("role", "Attorney"));
         }
 
         // Add attorney assignment information for legal professionals
         if (user.IsLegalProfessional && user.AttorneyProfileId.HasValue)
         {
+            claims.Add(new Claim("attorney_id", user.AttorneyProfileId.Value.ToString(CultureInfo.InvariantCulture)));
             claims.Add(new Claim("AttorneyId", user.AttorneyProfileId.Value.ToString(CultureInfo.InvariantCulture)));
         }
 

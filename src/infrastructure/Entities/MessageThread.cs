@@ -16,6 +16,12 @@ public class MessageThread
     public DateTime LastMessageAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// Type of thread: general, assigned, internal, admin, direct
+    /// </summary>
+    [MaxLength(50)]
+    public string ThreadType { get; set; } = "general";
+
+    /// <summary>
     /// Recipient user ID. Null = "General" message visible to all admins.
     /// Non-null = Message directed to specific staff member (attorney).
     /// </summary>

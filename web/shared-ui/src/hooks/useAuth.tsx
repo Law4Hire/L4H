@@ -57,12 +57,19 @@ const decodeJwt = (token: string): User | null => {
 
     const userId = payload.sub || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
     const email = payload.email || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress']
-    const isAdmin = payload.is_admin === 'True' || payload.is_admin === 'true' || payload.is_admin === true
-    const isLegalProfessional = payload.is_legal_professional === 'True' || payload.is_legal_professional === 'true' || payload.is_legal_professional === true
+    
+    // Robust boolean claim detection
+    const isTrue = (val: any) => val === 'True' || val === 'true' || val === true || val === 1 || val === '1'
+    
+    const isAdmin = isTrue(payload.is_admin) || isTrue(payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === 'Admin')
+    const isLegalProfessional = isTrue(payload.is_legal_professional) || 
+                               isTrue(payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === 'LegalProfessional') ||
+                               isTrue(payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === 'Attorney')
+    
     const firstName = payload.given_name || payload.firstName || ''
     const lastName = payload.family_name || payload.lastName || ''
-    const name = payload.name || `${firstName} ${lastName}`.trim() || email.split('@')[0]
-    const attorneyId = payload.attorney_id ? parseInt(payload.attorney_id) : undefined
+    const name = payload.name || `${firstName} ${lastName}`.trim() || email?.split('@')[0] || 'User'
+    const attorneyId = payload.attorney_id || payload.AttorneyId ? parseInt(payload.attorney_id || payload.AttorneyId) : undefined
     const country = payload.country || payload.location
 
     let role: 'Admin' | 'LegalProfessional' | 'Client' = 'Client'

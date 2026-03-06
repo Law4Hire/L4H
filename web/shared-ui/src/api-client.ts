@@ -337,6 +337,14 @@ export const cases = {
     return fetchJson('/v1/cases/mine')
   },
 
+  async assigned() {
+    return fetchJson('/v1/cases/assigned')
+  },
+
+  async available() {
+    return fetchJson('/v1/cases/available')
+  },
+
   async get(caseId: string) {
     return fetchJson(`/v1/cases/${caseId}`)
   },
@@ -422,6 +430,26 @@ export const appointments = {
 export const messages = {
   async threads() {
     return fetchJson('/v1/messaging/threads')
+  },
+
+  async general() {
+    return fetchJson('/v1/messaging/general')
+  },
+
+  async assigned() {
+    return fetchJson('/v1/messaging/assigned')
+  },
+
+  async internal() {
+    return fetchJson('/v1/messaging/internal')
+  },
+
+  async admin() {
+    return fetchJson('/v1/messaging/admin')
+  },
+
+  async direct(userId: string) {
+    return fetchJson(`/v1/messaging/direct/${userId}`)
   },
   
   async thread(threadId: string) {

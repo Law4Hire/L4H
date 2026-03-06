@@ -75,5 +75,7 @@ export {
 // Pages
 export { SettingsHub } from './pages/SettingsHub'
 export { UnifiedDashboard } from './pages/UnifiedDashboard'
+export { default as AdminWorkspace } from './pages/dashboards/AdminWorkspace'
+export { default as ProfessionalWorkspace } from './pages/dashboards/ProfessionalWorkspace'
 
 // I18n - removed singleton export, each app should create its own i18n instance
