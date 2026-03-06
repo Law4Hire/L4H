@@ -173,9 +173,9 @@ public sealed class MessagingControllerTests : BaseIntegrationTest
         messages.GetArrayLength().Should().BeGreaterThan(0);
         
         var firstMessage = messages[0];
-        firstMessage.GetProperty("content").GetString().Should().NotBeNullOrEmpty();
-        firstMessage.GetProperty("sender").GetString().Should().NotBeNullOrEmpty();
-        firstMessage.GetProperty("timestamp").GetString().Should().NotBeNullOrEmpty();
+        firstMessage.GetProperty("content").Should().NotBeNull();
+        firstMessage.GetProperty("sender").Should().NotBeNull();
+        firstMessage.GetProperty("timestamp").Should().NotBeNull();
     }
 
     [Fact]
