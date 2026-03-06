@@ -176,19 +176,30 @@ else
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("IsAdmin", policy => policy.Requirements.Add(new AdminOrBridgeRequirement()));
-    options.AddPolicy("IsLegalProfessional", policy => policy.RequireClaim("is_legal_professional", "true", "True"));
+    options.AddPolicy("IsAdmin", policy => {
+        policy.RequireAuthenticatedUser();
+        policy.Requirements.Add(new AdminOrBridgeRequirement());
+    });
+    
+    options.AddPolicy("IsLegalProfessional", policy => 
+        policy.RequireAssertion(context => 
+            context.User.IsInRole("LegalProfessional") || 
+            context.User.IsInRole("Attorney") ||
+            context.User.HasClaim(c => c.Type == "is_legal_professional" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase))));
+
     options.AddPolicy("IsAdminOrLegalProfessional", policy => 
         policy.RequireAssertion(context => 
-            context.User.HasClaim("is_admin", "true") || 
-            context.User.HasClaim("is_admin", "True") ||
-            context.User.HasClaim("is_legal_professional", "true") ||
-            context.User.HasClaim("is_legal_professional", "True")));
+            context.User.IsInRole("Admin") ||
+            context.User.IsInRole("LegalProfessional") || 
+            context.User.IsInRole("Attorney") ||
+            context.User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase)) ||
+            context.User.HasClaim(c => c.Type == "is_legal_professional" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase))));
+
     options.AddPolicy("HasAttorneyAssignment", policy => 
         policy.RequireAssertion(context => 
-            context.User.HasClaim("is_admin", "true") || 
-            context.User.HasClaim("is_admin", "True") ||
-            context.User.HasClaim(c => c.Type == "attorney_id")));
+            context.User.HasClaim(c => c.Type == "is_admin" && c.Value.Equals("true", StringComparison.OrdinalIgnoreCase)) || 
+            context.User.HasClaim(c => c.Type == "attorney_id") ||
+            context.User.HasClaim(c => c.Type == "AttorneyId")));
 });
 
             // Add HttpContextAccessor for CSRF service

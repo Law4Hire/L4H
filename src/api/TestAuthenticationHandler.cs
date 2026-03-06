@@ -61,7 +61,13 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
         if (token == "mock-jwt-token-for-testing" || token.Contains("staff"))
         {
             claims.Add(new Claim(ClaimTypes.Role, "Staff"));
-            claims.Add(new Claim("is_staff", "true")); // Changed from "IsStaff" to "is_staff"
+            claims.Add(new Claim("role", "Staff"));
+            claims.Add(new Claim("is_staff", "true"));
+            claims.Add(new Claim(ClaimTypes.Role, "LegalProfessional"));
+            claims.Add(new Claim("role", "LegalProfessional"));
+            claims.Add(new Claim("is_legal_professional", "true"));
+            claims.Add(new Claim(ClaimTypes.Role, "Attorney"));
+            claims.Add(new Claim("role", "Attorney"));
         }
 
         var identity = new ClaimsIdentity(claims, "Test");

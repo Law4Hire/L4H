@@ -125,45 +125,7 @@ public class CasesController : ControllerBase
         };
 
         var cases = await query.ToListAsync().ConfigureAwait(false);
-
-        // Get assigned staff details for cases that have assignments
-        var staffIds = cases.Where(c => c.AssignedStaffId.HasValue).Select(c => c.AssignedStaffId!.Value).Distinct().ToList();
-        var staffMembers = await _context.Attorneys
-            .Where(a => staffIds.Contains(a.Id))
-            .Select(a => new { a.Id, a.Name })
-            .ToDictionaryAsync(a => a.Id, a => a.Name);
-
-        var response = cases.Select(c => new CaseDashboardResponse
-        {
-            Id = c.Id.Value,
-            UserId = c.User.Id.Value,
-            ClientFirstName = c.User.FirstName ?? "",
-            ClientLastName = c.User.LastName ?? "",
-            ClientEmail = c.User.Email,
-            Status = c.Status,
-            LastActivityAt = c.LastActivityAt,
-            CreatedAt = c.CreatedAt,
-            AssignedStaffId = c.AssignedStaffId,
-            AssignedStaffName = c.AssignedStaffId.HasValue && staffMembers.ContainsKey(c.AssignedStaffId.Value)
-                ? staffMembers[c.AssignedStaffId.Value]
-                : null,
-            VisaTypes = c.CaseVisaTypes
-                .OrderBy(cvt => cvt.DisplayOrder)
-                .Select(cvt => new CaseVisaTypeInfo
-                {
-                    VisaTypeId = cvt.VisaTypeId,
-                    VisaTypeCode = cvt.VisaType.Code ?? "",
-                    VisaTypeName = cvt.VisaType.Name ?? "",
-                    IsPrimary = cvt.IsPrimary,
-                    DisplayOrder = cvt.DisplayOrder
-                })
-                .ToList()
-        }).ToArray();
-
-        await LogAuditAsync("case", "dashboard_list", "Case", "multiple",
-            new { count = response.Length, showAssigned, isAdmin, isLegalProfessional }).ConfigureAwait(false);
-
-        return Ok(response);
+        return Ok(await MapToDashboardResponse(cases));
     }
 
     /// <summary>
@@ -333,22 +295,6 @@ public class CasesController : ControllerBase
     }
 
     /// <summary>
-    /// Update case status (POST alternative for CORS compatibility)
-    /// </summary>
-    /// <param name="id">Case ID</param>
-    /// <param name="request">Status update request</param>
-    /// <returns>Success message</returns>
-    [HttpPost("{id}/status")]
-    [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<MessageResponse>> UpdateCaseStatusPost(Guid id, [FromBody] UpdateCaseStatusRequest request)
-    {
-        return await UpdateCaseStatus(id, request);
-    }
-
-    /// <summary>
     /// Update case status with guarded transitions
     /// </summary>
     /// <param name="id">Case ID</param>
@@ -411,14 +357,9 @@ public class CasesController : ControllerBase
         });
     }
 
-    // ... (rest of the file)
-
     /// <summary>
     /// Assign a case to a legal professional (admin only)
     /// </summary>
-    /// <param name="id">Case ID</param>
-    /// <param name="request">Assignment request</param>
-    /// <returns>Success response</returns>
     [HttpPost("{id}/assign")]
     [Authorize(Policy = "IsAdmin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -446,46 +387,31 @@ public class CasesController : ControllerBase
             attorney = await _context.Attorneys.FindAsync(request.StaffId);
             if (attorney == null)
             {
-                // Debugging: Log available attorneys
-                var count = await _context.Attorneys.CountAsync();
-                var firstId = await _context.Attorneys.Select(a => a.Id).FirstOrDefaultAsync();
-                return NotFound(new ProblemDetails 
-                { 
-                    Title = "Not Found", 
-                    Detail = $"Attorney/Staff not found. ID requested: {request.StaffId}. Total attorneys in DB: {count}. First ID: {firstId}." 
-                });
+                return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Attorney not found." });
             }
         }
 
-        // Update assignment (null means unassign)
+        // Update assignment
         caseEntity.AssignedStaffId = request.StaffId;
         caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
-        // Send notification to the assigned attorney if they have notifications enabled
+        // Send notification
         if (request.StaffId.HasValue)
         {
             var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.AttorneyProfileId == request.StaffId);
             if (assignedUser != null)
             {
-                var notificationPrefs = await _context.UserNotificationPreferences
-                    .FirstOrDefaultAsync(p => p.UserId == assignedUser.Id && p.NotificationType == NotificationType.ClientAssignment);
-
-                // Send notification if preference not set or if enabled
-                if (notificationPrefs == null || notificationPrefs.InAppEnabled)
+                _context.Notifications.Add(new Notification
                 {
-                    var notification = new Notification
-                    {
-                        UserId = assignedUser.Id,
-                        Title = "New Case Assigned",
-                        Message = $"You have been assigned to case for {caseEntity.User.FirstName} {caseEntity.User.LastName}",
-                        Priority = NotificationPriority.Normal,
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    _context.Notifications.Add(notification);
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                    UserId = assignedUser.Id,
+                    Title = "New Case Assigned",
+                    Message = $"You have been assigned to case for {caseEntity.User.FirstName} {caseEntity.User.LastName}",
+                    Priority = NotificationPriority.Normal,
+                    CreatedAt = DateTime.UtcNow
+                });
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 
@@ -496,171 +422,124 @@ public class CasesController : ControllerBase
     }
 
     /// <summary>
-    /// Request reassignment of a case. Only the legal professional currently assigned to the
-    /// case may submit this request; admins are not permitted (they can reassign directly).
+    /// Request reassignment of a case
     /// </summary>
     [HttpPost("{id}/request-reassignment")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RequestReassignment(Guid id, [FromBody] ReassignmentRequestBody? request)
+    public async Task<IActionResult> RequestReassignment(Guid id, [FromBody] ReassignmentRequestBody request)
     {
-        // 1. Null-body guard
-        if (request == null)
-            return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = "Request body is required." });
-
-        // 2. Only legal professionals (non-admin staff) may use this endpoint
-        if (!IsLegalProfessional() || IsAdmin())
-            return Forbid();
+        if (!IsLegalProfessional() || IsAdmin()) return Forbid();
 
         var caseId = new CaseId(id);
-        var caseEntity = await _context.Cases
-            .Include(c => c.User)
-            .FirstOrDefaultAsync(c => c.Id == caseId)
-            .ConfigureAwait(false);
+        var caseEntity = await _context.Cases.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == caseId).ConfigureAwait(false);
+        if (caseEntity == null) return NotFound();
 
-        if (caseEntity == null)
-            return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Case not found." });
-
-        // 3. Ownership check — caller must be the attorney assigned to this case
         var callerId = GetCurrentUserId();
         var callerUser = await _context.Users.FindAsync(callerId).ConfigureAwait(false);
-        if (callerUser?.AttorneyProfileId == null || caseEntity.AssignedStaffId != callerUser.AttorneyProfileId)
-            return Forbid();
+        if (callerUser?.AttorneyProfileId == null || caseEntity.AssignedStaffId != callerUser.AttorneyProfileId) return Forbid();
 
-        var requesterName = User.FindFirst(ClaimTypes.Name)?.Value
-            ?? User.FindFirst(ClaimTypes.Email)?.Value
-            ?? "Legal Professional";
-
-        // Create an in-app notification for all admin users
-        var adminUsers = await _context.Users
-            .Where(u => u.IsAdmin)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
+        var adminUsers = await _context.Users.Where(u => u.IsAdmin).ToListAsync().ConfigureAwait(false);
         foreach (var admin in adminUsers)
         {
             _context.Notifications.Add(new Notification
             {
                 UserId = admin.Id,
                 Title = "Reassignment Request",
-                Message = $"Reassignment requested for case {id.ToString()[..8]}... by {requesterName}. Reason: {request.Reason ?? "Not specified"}",
-                Priority = NotificationPriority.Normal,
-                IsRead = false,
+                Message = $"Reassignment requested for case {id.ToString()[..8]}... by {User.Identity?.Name}. Reason: {request.Reason}",
                 CreatedAt = DateTime.UtcNow,
             });
         }
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        await LogAuditAsync("case", "reassignment_request", "Case", id.ToString(),
-            new { requesterName, reason = request.Reason }).ConfigureAwait(false);
+        await LogAuditAsync("case", "reassignment_request", "Case", id.ToString(), new { reason = request.Reason }).ConfigureAwait(false);
 
         return Ok(new { message = "Reassignment request sent to administrators" });
     }
 
     /// <summary>
-    /// Update visa types for a case (legal professionals can update for assigned cases)
+    /// Get cases assigned to the current legal professional
     /// </summary>
-    /// <param name="id">Case ID</param>
-    /// <param name="request">Visa types update request</param>
-    /// <returns>Success response</returns>
-    [HttpPut("{id}/visa-types")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateCaseVisaTypes(Guid id, [FromBody] UpdateCaseVisaTypesRequest request)
+    [HttpGet("assigned")]
+    [Authorize(Policy = "IsLegalProfessional")]
+    public async Task<ActionResult<CaseDashboardResponse[]>> GetAssignedCases()
     {
-        var caseId = new CaseId(id);
         var userId = GetCurrentUserId();
-        var isAdmin = IsAdmin();
-
-        var caseEntity = await _context.Cases
-            .Include(c => c.CaseVisaTypes)
-            .FirstOrDefaultAsync(c => c.Id == caseId)
-            .ConfigureAwait(false);
-
-        if (caseEntity == null)
+        var currentUser = await _context.Users.FindAsync(userId).ConfigureAwait(false);
+        
+        if (currentUser?.AttorneyProfileId == null && !IsAdmin())
         {
-            return NotFound(new ProblemDetails { Title = "Not Found", Detail = "Case not found." });
+            return Ok(Array.Empty<CaseDashboardResponse>());
         }
 
-        // Check access: admin or assigned legal professional
-        var currentUser = await _context.Users.FindAsync(userId);
-        var isAssignedProfessional = currentUser?.AttorneyProfileId != null && caseEntity.AssignedStaffId == currentUser.AttorneyProfileId;
+        var query = _context.Cases
+            .Include(c => c.User)
+            .Include(c => c.CaseVisaTypes).ThenInclude(cvt => cvt.VisaType)
+            .FilterActive()
+            .FilterForClients();
 
-        if (!isAdmin && !isAssignedProfessional)
+        if (!IsAdmin())
         {
-            return StatusCode(403, new ProblemDetails
-            {
-                Title = "Forbidden",
-                Detail = "You don't have permission to update visa types for this case."
-            });
+            query = query.Where(c => c.AssignedStaffId == currentUser!.AttorneyProfileId);
         }
 
-        // Validate visa type count (max 5)
-        if (request.VisaTypeIds.Count > 5)
+        var cases = await query.ToListAsync().ConfigureAwait(false);
+        return Ok(await MapToDashboardResponse(cases));
+    }
+
+    /// <summary>
+    /// Get unassigned cases available for pickup
+    /// </summary>
+    [HttpGet("available")]
+    [Authorize(Policy = "IsAdminOrLegalProfessional")]
+    public async Task<ActionResult<CaseDashboardResponse[]>> GetAvailableCases()
+    {
+        var query = _context.Cases
+            .Include(c => c.User)
+            .Include(c => c.CaseVisaTypes).ThenInclude(cvt => cvt.VisaType)
+            .FilterActive()
+            .FilterForClients()
+            .Where(c => c.AssignedStaffId == null);
+
+        var cases = await query.ToListAsync().ConfigureAwait(false);
+        return Ok(await MapToDashboardResponse(cases));
+    }
+
+    private async Task<CaseDashboardResponse[]> MapToDashboardResponse(List<Case> cases)
+    {
+        var staffIds = cases.Where(c => c.AssignedStaffId.HasValue).Select(c => c.AssignedStaffId!.Value).Distinct().ToList();
+        var staffMembers = await _context.Attorneys
+            .Where(a => staffIds.Contains(a.Id))
+            .Select(a => new { a.Id, a.Name })
+            .ToDictionaryAsync(a => a.Id, a => a.Name);
+
+        return cases.Select(c => new CaseDashboardResponse
         {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "Invalid Request",
-                Detail = "A case can have at most 5 visa types."
-            });
-        }
-
-        // Verify all visa types exist
-        var visaTypes = await _context.VisaTypes
-            .Where(vt => request.VisaTypeIds.Contains(vt.Id))
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        if (visaTypes.Count != request.VisaTypeIds.Count)
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "Invalid Request",
-                Detail = "One or more visa types not found."
-            });
-        }
-
-        // Remove existing visa types
-        _context.CaseVisaTypes.RemoveRange(caseEntity.CaseVisaTypes);
-
-        // Add new visa types
-        for (int i = 0; i < request.VisaTypeIds.Count; i++)
-        {
-            var visaTypeId = request.VisaTypeIds[i];
-            var isPrimary = request.PrimaryVisaTypeId.HasValue && visaTypeId == request.PrimaryVisaTypeId.Value;
-
-            caseEntity.CaseVisaTypes.Add(new CaseVisaType
-            {
-                CaseId = caseId,
-                VisaTypeId = visaTypeId,
-                DisplayOrder = i + 1,
-                IsPrimary = isPrimary,
-                CreatedAt = DateTime.UtcNow
-            });
-        }
-
-        // Update the legacy VisaTypeId field to the primary visa type (for backwards compatibility)
-        if (request.PrimaryVisaTypeId.HasValue)
-        {
-            caseEntity.VisaTypeId = request.PrimaryVisaTypeId.Value;
-        }
-        else if (request.VisaTypeIds.Count > 0)
-        {
-            caseEntity.VisaTypeId = request.VisaTypeIds[0];
-        }
-
-        caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
-
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-
-        await LogAuditAsync("case", "update_visa_types", "Case", id.ToString(),
-            new { visaTypeIds = request.VisaTypeIds, primaryId = request.PrimaryVisaTypeId }).ConfigureAwait(false);
-
-        return Ok(new { message = "Visa types updated successfully" });
+            Id = c.Id.Value,
+            UserId = c.User.Id.Value,
+            ClientFirstName = c.User.FirstName ?? "",
+            ClientLastName = c.User.LastName ?? "",
+            ClientEmail = c.User.Email,
+            Status = c.Status,
+            LastActivityAt = c.LastActivityAt,
+            CreatedAt = c.CreatedAt,
+            AssignedStaffId = c.AssignedStaffId,
+            AssignedStaffName = c.AssignedStaffId.HasValue && staffMembers.ContainsKey(c.AssignedStaffId.Value)
+                ? staffMembers[c.AssignedStaffId.Value]
+                : null,
+            VisaTypes = c.CaseVisaTypes
+                .OrderBy(cvt => cvt.DisplayOrder)
+                .Select(cvt => new CaseVisaTypeInfo
+                {
+                    VisaTypeId = cvt.VisaTypeId,
+                    VisaTypeCode = cvt.VisaType.Code ?? "",
+                    VisaTypeName = cvt.VisaType.Name ?? "",
+                    IsPrimary = cvt.IsPrimary,
+                    DisplayOrder = cvt.DisplayOrder
+                })
+                .ToList()
+        }).ToArray();
     }
 
     private static bool IsValidTransition(string currentStatus, string newStatus)
@@ -671,7 +550,6 @@ public class CasesController : ControllerBase
             "paid" => newStatus.ToLower(CultureInfo.InvariantCulture) is "active" or "inactive", 
             "active" => newStatus.ToLower(CultureInfo.InvariantCulture) is "closed" or "denied" or "inactive",
             "inactive" => newStatus.ToLower(CultureInfo.InvariantCulture) is "paid",
-            "closed" or "denied" => false, // Terminal states
             _ => false
         };
     }
@@ -679,16 +557,20 @@ public class CasesController : ControllerBase
     private UserId GetCurrentUserId()
     {
         var userIdClaim = User.FindFirst("sub")?.Value;
-        if (Guid.TryParse(userIdClaim, out var userId))
-        {
-            return new UserId(userId);
-        }
-        throw new UnauthorizedAccessException("User ID not found in claims");
+        if (Guid.TryParse(userIdClaim, out var userId)) return new UserId(userId);
+        throw new UnauthorizedAccessException("User ID not found");
     }
 
     private bool IsAdmin()
     {
         return User.HasClaim("is_admin", "True") || User.HasClaim("is_admin", "true") || User.IsInRole("Admin");
+    }
+
+    private bool IsLegalProfessional()
+    {
+        return User.HasClaim("is_legal_professional", "True") || User.HasClaim("is_legal_professional", "true") ||
+               User.HasClaim("is_admin", "True") || User.HasClaim("is_admin", "true") ||
+               User.IsInRole("LegalProfessional") || User.IsInRole("Attorney");
     }
 
     private async Task LogAuditAsync(string category, string action, string targetType, string targetId, object details)
@@ -704,15 +586,8 @@ public class CasesController : ControllerBase
             DetailsJson = JsonSerializer.Serialize(details),
             CreatedAt = DateTime.UtcNow
         };
-
         _context.AuditLogs.Add(auditLog);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-    }
-
-    private bool IsLegalProfessional()
-    {
-        return User.HasClaim("is_legal_professional", "True") || User.HasClaim("is_legal_professional", "true") ||
-               User.HasClaim("is_admin", "True") || User.HasClaim("is_admin", "true");
     }
 }
 
@@ -741,16 +616,8 @@ public class PriceSnapshotResponse
     public DateTime CreatedAt { get; set; }
 }
 
-public class UpdateCaseStatusRequest
-{
-    public string Status { get; set; } = string.Empty;
-}
-
-public class SetPackageRequest
-{
-    public string PackageId { get; set; } = string.Empty;
-}
-
+public class UpdateCaseStatusRequest { public string Status { get; set; } = string.Empty; }
+public class SetPackageRequest { public string PackageId { get; set; } = string.Empty; }
 public class CaseDashboardResponse
 {
     public Guid Id { get; set; }
@@ -775,16 +642,8 @@ public class CaseVisaTypeInfo
     public int DisplayOrder { get; set; }
 }
 
-public class AssignCaseRequest
-{
-    public int? StaffId { get; set; }
-}
-
-public class ReassignmentRequestBody
-{
-    public string? Reason { get; set; }
-}
-
+public class AssignCaseRequest { public int? StaffId { get; set; } }
+public class ReassignmentRequestBody { public string? Reason { get; set; } }
 public class UpdateCaseVisaTypesRequest
 {
     public List<int> VisaTypeIds { get; set; } = new List<int>();

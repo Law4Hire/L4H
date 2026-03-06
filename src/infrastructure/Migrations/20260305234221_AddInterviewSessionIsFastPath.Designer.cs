@@ -4,6 +4,7 @@ using L4H.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace L4H.Infrastructure.Migrations
 {
     [DbContext(typeof(L4HDbContext))]
-    partial class L4HDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260305234221_AddInterviewSessionIsFastPath")]
+    partial class AddInterviewSessionIsFastPath
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2854,11 +2857,6 @@ namespace L4H.Infrastructure.Migrations
                     b.Property<string>("Subject")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ThreadType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 

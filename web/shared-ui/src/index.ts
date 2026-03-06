@@ -52,6 +52,7 @@ export { Container } from './components/Container'
 export { EmptyState } from './components/EmptyState'
 export { Toast, ToastContainer, useToast, ToastProvider } from './components/Toast'
 export { TimeTracker } from './components/TimeTracker'
+export { FastPathQuiz } from './components/FastPathQuiz'
 export { NextSteps } from './components/NextSteps'
 
 // Icons
@@ -74,5 +75,7 @@ export {
 // Pages
 export { SettingsHub } from './pages/SettingsHub'
 export { UnifiedDashboard } from './pages/UnifiedDashboard'
+export { default as AdminWorkspace } from './pages/dashboards/AdminWorkspace'
+export { default as ProfessionalWorkspace } from './pages/dashboards/ProfessionalWorkspace'
 
 // I18n - removed singleton export, each app should create its own i18n instance

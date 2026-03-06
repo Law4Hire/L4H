@@ -56,7 +56,7 @@ public class InterviewController : ControllerBase
             }
 
             // Start the interview using orchestrator
-            var result = await _orchestrator.StartAuthenticatedInterviewAsync(caseId, new UserId(userId));
+            var result = await _orchestrator.StartAuthenticatedInterviewAsync(caseId, new UserId(userId), request.InitialAnswers);
             
             return Ok(new { 
                 sessionId = result.SessionId,
@@ -75,4 +75,5 @@ public class InterviewController : ControllerBase
 public class StartAuthenticatedInterviewRequest
 {
     public Guid CaseId { get; set; }
+    public Dictionary<string, string>? InitialAnswers { get; set; }
 }

@@ -33,7 +33,7 @@ public class AnonymousInterviewController : ControllerBase
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var result = await _orchestrator.StartAnonymousInterviewAsync();
+        var result = await _orchestrator.StartAnonymousInterviewAsync(request.InitialAnswers, request.ExistingSessionId);
         return Ok(result.ToStartResponse());
     }
 

@@ -1,51 +1,44 @@
 import React, { useEffect, useState } from 'react'
 import { auth, getJwtToken, setJwtToken } from './api-client'
+import { useAuth } from './hooks/useAuth'
 
 interface RouteGuardProps {
   children: React.ReactNode
   redirectTo?: string
+  roles?: ('Admin' | 'LegalProfessional' | 'Client')[]
 }
 
 export const RouteGuard: React.FC<RouteGuardProps> = ({ 
   children, 
-  redirectTo = '/login' 
+  redirectTo = '/login',
+  roles
 }) => {
-  // const navigate = useNavigate() // Commented out router dependency
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const { role, isAuthenticated: contextAuthenticated, isLoading } = useAuth()
+  const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
     const checkAuth = async () => {
-      // First check if we have a token in memory
       if (getJwtToken()) {
-        setIsAuthenticated(true)
+        setIsChecking(false)
         return
       }
 
-      // Try to remember (exchange cookie for JWT)
       try {
         const response = await auth.remember()
         if (response && response.token) {
           setJwtToken(response.token)
-          setIsAuthenticated(true)
-        } else {
-          setIsAuthenticated(false)
         }
       } catch (error) {
         console.warn('Remember me failed:', error)
-        setIsAuthenticated(false)
-      }
-      
-      if (!getJwtToken()) {
-        // Redirect to login page
-        window.location.href = redirectTo
+      } finally {
+        setIsChecking(false)
       }
     }
 
     checkAuth()
-  }, [redirectTo])
+  }, [])
 
-  // Show loading while checking authentication
-  if (isAuthenticated === null) {
+  if (isChecking || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-lg">Loading...</div>
@@ -53,11 +46,20 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
     )
   }
 
-  // Show children if authenticated
-  if (isAuthenticated) {
-    return <>{children}</>
+  const authenticated = contextAuthenticated || !!getJwtToken()
+
+  if (!authenticated) {
+    window.location.href = redirectTo
+    return null
   }
 
-  // This shouldn't render as we navigate away, but just in case
-  return null
+  if (roles && roles.length > 0 && role) {
+    if (!roles.includes(role)) {
+      // Not authorized for this role
+      window.location.href = '/dashboard'
+      return null
+    }
+  }
+
+  return <>{children}</>
 }

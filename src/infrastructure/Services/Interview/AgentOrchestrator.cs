@@ -34,17 +34,48 @@ public class AgentOrchestrator : IAgentOrchestrator
         _context = context;
     }
 
-    public async Task<InterviewStartResult> StartAnonymousInterviewAsync()
+    public async Task<InterviewStartResult> StartAnonymousInterviewAsync(Dictionary<string, string>? initialAnswers = null, Guid? existingSessionId = null)
     {
-        // Create new anonymous session
-        var session = await _sessionManager.CreateAnonymousSessionAsync();
+        InterviewSession? session = null;
+        List<InterviewQA> answeredQuestions = new List<InterviewQA>();
+
+        if (existingSessionId.HasValue)
+        {
+            session = await _sessionManager.GetSessionByTokenAsync(existingSessionId.Value);
+            if (session != null)
+            {
+                // Upgrade from FastPath to full interview
+                session.IsFastPath = false;
+                answeredQuestions = (await _sessionManager.GetSessionAnswersAsync(session.Id)).ToList();
+            }
+        }
+
+        if (session == null)
+        {
+            // Create new anonymous session
+            session = await _sessionManager.CreateAnonymousSessionAsync();
+        }
+
+        // Persist initial answers if provided (e.g. from FastPath quiz)
+        // and add to answeredQuestions list if not already there
+        if (initialAnswers != null && initialAnswers.Any())
+        {
+            foreach (var initial in initialAnswers)
+            {
+                if (!answeredQuestions.Any(q => q.QuestionKey.Equals(initial.Key, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var qa = await _sessionManager.SaveAnswerAsync(session.Id, initial.Key, initial.Value);
+                    answeredQuestions.Add(qa);
+                }
+            }
+        }
 
         // Get first question - try AI first to ensure AI-driven flow from the start
-        var firstQuestion = await _aiService.GetNextAIQuestionAsync(session, new List<InterviewQA>(), new List<VisaType>());
+        var firstQuestion = await _aiService.GetNextAIQuestionAsync(session, answeredQuestions, new List<VisaType>());
 
         if (firstQuestion == null)
         {
-            firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());
+            firstQuestion = await _questionEngine.GetNextQuestionAsync(session, answeredQuestions);
         }
 
         if (firstQuestion == null)
@@ -60,18 +91,30 @@ public class AgentOrchestrator : IAgentOrchestrator
         };
     }
 
-    public async Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId)
+    public async Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId, Dictionary<string, string>? initialAnswers = null)
     {
-        // Create new authenticated session linked to the case
+        // Create new authenticated session
         var session = await _sessionManager.CreateAuthenticatedSessionAsync(caseId, userId);
 
+        // Persist initial answers if provided (e.g. from FastPath quiz)
+        var answeredQuestions = new List<InterviewQA>();
+        if (initialAnswers != null && initialAnswers.Any())
+        {
+            foreach (var initial in initialAnswers)
+            {
+                var qa = await _sessionManager.SaveAnswerAsync(session.Id, initial.Key, initial.Value);
+                answeredQuestions.Add(qa);
+            }
+        }
+
         // Get first question - try AI first to ensure AI-driven flow from the start
-        var firstQuestion = await _aiService.GetNextAIQuestionAsync(session, new List<InterviewQA>(), new List<VisaType>());
+        var firstQuestion = await _aiService.GetNextAIQuestionAsync(session, answeredQuestions, new List<VisaType>());
 
         if (firstQuestion == null)
         {
-            firstQuestion = await _questionEngine.GetNextQuestionAsync(session, new List<InterviewQA>());
+            firstQuestion = await _questionEngine.GetNextQuestionAsync(session, answeredQuestions);
         }
+
 
         if (firstQuestion == null)
         {

@@ -8,7 +8,6 @@ import { useAuth } from './hooks/useAuth'
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const SinglePageRegistration = lazy(() => import('./pages/SinglePageRegistration'))
-// const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const PricingPage = lazy(() => import('./pages/PricingPage'))
 const SchedulingPage = lazy(() => import('./pages/SchedulingPage'))
 const AppointmentsPage = lazy(() => import('./pages/AppointmentsPage'))
@@ -30,7 +29,6 @@ const AdminUSCISFormsPage = lazy(() => import('./pages/AdminUSCISFormsPage'))
 const AdminVisaLibraryPage = lazy(() => import('./pages/AdminVisaLibraryPage'))
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'))
 const AttorneyManagementPage = lazy(() => import('./pages/admin/AttorneyManagementPage'))
-// const SystemSettingsPage = lazy(() => import('./pages/admin/SystemSettingsPage'))
 const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
 const DocumentPoolPage = lazy(() => import('./pages/admin/DocumentPoolPage'))
 
@@ -41,7 +39,7 @@ const LoadingFallback = () => (
   </div>
 )
 
-function App() {
+function AppContent() {
   const { isAuthenticated, user } = useAuth()
 
   // Item 11: Automatic Cache Clearing on New Build
@@ -54,15 +52,12 @@ function App() {
       console.log('New build detected, clearing authentication and storage...');
 
       // CRITICAL: Call logout to clear server-side cookies before clearing localStorage
-      // This prevents the "stuck cookie" problem where users remain logged in after rebuild
       fetch('/api/v1/auth/logout', {
         method: 'POST',
-        credentials: 'include' // Include cookies for proper logout
+        credentials: 'include' 
       }).catch(err => {
-        // Logout may fail if already logged out - that's okay
         console.log('Logout during version update:', err.message);
       }).finally(() => {
-        // Clear everything except theme preference
         const theme = localStorage.getItem('theme');
         localStorage.clear();
         if (theme) localStorage.setItem('theme', theme);
@@ -76,22 +71,20 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-    <ToastProvider>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Layout
-                showUserMenu={true}
-                user={user}
-                isAuthenticated={isAuthenticated}
-              >
-                <LandingPage />
-              </Layout>
-            }
-          />
+    <Suspense fallback={<LoadingFallback />}>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout
+              showUserMenu={true}
+              user={user}
+              isAuthenticated={isAuthenticated}
+            >
+              <LandingPage />
+            </Layout>
+          }
+        />
         <Route 
           path="/login" 
           element={
@@ -303,7 +296,7 @@ function App() {
         <Route 
           path="/admin" 
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout 
                 title={'Admin'} 
                 showUserMenu={true} 
@@ -318,7 +311,7 @@ function App() {
         <Route
           path="/admin/users"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'User Management'}
                 showUserMenu={true}
@@ -333,7 +326,7 @@ function App() {
         <Route
           path="/admin/users/:userId"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'User Details'}
                 showUserMenu={true}
@@ -348,7 +341,7 @@ function App() {
         <Route
           path="/admin/pricing"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'Visa/Pricing Management'}
                 showUserMenu={true}
@@ -363,7 +356,7 @@ function App() {
         <Route
           path="/admin/packages"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'Package Management'}
                 showUserMenu={true}
@@ -378,7 +371,7 @@ function App() {
         <Route
           path="/admin/attorneys"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'Attorney Management'}
                 showUserMenu={true}
@@ -393,7 +386,7 @@ function App() {
         <Route
           path="/admin/cases"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin', 'LegalProfessional']}>
               <Layout
                 title={'Case Management'}
                 showUserMenu={true}
@@ -408,7 +401,7 @@ function App() {
         <Route
           path="/admin/uscis-forms"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'USCIS Forms Management'}
                 showUserMenu={true}
@@ -423,7 +416,7 @@ function App() {
         <Route
           path="/admin/visa-library"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'Visa Library Management'}
                 showUserMenu={true}
@@ -438,7 +431,7 @@ function App() {
         <Route
           path="/admin/system-settings"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'System Settings'}
                 showUserMenu={true}
@@ -453,7 +446,7 @@ function App() {
         <Route
           path="/admin/reports"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin']}>
               <Layout
                 title={'Reports & Analytics'}
                 showUserMenu={true}
@@ -468,7 +461,7 @@ function App() {
         <Route
           path="/admin/document-pool"
           element={
-            <RouteGuard>
+            <RouteGuard roles={['Admin', 'LegalProfessional']}>
               <Layout
                 title={'Document Pool Management'}
                 showUserMenu={true}
@@ -495,10 +488,18 @@ function App() {
             </RouteGuard>
           }
         />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
-    </ToastProvider>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </AuthProvider>
   )
 }

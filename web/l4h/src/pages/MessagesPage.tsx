@@ -249,13 +249,8 @@ export default function MessagesPage() {
       return
     }
 
-    if (!activeCaseId) {
-      error('Error', 'No active case found. Please create a case first.')
-      return
-    }
-
     sendMessageMutation.mutate({
-      caseId: activeCaseId,
+      caseId: activeCaseId || '',
       title: newMessage.title,
       initialMessage: newMessage.initialMessage,
       recipientUserId: newMessage.recipientUserId
@@ -293,11 +288,11 @@ export default function MessagesPage() {
       return
     }
 
-    if (!forwardingMessageId || !activeCaseId) return
+    if (!forwardingMessageId) return
 
     forwardMessageMutation.mutate({
       messageId: forwardingMessageId,
-      caseId: activeCaseId,
+      caseId: activeCaseId || '',
       title: forwardMessage.title,
       recipientUserId: forwardMessage.recipientUserId
     })
@@ -314,20 +309,6 @@ export default function MessagesPage() {
           <EmptyState
             icon={MessageCircle}
             title={'Loading...'}
-          />
-        </Card>
-      </Container>
-    )
-  }
-
-  if (!activeCaseId) {
-    return (
-      <Container>
-        <Card>
-          <EmptyState
-            icon={MessageCircle}
-            title={'No Case Found'}
-            description={'You need to create a case before you can send messages. Please visit your dashboard to get started.'}
           />
         </Card>
       </Container>

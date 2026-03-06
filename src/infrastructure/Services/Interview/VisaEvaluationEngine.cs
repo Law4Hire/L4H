@@ -125,19 +125,22 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
                 a => a.AnswerValue!,
                 StringComparer.OrdinalIgnoreCase);
 
-        // Logic Alignment: Map AI-captured intents and Category selections to Legal Vocabulary
+        // Logic Alignment: Map AI-captured intents, Quiz intents and Category selections to Legal Vocabulary
         if (answerDict.TryGetValue("ai_agent_initial_purpose", out var aiPurpose) ||
+            answerDict.TryGetValue("intent_type", out aiPurpose) ||
             answerDict.TryGetValue("intent_purpose", out aiPurpose) ||
             answerDict.TryGetValue("category", out aiPurpose))
         {
             // Vocabulary Harmonization: category values → purpose
             string mappedPurpose = aiPurpose.ToLower() switch
             {
-                "work" or "work_visa" or "green_card_employment" => "professional",
-                "study" or "student_visa" => "student",
-                "tourism" or "visit" or "vacation" or "visitor_visa" => "visitor",
-                "investment" or "eb5" or "investor" => "investor",
+                "work" or "work_visa" or "green_card_employment" or "professional" => "professional",
+                "study" or "student_visa" or "student" => "student",
+                "tourism" or "visit" or "vacation" or "visitor_visa" or "visitor" => "visitor",
+                "investment" or "eb5" or "investor" or "investor_nonimmigrant" or "investor_immigrant" => "investor",
                 "family" or "green_card_family" or "family_petition" => "family",
+                "citizenship" or "naturalization" or "adoption" => "citizenship",
+                "refugee" or "asylum_app" or "tps" or "deportation_defense" or "vawa" => "refugee",
                 _ => aiPurpose
             };
 

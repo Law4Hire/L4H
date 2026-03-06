@@ -337,6 +337,14 @@ export const cases = {
     return fetchJson('/v1/cases/mine')
   },
 
+  async assigned() {
+    return fetchJson('/v1/cases/assigned')
+  },
+
+  async available() {
+    return fetchJson('/v1/cases/available')
+  },
+
   async get(caseId: string) {
     return fetchJson(`/v1/cases/${caseId}`)
   },
@@ -422,6 +430,26 @@ export const appointments = {
 export const messages = {
   async threads() {
     return fetchJson('/v1/messaging/threads')
+  },
+
+  async general() {
+    return fetchJson('/v1/messaging/general')
+  },
+
+  async assigned() {
+    return fetchJson('/v1/messaging/assigned')
+  },
+
+  async internal() {
+    return fetchJson('/v1/messaging/internal')
+  },
+
+  async admin() {
+    return fetchJson('/v1/messaging/admin')
+  },
+
+  async direct(userId: string) {
+    return fetchJson(`/v1/messaging/direct/${userId}`)
   },
   
   async thread(threadId: string) {
@@ -523,7 +551,7 @@ export const interview = {
   },
 
   // Start a new anonymous interview
-  async startAnonymous(languageCode?: string) {
+  async startAnonymous(initialAnswers?: Record<string, string>, existingSessionId?: string, languageCode?: string) {
     return fetchJson<{
       sessionToken: string
       sessionId: string
@@ -538,7 +566,7 @@ export const interview = {
       }
     }>('/v1/interview/anonymous/start', {
       method: 'POST',
-      body: JSON.stringify({ languageCode })
+      body: JSON.stringify({ initialAnswers, existingSessionId, languageCode })
     })
   },
 

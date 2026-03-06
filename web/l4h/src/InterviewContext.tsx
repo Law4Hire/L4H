@@ -26,7 +26,7 @@ interface InterviewState {
   isComplete: boolean;
   isLoading: boolean;
   error: string | null;
-  startInterview: () => Promise<void>;
+  startInterview: (initialAnswers?: Record<string, string>) => Promise<void>;
   resumeInterview: (token: string) => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
 }
@@ -41,7 +41,7 @@ export const InterviewProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const startInterview = useCallback(async () => {
+  const startInterview = useCallback(async (initialAnswers?: Record<string, string>) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -51,9 +51,23 @@ export const InterviewProvider = ({ children }: { children: ReactNode }) => {
       setVisaEvaluations([]);
       setIsComplete(false);
 
-      const response = await interview.startAnonymous();
+      // Check for fastpath answers and session ID in session storage if not provided directly
+      const answers = initialAnswers || 
+        JSON.parse(sessionStorage.getItem('fastpath_answers') || 'null');
+      
+      const existingSessionId = sessionStorage.getItem('fastpath_session_id') || undefined;
+
+      const response = await interview.startAnonymous(answers, existingSessionId);
       setSessionToken(response.sessionToken);
       setCurrentQuestion(response.firstQuestion);
+      
+      // Clear session storage once consumed
+      if (sessionStorage.getItem('fastpath_answers')) {
+        sessionStorage.removeItem('fastpath_answers');
+      }
+      if (sessionStorage.getItem('fastpath_session_id')) {
+        sessionStorage.removeItem('fastpath_session_id');
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to start interview');
     } finally {

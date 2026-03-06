@@ -11,13 +11,19 @@ public interface IAgentOrchestrator
     /// <summary>
     /// Starts a new anonymous interview session
     /// </summary>
+    /// <param name="initialAnswers">Optional initial answers to pre-populate</param>
+    /// <param name="existingSessionId">Optional existing session ID to resume/upgrade</param>
     /// <returns>Session with first question</returns>
-    Task<InterviewStartResult> StartAnonymousInterviewAsync();
+    Task<InterviewStartResult> StartAnonymousInterviewAsync(Dictionary<string, string>? initialAnswers = null, Guid? existingSessionId = null);
 
     /// <summary>
     /// Starts a new authenticated interview session linked to a case
     /// </summary>
-    Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId);
+    /// <param name="caseId">Case ID</param>
+    /// <param name="userId">User ID</param>
+    /// <param name="initialAnswers">Optional initial answers to pre-populate</param>
+    /// <returns>Session with first question</returns>
+    Task<InterviewStartResult> StartAuthenticatedInterviewAsync(CaseId caseId, UserId userId, Dictionary<string, string>? initialAnswers = null);
 
     /// <summary>
     /// Resumes an existing interview session
