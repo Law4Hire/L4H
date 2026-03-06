@@ -23,6 +23,7 @@ interface AuthContextType {
   loginAsProfessional: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   hasRole: (role: string) => boolean
+  role: 'Admin' | 'LegalProfessional' | 'Client' | null
   isAdmin: boolean
   isLegalProfessional: boolean
   isStaff: boolean
@@ -206,6 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loginAsProfessional,
     logout,
     hasRole,
+    role: user?.role || null,
     isAdmin: user?.isAdmin || false,
     isLegalProfessional: user?.isLegalProfessional || false,
     isStaff: user?.isAdmin || user?.isLegalProfessional || false,
