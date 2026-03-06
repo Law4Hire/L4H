@@ -453,12 +453,14 @@ catch (Exception ex)
 
 if (Directory.Exists(basePath))
 {
+    // Unified upload route (Preferred for new uploads)
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(basePath),
-        RequestPath = "/uploads"
+        RequestPath = "/api/v1/uploads"
     });
-    
+
+    // Compatibility route for seeded images at /images/attorneys/...
     var imagesPath = Path.Combine(basePath, "images");
     if (Directory.Exists(imagesPath))
     {
@@ -469,7 +471,7 @@ if (Directory.Exists(basePath))
         });
     }
 }
-Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /uploads");
+Console.WriteLine($"[STARTUP] Static files configured: {basePath} -> /api/v1/uploads and {Path.Combine(basePath, "images")} -> /images");
 
 app.UseAuthentication();
 Console.WriteLine("[STARTUP] Authentication configured");
