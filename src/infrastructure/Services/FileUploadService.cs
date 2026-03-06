@@ -172,7 +172,18 @@ public class FileUploadService : IFileUploadService
 
     public async Task DeleteFileAsync(string fileUrl)
     {
-        var relativePath = fileUrl.TrimStart('/');
+        const string prefix = "/api/v1/uploads/";
+        var relativePath = fileUrl;
+        
+        if (relativePath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            relativePath = relativePath.Substring(prefix.Length);
+        }
+        else
+        {
+            relativePath = relativePath.TrimStart('/');
+        }
+
         var fullPath = Path.Combine(_uploadPath, relativePath.Replace("/", "\\"));
         
         if (File.Exists(fullPath))
