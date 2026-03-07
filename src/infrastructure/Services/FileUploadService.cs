@@ -165,7 +165,7 @@ public class FileUploadService : IFileUploadService
 
     public bool IsValidImageFile(IFormFile file)
     {
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".tiff", ".tif", ".heic" };
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".jfif", ".png", ".gif", ".tiff", ".tif", ".heic", ".webp" };
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
         return allowedExtensions.Contains(ext);
     }

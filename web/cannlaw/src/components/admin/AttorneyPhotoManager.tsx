@@ -144,7 +144,7 @@ export const AttorneyPhotoManager: React.FC<AttorneyPhotoManagerProps> = ({
             type="file"
             id="photo-upload"
             className="hidden"
-            accept="image/*"
+            accept=".jpg,.jpeg,.jfif,.png,.gif,.tiff,.tif,.heic,.webp,image/*"
             onChange={handleUpload}
             disabled={isUploading}
           />

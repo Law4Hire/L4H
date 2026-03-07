@@ -465,7 +465,7 @@ const AttorneyManagementPage: React.FC = () => {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept=".jpg,.jpeg,.jfif,.png,.gif,.tiff,.tif,.heic,.webp,image/*"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
