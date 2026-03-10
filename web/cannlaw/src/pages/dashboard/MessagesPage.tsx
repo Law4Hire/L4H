@@ -111,7 +111,9 @@ const MessagesPage: React.FC = () => {
         unreadCount: t.unreadCount
       }))
       setThreads(mappedThreads)
-      if (mappedThreads.length > 0 && !selectedThreadId) {
+      // Only auto-select the first thread on desktop (>= 768px)
+      // On mobile, we want to start with the thread list (Master view)
+      if (mappedThreads.length > 0 && !selectedThreadId && window.innerWidth >= 768) {
         setSelectedThreadId(mappedThreads[0].id)
       }
     } catch (err) {
