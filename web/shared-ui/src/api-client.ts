@@ -180,8 +180,14 @@ async function fetchJson<T = any>(
                 }
                 const retryData = await retryResponse.json()
                 return retryData.data || retryData as T
+              } else {
+                throw new Error('Retry after refresh failed')
               }
+            } else {
+              throw new Error('No token in refresh response')
             }
+          } else {
+            throw new Error('Refresh response not ok')
           }
         } catch (refreshError) {
           // If refresh fails, clear auth state and redirect to login
@@ -199,10 +205,7 @@ async function fetchJson<T = any>(
             // Dispatch event to notify auth state change
             window.dispatchEvent(new Event('jwt-token-changed'))
 
-            // Issue 10 Fix: Force Redirect to Login
-            if (!window.location.pathname.match(/^\/(login|verify|interview|results|$)/)) {
-              window.location.href = '/login?reason=session_expired'
-            }
+            window.location.href = '/login?reason=expired'
           }
           throw new Error('Session expired. Please log in again.')
         }
