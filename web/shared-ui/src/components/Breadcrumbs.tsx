@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
 
 export const Breadcrumbs: React.FC = () => {
-  const location = useLocation();
-  const pathnames = location.pathname.split('/').filter((x) => x);
+  // Use window.location to avoid dependency on Router context
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const pathnames = pathname.split('/').filter((x) => x);
   
   if (pathnames.length === 0) return null;
 
@@ -11,7 +11,7 @@ export const Breadcrumbs: React.FC = () => {
     <nav className="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
       <ol className="list-none p-0 inline-flex">
         <li className="flex items-center">
-          <Link to="/" className="hover:text-gray-700">Home</Link>
+          <a href="/" className="hover:text-gray-700">Home</a>
           <span className="mx-2">/</span>
         </li>
         {pathnames.map((name, index) => {
@@ -25,7 +25,7 @@ export const Breadcrumbs: React.FC = () => {
                 <span className="text-gray-700 font-semibold" aria-current="page">{displayName}</span>
               ) : (
                 <>
-                  <Link to={routeTo} className="hover:text-gray-700">{displayName}</Link>
+                  <a href={routeTo} className="hover:text-gray-700">{displayName}</a>
                   <span className="mx-2">/</span>
                 </>
               )}
