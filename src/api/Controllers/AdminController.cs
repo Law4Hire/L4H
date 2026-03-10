@@ -662,6 +662,24 @@ public class AdminController : ControllerBase
             changes.Add(new { field = "IsStaff", oldValue = user.IsStaff, newValue = request.IsStaff });
             user.IsStaff = request.IsStaff;
             user.IsLegalProfessional = request.IsStaff; // Keep in sync
+
+            if (request.IsStaff && user.AttorneyProfileId == null)
+            {
+                var newProfile = new L4H.Infrastructure.Entities.Attorney
+                {
+                    Name = string.IsNullOrWhiteSpace(user.FirstName) && string.IsNullOrWhiteSpace(user.LastName) 
+                           ? user.Email 
+                           : $"{user.FirstName} {user.LastName}".Trim(),
+                    Email = user.Email,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                };
+                
+                _context.Attorneys.Add(newProfile);
+                await _context.SaveChangesAsync().ConfigureAwait(false); // Get the ID
+                
+                user.AttorneyProfileId = newProfile.Id;
+            }
         }
 
         if (changes.Any())

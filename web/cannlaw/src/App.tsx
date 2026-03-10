@@ -350,6 +350,26 @@ function App() {
             </ProtectedRoute>
           } 
         />
+        <Route 
+          path="/admin/cases" 
+          element={
+            <ProtectedRoute requireAdmin>
+              <DashboardLayout title="Case Oversight">
+                <CasesPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/analytics" 
+          element={
+            <ProtectedRoute requireAdmin>
+              <DashboardLayout title={'Analytics'}>
+                <AdminReportsPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Unauthorized page */}
         <Route path="/unauthorized" element={

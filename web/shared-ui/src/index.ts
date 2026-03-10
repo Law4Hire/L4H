@@ -54,6 +54,7 @@ export { Toast, ToastContainer, useToast, ToastProvider } from './components/Toa
 export { TimeTracker } from './components/TimeTracker'
 export { FastPathQuiz } from './components/FastPathQuiz'
 export { NextSteps } from './components/NextSteps'
+export { Breadcrumbs } from './components/Breadcrumbs'
 
 // Icons
 export { Icon } from './Icon'

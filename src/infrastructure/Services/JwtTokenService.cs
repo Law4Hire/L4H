@@ -45,6 +45,9 @@ public class JwtTokenService : IJwtTokenService
         {
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
             claims.Add(new Claim("role", "Admin"));
+            // Add professional role to Admins so they can see Professional dashboards
+            claims.Add(new Claim(ClaimTypes.Role, "LegalProfessional")); 
+            claims.Add(new Claim("role", "LegalProfessional")); 
         }
 
         if (user.IsLegalProfessional)

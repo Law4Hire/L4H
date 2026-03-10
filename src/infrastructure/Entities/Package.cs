@@ -7,6 +7,7 @@ public class Package
     public string Code { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue, ErrorMessage = "Sort order cannot be negative.")]
     public int SortOrder { get; set; }
     public bool IsActive { get; set; } = true;
     /// <summary>
