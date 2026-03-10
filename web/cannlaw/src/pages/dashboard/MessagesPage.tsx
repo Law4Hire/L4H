@@ -248,9 +248,9 @@ const MessagesPage: React.FC = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col md:flex-row overflow-hidden bg-white dark:bg-navy-900 rounded-lg shadow-lg border border-gray-200 dark:border-navy-800">
+    <div data-testid="messages-container" className="h-[calc(100vh-12rem)] flex flex-col md:flex-row overflow-hidden bg-white dark:bg-navy-900 rounded-lg shadow-lg border border-gray-200 dark:border-navy-800">
       {/* Sidebar - Thread List */}
-      <div className={`${selectedThreadId ? 'hidden' : 'flex'} md:flex w-full md:w-80 flex-col border-r border-gray-200 dark:border-navy-800 bg-white dark:bg-navy-900`}>
+      <div data-testid="thread-sidebar" className={`${selectedThreadId ? 'hidden' : 'flex'} md:flex w-full md:w-80 flex-col border-r border-gray-200 dark:border-navy-800 bg-white dark:bg-navy-900`}>
         <div className="p-4 border-b border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-950 flex justify-between items-center">
           <h2 className="text-xl font-bold text-navy-900 dark:text-white flex items-center">
             <MessageSquare size={20} className="mr-2 text-blue-600" />
@@ -262,17 +262,19 @@ const MessagesPage: React.FC = () => {
             className="rounded-full !p-2" 
             onClick={() => setShowNewThreadModal(true)}
             title="New Message"
+            data-testid="new-message-button"
           >
             <Plus size={18} />
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto">
           {threads.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 italic">No messages yet.</div>
+            <div data-testid="no-threads-message" className="p-8 text-center text-gray-500 italic">No messages yet.</div>
           ) : (
             threads.map((thread) => (
               <div
                 key={thread.id}
+                data-testid={`thread-item-${thread.id}`}
                 onClick={() => setSelectedThreadId(thread.id)}
                 className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-800 transition-colors border-b border-gray-100 dark:border-navy-800 ${
                   selectedThreadId === thread.id ? 'bg-blue-50 dark:bg-navy-800 border-l-4 border-l-blue-600' : ''
@@ -293,7 +295,7 @@ const MessagesPage: React.FC = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className={`${selectedThreadId ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-gray-50 dark:bg-navy-950`}>
+      <div data-testid="chat-area" className={`${selectedThreadId ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-gray-50 dark:bg-navy-950`}>
         {selectedThreadId ? (
           <>
             {/* Chat Header */}
@@ -301,16 +303,17 @@ const MessagesPage: React.FC = () => {
               <div className="flex items-center">
                 {/* Back button for mobile */}
                 <button
+                  data-testid="back-to-threads"
                   onClick={() => setSelectedThreadId(null)}
                   className="md:hidden mr-3 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-navy-800"
                 >
                   <ChevronRight size={20} className="transform rotate-180 text-gray-600 dark:text-gray-400" />
                 </button>
                 <div>
-                  <h3 className="font-bold text-navy-900 dark:text-white">
+                  <h3 data-testid="chat-header-name" className="font-bold text-navy-900 dark:text-white">
                     {threads.find(t => t.id === selectedThreadId)?.participantName}
                   </h3>
-                  <p className="text-xs text-gray-500">{threads.find(t => t.id === selectedThreadId)?.subject}</p>
+                  <p data-testid="chat-header-subject" className="text-xs text-gray-500">{threads.find(t => t.id === selectedThreadId)?.subject}</p>
                 </div>
               </div>
             </div>
