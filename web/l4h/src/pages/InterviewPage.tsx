@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useToast, ChevronLeft } from '@l4h/shared-ui';
+import { useToast, ChevronLeft, Button } from '@l4h/shared-ui';
 import { useInterview } from '../InterviewContext';
 import { DocumentUploadQuestion } from '../components/interview/DocumentUploadQuestion';
 import { AttorneyQuestionPage } from '../components/interview/AttorneyQuestionPage';
@@ -115,11 +115,64 @@ const InterviewPage: React.FC = () => {
           />
         );
 
+      case 'text':
+      case 'textarea':
+        return (
+          <div className="space-y-6">
+            <div className="mb-8">
+              <span className="inline-block px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-4">
+                {currentQuestion.category || 'AI Analysis'}
+              </span>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+                {currentQuestion.text}
+              </h2>
+            </div>
+            
+            <div className="flex flex-col space-y-4">
+              {currentQuestion.inputType === 'textarea' ? (
+                <textarea
+                  className="w-full p-4 border-2 border-gray-300 dark:border-gray-700 rounded-lg focus:border-blue-600 dark:focus:border-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-[150px]"
+                  placeholder="Type your answer here..."
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                      submitAnswer((e.target as HTMLTextAreaElement).value);
+                    }
+                  }}
+                />
+              ) : (
+                <input
+                  type="text"
+                  className="w-full p-4 border-2 border-gray-300 dark:border-gray-700 rounded-lg focus:border-blue-600 dark:focus:border-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                  placeholder="Type your answer here..."
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      submitAnswer((e.target as HTMLInputElement).value);
+                    }
+                  }}
+                />
+              )}
+              
+              <div className="flex justify-end mt-4">
+                <Button 
+                  variant="primary" 
+                  size="lg"
+                  onClick={(e) => {
+                    const input = (e.currentTarget.parentElement?.previousElementSibling as HTMLInputElement | HTMLTextAreaElement);
+                    submitAnswer(input.value);
+                  }}
+                >
+                  Continue
+                </Button>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'select':
       case 'radio':
       case 'checkbox':
-      case 'text':
-      case 'textarea':
       default:
         return (
           <div>

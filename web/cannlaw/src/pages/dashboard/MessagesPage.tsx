@@ -34,6 +34,9 @@ interface RecipientOption {
   id: string;
   label: string;
   description: string;
+  isStaff: boolean;
+  isAdmin: boolean;
+  assignedAttorneyId?: number;
 }
 
 const MessagesPage: React.FC = () => {
@@ -48,18 +51,32 @@ const MessagesPage: React.FC = () => {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const [showNewThreadModal, setShowNewThreadModal] = useState(false)
   
+  // Filtering state
+  const [filters, setFilters] = useState({
+    assigned: true,
+    unassigned: true,
+    pros: true
+  })
+  
   // New thread state
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([])
   const [newSubject, setNewSubject] = useState('')
   const [newBody, setNewBody] = useState('')
 
   const handleSelectAllRecipients = useCallback(() => {
-    if (selectedRecipients.length === recipients.length) {
+    const filtered = recipients.filter(r => {
+      if (filters.pros && (r.isStaff || r.isAdmin)) return true;
+      if (filters.assigned && r.assignedAttorneyId) return true;
+      if (filters.unassigned && !r.assignedAttorneyId && !r.isStaff && !r.isAdmin) return true;
+      return false;
+    });
+
+    if (selectedRecipients.length === filtered.length) {
       setSelectedRecipients([])
     } else {
-      setSelectedRecipients(recipients.map(r => r.id))
+      setSelectedRecipients(filtered.map(r => r.id))
     }
-  }, [recipients, selectedRecipients])
+  }, [recipients, selectedRecipients, filters])
 
   const handleRecipientToggle = useCallback((recipientId: string) => {
     setSelectedRecipients(prev => 
@@ -114,8 +131,21 @@ const MessagesPage: React.FC = () => {
       ])
 
       const allPossibleRecipients: RecipientOption[] = [
-        ...usersData.map((u: any) => ({ id: u.id, label: u.name, description: 'User' })),
-        ...attorneysData.map((a: any) => ({ id: a.id, label: a.name, description: 'Attorney' }))
+        ...usersData.map((u: any) => ({ 
+          id: u.id, 
+          label: u.name || u.email, 
+          description: u.isAdmin ? 'Admin' : (u.isStaff ? 'Staff' : 'Client'),
+          isStaff: u.isStaff || false,
+          isAdmin: u.isAdmin || false,
+          assignedAttorneyId: u.assignedAttorneyId
+        })),
+        ...attorneysData.map((a: any) => ({ 
+          id: a.id.toString(), 
+          label: a.name, 
+          description: 'Attorney',
+          isStaff: true,
+          isAdmin: false
+        }))
       ]
 
       setRecipients(allPossibleRecipients)
@@ -350,15 +380,36 @@ const MessagesPage: React.FC = () => {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Recipients</label>
+                  <div className="flex space-x-2">
+                    <label className="flex items-center text-[10px] text-gray-500 cursor-pointer">
+                      <input type="checkbox" checked={filters.assigned} onChange={() => setFilters({...filters, assigned: !filters.assigned})} className="mr-1 h-3 w-3" />
+                      Assigned
+                    </label>
+                    <label className="flex items-center text-[10px] text-gray-500 cursor-pointer">
+                      <input type="checkbox" checked={filters.unassigned} onChange={() => setFilters({...filters, unassigned: !filters.unassigned})} className="mr-1 h-3 w-3" />
+                      Clients
+                    </label>
+                    <label className="flex items-center text-[10px] text-gray-500 cursor-pointer">
+                      <input type="checkbox" checked={filters.pros} onChange={() => setFilters({...filters, pros: !filters.pros})} className="mr-1 h-3 w-3" />
+                      Pros
+                    </label>
+                  </div>
                   <button 
                     onClick={handleSelectAllRecipients}
-                    className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                    className="text-xs text-blue-600 hover:underline dark:text-blue-400 ml-2"
                   >
-                    {selectedRecipients.length === recipients.length ? 'Deselect All' : 'Select All'}
+                    {selectedRecipients.length > 0 ? 'Deselect All' : 'Select All'}
                   </button>
                 </div>
                 <div className="border rounded-lg max-h-48 overflow-y-auto bg-white dark:bg-navy-950 dark:border-navy-700">
-                  {recipients.map(r => (
+                  {recipients
+                    .filter(r => {
+                      if (filters.pros && (r.isStaff || r.isAdmin)) return true;
+                      if (filters.assigned && r.assignedAttorneyId) return true;
+                      if (filters.unassigned && !r.assignedAttorneyId && !r.isStaff && !r.isAdmin) return true;
+                      return false;
+                    })
+                    .map(r => (
                     <div 
                       key={r.id} 
                       onClick={() => handleRecipientToggle(r.id)}
@@ -377,6 +428,14 @@ const MessagesPage: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                  {recipients.filter(r => {
+                      if (filters.pros && (r.isStaff || r.isAdmin)) return true;
+                      if (filters.assigned && r.assignedAttorneyId) return true;
+                      if (filters.unassigned && !r.assignedAttorneyId && !r.isStaff && !r.isAdmin) return true;
+                      return false;
+                    }).length === 0 && (
+                    <div className="p-4 text-center text-gray-500 text-sm">No recipients match filters.</div>
+                  )}
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   {selectedRecipients.length} recipient(s) selected
@@ -413,6 +472,9 @@ const MessagesPage: React.FC = () => {
               >
                 Send Message
               </Button>
+              {(!newBody && selectedRecipients.length > 0) && (
+                <p className="text-red-500 text-[10px] mt-1 text-center font-bold">Please enter a message body before sending.</p>
+              )}
             </div>
           </Card>
         </div>

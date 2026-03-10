@@ -184,23 +184,27 @@ async function fetchJson<T = any>(
             }
           }
         } catch (refreshError) {
-          // If refresh fails, clear auth state and redirect to home
-          console.warn('Token refresh failed:', refreshError)
+          // If refresh fails, clear auth state and redirect to login
+          console.warn('Token refresh failed - Force Logout:', refreshError)
 
           // Clear all auth state
           jwtToken = null
           localStorage.removeItem('jwt_token')
+          if (typeof sessionStorage !== 'undefined') {
+             sessionStorage.removeItem('logout_in_progress')
+          }
 
           // If we're in a browser context, trigger logout
           if (typeof window !== 'undefined' && response.status === 401) {
             // Dispatch event to notify auth state change
             window.dispatchEvent(new Event('jwt-token-changed'))
 
-            // Only redirect if not already on public pages
+            // Issue 10 Fix: Force Redirect to Login
             if (!window.location.pathname.match(/^\/(login|verify|interview|results|$)/)) {
-              window.location.href = '/'
+              window.location.href = '/login?reason=session_expired'
             }
           }
+          throw new Error('Session expired. Please log in again.')
         }
       }
 

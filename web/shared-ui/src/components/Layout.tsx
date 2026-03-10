@@ -3,6 +3,7 @@ import { useTheme } from '../ThemeProvider'
 import { Sun, Moon } from '../Icon'
 import { Button } from './Button'
 import { VersionStamp } from './VersionStamp'
+import { Breadcrumbs } from './Breadcrumbs'
 
 interface User {
   email: string
@@ -222,6 +223,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {/* Main content */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs />
         {children}
       </main>
 

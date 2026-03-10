@@ -149,10 +149,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true }
       }
       return { success: false, error: 'Login failed' }
-    } catch (error) {
+    } catch (error: any) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Login failed' 
+        error: error.detail || error.message || 'Login failed' 
       }
     }
   }
@@ -166,10 +166,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true }
       }
       return { success: false, error: 'Login failed' }
-    } catch (error) {
+    } catch (error: any) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Login failed' 
+        error: error.detail || error.message || 'Login failed' 
       }
     }
   }

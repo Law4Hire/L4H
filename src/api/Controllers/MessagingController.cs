@@ -41,7 +41,8 @@ public class MessagingController : ControllerBase
 
         if (isAdmin)
         {
-            query = query.Where(t => t.RecipientUserId == null || t.RecipientUserId == userId);
+            // Admins see all threads by default to manage the general queue
+            // They can still see threads specifically assigned to them
         }
         else if (isStaff)
         {
