@@ -248,9 +248,9 @@ const MessagesPage: React.FC = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex overflow-hidden bg-white dark:bg-navy-900 rounded-lg shadow-lg border border-gray-200 dark:border-navy-800">
+    <div className="h-[calc(100vh-12rem)] flex flex-col md:flex-row overflow-hidden bg-white dark:bg-navy-900 rounded-lg shadow-lg border border-gray-200 dark:border-navy-800">
       {/* Sidebar - Thread List */}
-      <div className={`w-full md:w-80 flex flex-col border-r border-gray-200 dark:border-navy-800 ${selectedThreadId ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`${selectedThreadId ? 'hidden' : 'flex'} md:flex w-full md:w-80 flex-col border-r border-gray-200 dark:border-navy-800 bg-white dark:bg-navy-900`}>
         <div className="p-4 border-b border-gray-200 dark:border-navy-800 bg-gray-50 dark:bg-navy-950 flex justify-between items-center">
           <h2 className="text-xl font-bold text-navy-900 dark:text-white flex items-center">
             <MessageSquare size={20} className="mr-2 text-blue-600" />
@@ -293,7 +293,7 @@ const MessagesPage: React.FC = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className={`flex-1 flex-col bg-gray-50 dark:bg-navy-950 ${selectedThreadId ? 'flex' : 'hidden md:flex'}`}>
+      <div className={`${selectedThreadId ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-gray-50 dark:bg-navy-950`}>
         {selectedThreadId ? (
           <>
             {/* Chat Header */}
@@ -319,15 +319,20 @@ const MessagesPage: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {isLoadingMessages ? (
                 <div className="flex justify-center py-8"><div className="animate-spin h-6 w-6 border-b-2 border-blue-600 rounded-full"></div></div>
+              ) : messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-gray-400 italic">
+                  <MessageSquare size={32} className="mb-2 opacity-20" />
+                  <p>No messages in this thread yet.</p>
+                </div>
               ) : (
                 messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[70%] rounded-2xl px-4 py-2 shadow-sm ${
+                    <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-2 shadow-sm ${
                       msg.isMe 
                         ? 'bg-blue-600 text-white rounded-tr-none' 
                         : 'bg-white dark:bg-navy-800 text-gray-900 dark:text-white border border-gray-100 dark:border-navy-700 rounded-tl-none'
                     }`}>
-                      <p className="text-sm leading-relaxed">{msg.body}</p>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.body}</p>
                       <p className={`text-[10px] mt-1 ${msg.isMe ? 'text-blue-100' : 'text-gray-400'}`}>
                         {formatDistanceToNow(new Date(msg.sentAt))} ago
                       </p>
