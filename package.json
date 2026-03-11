@@ -1,18 +1,11 @@
 {
-  "name": "l4h-multilingual-testing",
+  "name": "l4h-e2e-testing",
   "version": "1.0.0",
-  "description": "Comprehensive multilingual e2e testing for L4H platform",
+  "description": "Comprehensive e2e testing for L4H platform",
   "scripts": {
-    "test:multilingual": "node tests/e2e/run-multilingual-tests.ts",
-    "test:multilingual:quick": "node tests/e2e/run-multilingual-tests.ts --languages en-US,es-ES,ar-SA",
-    "test:multilingual:rtl": "node tests/e2e/run-multilingual-tests.ts --languages ar-SA,ur-PK --browsers 'RTL Testing - Arabic'",
-    "test:multilingual:cjk": "node tests/e2e/run-multilingual-tests.ts --languages zh-CN,ja-JP --browsers 'CJK Testing - Chinese'",
-    "test:multilingual:comprehensive": "node tests/e2e/run-multilingual-tests.ts --languages en-US,es-ES,fr-FR,de-DE,ar-SA,zh-CN,hi-IN,ja-JP,ur-PK,ru-RU",
-    "test:multilingual:debug": "node tests/e2e/run-multilingual-tests.ts --debug --headless false --verbose",
-    "test:multilingual:ci": "node tests/e2e/run-multilingual-tests.ts --languages en-US,es-ES,ar-SA --reporter junit --parallel false",
-    "test:multilingual:performance": "node tests/e2e/run-multilingual-tests.ts --languages en-US,es-ES,ar-SA,zh-CN --verbose --timeout 120000",
     "playwright:install": "npx playwright install",
-    "playwright:install-deps": "npx playwright install-deps"
+    "playwright:install-deps": "npx playwright install-deps",
+    "test": "playwright test"
   },
   "dependencies": {
     "axios": "^1.12.2",
@@ -40,11 +33,6 @@
   },
   "keywords": [
     "e2e-testing",
-    "multilingual",
-    "internationalization",
-    "i18n",
-    "playwright",
-    "accessibility",
-    "rtl-support"
+    "playwright"
   ]
 }
