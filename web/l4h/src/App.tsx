@@ -19,6 +19,8 @@ const VisaLibraryPage = lazy(() => import('./pages/VisaLibraryPage'))
 const InterviewPage = lazy(() => import('./pages/InterviewPage'))
 const VisaResultsPage = lazy(() => import('./pages/VisaResultsPage'))
 const DocumentInterviewPage = lazy(() => import('./pages/DocumentInterviewPage'))
+const ServiceFitPage = lazy(() => import('./pages/ServiceFitPage'))
+const USCISDocumentsPage = lazy(() => import('./pages/USCISDocumentsPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'))
 const UserDetailPage = lazy(() => import('./pages/UserDetailPage'))
@@ -275,6 +277,32 @@ function AppContent() {
               isAuthenticated={isAuthenticated}
             >
               <VisaResultsPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/service-fit"
+          element={
+            <Layout
+              title={'Service Assessment'}
+              showUserMenu={false}
+              user={user}
+              isAuthenticated={isAuthenticated}
+            >
+              <ServiceFitPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/uscis-documents"
+          element={
+            <Layout
+              title={'Documents Catalog'}
+              showUserMenu={true}
+              user={user}
+              isAuthenticated={isAuthenticated}
+            >
+              <USCISDocumentsPage />
             </Layout>
           }
         />

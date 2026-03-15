@@ -14,7 +14,7 @@ interface FormField {
 const DocumentInterviewPage: React.FC = () => {
   const { formId } = useParams<{ formId: string }>();
   const navigate = useNavigate();
-  const { addToast } = useToast();
+  const { success, error } = useToast();
   const [fields, setFields] = useState<FormField[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ const DocumentInterviewPage: React.FC = () => {
         });
         setAnswers(initialAnswers);
       } catch (err) {
-        addToast('Error', 'Failed to load form requirements', 'error');
+        error('Error', 'Failed to load form requirements');
       } finally {
         setLoading(false);
       }
@@ -59,9 +59,9 @@ const DocumentInterviewPage: React.FC = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      addToast('Success', 'Document generated and downloaded!', 'success');
+      success('Success', 'Document generated and downloaded!');
     } catch (err) {
-      addToast('Error', 'Failed to generate document', 'error');
+      error('Error', 'Failed to generate document');
     } finally {
       setSubmitting(false);
     }

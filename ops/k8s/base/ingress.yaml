@@ -42,8 +42,60 @@ spec:
             port:
               number: 7070
 
+  # Law4Hire Local Development
+  - host: l4h.localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 8080
+      - path: /gateway
+        pathType: Prefix
+        backend:
+          service:
+            name: upload-gateway
+            port:
+              number: 7070
+
   # Cannlaw site
   - host: cannlaw.74-208-77-43.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 8080
+      - path: /gateway
+        pathType: Prefix
+        backend:
+          service:
+            name: upload-gateway
+            port:
+              number: 7070
+
+  # Cannlaw Local Development
+  - host: cannlaw.localhost
     http:
       paths:
       - path: /
@@ -85,4 +137,6 @@ spec:
     - l4h.74-208-77-43.nip.io
     - cannlaw.74-208-77-43.nip.io
     - api.74-208-77-43.nip.io
+    - l4h.localhost
+    - cannlaw.localhost
     secretName: l4h-tls  # Traefik will auto-generate with Let's Encrypt

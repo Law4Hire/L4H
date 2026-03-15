@@ -132,28 +132,24 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         }
 
         // Logical completion triggers (only reachable once prerequisites are satisfied):
-        // 1. Conclusive result — narrowed to a single visa
-        if (remainingVisas.Count == 1)
-        {
-            return true;
-        }
-
-        // 2. Disqualified state — all visas eliminated after sufficient depth
-        if (remainingVisas.Count == 0 && questionsAnswered >= 3)
-        {
-            return true;
-        }
-
+        // CitizenPath Workflow: We do NOT force the remaining visas down to 1.
+        // Once the user has provided all necessary foundational data and document prerequisites,
+        // we complete the interview so the UI can present them with the FULL curated list of all visas
+        // they are eligible for.
+        
         // 3. Document Prerequisites check (MANDATORY before completion)
         if (!answers.ContainsKey("doc_prefill_full_name") ||
             !answers.ContainsKey("doc_prefill_dob") ||
             !answers.ContainsKey("doc_prefill_nationality") ||
-            !answers.ContainsKey("doc_prefill_passport_number"))
+            !answers.ContainsKey("doc_prefill_passport_number") ||
+            !answers.ContainsKey("doc_prefill_passport_expiry"))
         {
             return false;
         }
 
-        return false;
+        // Once all foundational data + document prerequisites are satisfied, the interview is complete!
+        // We will evaluate and show ALL qualified visas in the Results page.
+        return true;
     }
 
     #region Step 1: Denise Fork (Intent Type)

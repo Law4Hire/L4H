@@ -68,16 +68,16 @@ const SinglePageRegistration: React.FC = () => {
 
   if (showSignupPrompt) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full bg-white rounded-lg shadow-xl p-8">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4 transition-colors duration-200">
+        <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
           <div className="text-center">
             <div className="mb-6">
               <svg className="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Account Created Successfully!</h1>
-            <p className="text-xl text-gray-600 mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Account Created Successfully!</h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
               Would you like to purchase a consultation package to get started with your visa application?
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -95,13 +95,13 @@ const SinglePageRegistration: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full bg-white rounded-lg shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Create Your Account</h1>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4 transition-colors duration-200">
+      <div className="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
+        <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Create Your Account</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Personal Information */}
-          <div className="md:col-span-2 font-bold text-xl mb-2">Personal Information</div>
+          <div className="md:col-span-2 font-bold text-xl mb-2 text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Personal Information</div>
           <Input label="First Name" {...register("firstName")} error={errors.firstName?.message} />
           <Input label="Last Name" {...register("lastName")} error={errors.lastName?.message} />
           <Input label="Email Address" type="email" {...register("email")} error={errors.email?.message} />

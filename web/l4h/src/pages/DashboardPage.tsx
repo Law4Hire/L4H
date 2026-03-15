@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 import NextSteps from '../components/NextSteps';
 import { useAuth } from '../hooks/useAuth';
+import { apiClient } from '../apiClient';
 
 interface Case {
   id: string

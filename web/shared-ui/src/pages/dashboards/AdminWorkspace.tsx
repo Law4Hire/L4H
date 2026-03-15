@@ -30,7 +30,7 @@ const AdminWorkspace: React.FC = () => {
         const [statsData, cases, msgData] = await Promise.all([
           fetchJson('/v1/dashboard/stats'),
           fetchJson<CaseItem[]>('/v1/admin/cases'),
-          fetchJson<any[]>('/api/v1/messaging/general'),
+          fetchJson<any[]>('/v1/messaging/general'),
         ])
         setStats(statsData)
         setRecentCases(cases.slice(0, 5))

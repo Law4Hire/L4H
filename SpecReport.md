@@ -35,7 +35,7 @@ The L4HProject is a distributed system utilizing a .NET 10 backend and a React-b
 - **Infrastructure:** `L4H.Infrastructure` is the provider for all persistence and external service integrations (Mail, Payments, Graph).
 
 ### External Dependencies (.NET Backend)
-- **Database:** `Microsoft.EntityFrameworkCore.SqlServer` (v10.0.3)
+- **Database:** `Microsoft.EntityFrameworkCore.SqlServer` (v10.0.4)
 - **Identity/Security:** `Microsoft.AspNetCore.Authentication.JwtBearer`, `FluentValidation.AspNetCore`
 - **External Integration:** `Microsoft.Graph` (v5.95.0), `Scalar.AspNetCore` (OpenAPI)
 - **Utilities:** `Serilog`, `SixLabors.ImageSharp`, `CsvHelper`

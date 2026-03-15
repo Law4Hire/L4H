@@ -77,64 +77,17 @@ public class AIService : IAIService
             return null; // Handover to rules engine to complete mandatory flow
         }
 
-        if (remainingVisas.Count > 1)
-        {
-            // If the user already confirmed a visa, the interview can proceed to completion
-            if (answersDict.Any(kvp =>
-                    kvp.Key.StartsWith("ai_agent_refine_", StringComparison.OrdinalIgnoreCase) &&
-                    kvp.Value.Equals("yes", StringComparison.OrdinalIgnoreCase)))
-            {
-                return null;
-            }
+        // We have completely removed the "guessing game" loop here.
+        // CitizenPath Workflow: Do not guess one-by-one and ask "Does this align?".
+        // Instead, once all mandatory fields are collected, we immediately hand over to the rules-based 
+        // engine to finish document prerequisites and then evaluate the user for a curated list 
+        // of ALL visas they are qualified for.
 
-            // Collect visa codes that have already been presented as a refine question
-            var alreadyRefined = answersDict.Keys
-                .Where(k => k.StartsWith("ai_agent_refine_", StringComparison.OrdinalIgnoreCase))
-                .Select(k => k["ai_agent_refine_".Length..])
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            // Prefer the user's explicitly chosen subcategory if not yet asked;
-            // remainingVisas is already ranked by eligibility + score from EvaluateAllVisasAsync
-            VisaType? topCandidate = null;
-            if (answersDict.TryGetValue("subcategory", out var subcategoryCode) &&
-                !string.IsNullOrEmpty(subcategoryCode) &&
-                !alreadyRefined.Contains(subcategoryCode))
-            {
-                topCandidate = remainingVisas.FirstOrDefault(v =>
-                    v.Code.Equals(subcategoryCode, StringComparison.OrdinalIgnoreCase));
-            }
-
-            // Fallback: first remaining visa not yet asked about
-            topCandidate ??= remainingVisas.FirstOrDefault(v => !alreadyRefined.Contains(v.Code));
-
-            // All remaining visas have been presented — let the interview complete
-            if (topCandidate == null)
-            {
-                return null;
-            }
-
-            return new InterviewQuestion
-            {
-                Key = $"ai_agent_refine_{topCandidate.Code.ToLower()}",
-                Text = $"Based on our analysis, the {topCandidate.Name} ({topCandidate.Code}) looks like a strong match for your objectives. Does this align with what you are looking for?",
-                Category = "ai_agent",
-                InputType = "select",
-                IsRequired = true,
-                Options = new List<QuestionOption>
-                {
-                    new() { Value = "yes", Label = "Yes, this matches my situation" },
-                    new() { Value = "no", Label = "No, I'd like to explore other options" },
-                    new() { Value = "maybe", Label = "I'm not sure, I'd like more details" }
-                }
-            };
+        // Handover to rules-based engine
+        return null;
         }
-        
-        // Handover to rules-based engine only when we are down to a single visa or conclusive state
-        return null; 
-    }
 
-    public async Task<List<VisaEvaluationResult>> AnalyzeEligibilityAsync(List<InterviewQA> answers)
-    {
+        public async Task<List<VisaEvaluationResult>> AnalyzeEligibilityAsync(List<InterviewQA> answers)    {
         _logger.LogInformation("AI performing eligibility analysis for {AnswerCount} answers", answers.Count);
         
         await Task.Delay(1200); // AI 'Thinking' time

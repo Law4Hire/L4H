@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.3 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.4 AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
