@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Strip out multilingual components to enforce English ONLY**
+- [~] **Track: Strip out multilingual components to enforce English ONLY**
   *Link: [./tracks/strip_multilingual_20260311/](./tracks/strip_multilingual_20260311/)*

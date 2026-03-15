@@ -85,7 +85,15 @@
       "Bash(cmd:*)",
       "Bash(xargs -r kill -9)",
       "Bash(python3:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx:*)",
+      "Bash(Start-Process:*)",
+      "Bash(tasklist:*)",
+      "Bash(net start:*)",
+      "Bash(ConnectionStrings__SqlServer=\"Server=localhost;Database=Law4Hire;Integrated Security=True;TrustServerCertificate=True;\" Uploads__BasePath=\"C:/programming/L4HProject/data/uploads\" dotnet run:*)",
+      "Bash(ConnectionStrings__SqlServer=\"Server=localhost;Database=L4HTest;Integrated Security=True;TrustServerCertificate=True;\" dotnet ef:*)",
+      "Bash(ConnectionStrings__SqlServer=\"Server=localhost;Database=L4HTest;Integrated Security=True;TrustServerCertificate=True;\" Uploads__BasePath=\"C:/programming/L4HProject/data/uploads\" dotnet run:*)",
+      "Bash(VITE_API_URL=http://localhost:8765 npm run:*)"
     ]
   }
 }

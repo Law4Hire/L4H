@@ -24,21 +24,14 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         List<InterviewQA> answers,
         User? user = null)
     {
-        // 1. Get all active visa types with related data (prevent N+1 queries)
+        // 1. Get all active visa types with related data
         var allVisas = await _context.VisaTypes
             .Include(v => v.PricingRules)
             .Where(v => v.IsActive)
             .ToListAsync();
 
-        // 2. Filter by user profile (age, nationality, etc.)
+        // 2. Initial Profile Filtering (Age, etc.)
         var profileFiltered = FilterByUserProfile(allVisas, user);
-
-        // Logic Alignment: Filter by 'intent_type' if present
-        var intentType = answers.FirstOrDefault(a => a.QuestionKey.Equals("intent_type", StringComparison.OrdinalIgnoreCase))?.AnswerValue;
-        if (!string.IsNullOrEmpty(intentType))
-        {
-            profileFiltered = profileFiltered.Where(v => IsCompatibleWithIntent(v, intentType)).ToList();
-        }
 
         // 3. Evaluate each visa against answers
         var evaluated = new List<VisaEvaluationResult>();
@@ -76,11 +69,6 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         List<InterviewQA> answers,
         List<VisaType> remainingVisas)
     {
-        // Complete if:
-        // - 3 or fewer visas remain (clear direction)
-        // - OR 8+ questions answered (enough info)
-        // - OR no commercially available visas remain
-
         if (remainingVisas.Count <= 3) return true;
         if (answers.Count >= 8) return true;
         if (!remainingVisas.Any(v => v.PricingRules.Count > 0)) return true;
@@ -93,17 +81,7 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
     private List<VisaType> FilterByUserProfile(List<VisaType> visas, User? user)
     {
         if (user == null) return visas;
-
-        var filtered = new List<VisaType>(visas);
-
-        // Age-based filtering
-        if (user.DateOfBirth.HasValue)
-        {
-            var age = CalculateAge(user.DateOfBirth.Value);
-            // Future age filtering logic here
-        }
-
-        return filtered;
+        return new List<VisaType>(visas);
     }
 
     private VisaEvaluationResult EvaluateVisa(VisaType visa, List<InterviewQA> answers, User? user)
@@ -112,36 +90,61 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         {
             VisaType = visa,
             Status = EligibilityStatus.Potential,
-            MatchScore = 50, // Default score
+            MatchScore = 50,
             RequiredDocuments = GetRequiredDocuments(visa),
             KeyBenefits = GetKeyBenefits(visa)
         };
 
-        // Code-Review Regression Fix: Filter null AnswerValues before conversion
         var answerDict = answers
             .Where(a => a.AnswerValue != null)
             .ToDictionary(
                 a => a.QuestionKey,
-                a => a.AnswerValue!,
+                a => a.AnswerValue!.Trim(),
                 StringComparer.OrdinalIgnoreCase);
 
-        // Logic Alignment: Map AI-captured intents, Quiz intents and Category selections to Legal Vocabulary
-        if (answerDict.TryGetValue("ai_agent_initial_purpose", out var aiPurpose) ||
-            answerDict.TryGetValue("intent_type", out aiPurpose) ||
-            answerDict.TryGetValue("intent_purpose", out aiPurpose) ||
-            answerDict.TryGetValue("category", out aiPurpose))
+        // 1. Geopolitical/Country Restrictions Check (Highest Priority)
+        if (answerDict.TryGetValue("doc_prefill_nationality", out var nationality))
         {
-            // Vocabulary Harmonization: category values → purpose
-            string mappedPurpose = aiPurpose.ToLower() switch
+            string cleanNat = nationality.Trim().ToLowerInvariant();
+            if (cleanNat == "algeria" || cleanNat.Contains("algeria"))
             {
-                "work" or "work_visa" or "green_card_employment" or "professional" => "professional",
+                result.Status = EligibilityStatus.NotEligible;
+                result.MatchScore = 0;
+                result.Explanation = $"Visa applications are currently on administrative hold for citizens of {nationality}. Please consult an immigration attorney.";
+                return result;
+            }
+        }
+
+        // 2. Broad Intent Check (Intent Type)
+        if (answerDict.TryGetValue("intent_type", out var intentType))
+        {
+            if (!IsCompatibleWithIntent(visa, intentType))
+            {
+                result.Status = EligibilityStatus.NotEligible;
+                result.MatchScore = 10;
+                result.Explanation = $"{visa.Name} is not compatible with your selection of '{intentType}' status.";
+                return result;
+            }
+        }
+
+        // 3. Logic Alignment: Map AI-captured intents and Category selections to Legal Vocabulary
+        string? rawPurpose = null;
+        if (answerDict.TryGetValue("category", out var cat)) rawPurpose = cat;
+        else if (answerDict.TryGetValue("intent_purpose", out var ip)) rawPurpose = ip;
+        else if (answerDict.TryGetValue("ai_agent_initial_purpose", out var ai)) rawPurpose = ai;
+
+        if (!string.IsNullOrEmpty(rawPurpose))
+        {
+            string mappedPurpose = rawPurpose.ToLower() switch
+            {
+                "work" or "work_visa" or "green_card_employment" or "professional" or "professional_visa" => "professional",
                 "study" or "student_visa" or "student" => "student",
                 "tourism" or "visit" or "vacation" or "visitor_visa" or "visitor" => "visitor",
                 "investment" or "eb5" or "investor" or "investor_nonimmigrant" or "investor_immigrant" => "investor",
                 "family" or "green_card_family" or "family_petition" => "family",
                 "citizenship" or "naturalization" or "adoption" => "citizenship",
                 "refugee" or "asylum_app" or "tps" or "deportation_defense" or "vawa" => "refugee",
-                _ => aiPurpose
+                _ => rawPurpose
             };
 
             if (!answerDict.ContainsKey("purpose"))
@@ -150,104 +153,39 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             }
         }
 
-        // Vocabulary Mismatch Fix: map employment_status and educational_goals to purpose
-        // when category hasn't been answered yet — prevents incorrect NotEligible verdicts
-        // for H-1B/F-1 at the employment/education branching stage.
+        // Vocabulary Mismatch Fix
         if (!answerDict.ContainsKey("purpose"))
         {
-            if (answerDict.TryGetValue("educational_goals", out var eduGoal) &&
-                eduGoal.Equals("yes", StringComparison.OrdinalIgnoreCase))
-            {
+            if (answerDict.TryGetValue("educational_goals", out var eduGoal) && eduGoal.Equals("yes", StringComparison.OrdinalIgnoreCase))
                 answerDict["purpose"] = "student";
-            }
-            else if (answerDict.TryGetValue("employment_status", out var empStatus) &&
-                     empStatus is "employed_full" or "employed_part" or "self_employed")
-            {
-                answerDict["purpose"] = "professional";
-            }
-            else if (answerDict.TryGetValue("employment_status", out var empStatus2) &&
-                     empStatus2.Equals("student", StringComparison.OrdinalIgnoreCase))
-            {
-                answerDict["purpose"] = "student";
-            }
+            else if (answerDict.TryGetValue("employment_status", out var empStatus) && empStatus is "employed_full" or "employed_part" or "self_employed" or "student")
+                answerDict["purpose"] = (empStatus == "student") ? "student" : "professional";
         }
 
-        // Guard: if category/purpose not yet established, no specific evaluator can fire
-        // correctly — keep every compatible visa as Potential rather than eliminating it.
-        // This prevents the "B-1 singularity" where B-1 wins by default because all
-        // specifically-evaluated visas return NotEligible before purpose is known.
+        // Guard: If purpose not yet established
         if (!answerDict.ContainsKey("purpose"))
         {
             result.Status = EligibilityStatus.Potential;
             result.MatchScore = 40;
-            result.Explanation = $"{visa.Name} is being evaluated — more information needed.";
-            result.MissingInformation.Add("Category / purpose not yet specified");
-            result.VisaType = visa;
-            result.RequiredDocuments = GetRequiredDocuments(visa);
-            result.KeyBenefits = GetKeyBenefits(visa);
+            result.Explanation = $"{visa.Name} is being evaluated â€” more information needed.";
             return result;
         }
 
-        // Evaluate based on visa code
+        // 4. Specific Evaluators
         switch (visa.Code.ToUpper(CultureInfo.InvariantCulture))
         {
-            case "B-1": // Business Visitor (must be evaluated explicitly — not via EvaluateGeneric)
-                result = EvaluateB1(visa, answerDict, user);
-                break;
-
-            case "B-2": // Tourist/Visitor
-                result = EvaluateB2(visa, answerDict, user);
-                break;
-
-            case "B-1/B-2": // Combined
-                result = EvaluateB1B2(visa, answerDict, user);
-                break;
-
-            case "H-1B": // Skilled Worker
-                result = EvaluateH1B(visa, answerDict, user);
-                break;
-
-            case "F-1": // Student
-                result = EvaluateF1(visa, answerDict, user);
-                break;
-
-            case "O-1": // Extraordinary Ability
-                result = EvaluateO1(visa, answerDict, user);
-                break;
-
-            case "EB-5": // Investor
-                result = EvaluateEB5(visa, answerDict, user);
-                break;
-
-            case "IR-1": // Spouse of US Citizen
-            case "CR-1":
-                result = EvaluateFamilySpouse(visa, answerDict, user);
-                break;
-
-            case "IR-3": // Adopted Child (Hague)
-            case "IR-4": // Adopted Child (Non-Hague)
-            case "ADOP": // Adoption Services
-                result = EvaluateAdoption(visa, answerDict, user);
-                break;
-
-            case "N-400": // Naturalization
-            case "N-600": // Certificate of Citizenship
-            case "NATZ": // Naturalization
-                result = EvaluateCitizenship(visa, answerDict, user);
-                break;
-
-            case "F1-IM": // Family F1
-            case "F2A":
-            case "F2B":
-            case "F3-IM":
-            case "F4":
-                result = EvaluateFamilySpouse(visa, answerDict, user); // Broader family logic
-                break;
-
-            default:
-                // Generic evaluation
-                result = EvaluateGeneric(visa, answerDict, user);
-                break;
+            case "B-1": result = EvaluateB1(visa, answerDict, user); break;
+            case "B-2": result = EvaluateB2(visa, answerDict, user); break;
+            case "B-1/B-2": result = EvaluateB1B2(visa, answerDict, user); break;
+            case "H-1B": result = EvaluateH1B(visa, answerDict, user); break;
+            case "F-1": result = EvaluateF1(visa, answerDict, user); break;
+            case "O-1": result = EvaluateO1(visa, answerDict, user); break;
+            case "EB-5": result = EvaluateEB5(visa, answerDict, user); break;
+            case "IR-1": case "CR-1": result = EvaluateFamilySpouse(visa, answerDict, user); break;
+            case "IR-3": case "IR-4": case "ADOP": result = EvaluateAdoption(visa, answerDict, user); break;
+            case "N-400": case "N-600": case "NATZ": result = EvaluateCitizenship(visa, answerDict, user); break;
+            case "F1-IM": case "F2A": case "F2B": case "F3-IM": case "F4": result = EvaluateFamilySpouse(visa, answerDict, user); break;
+            default: result = EvaluateGeneric(visa, answerDict, user); break;
         }
 
         result.VisaType = visa;
@@ -586,12 +524,64 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
     {
         var result = new VisaEvaluationResult
         {
-            Status = EligibilityStatus.Potential,
-            MatchScore = 50,
-            Explanation = $"{visa.Name} may be an option depending on your specific circumstances."
+            Status = EligibilityStatus.NotEligible,
+            MatchScore = 10,
+            Explanation = $"{visa.Name} does not align with your stated primary purpose."
         };
 
-        result.MissingInformation.Add("Detailed information about your situation");
+        // If we don't have a clear purpose yet, leave it as potential
+        if (!answers.ContainsKey("purpose"))
+        {
+            result.Status = EligibilityStatus.Potential;
+            result.MatchScore = 40;
+            result.Explanation = $"{visa.Name} is being evaluated — more information needed.";
+            return result;
+        }
+
+        var purpose = answers["purpose"].ToLowerInvariant();
+        var code = visa.Code.ToUpperInvariant();
+
+        // If purpose is 'student', generic visas should be NotEligible unless they are student visas
+        if (purpose == "student" && !code.StartsWith("F") && !code.StartsWith("M") && !code.StartsWith("J"))
+        {
+            return result;
+        }
+
+        // If purpose is 'professional', generic visas should be NotEligible unless they are work visas
+        if (purpose == "professional" && !code.StartsWith("H") && !code.StartsWith("L") && !code.StartsWith("O") && !code.StartsWith("P") && !code.StartsWith("E") && !code.StartsWith("TN"))
+        {
+            return result;
+        }
+
+        // If purpose is 'visitor', generic visas should be NotEligible unless they are B visas
+        if (purpose == "visitor" && !code.StartsWith("B"))
+        {
+            return result;
+        }
+
+        // If purpose is 'investor', generic visas should be NotEligible unless they are E or EB visas
+        if (purpose == "investor" && !code.StartsWith("E"))
+        {
+            return result;
+        }
+
+        // If purpose is 'family', generic visas should be NotEligible unless they are Family visas
+        if (purpose == "family" && !code.StartsWith("IR") && !code.StartsWith("F") && !code.StartsWith("CR") && !code.StartsWith("K"))
+        {
+            return result;
+        }
+
+        // If purpose is 'citizenship', generic visas should be NotEligible unless they are Naturalization visas
+        if (purpose == "citizenship" && !code.StartsWith("N") && code != "NATZ")
+        {
+            return result;
+        }
+
+        // Default to potential if it aligns with the broad purpose but lacks a specific evaluator
+        result.Status = EligibilityStatus.Potential;
+        result.MatchScore = 50;
+        result.Explanation = $"{visa.Name} may be an option depending on your specific circumstances.";
+        result.MissingInformation.Add("Detailed information about your specific situation");
 
         return result;
     }

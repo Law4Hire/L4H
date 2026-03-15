@@ -53,11 +53,11 @@ export default defineConfig(({ mode }) => {
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8766',
+        target: 'http://localhost:8765',
         changeOrigin: true
       },
       '/uploads': {
-        target: 'http://localhost:8766',
+        target: 'http://localhost:8765',
         changeOrigin: true
       }
     }
@@ -66,11 +66,11 @@ export default defineConfig(({ mode }) => {
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8766',
+        target: 'http://localhost:8765',
         changeOrigin: true
       },
       '/uploads': {
-        target: 'http://localhost:8766',
+        target: 'http://localhost:8765',
         changeOrigin: true
       }
     }

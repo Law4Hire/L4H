@@ -20,7 +20,7 @@ const ProfilePhotoManager: React.FC<ProfilePhotoManagerProps> = ({ attorneyId, o
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const { addToast } = useToast();
+  const { success, error } = useToast();
 
   const fetchPhotos = async () => {
     setLoading(true);
@@ -30,7 +30,7 @@ const ProfilePhotoManager: React.FC<ProfilePhotoManagerProps> = ({ attorneyId, o
       const primary = data.find((p: AttorneyImage) => p.isPrimary);
       if (primary) setSelectedPhotoId(primary.id);
     } catch (err) {
-      addToast('Error', 'Failed to load photos', 'error');
+      error('Error', 'Failed to load photos');
     } finally {
       setLoading(false);
     }
@@ -45,11 +45,11 @@ const ProfilePhotoManager: React.FC<ProfilePhotoManagerProps> = ({ attorneyId, o
     setUploading(true);
     try {
       await apiClient.uploadAttorneyPhoto(attorneyId, e.target.files[0]);
-      addToast('Success', 'Photo uploaded', 'success');
+      success('Success', 'Photo uploaded');
       fetchPhotos();
       if (onPhotoChanged) onPhotoChanged();
     } catch (err) {
-      addToast('Error', 'Upload failed', 'error');
+      error('Error', 'Upload failed');
     } finally {
       setUploading(false);
     }
@@ -59,11 +59,11 @@ const ProfilePhotoManager: React.FC<ProfilePhotoManagerProps> = ({ attorneyId, o
     if (!selectedPhotoId) return;
     try {
       await apiClient.setPrimaryPhoto(attorneyId, selectedPhotoId);
-      addToast('Success', 'Primary photo updated', 'success');
+      success('Success', 'Primary photo updated');
       fetchPhotos();
       if (onPhotoChanged) onPhotoChanged();
     } catch (err) {
-      addToast('Error', 'Failed to set primary photo', 'error');
+      error('Error', 'Failed to set primary photo');
     }
   };
 
@@ -71,11 +71,11 @@ const ProfilePhotoManager: React.FC<ProfilePhotoManagerProps> = ({ attorneyId, o
     if (!window.confirm('Delete this photo?')) return;
     try {
       await apiClient.deleteAttorneyPhoto(attorneyId, photoId);
-      addToast('Success', 'Photo deleted', 'success');
+      success('Success', 'Photo deleted');
       fetchPhotos();
       if (onPhotoChanged) onPhotoChanged();
     } catch (err) {
-      addToast('Error', 'Delete failed', 'error');
+      error('Error', 'Delete failed');
     }
   };
 
@@ -122,14 +122,9 @@ const ProfilePhotoManager: React.FC<ProfilePhotoManagerProps> = ({ attorneyId, o
             onChange={handleFileUpload}
           />
           <label htmlFor="photo-upload">
-            <Button 
-              as="span" 
-              variant="outline" 
-              disabled={uploading}
-              className="cursor-pointer"
-            >
+            <span className={`inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${uploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
               {uploading ? 'Uploading...' : 'Upload Picture'}
-            </Button>
+            </span>
           </label>
 
           <Button

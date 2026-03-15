@@ -4,7 +4,7 @@
 - [x] Task: Remove multilingual test scripts from package.json 677de07
     - [ ] Write Tests (Update test assertions to verify English-only fallback)
     - [ ] Implement Feature (Remove RTL/CJK and other language scripts)
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Clean Up Testing Suite' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Clean Up Testing Suite' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Localization Removal
 - [ ] Task: Remove localization libraries and config from React frontend

@@ -3,6 +3,7 @@ import { Container, Card, Button, EmptyState, useToast, useQuery, useMutation, u
 import { uploads } from '@l4h/shared-ui'
 import { Upload, File, Download, Trash2, CheckCircle, AlertTriangle, Clock } from 'lucide-react'
 import { format } from 'date-fns'
+import { apiClient } from '../apiClient'
 
 interface UploadedFile {
   id: string

@@ -20,6 +20,7 @@ public class HealthController : ControllerBase
     /// </summary>
     /// <returns>Health status</returns>
     [HttpGet("healthz")]
+    [HttpGet("health")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Health()
     {

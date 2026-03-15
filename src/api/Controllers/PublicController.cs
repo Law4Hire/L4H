@@ -221,6 +221,39 @@ public class PublicController : ControllerBase
     }
 
     /// <summary>
+    /// Get all active USCIS forms for public viewing
+    /// </summary>
+    [HttpGet("uscis-forms")]
+    [HttpGet("~/api/v1/public/uscis-forms")]
+    [AllowAnonymous]
+    [ProducesResponseType<IEnumerable<USCISFormInfo>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUSCISForms()
+    {
+        try
+        {
+            var forms = await _context.USCISForms
+                .Where(f => f.IsActive)
+                .Select(f => new USCISFormInfo
+                {
+                    Id = f.Id,
+                    FormNumber = f.FormNumber,
+                    FormName = f.FormName,
+                    Description = f.Description
+                })
+                .OrderBy(f => f.FormNumber)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return Ok(forms);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving public USCIS forms");
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from database");
+        }
+    }
+
+    /// <summary>
     /// Get published site content (news, resources, blog posts)
     /// </summary>
     [HttpGet("site-content")]
@@ -269,6 +302,14 @@ public class VisaListItem
 {
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+}
+
+public class USCISFormInfo
+{
+    public Guid Id { get; set; }
+    public string FormNumber { get; set; } = string.Empty;
+    public string FormName { get; set; } = string.Empty;
+    public string? Description { get; set; }
 }
 
 public class SiteContentInfo
