@@ -224,7 +224,6 @@ public class PublicController : ControllerBase
     /// Get all active USCIS forms for public viewing
     /// </summary>
     [HttpGet("uscis-forms")]
-    [HttpGet("~/api/v1/public/uscis-forms")]
     [AllowAnonymous]
     [ProducesResponseType<IEnumerable<USCISFormInfo>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUSCISForms()
