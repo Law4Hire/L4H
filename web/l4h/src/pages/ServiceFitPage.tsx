@@ -2,6 +2,20 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, useToast } from '@l4h/shared-ui';
 
+interface Option {
+  label: string;
+  value: string;
+  nextStep?: string;
+  result?: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | 'RECOMMENDED_WIZARD';
+  message?: string;
+}
+
+interface Step {
+  id: string;
+  question: string;
+  options: Option[];
+}
+
 const SERVICE_FIT_TREE: Record<string, Step> = {
   start: {
     id: 'start',
