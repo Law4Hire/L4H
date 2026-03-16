@@ -115,7 +115,7 @@ const USCISDocumentsPage: React.FC = () => {
 
       {showKnockout && selectedForm && (
         <Modal 
-          isOpen={showKnockout} 
+          open={showKnockout} 
           onClose={() => setShowKnockout(false)}
           title={`Eligibility Check: ${selectedForm.formNumber}`}
         >

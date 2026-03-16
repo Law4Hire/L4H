@@ -6,7 +6,7 @@ interface Option {
   label: string;
   value: string;
   nextStep?: string;
-  result?: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS';
+  result?: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | 'RECOMMENDED_WIZARD';
   message?: string;
 }
 
@@ -155,23 +155,23 @@ const SERVICE_FIT_TREE: Record<string, Step> = {
     question: 'Is your current status still valid, or did it expire less than 6 months ago?',
     options: [
       { label: 'Yes', value: 'yes', nextStep: 'docs_removal' },
-      { label: 'No', value: 'no', result: 'TERMINATED', message: 'Lapsed status for >6 months requires specialized legal intervention.' },
+      { label: 'No', value: 'no', result: 'RECOMMENDED_WIZARD', message: 'Lapsed status for more than 6 months usually requires specialized legal intervention. We strongly recommend completing our full assessment wizard to determine your best legal path.' },
     ],
   },
   docs_removal: {
     id: 'docs_removal',
     question: 'Are you currently in removal (deportation) proceedings?',
     options: [
-      { label: 'Yes', value: 'yes', result: 'TERMINATED', message: 'Requires removal defense attorney.' },
+      { label: 'Yes', value: 'yes', result: 'RECOMMENDED_WIZARD', message: 'Being in removal proceedings is a complex legal situation. We recommend our full attorney-guided assessment, but you may still browse our documents if you are confident.' },
       { label: 'No', value: 'no', result: 'DOCUMENTS' },
     ],
   },
   docs_first_gc: {
     id: 'docs_first_gc',
-    question: 'Are you seeking to apply for your first Green Card from inside the U.S. (Adjustment of Status)?',
+    question: 'Are you seeking to apply for your first Green Card?',
     options: [
-      { label: 'Yes', value: 'yes', nextStep: 'docs_lawful_entry' },
-      { label: 'No', value: 'no', result: 'TERMINATED', message: 'Initial applications from abroad must follow the Immigrant Visa path.' },
+      { label: 'Yes, from inside the U.S. (Adjustment of Status)', value: 'inside', nextStep: 'docs_lawful_entry' },
+      { label: 'Yes, from abroad (Consular Processing / Self-Petition)', value: 'abroad', result: 'DOCUMENTS' },
     ],
   },
   docs_lawful_entry: {
@@ -179,7 +179,7 @@ const SERVICE_FIT_TREE: Record<string, Step> = {
     question: 'Did you enter the U.S. lawfully with inspection?',
     options: [
       { label: 'Yes', value: 'yes', nextStep: 'docs_underlying_petition' },
-      { label: 'No', value: 'no', result: 'TERMINATED', message: 'Unlawful entry prevents standard Adjustment of Status.' },
+      { label: 'No', value: 'no', result: 'RECOMMENDED_WIZARD', message: 'Unlawful entry can create significant bars to adjusting status. We recommend our full eligibility assessment before you proceed with individual forms.' },
     ],
   },
   docs_underlying_petition: {
@@ -187,7 +187,7 @@ const SERVICE_FIT_TREE: Record<string, Step> = {
     question: 'Do you have an underlying approved petition or immediate relative sponsor?',
     options: [
       { label: 'Yes', value: 'yes', result: 'DOCUMENTS' },
-      { label: 'No', value: 'no', result: 'TERMINATED', message: 'A qualifying petition is required for Adjustment of Status.' },
+      { label: 'No', value: 'no', result: 'RECOMMENDED_WIZARD', message: 'A qualifying petition is usually required for Adjustment of Status. We recommend checking your general eligibility first.' },
     ],
   },
   // Humanitarian Path
@@ -255,17 +255,16 @@ const ServiceFitPage: React.FC = () => {
   
   const [currentStepId, setCurrentStepId] = useState<string>('start');
   const [history, setHistory] = useState<string[]>([]);
-  const [terminatedMessage, setTerminatedMessage] = useState<string | null>(null);
-  const [result, setResult] = useState<'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | null>(null);
+  const [resultMessage, setResultOptions] = useState<{message: string, result: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | 'RECOMMENDED_WIZARD'} | null>(null);
 
   const currentStep = SERVICE_FIT_TREE[currentStepId];
 
   const handleOptionClick = (option: Option) => {
     if (option.result) {
-      setResult(option.result);
-      if (option.result === 'TERMINATED') {
-        setTerminatedMessage(option.message || 'Based on your answers, you may not be eligible for our automated services at this time.');
-      }
+      setResultOptions({
+        result: option.result,
+        message: option.message || (option.result === 'TERMINATED' ? 'Based on your answers, you may not be eligible for our automated services at this time.' : '')
+      });
       return;
     }
 
@@ -280,15 +279,16 @@ const ServiceFitPage: React.FC = () => {
     if (previous) {
       setCurrentStepId(previous);
       setHistory([...history]);
-      setResult(null);
-      setTerminatedMessage(null);
+      setResultOptions(null);
     } else {
       navigate('/');
     }
   };
 
   const renderResult = () => {
-    switch (result) {
+    if (!resultMessage) return null;
+
+    switch (resultMessage.result) {
       case 'GOOD_FIT':
         return (
           <div className="text-center space-y-6">
@@ -330,6 +330,28 @@ const ServiceFitPage: React.FC = () => {
             </div>
           </div>
         );
+      case 'RECOMMENDED_WIZARD':
+        return (
+          <div className="text-center space-y-6">
+            <div className="bg-yellow-100 dark:bg-yellow-900/30 p-8 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <svg className="w-12 h-12 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Recommendation</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-lg mx-auto">
+              {resultMessage.message}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+              <Button onClick={() => navigate('/interview')} size="lg" className="px-12">
+                Start Full Assessment
+              </Button>
+              <Button onClick={() => navigate('/uscis-documents')} variant="secondary" size="lg" className="px-12">
+                Proceed to Documents Anyway
+              </Button>
+            </div>
+          </div>
+        );
       case 'TERMINATED':
         return (
           <div className="text-center space-y-6">
@@ -340,7 +362,7 @@ const ServiceFitPage: React.FC = () => {
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">We're Sorry</h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-lg mx-auto">
-              {terminatedMessage}
+              {resultMessage.message}
             </p>
             <p className="text-gray-500 dark:text-gray-500 max-w-md mx-auto italic">
               Our automated system currently handles standard cases. For complex legal issues, we recommend consulting with an immigration attorney directly.
@@ -353,38 +375,7 @@ const ServiceFitPage: React.FC = () => {
           </div>
         );
       default:
-        return (
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <button 
-                onClick={handleBack}
-                className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 transition-colors"
-              >
-                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Back
-              </button>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-                {currentStep.question}
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              {currentStep.options.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleOptionClick(option)}
-                  className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-left hover:border-blue-600 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-800/50 transition-all group"
-                >
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    {option.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        );
+        return null;
     }
   };
 
@@ -392,10 +383,41 @@ const ServiceFitPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 transition-colors duration-200">
       <div className="max-w-3xl mx-auto">
         <Card className="p-8 shadow-xl">
-          {renderResult()}
+          {resultMessage ? renderResult() : (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <button 
+                  onClick={handleBack}
+                  className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 transition-colors"
+                >
+                  <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back
+                </button>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+                  {currentStep.question}
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {currentStep.options.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => handleOptionClick(option)}
+                    className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-left hover:border-blue-600 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-800/50 transition-all group"
+                  >
+                    <span className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      {option.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </Card>
         
-        {!result && (
+        {!resultMessage && (
           <div className="text-center mt-12">
             <div className="inline-flex space-x-2">
               {[...Array(5)].map((_, i) => (
