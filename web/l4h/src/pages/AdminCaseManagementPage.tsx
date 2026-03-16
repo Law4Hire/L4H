@@ -59,6 +59,7 @@ const statusOptions = [
 
 const AdminCaseManagementPage: React.FC = () => {
   const [cases, setCases] = useState<AdminCaseResponse[]>([])
+  const [attorneys, setAttorneys] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [updatingCaseId, setUpdatingCaseId] = useState<string | null>(null)
   const { success, error } = useToast()
@@ -69,7 +70,7 @@ const AdminCaseManagementPage: React.FC = () => {
   const [evaluations, setEvaluations] = useState<VisaEvaluation[]>([]);
   const [isEvaluationsLoading, setIsEvaluationsLoading] = useState(false);
 
-  const loadCases = React.useCallback(async () => {
+  const loadData = React.useCallback(async () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('jwt_token')
@@ -79,31 +80,66 @@ const AdminCaseManagementPage: React.FC = () => {
         return
       }
 
-      const response = await fetch('/api/v1/admin/cases', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
+      const [casesRes, attorneysRes] = await Promise.all([
+        fetch('/api/v1/admin/cases', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }),
+        fetch('/api/v1/attorneys', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+      ])
 
-      if (!response.ok) {
-        throw new Error(`Failed to load cases: ${response.status}`)
-      }
+      if (!casesRes.ok) throw new Error(`Failed to load cases: ${casesRes.status}`)
+      if (!attorneysRes.ok) throw new Error(`Failed to load attorneys: ${attorneysRes.status}`)
 
-      const data = await response.json()
-      setCases(data)
+      const casesData = await casesRes.json()
+      const attorneysData = await attorneysRes.json()
+      
+      setCases(casesData)
+      setAttorneys(attorneysData)
 
     } catch (err) {
-      console.error('Error loading cases:', err)
-      error('Failed to load cases', err instanceof Error ? err.message : 'Unknown error')
+      console.error('Error loading data:', err)
+      error('Failed to load data', err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
   }, [error])
 
   useEffect(() => {
-    loadCases()
-  }, [loadCases])
+    loadData()
+  }, [loadData])
+
+  const handleAssignCase = async (caseId: string, staffId: number | null) => {
+    try {
+      setUpdatingCaseId(caseId)
+      const token = localStorage.getItem('jwt_token')
+      
+      const response = await fetch(`/api/v1/cases/${caseId}/assign`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ staffId })
+      })
+
+      if (!response.ok) throw new Error('Failed to update assignment')
+
+      success(staffId === null ? 'Case unassigned' : 'Case assigned successfully')
+      loadData()
+    } catch (err) {
+      error('Assignment failed', err instanceof Error ? err.message : 'Unknown error')
+    } finally {
+      setUpdatingCaseId(null)
+    }
+  }
 
   const updateCaseStatus = async (caseId: string, newStatus: string, reason?: string) => {
     try {
@@ -311,8 +347,18 @@ const AdminCaseManagementPage: React.FC = () => {
                         <div className="text-sm text-gray-500 dark:text-gray-400">No pricing</div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {caseItem.assignedStaffName || <span className="text-amber-600 dark:text-amber-400 italic">Unassigned</span>}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <select
+                        value={caseItem.assignedStaffId || ''}
+                        onChange={(e) => handleAssignCase(caseItem.id, e.target.value ? parseInt(e.target.value) : null)}
+                        disabled={updatingCaseId === caseItem.id}
+                        className="text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <option value="">Unassigned</option>
+                        {attorneys.map(a => (
+                          <option key={a.id} value={a.id}>{a.name}</option>
+                        ))}
+                      </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {formatDate(caseItem.lastActivityAt)}
