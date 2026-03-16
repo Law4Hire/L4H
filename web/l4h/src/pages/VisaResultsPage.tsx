@@ -5,6 +5,7 @@ import { interview } from '@l4h/shared-ui';
 
 // This should match the DTO from the backend
 interface VisaEvaluation {
+  visaTypeId: number;
   visaName: string;
   visaCode: string;
   status: string;
@@ -41,9 +42,9 @@ const VisaResultsPage: React.FC = () => {
         if (eligible) {
             setSelectedVisaCode(eligible.visaCode);
         }
-      } catch (error: any) {
-        console.error('Failed to fetch evaluations:', error);
-        showError(error.message || 'Failed to load results.');
+      } catch (err: any) {
+        console.error('Failed to fetch evaluations:', err);
+        showError(err.message || 'Failed to load results.');
       } finally {
         setIsLoading(false);
       }
@@ -61,43 +62,30 @@ const VisaResultsPage: React.FC = () => {
   };
 
   const handleRegister = async () => {
-    if (!selectedVisaCode) {
-        showError('Please select a visa to proceed.');
-        return;
-    }
+    const selectedVisa = evaluations.find(e => e.visaCode === selectedVisaCode);
+    
+    // If no visa selected, but user wants to consult, they can still register
+    const visaTypeId = selectedVisa?.visaTypeId || 0;
     
     try {
         // Save the selection to the backend interview session
-        await interview.selectVisa(sessionToken, selectedVisaCode);
+        if (visaTypeId > 0) {
+            await interview.selectVisa(sessionToken, visaTypeId);
+        }
         navigate('/register-interview', { state: { sessionToken, selectedVisaCode } });
     } catch (err: any) {
         console.error('Failed to save visa selection:', err);
-        showError(err.message || 'Failed to save your selection.');
+        // Handle validation error object specifically if it exists
+        const msg = err.errors 
+            ? Object.values(err.errors).flat().join(' ') 
+            : (err.message || 'Failed to save your selection.');
+        showError('Registration Error', msg);
     }
   };
 
   const renderResults = () => {
     if (isLoading) {
       return <div className="text-center dark:text-gray-300"><p>Loading results...</p></div>;
-    }
-
-    if (evaluations.length === 0) {
-      return (
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">No Eligible Visas Found</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Based on the answers provided, we could not find a suitable visa option at this time.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button onClick={handleReturnHome} variant="secondary" size="lg">
-              Return to Home
-            </Button>
-            <Button onClick={handleRedoInterview} size="lg">
-              Redo Interview
-            </Button>
-          </div>
-        </div>
-      );
     }
 
     const eligibleVisas = evaluations.filter(e => e.status === 'Eligible');
@@ -115,12 +103,15 @@ const VisaResultsPage: React.FC = () => {
               {displayMessage}
             </p>
           </div>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            Even if you don't qualify for automated processing, you can still sign up for a consultation with our legal professionals to appeal your case or explore other complex options.
+          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button onClick={handleReturnHome} variant="secondary" size="lg">
               Return to Home
             </Button>
-            <Button onClick={handleRedoInterview} size="lg">
-              Redo Interview
+            <Button onClick={handleRegister} size="lg" className="bg-blue-600 hover:bg-blue-700">
+              Register for Consultation
             </Button>
           </div>
         </div>
