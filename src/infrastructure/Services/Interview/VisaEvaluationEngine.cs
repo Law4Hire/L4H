@@ -109,17 +109,20 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             if (cleanNat == "algeria" || cleanNat.Contains("algeria"))
             {
                 // Relax hold if already in the U.S.
-                if (answerDict.TryGetValue("location", out var location) && location.Equals("inside", StringComparison.OrdinalIgnoreCase))
+                bool isInside = answerDict.TryGetValue("location", out var location) && 
+                               location.Equals("inside", StringComparison.OrdinalIgnoreCase);
+                
+                if (!isInside)
                 {
-                    // Do not return early; allow standard evaluation to proceed for those already in the U.S.
-                }
-                else
-                {
-                    _logger.LogWarning("Geopolitical hold triggered for nationality: {Nationality}", nationality);
+                    _logger.LogWarning("Geopolitical hold triggered for nationality: {Nationality} (Located Abroad)", nationality);
                     result.Status = EligibilityStatus.NotEligible;
                     result.MatchScore = 0;
                     result.Explanation = $"Visa applications are currently on administrative hold for citizens of {nationality} located abroad. Please consult an immigration attorney.";
                     return result;
+                }
+                else
+                {
+                    _logger.LogInformation("Algerian citizen in U.S. - processing standard evaluation.");
                 }
             }
         }
