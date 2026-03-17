@@ -179,7 +179,7 @@ const ProfessionalWorkspace: React.FC = () => {
                         </select>
                       ) : (
                         <Button 
-                          size="xs" 
+                          size="sm" 
                           variant="outline" 
                           className="text-[10px]"
                           onClick={() => handleAssign(c.id, null)}
