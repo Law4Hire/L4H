@@ -64,22 +64,35 @@ const VisaResultsPage: React.FC = () => {
   const handleRegister = async () => {
     const selectedVisa = evaluations.find(e => e.visaCode === selectedVisaCode);
     
-    // If no visa selected, but user wants to consult, they can still register
-    const visaTypeId = selectedVisa?.visaTypeId || 0;
+    // Ensure we have a valid numeric ID if a visa was selected
+    const visaTypeId = selectedVisa ? Number(selectedVisa.visaTypeId) : 0;
     
     try {
-        // Save the selection to the backend interview session
+        // Save the selection to the backend interview session if one was made
         if (visaTypeId > 0) {
             await interview.selectVisa(sessionToken, visaTypeId);
         }
         navigate('/register-interview', { state: { sessionToken, selectedVisaCode } });
     } catch (err: any) {
         console.error('Failed to save visa selection:', err);
-        // Handle validation error object specifically if it exists
-        const msg = err.errors 
-            ? Object.values(err.errors).flat().join(' ') 
-            : (err.message || 'Failed to save your selection.');
-        showError('Registration Error', msg);
+        
+        // Robust Error Handling for 400 Bad Request / Validation Errors
+        let errorMessage = 'Failed to save your selection.';
+        
+        if (err.errors) {
+            // Extract messages from ASP.NET Validation Error object
+            errorMessage = Object.values(err.errors)
+                .flat()
+                .join(' ');
+        } else if (err.message) {
+            errorMessage = err.message;
+        }
+
+        showError('Registration Issue', errorMessage);
+        
+        // Even if the select-visa call fails, allow the user to proceed to registration
+        // so they can at least talk to an attorney.
+        navigate('/register-interview', { state: { sessionToken, selectedVisaCode } });
     }
   };
 
