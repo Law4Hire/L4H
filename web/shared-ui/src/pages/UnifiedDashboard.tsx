@@ -19,8 +19,7 @@ export const UnifiedDashboard: React.FC = () => {
   }
 
   const renderDashboard = () => {
-    if (isAdmin) return <AdminWorkspace />
-    if (isLegalProfessional) return <ProfessionalWorkspace />
+    if (isAdmin || isLegalProfessional) return <ProfessionalWorkspace />
     return <ClientDashboard />
   }
 

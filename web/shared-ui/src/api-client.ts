@@ -367,6 +367,13 @@ export const cases = {
     return fetchJson(`/v1/cases/${caseId}/reset-visa-type`, {
       method: 'POST'
     })
+  },
+
+  async assign(caseId: string, staffId: number | null) {
+    return fetchJson(`/v1/cases/${caseId}/assign`, {
+      method: 'POST',
+      body: JSON.stringify({ staffId })
+    })
   }
 }
 
