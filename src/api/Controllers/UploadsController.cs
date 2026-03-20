@@ -283,7 +283,7 @@ public class UploadsController : ControllerBase
             CreatedAt = upload.CreatedAt,
             VerdictAt = upload.VerdictAt,
             DownloadUrl = upload.Status == "clean" && !string.IsNullOrEmpty(upload.StorageUrl) 
-                ? $"/api/v1/uploads/download/{upload.Id}" 
+                ? $"/api/v1/uploads/{upload.Id}/download"
                 : null
         }).ToList();
 
@@ -293,6 +293,106 @@ public class UploadsController : ControllerBase
         };
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Download a clean uploaded file.
+    /// </summary>
+    [HttpGet("{uploadId:guid}/download")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> DownloadUpload(Guid uploadId)
+    {
+        var userId = GetCurrentUserId();
+        var upload = await _context.Uploads
+            .Include(u => u.Case)
+            .FirstOrDefaultAsync(u => u.Id == uploadId)
+            .ConfigureAwait(false);
+
+        if (upload == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Upload Not Found",
+                Detail = "File not found.",
+                Status = StatusCodes.Status404NotFound
+            });
+        }
+
+        if (upload.Case.UserId != userId && !IsStaff())
+        {
+            return StatusCode(403, new ProblemDetails
+            {
+                Title = "Forbidden",
+                Detail = "Access denied to this file.",
+                Status = StatusCodes.Status403Forbidden
+            });
+        }
+
+        if (upload.Status != "clean" || string.IsNullOrWhiteSpace(upload.StorageUrl) || !System.IO.File.Exists(upload.StorageUrl))
+        {
+            return Conflict(new ProblemDetails
+            {
+                Title = "File Not Available",
+                Detail = "This file is not available for download yet.",
+                Status = StatusCodes.Status409Conflict
+            });
+        }
+
+        upload.Case.LastActivityAt = DateTimeOffset.UtcNow;
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+        return PhysicalFile(upload.StorageUrl, upload.Mime, upload.OriginalName);
+    }
+
+    /// <summary>
+    /// Delete an uploaded file from the current case.
+    /// </summary>
+    [HttpDelete("{uploadId:guid}")]
+    [ProducesResponseType<MessageResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteUpload(Guid uploadId)
+    {
+        var userId = GetCurrentUserId();
+        var upload = await _context.Uploads
+            .Include(u => u.Case)
+            .FirstOrDefaultAsync(u => u.Id == uploadId)
+            .ConfigureAwait(false);
+
+        if (upload == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Upload Not Found",
+                Detail = "File not found.",
+                Status = StatusCodes.Status404NotFound
+            });
+        }
+
+        if (upload.Case.UserId != userId && !IsStaff())
+        {
+            return StatusCode(403, new ProblemDetails
+            {
+                Title = "Forbidden",
+                Detail = "Access denied to this file.",
+                Status = StatusCodes.Status403Forbidden
+            });
+        }
+
+        DeleteUploadArtifacts(upload);
+
+        _context.Uploads.Remove(upload);
+        upload.Case.LastActivityAt = DateTimeOffset.UtcNow;
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        LogAudit("docs", "delete", "Upload", upload.Id.ToString(), new { uploadId, caseId = upload.CaseId.Value });
+
+        return Ok(new MessageResponse
+        {
+            Message = "File deleted successfully."
+        });
     }
 
     /// <summary>
@@ -325,6 +425,42 @@ public class UploadsController : ControllerBase
     private bool IsStaff()
     {
         return User.HasClaim("IsAdmin", "true") || User.IsInRole("Admin") || User.IsInRole("Staff");
+    }
+
+    private void DeleteUploadArtifacts(Upload upload)
+    {
+        TryDeleteFile(upload.StorageUrl);
+
+        var quarantinePath = Path.Combine(
+            _uploadOptions.BasePath,
+            _uploadOptions.QuarantineSubdir,
+            upload.Key.Replace('/', Path.DirectorySeparatorChar));
+        TryDeleteFile(quarantinePath);
+    }
+
+    private void TryDeleteFile(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
+        {
+            return;
+        }
+
+        try
+        {
+            System.IO.File.Delete(path);
+
+            var directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrWhiteSpace(directory) &&
+                Directory.Exists(directory) &&
+                !Directory.EnumerateFileSystemEntries(directory).Any())
+            {
+                Directory.Delete(directory);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to delete upload artifact at {Path}", path);
+        }
     }
 
     private void LogAudit(string category, string action, string targetType, string targetId, object details)

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace L4H.Api.Controllers;
 
@@ -25,6 +26,7 @@ public class AuthController : ControllerBase
     private readonly AuthConfig _authConfig;
     private readonly ILogger<AuthController> _logger;
     private readonly IMailService _mailService;
+    private readonly IHostEnvironment _environment;
 
     public AuthController(
         IAuthService authService,
@@ -36,7 +38,8 @@ public class AuthController : ControllerBase
         IAccountLockoutService accountLockoutService,
         IOptions<AuthConfig> authConfig,
         ILogger<AuthController> logger,
-        IMailService mailService)
+        IMailService mailService,
+        IHostEnvironment environment)
     {
         _authService = authService;
         _rememberMeTokenService = rememberMeTokenService;
@@ -48,6 +51,7 @@ public class AuthController : ControllerBase
         _authConfig = authConfig.Value;
         _logger = logger;
         _mailService = mailService;
+        _environment = environment;
     }
 
     /// <summary>
@@ -98,15 +102,16 @@ public class AuthController : ControllerBase
         var result = await _authService.SignupAsync(request, HttpContext.RequestAborted).ConfigureAwait(false);
         
         if (!result.IsSuccess)
-            return BadRequest(new { error = result.Error });
+            return CreateProblem(StatusCodes.Status400BadRequest, "Signup Failed", result.Error!);
 
         // Create email verification token if required
         if (_authConfig.EmailVerification.Required && result.Value!.UserId.HasValue)
         {
-            var verificationToken = await _emailVerificationService.CreateVerificationTokenAsync(result.Value.UserId.Value).ConfigureAwait(false);
-            // In a real implementation, this would be sent via email
-            // For now, we'll log it for testing
-            _logger.LogInformation("Email verification token for {Email}: {Token}", request.Email, verificationToken);
+            var verificationUrl = await SendVerificationEmailAsync(result.Value.UserId.Value, request.Email).ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(verificationUrl))
+            {
+                Response.Headers.Append("X-Debug-Verification-Url", verificationUrl);
+            }
         }
 
         // Create a session for the user
@@ -145,7 +150,8 @@ public class AuthController : ControllerBase
             return StatusCode(429, new ProblemDetails
             {
                 Title = "Rate Limit Exceeded",
-                Detail = ipRateLimit.Error
+                Detail = ipRateLimit.Error,
+                Status = StatusCodes.Status429TooManyRequests
             });
         }
 
@@ -165,14 +171,16 @@ public class AuthController : ControllerBase
                 return Unauthorized(new ProblemDetails
                 {
                     Title = "Account Deactivated",
-                    Detail = result.Error
+                    Detail = result.Error,
+                    Status = StatusCodes.Status401Unauthorized
                 });
             }
 
             return Unauthorized(new ProblemDetails
             {
                 Title = "Authentication Failed",
-                Detail = "Invalid email or password."
+                Detail = "Invalid email or password.",
+                Status = StatusCodes.Status401Unauthorized
             });
         }
 
@@ -185,7 +193,8 @@ public class AuthController : ControllerBase
                 return Unauthorized(new ProblemDetails
                 {
                     Title = "Account Locked",
-                    Detail = lockoutCheck.Error
+                    Detail = lockoutCheck.Error,
+                    Status = StatusCodes.Status401Unauthorized
                 });
             }
 
@@ -202,7 +211,9 @@ public class AuthController : ControllerBase
                 return Unauthorized(new ProblemDetails
                 {
                     Title = "Email Verification Required",
-                    Detail = "Please verify your email address before logging in."
+                    Detail = "Please verify your email address before logging in. You can request a new verification email from the login screen.",
+                    Status = StatusCodes.Status401Unauthorized,
+                    Extensions = { ["code"] = "email_verification_required" }
                 });
             }
         }
@@ -308,7 +319,7 @@ public class AuthController : ControllerBase
         if (!Request.Cookies.TryGetValue("l4h_remember", out var rememberToken) || 
             string.IsNullOrEmpty(rememberToken))
         {
-            return Unauthorized(new { error = "Remember token not found" });
+            return CreateProblem(StatusCodes.Status401Unauthorized, "Session Not Found", "Remember token not found.");
         }
 
         var result = await _authService.RefreshFromRememberTokenAsync(rememberToken, HttpContext.RequestAborted).ConfigureAwait(false);
@@ -324,7 +335,7 @@ public class AuthController : ControllerBase
                 Path = "/"
             };
             Response.Cookies.Delete("l4h_remember", deleteOptions);
-            return Unauthorized(new { error = result.Error });
+            return CreateProblem(StatusCodes.Status401Unauthorized, "Session Expired", result.Error!);
         }
 
         // The remember token service already rotated the token, so we need to set the new one
@@ -387,17 +398,36 @@ public class AuthController : ControllerBase
     {
         if (string.IsNullOrEmpty(token))
         {
-            return BadRequest(new { error = "Invalid verification token." });
+            return CreateProblem(StatusCodes.Status400BadRequest, "Invalid Verification Token", "Invalid verification token.");
         }
 
         var result = await _emailVerificationService.VerifyTokenAsync(token).ConfigureAwait(false);
         
         if (!result.IsSuccess)
         {
-            return BadRequest(new { error = result.Error });
+            return CreateProblem(StatusCodes.Status400BadRequest, "Verification Failed", result.Error!);
         }
 
         return Ok(new { message = "Email verified successfully." });
+    }
+
+    [HttpPost("resend-verification")]
+    [AllowAnonymous]
+    [ProducesResponseType<MessageResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResendVerification([FromBody] ResendVerificationRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var verificationUrl = await TryResendVerificationEmailAsync(request.Email).ConfigureAwait(false);
+        return Ok(new
+        {
+            message = "If an account exists and still needs verification, a new verification email has been sent.",
+            verificationUrl
+        });
     }
 
     /// <summary>
@@ -416,7 +446,7 @@ public class AuthController : ControllerBase
         var result = await _authService.ForgotPasswordAsync(request).ConfigureAwait(false);
         
         if (!result.IsSuccess)
-            return BadRequest(new { error = result.Error });
+            return CreateProblem(StatusCodes.Status400BadRequest, "Password Reset Failed", result.Error!);
 
         return Ok(result.Value);
     }
@@ -438,7 +468,7 @@ public class AuthController : ControllerBase
         var result = await _authService.ResetPasswordAsync(request).ConfigureAwait(false);
         
         if (!result.IsSuccess)
-            return BadRequest(new { error = result.Error });
+            return CreateProblem(StatusCodes.Status400BadRequest, "Password Reset Failed", result.Error!);
 
         return Ok(result.Value);
     }
@@ -455,7 +485,7 @@ public class AuthController : ControllerBase
         var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userIdGuid))
         {
-            return Unauthorized(new { error = "Invalid user" });
+            return CreateProblem(StatusCodes.Status401Unauthorized, "Unauthorized", "Invalid user.");
         }
         var userId = new UserId(userIdGuid);
 
@@ -487,7 +517,7 @@ public class AuthController : ControllerBase
         var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userIdGuid))
         {
-            return Unauthorized(new { error = "Invalid user" });
+            return CreateProblem(StatusCodes.Status401Unauthorized, "Unauthorized", "Invalid user.");
         }
         var userId = new UserId(userIdGuid);
 
@@ -517,7 +547,7 @@ public class AuthController : ControllerBase
         var userIdClaim = User.FindFirst("sub")?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userIdGuid))
         {
-            return Unauthorized(new { error = "Invalid user" });
+            return CreateProblem(StatusCodes.Status401Unauthorized, "Unauthorized", "Invalid user.");
         }
         var userId = new UserId(userIdGuid);
 
@@ -529,8 +559,68 @@ public class AuthController : ControllerBase
         }
         
         if (!result.IsSuccess)
-            return BadRequest(new { error = result.Error });
+            return CreateProblem(StatusCodes.Status400BadRequest, "Profile Update Failed", result.Error!);
 
         return Ok(result.Value);
     }
+
+    private ObjectResult CreateProblem(int status, string title, string detail, string? code = null)
+    {
+        var problem = new ProblemDetails
+        {
+            Status = status,
+            Title = title,
+            Detail = detail
+        };
+
+        if (!string.IsNullOrWhiteSpace(code))
+        {
+            problem.Extensions["code"] = code;
+        }
+
+        return StatusCode(status, problem);
+    }
+
+    private async Task<string?> TryResendVerificationEmailAsync(string email)
+    {
+        using var scope = HttpContext.RequestServices.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<L4H.Infrastructure.Data.L4HDbContext>();
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email, HttpContext.RequestAborted).ConfigureAwait(false);
+        if (user == null || user.EmailVerified)
+        {
+            return null;
+        }
+
+        return await SendVerificationEmailAsync(user.Id, user.Email).ConfigureAwait(false);
+    }
+
+    private async Task<string?> SendVerificationEmailAsync(UserId userId, string email)
+    {
+        var verificationToken = await _emailVerificationService.CreateVerificationTokenAsync(userId).ConfigureAwait(false);
+        var verificationUrl = $"{Request.Scheme}://{Request.Host}/verify?token={Uri.EscapeDataString(verificationToken)}";
+        var body = $"""
+            <p>Please verify your email to continue with Law4Hire.</p>
+            <p><a href="{verificationUrl}">Verify my email</a></p>
+            <p>If the button does not work, copy and paste this link into your browser:</p>
+            <p>{verificationUrl}</p>
+            """;
+
+        try
+        {
+            await _mailService.SendEmailAsync(email, "Verify your Law4Hire email", body).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send verification email to {Email}. Verification URL: {VerificationUrl}", email, verificationUrl);
+        }
+
+        _logger.LogInformation("Verification URL generated for {Email}: {VerificationUrl}", email, verificationUrl);
+        return _environment.IsProduction() ? null : verificationUrl;
+    }
+}
+
+public class ResendVerificationRequest
+{
+    [Required, EmailAddress]
+    public string Email { get; set; } = string.Empty;
 }

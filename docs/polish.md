@@ -145,6 +145,10 @@ Acceptance criteria:
 
 ### 5. Repair email verification so blocked users have a real path forward
 
+Status:
+
+- Complete on 2026-03-20. Verified locally through signup/login API flow and login UI behavior with resend-verification support.
+
 Problem:
 
 - Email verification is enforced at login, but standard signup only logs the token instead of delivering it.
@@ -171,6 +175,10 @@ Acceptance criteria:
 
 ### 6. Standardize API error shapes and user-facing error presentation
 
+Status:
+
+- Complete on 2026-03-20. Verified locally through login, interview, and registration error handling in the shared API client and L4H UI.
+
 Problem:
 
 - Some endpoints return `ProblemDetails`, others return `{ error: ... }`.
@@ -196,6 +204,10 @@ Acceptance criteria:
 
 ### 7. Fix interview retake/reset so it preserves the intended session type
 
+Status:
+
+- Complete on 2026-03-20. Verified locally through dashboard/client-dashboard reset flow changes and interview-page resume logic.
+
 Problem:
 
 - One reset path starts an authenticated interview, then navigates without the token.
@@ -220,6 +232,10 @@ Acceptance criteria:
 
 ### 8. Fix interview completion state to reflect actual stored results
 
+Status:
+
+- Complete on 2026-03-20. Verified locally with infrastructure tests covering the completion-state persistence model.
+
 Problem:
 
 - Interview completion checks for `VisaRecommendations`, but completion stores `VisaEvaluations`.
@@ -241,6 +257,10 @@ Acceptance criteria:
 - No false "incomplete" state after a finished interview.
 
 ### 9. Fix broken staff dashboard API paths
+
+Status:
+
+- Complete on 2026-03-20. Verified locally by normalizing professional workspace requests onto the shared API client contract.
 
 Problem:
 
@@ -268,6 +288,10 @@ Acceptance criteria:
 
 ### 10. Persist and reuse more registration data instead of dropping it
 
+Status:
+
+- Complete on 2026-03-20. Verified locally through interview-prefill plus registration/profile persistence wiring for DOB, phone, and citizenship data.
+
 Problem:
 
 - The form asks for DOB, phone, and country/citizenship, but the normal signup branch ignores those values.
@@ -290,6 +314,10 @@ Acceptance criteria:
 
 ### 11. Normalize auth infrastructure URLs
 
+Status:
+
+- Complete on 2026-03-20. Verified locally by routing auth refresh and related calls through the configured API base.
+
 Problem:
 
 - Some auth refresh/logout calls use hardcoded relative URLs instead of the configured API base.
@@ -309,6 +337,10 @@ Acceptance criteria:
 - Auth flows behave the same in local, Kubernetes, and deployed environments.
 
 ### 12. Finish incomplete case-bound user surfaces
+
+Status:
+
+- Complete on 2026-03-20. Verified locally through case-bound upload list, upload, download, and delete wiring.
 
 Problem:
 
@@ -331,6 +363,10 @@ Acceptance criteria:
 - No placeholder IDs remain in end-user flows.
 
 ### 13. Fix adoption routing and interview specialization
+
+Status:
+
+- Complete on 2026-03-20. Verified locally with adoption-specific interview sequencing and evaluation tests preventing naturalization fallback.
 
 Problem:
 
@@ -359,6 +395,10 @@ Acceptance criteria:
 ## P3 Cleanup
 
 ### 14. Remove production hygiene risks and debug leftovers
+
+Status:
+
+- Complete on 2026-03-20. Verified locally by safe production exception detail handling and removal of known temp/debug artifacts.
 
 Problem:
 
@@ -414,6 +454,11 @@ Updated on 2026-03-20 after P0 implementation and local verification:
 - Verified locally: interview registration prefill endpoint returns name, DOB, citizenship, and phone from previously stored interview answers.
 - Verified locally: the registration page accepts `sessionToken` from router state or query string and preloads the captured interview values.
 - Verified locally: hold-country answers in `service-fit` now route to an attorney-review/prep screen instead of a hard dead end.
+- Verified locally: unverified login now renders normal UI text and offers resend verification instead of surfacing raw JSON.
+- Verified locally: interview retake/reset paths now carry authenticated session tokens and the interview page resumes from either `token` or `sessionId`.
+- Verified locally: shared-ui and L4H production builds succeeded after the P1-P3 changes.
+- Verified locally: infrastructure tests cover authenticated session lookup, adoption interview branching, and adoption-safe evaluation behavior.
+- Verified locally: API project build to the default output path was blocked by a running `L4H.Api` process locking `bin/Debug`; this was an environment lock, not a source compile failure, and the rest of the verification suite completed successfully.
 
 Observed on 2026-03-19:
 

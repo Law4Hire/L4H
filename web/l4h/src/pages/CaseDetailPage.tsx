@@ -65,8 +65,8 @@ const CaseDetailPage: React.FC = () => {
       // Start the interview
       const response = await interview.start(caseId)
 
-      // Navigate to interview page with session ID
-      navigate(`/interview?sessionId=${response.sessionId}`)
+      // Navigate with the resume token so authenticated sessions continue on the same case-backed interview.
+      navigate(`/interview?sessionId=${response.sessionId}&token=${response.sessionToken}`)
 
     } catch (error: any) {
       console.error('Failed to start interview:', error)

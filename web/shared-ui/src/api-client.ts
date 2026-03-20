@@ -5,6 +5,8 @@ interface ProblemDetails {
   status?: number
   type?: string
   instance?: string
+  errors?: Record<string, string[]>
+  code?: string
 }
 
 interface ApiResponse<T = any> {
@@ -16,7 +18,8 @@ class ApiError extends Error {
   constructor(
     public title: string,
     public detail?: string,
-    public status?: number
+    public status?: number,
+    public code?: string
   ) {
     super(detail || title)
     this.name = 'ApiError'
@@ -148,7 +151,7 @@ async function fetchJson<T = any>(
         }
 
         try {
-          const refreshResponse = await fetch('/api/v1/auth/remember', {
+          const refreshResponse = await fetch(`${API_BASE_URL}/v1/auth/remember`, {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' }
@@ -211,15 +214,9 @@ async function fetchJson<T = any>(
         }
       }
 
-      // Check if the response body itself is a ProblemDetails object
-      // or if it follows the { error: ... } envelope pattern
       const responseData = data as any
-      const errorData = data.error || (responseData.title ? responseData : undefined) || {
-        title: `HTTP ${response.status}`,
-        detail: response.statusText,
-        status: response.status
-      }
-      throw new ApiError(errorData.title, errorData.detail, errorData.status)
+      const errorData = normalizeErrorResponse(data.error || responseData, response.status, response.statusText)
+      throw new ApiError(errorData.title, errorData.detail, errorData.status, errorData.code)
     }
     
     return data.data || data as T
@@ -302,6 +299,16 @@ export const auth = {
   
   async verify(token: string) {
     return fetchJson(`/v1/auth/verify?token=${encodeURIComponent(token)}`)
+  },
+
+  async resendVerification(email: string) {
+    return fetchJson<{
+      message: string
+      verificationUrl?: string
+    }>('/v1/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    })
   },
   
   async forgot(email: string) {
@@ -516,16 +523,25 @@ export const uploads = {
     contentType: string
     sizeBytes: number
   }) {
-    return fetchJson('/v1/uploads/presign', {
+    return fetchJson<{
+      key: string
+      url: string
+      headers: Record<string, string>
+      uploadId: string
+    }>('/v1/uploads/presign', {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        caseId: data.caseId,
+        filename: data.fileName,
+        contentType: data.contentType,
+        sizeBytes: data.sizeBytes
+      })
     })
   },
   
   async confirm(data: {
     caseId: string
-    fileName: string
-    uploadToken: string
+    key: string
   }) {
     return fetchJson('/v1/uploads/confirm', {
       method: 'POST',
@@ -534,11 +550,41 @@ export const uploads = {
   },
   
   async list(caseId: string) {
-    return fetchJson(`/v1/uploads/list?caseId=${encodeURIComponent(caseId)}`)
+    const result = await fetchJson<{
+      uploads: Array<{
+        id: string
+        originalName: string
+        mime: string
+        sizeBytes: number
+        status: string
+        downloadUrl?: string | null
+        createdAt: string
+        verdictAt?: string | null
+      }>
+    }>(`/v1/uploads/list?caseId=${encodeURIComponent(caseId)}`)
+
+    return result.uploads
   },
   
   async download(fileId: string) {
-    return fetchJson(`/v1/uploads/${fileId}/download`)
+    const token = getJwtToken()
+    const response = await fetch(`${API_BASE_URL}/v1/uploads/${encodeURIComponent(fileId)}/download`, {
+      credentials: 'same-origin',
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => response.statusText)
+      throw new ApiError(`HTTP ${response.status}`, errorText || response.statusText, response.status)
+    }
+
+    return response.blob()
+  },
+
+  async delete(fileId: string) {
+    return fetchJson(`/v1/uploads/${encodeURIComponent(fileId)}`, {
+      method: 'DELETE'
+    })
   }
 }
 
@@ -702,6 +748,33 @@ export const interview = {
       citizenship?: string
     }>(`/v1/interview/anonymous/registration-prefill/${encodeURIComponent(sessionToken)}`)
   }
+}
+
+function normalizeErrorResponse(
+  responseData: any,
+  status: number,
+  fallbackStatusText: string
+): ProblemDetails {
+  const validationMessage = formatValidationErrors(responseData?.errors)
+
+  return {
+    title: responseData?.title || `HTTP ${status}`,
+    detail: responseData?.detail || validationMessage || fallbackStatusText,
+    status: responseData?.status || status,
+    type: responseData?.type,
+    instance: responseData?.instance,
+    errors: responseData?.errors,
+    code: responseData?.code || responseData?.extensions?.code
+  }
+}
+
+function formatValidationErrors(errors?: Record<string, string[]>): string | undefined {
+  if (!errors) {
+    return undefined
+  }
+
+  const messages = Object.values(errors).flat().filter(Boolean)
+  return messages.length > 0 ? messages.join(' ') : undefined
 }
 
 // Professional Interview API methods

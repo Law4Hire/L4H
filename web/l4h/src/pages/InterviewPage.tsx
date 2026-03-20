@@ -103,8 +103,11 @@ const InterviewPage: React.FC = () => {
   // Initialize: Start or resume interview on load
   useEffect(() => {
     const token = searchParams.get('token');
+    const sessionId = searchParams.get('sessionId');
     if (token) {
       resumeInterview(token);
+    } else if (sessionId) {
+      resumeInterview(sessionId);
     } else {
       startInterview();
     }
@@ -245,10 +248,13 @@ const InterviewPage: React.FC = () => {
       default:
         // Handle special case where options might be empty (e.g., country select)
         // or where there are simply too many options to render as buttons.
-        const isDropdown = currentQuestion.options.length === 0 || currentQuestion.options.length > 8 || currentQuestion.key === 'doc_prefill_nationality';
+        const shouldRenderCountryOptions =
+          currentQuestion.key.toLowerCase().includes('nationality') ||
+          currentQuestion.key.toLowerCase().includes('citizenship');
+        const isDropdown = currentQuestion.options.length === 0 || currentQuestion.options.length > 8 || shouldRenderCountryOptions;
         
         let optionsToRender = currentQuestion.options;
-        if (currentQuestion.key === 'doc_prefill_nationality' && optionsToRender.length === 0) {
+        if (shouldRenderCountryOptions && optionsToRender.length === 0) {
             optionsToRender = getNames().sort().map(name => ({ label: name, value: name }));
         }
 

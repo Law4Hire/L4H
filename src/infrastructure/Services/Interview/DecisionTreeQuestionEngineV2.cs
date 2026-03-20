@@ -86,6 +86,13 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             }
         }
 
+        // Adoption must collect child-specific facts instead of falling into adult passport intake.
+        var adoptionQuestion = GetNextAdoptionQuestion(answers);
+        if (adoptionQuestion != null)
+        {
+            return adoptionQuestion;
+        }
+
         // Step 6.1: Document Prerequisites (Parallel Qualification Flow)
         // Collect master data for document pre-population before completion
         var docPrereqQuestion = GetNextDocumentPrerequisiteQuestion(answers);
@@ -138,6 +145,16 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         // they are eligible for.
         
         // 3. Document Prerequisites check (MANDATORY before completion)
+        if (IsAdoptionFlow(answers))
+        {
+            return answers.ContainsKey("adoption_subject_role") &&
+                   answers.ContainsKey("adoption_child_full_name") &&
+                   answers.ContainsKey("adoption_child_dob") &&
+                   answers.ContainsKey("adoption_child_nationality") &&
+                   answers.ContainsKey("adoption_parent_status") &&
+                   answers.ContainsKey("adoption_case_stage");
+        }
+
         if (!answers.ContainsKey("doc_prefill_full_name") ||
             !answers.ContainsKey("doc_prefill_dob") ||
             !answers.ContainsKey("doc_prefill_nationality") ||
@@ -505,10 +522,135 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
 
     #endregion
 
+    #region Step 6.05: Adoption Questions
+
+    private static bool IsAdoptionFlow(Dictionary<string, string> answers)
+    {
+        return answers.TryGetValue("category", out var category) &&
+               category.Equals("adoption", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private InterviewQuestion? GetNextAdoptionQuestion(Dictionary<string, string> answers)
+    {
+        if (!IsAdoptionFlow(answers))
+        {
+            return null;
+        }
+
+        if (!answers.ContainsKey("adoption_subject_role"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "adoption_subject_role",
+                Text = "Who are we gathering adoption information about right now?",
+                Category = "adoption",
+                InputType = "select",
+                Order = 90,
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new() { Value = "child", Label = "The adopted child" },
+                    new() { Value = "parent", Label = "The adoptive parent or petitioner" },
+                    new() { Value = "both", Label = "Both the child and the adoptive parent" }
+                }
+            };
+        }
+
+        if (!answers.ContainsKey("adoption_child_full_name"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "adoption_child_full_name",
+                Text = "What is the adopted child's full legal name?",
+                Category = "adoption",
+                InputType = "text",
+                Order = 91,
+                IsRequired = true,
+                Options = new List<QuestionOption>()
+            };
+        }
+
+        if (!answers.ContainsKey("adoption_child_dob"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "adoption_child_dob",
+                Text = "What is the adopted child's date of birth?",
+                Category = "adoption",
+                InputType = "date",
+                Order = 92,
+                IsRequired = true,
+                Options = new List<QuestionOption>()
+            };
+        }
+
+        if (!answers.ContainsKey("adoption_child_nationality"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "adoption_child_nationality",
+                Text = "What is the adopted child's country of citizenship or nationality?",
+                Category = "adoption",
+                InputType = "select",
+                Order = 93,
+                IsRequired = true,
+                Options = new List<QuestionOption>()
+            };
+        }
+
+        if (!answers.ContainsKey("adoption_parent_status"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "adoption_parent_status",
+                Text = "What is the adoptive parent's U.S. immigration status?",
+                Category = "adoption",
+                InputType = "select",
+                Order = 94,
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new() { Value = "us_citizen", Label = "U.S. citizen" },
+                    new() { Value = "lawful_permanent_resident", Label = "Lawful permanent resident" },
+                    new() { Value = "other", Label = "Other or not yet determined" }
+                }
+            };
+        }
+
+        if (!answers.ContainsKey("adoption_case_stage"))
+        {
+            return new InterviewQuestion
+            {
+                Key = "adoption_case_stage",
+                Text = "What stage is the adoption case in right now?",
+                Category = "adoption",
+                InputType = "select",
+                Order = 95,
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new() { Value = "planning", Label = "We are planning the adoption" },
+                    new() { Value = "match_made", Label = "A child match has been made" },
+                    new() { Value = "adoption_in_progress", Label = "The foreign adoption process is underway" },
+                    new() { Value = "adoption_finalized", Label = "The foreign adoption is already finalized" }
+                }
+            };
+        }
+
+        return null;
+    }
+
+    #endregion
+
     #region Step 6.1: Document Prerequisites
 
     private InterviewQuestion? GetNextDocumentPrerequisiteQuestion(Dictionary<string, string> answers)
     {
+        if (IsAdoptionFlow(answers))
+        {
+            return null;
+        }
+
         // 1. Full Legal Name
         if (!answers.ContainsKey("doc_prefill_full_name"))
         {

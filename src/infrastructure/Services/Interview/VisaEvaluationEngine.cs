@@ -154,7 +154,8 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
                 "tourism" or "visit" or "vacation" or "visitor_visa" or "visitor" => "visitor",
                 "investment" or "eb5" or "investor" or "investor_nonimmigrant" or "investor_immigrant" => "investor",
                 "family" or "green_card_family" or "family_petition" => "family",
-                "citizenship" or "naturalization" or "adoption" => "citizenship",
+                "adoption" => "adoption",
+                "citizenship" or "naturalization" or "citizenship_certificate" => "citizenship",
                 "refugee" or "asylum_app" or "tps" or "deportation_defense" or "vawa" => "refugee",
                 _ => rawPurpose
             };
@@ -511,7 +512,8 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         var result = new VisaEvaluationResult { MatchScore = 20 };
 
         bool hasCitizenshipPurpose = answers.TryGetValue("purpose", out var purpose) &&
-            purpose.Contains("citizenship", StringComparison.OrdinalIgnoreCase);
+            (purpose.Contains("citizenship", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("naturalization", StringComparison.OrdinalIgnoreCase));
 
         bool hasPermanentResident = answers.TryGetValue("permanent_resident", out var pr) &&
             pr.Equals("yes", StringComparison.OrdinalIgnoreCase);
@@ -585,6 +587,12 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
 
         // If purpose is 'citizenship', generic visas should be NotEligible unless they are Naturalization visas
         if (purpose == "citizenship" && !code.StartsWith("N") && code != "NATZ")
+        {
+            return result;
+        }
+
+        // If purpose is 'adoption', only adoption-specific paths should remain eligible.
+        if (purpose == "adoption" && code != "ADOP" && code != "IR-3" && code != "IR-4")
         {
             return result;
         }
