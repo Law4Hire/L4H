@@ -1,7 +1,11 @@
 using L4H.Api.DTOs.Interview;
+using L4H.Infrastructure.Services;
 using L4H.Infrastructure.Services.Interview;
+using L4H.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace L4H.Api.Controllers;
 
@@ -14,13 +18,22 @@ namespace L4H.Api.Controllers;
 public class AnonymousInterviewController : ControllerBase
 {
     private readonly IAgentOrchestrator _orchestrator;
+    private readonly IEmailVerificationService _emailVerificationService;
+    private readonly ISessionManagementService _sessionManagementService;
+    private readonly AuthConfig _authConfig;
     private readonly ILogger<AnonymousInterviewController> _logger;
 
     public AnonymousInterviewController(
         IAgentOrchestrator orchestrator,
+        IEmailVerificationService emailVerificationService,
+        ISessionManagementService sessionManagementService,
+        IOptions<AuthConfig> authConfig,
         ILogger<AnonymousInterviewController> logger)
     {
         _orchestrator = orchestrator;
+        _emailVerificationService = emailVerificationService;
+        _sessionManagementService = sessionManagementService;
+        _authConfig = authConfig.Value;
         _logger = logger;
     }
 
@@ -143,6 +156,29 @@ public class AnonymousInterviewController : ControllerBase
     }
 
     /// <summary>
+    /// Returns registration prefill values captured during the interview.
+    /// </summary>
+    [HttpGet("registration-prefill/{anonymousToken}")]
+    public async Task<ActionResult<RegistrationPrefillResponse>> GetRegistrationPrefill(Guid anonymousToken)
+    {
+        try
+        {
+            var result = await _orchestrator.GetRegistrationPrefillAsync(anonymousToken);
+            return Ok(result.ToRegistrationPrefillResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Registration prefill not found for token {AnonymousToken}", anonymousToken);
+            return NotFound(new ProblemDetails
+            {
+                Title = "Interview Session Not Found",
+                Detail = ex.Message,
+                Status = StatusCodes.Status404NotFound
+            });
+        }
+    }
+
+    /// <summary>
     /// Creates user account and converts anonymous session to authenticated
     /// </summary>
     [HttpPost("register")]
@@ -153,18 +189,46 @@ public class AnonymousInterviewController : ControllerBase
 
         try
         {
-            var session = await _orchestrator.RegisterWithInterviewAsync(
-                request.AnonymousToken,
-                request.Email,
-                request.Password,
-                request.FirstName,
-                request.LastName);
+            var signupRequest = new SignupRequest
+            {
+                Email = request.Email,
+                Password = request.Password,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PhoneNumber = request.PhoneNumber,
+                DateOfBirth = request.DateOfBirth,
+                Country = request.Country,
+                Nationality = request.Nationality,
+                Citizenship = request.Citizenship
+            };
+            var session = await _orchestrator.RegisterWithInterviewAsync(request.AnonymousToken, signupRequest);
+
+            if (session.UserId is not { } userId)
+            {
+                throw new InvalidOperationException("Registration completed, but the interview session was not linked to the user.");
+            }
+
+            if (_authConfig.EmailVerification.Required)
+            {
+                var verificationToken = await _emailVerificationService.CreateVerificationTokenAsync(userId);
+                _logger.LogInformation("Email verification token for {Email}: {Token}", request.Email, verificationToken);
+            }
+
+            await _sessionManagementService.CreateSessionAsync(
+                userId,
+                HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                Request.Headers.UserAgent.ToString() ?? string.Empty);
+
+            var token = HttpContext.RequestServices
+                .GetRequiredService<IJwtTokenService>()
+                .GenerateAccessToken(session.User!);
 
             return Ok(new RegisterWithInterviewResponse
             {
                 SessionId = session.Id,
-                UserId = session.UserId!.Value.Value,
+                UserId = userId.Value,
                 Email = request.Email,
+                Token = token,
                 Success = true
             });
         }
@@ -172,10 +236,11 @@ public class AnonymousInterviewController : ControllerBase
         {
             _logger.LogWarning(ex, "Error registering with interview for token {AnonymousToken}",
                 request.AnonymousToken);
-            return BadRequest(new RegisterWithInterviewResponse
+            return BadRequest(new ProblemDetails
             {
-                Success = false,
-                ErrorMessage = ex.Message
+                Title = "Interview Registration Failed",
+                Detail = ex.Message,
+                Status = StatusCodes.Status400BadRequest
             });
         }
     }

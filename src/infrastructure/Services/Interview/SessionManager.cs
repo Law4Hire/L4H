@@ -72,7 +72,8 @@ public class SessionManager : ISessionManager
 
     public async Task<InterviewSession> ConvertToAuthenticatedSessionAsync(
         Guid anonymousToken,
-        UserId userId)
+        UserId userId,
+        CaseId caseId)
     {
         var session = await GetSessionByTokenAsync(anonymousToken);
         if (session == null)
@@ -81,7 +82,10 @@ public class SessionManager : ISessionManager
         }
 
         session.UserId = userId;
+        session.CaseId = caseId;
         session.AnonymousToken = null; // Clear anonymous token after conversion
+        session.User = await _context.Users.FirstAsync(u => u.Id == userId);
+        session.Case = await _context.Cases.FirstAsync(c => c.Id == caseId);
 
         await _context.SaveChangesAsync();
 

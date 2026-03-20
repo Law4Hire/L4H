@@ -34,7 +34,8 @@ public interface ISessionManager
     /// </summary>
     Task<InterviewSession> ConvertToAuthenticatedSessionAsync(
         Guid anonymousToken,
-        UserId userId);
+        UserId userId,
+        CaseId caseId);
 
     /// <summary>
     /// Saves user's answer to the current session

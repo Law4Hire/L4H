@@ -1,10 +1,11 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Button, Input, useToast, auth } from '@l4h/shared-ui';
+import { Button, Input, useToast, auth, setJwtToken } from '@l4h/shared-ui';
 import { interview } from '@l4h/shared-ui';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 const registrationSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -22,32 +23,94 @@ type RegistrationFormValues = z.infer<typeof registrationSchema>;
 const SinglePageRegistration: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { error: showError, success: showSuccess } = useToast();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegistrationFormValues>({
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
   });
 
-  const sessionToken = location.state?.sessionToken;
+  const sessionToken = location.state?.sessionToken || searchParams.get('sessionToken') || undefined;
 
   const [showSignupPrompt, setShowSignupPrompt] = React.useState(false);
+  const [isLoadingPrefill, setIsLoadingPrefill] = React.useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadPrefill = async () => {
+      if (!sessionToken) {
+        return;
+      }
+
+      setIsLoadingPrefill(true);
+      try {
+        const prefill = await interview.getRegistrationPrefill(sessionToken);
+        if (!isMounted) {
+          return;
+        }
+
+        reset({
+          firstName: prefill.firstName || '',
+          lastName: prefill.lastName || '',
+          email: '',
+          password: '',
+          phone: prefill.phoneNumber || '',
+          dob: prefill.dateOfBirth ? prefill.dateOfBirth.split('T')[0] : '',
+          countryOfCitizenship: prefill.citizenship || prefill.nationality || '',
+        });
+      } catch (err: any) {
+        if (isMounted) {
+          showError(err.message || 'Unable to load interview details for registration.');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingPrefill(false);
+        }
+      }
+    };
+
+    loadPrefill();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [reset, sessionToken, showError]);
 
   const onSubmit = async (data: RegistrationFormValues) => {
     try {
+      let token: string | undefined;
+
       if (sessionToken) {
-        // Register with interview session link
-        await interview.registerWithInterview({
+        const result = await interview.registerWithInterview({
           anonymousToken: sessionToken,
-          ...data,
-        });
-      } else {
-        // General signup
-        await auth.signup({
           email: data.email,
           password: data.password,
           firstName: data.firstName,
           lastName: data.lastName,
-          // Other fields if supported by backend signup DTO
+          phoneNumber: data.phone,
+          dateOfBirth: data.dob,
+          nationality: data.countryOfCitizenship,
+          citizenship: data.countryOfCitizenship,
         });
+        token = result.token;
+      } else {
+        const result = await auth.signup({
+          email: data.email,
+          password: data.password,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          phoneNumber: data.phone,
+          dateOfBirth: data.dob,
+          nationality: data.countryOfCitizenship,
+          citizenship: data.countryOfCitizenship,
+          country: data.countryOfCitizenship,
+        });
+        token = result.token;
+      }
+
+      if (token) {
+        setJwtToken(token);
+        window.dispatchEvent(new Event('jwt-token-changed'));
       }
 
       showSuccess("Registration successful!");
@@ -98,6 +161,14 @@ const SinglePageRegistration: React.FC = () => {
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4 transition-colors duration-200">
       <div className="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
         <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Create Your Account</h1>
+        {sessionToken && (
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
+            We pulled the identity details you already shared during the interview so you do not need to re-enter them.
+          </p>
+        )}
+        {isLoadingPrefill && (
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-6">Loading your interview details...</p>
+        )}
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Personal Information */}

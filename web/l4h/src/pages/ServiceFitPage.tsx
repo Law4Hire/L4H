@@ -6,7 +6,7 @@ interface Option {
   label: string;
   value: string;
   nextStep?: string;
-  result?: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | 'RECOMMENDED_WIZARD';
+  result?: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | 'RECOMMENDED_WIZARD' | 'HOLD_REVIEW';
   message?: string;
 }
 
@@ -40,7 +40,7 @@ const SERVICE_FIT_TREE: Record<string, Step> = {
     id: 'immigrant_hold',
     question: 'Are you a citizen of a country currently subject to a total U.S. administrative processing hold (e.g., Algeria)?',
     options: [
-      { label: 'Yes', value: 'yes', result: 'TERMINATED', message: 'Country-wide hold prevents processing.' },
+      { label: 'Yes', value: 'yes', result: 'HOLD_REVIEW', message: 'A current administrative hold may block immediate filing, but we can still help you prepare paperwork and route you for attorney review.' },
       { label: 'No', value: 'no', nextStep: 'immigrant_deportation' },
     ],
   },
@@ -80,7 +80,7 @@ const SERVICE_FIT_TREE: Record<string, Step> = {
     id: 'immigrant_hold_2',
     question: 'Are you a citizen of a country currently under administrative hold?',
     options: [
-      { label: 'Yes', value: 'yes', result: 'TERMINATED', message: 'Country-wide hold prevents processing.' },
+      { label: 'Yes', value: 'yes', result: 'HOLD_REVIEW', message: 'A current administrative hold may block immediate filing, but we can still help you prepare paperwork and route you for attorney review.' },
       { label: 'No', value: 'no', result: 'GOOD_FIT' },
     ],
   },
@@ -137,7 +137,7 @@ const SERVICE_FIT_TREE: Record<string, Step> = {
     id: 'non_immigrant_hold',
     question: 'Is your country currently under an administrative hold?',
     options: [
-      { label: 'Yes', value: 'yes', result: 'TERMINATED', message: 'Country-wide hold prevents processing.' },
+      { label: 'Yes', value: 'yes', result: 'HOLD_REVIEW', message: 'A current administrative hold may block immediate filing, but we can still help you prepare paperwork and route you for attorney review.' },
       { label: 'No', value: 'no', result: 'GOOD_FIT' },
     ],
   },
@@ -255,7 +255,7 @@ const ServiceFitPage: React.FC = () => {
   
   const [currentStepId, setCurrentStepId] = useState<string>('start');
   const [history, setHistory] = useState<string[]>([]);
-  const [resultMessage, setResultOptions] = useState<{message: string, result: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | 'RECOMMENDED_WIZARD'} | null>(null);
+  const [resultMessage, setResultOptions] = useState<{message: string, result: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | 'RECOMMENDED_WIZARD' | 'HOLD_REVIEW'} | null>(null);
 
   const currentStep = SERVICE_FIT_TREE[currentStepId];
 
@@ -370,6 +370,34 @@ const ServiceFitPage: React.FC = () => {
             <div className="pt-8">
               <Button onClick={() => navigate('/')} variant="secondary" size="lg">
                 Back to Home
+              </Button>
+            </div>
+          </div>
+        );
+      case 'HOLD_REVIEW':
+        return (
+          <div className="text-center space-y-6">
+            <div className="bg-amber-100 dark:bg-amber-900/30 p-8 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <svg className="w-12 h-12 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M4.93 19h14.14c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.2 16c-.77 1.33.19 3 1.73 3z" />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Attorney Review Recommended</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              {resultMessage.message}
+            </p>
+            <p className="text-gray-500 dark:text-gray-500 max-w-2xl mx-auto italic">
+              If the hold is lifted or an exception applies, you will already have your core information and paperwork prepared.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+              <Button onClick={() => navigate('/register')} size="lg" className="px-12">
+                Create Account
+              </Button>
+              <Button onClick={() => navigate('/interview')} variant="secondary" size="lg" className="px-12">
+                Start Full Interview
+              </Button>
+              <Button onClick={() => navigate('/uscis-documents')} variant="secondary" size="lg" className="px-12">
+                Prepare Documents
               </Button>
             </div>
           </div>

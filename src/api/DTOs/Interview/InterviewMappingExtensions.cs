@@ -124,6 +124,21 @@ public static class InterviewMappingExtensions
         };
     }
 
+    public static RegistrationPrefillResponse ToRegistrationPrefillResponse(this InterviewRegistrationPrefillResult result)
+    {
+        return new RegistrationPrefillResponse
+        {
+            FullName = result.FullName,
+            FirstName = result.FirstName,
+            LastName = result.LastName,
+            PhoneNumber = result.PhoneNumber,
+            DateOfBirth = result.DateOfBirth,
+            Country = result.Country,
+            Nationality = result.Nationality,
+            Citizenship = result.Citizenship
+        };
+    }
+
     public static ChecklistAnswersDTO ToChecklistAnswersDTO(
         string visaType,
         List<(string id, string text)> checklistDefinition,

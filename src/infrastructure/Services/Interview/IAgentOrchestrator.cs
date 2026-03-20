@@ -58,10 +58,12 @@ public interface IAgentOrchestrator
     /// </summary>
     Task<InterviewSession> RegisterWithInterviewAsync(
         Guid anonymousToken,
-        string email,
-        string password,
-        string firstName,
-        string lastName);
+        SignupRequest request);
+
+    /// <summary>
+    /// Gets registration prefill values captured during interview.
+    /// </summary>
+    Task<InterviewRegistrationPrefillResult> GetRegistrationPrefillAsync(Guid anonymousToken);
 
     /// <summary>
     /// Attorney/professional locks a specific visa for the session
@@ -147,4 +149,16 @@ public class InterviewCompletionResult
     public Guid SessionId { get; set; }
     public List<VisaEvaluationResult> Evaluations { get; set; } = new();
     public int TotalQuestionsAnswered { get; set; }
+}
+
+public class InterviewRegistrationPrefillResult
+{
+    public string FullName { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string? PhoneNumber { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public string? Nationality { get; set; }
+    public string? Citizenship { get; set; }
+    public string? Country { get; set; }
 }
