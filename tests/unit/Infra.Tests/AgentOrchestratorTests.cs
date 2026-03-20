@@ -67,7 +67,7 @@ public class AgentOrchestratorTests
             new Mock<ISessionManager>().Object,
             new Mock<IQuestionEngine>().Object,
             new Mock<IVisaEvaluationEngine>().Object,
-            new Mock<IPasswordHasher>().Object,
+            new Mock<IAuthService>().Object,
             new Mock<L4H.Infrastructure.Interfaces.IAIService>().Object,
             context);
 
@@ -117,7 +117,7 @@ public class AgentOrchestratorTests
             new Mock<ISessionManager>().Object,
             new Mock<IQuestionEngine>().Object,
             new Mock<IVisaEvaluationEngine>().Object,
-            new Mock<IPasswordHasher>().Object,
+            new Mock<IAuthService>().Object,
             new Mock<L4H.Infrastructure.Interfaces.IAIService>().Object,
             context);
 
