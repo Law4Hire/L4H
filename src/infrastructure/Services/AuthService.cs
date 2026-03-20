@@ -74,6 +74,11 @@ public class AuthService : IAuthService
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
+            PhoneNumber = request.PhoneNumber ?? string.Empty,
+            DateOfBirth = request.DateOfBirth,
+            Country = request.Country ?? string.Empty,
+            Nationality = request.Nationality ?? string.Empty,
+            Citizenship = request.Citizenship ?? request.Nationality ?? string.Empty,
             PasswordHash = _passwordHasher.HashPassword(request.Password),
             EmailVerified = false,
             CreatedAt = DateTime.UtcNow,
@@ -85,11 +90,7 @@ public class AuthService : IAuthService
 
         _context.Users.Add(user);
         
-        // Create a case for the new user if none exists
-        var existingCase = await _context.Cases
-            .FirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken).ConfigureAwait(false);
-
-        if (existingCase == null)
+        if (!await _context.Cases.AnyAsync(c => c.UserId == user.Id, cancellationToken).ConfigureAwait(false))
         {
             var newCase = new Case
             {

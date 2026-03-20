@@ -16,6 +16,17 @@ public record SignupRequest
 
     [Required]
     public string LastName { get; init; } = string.Empty;
+
+    [Phone]
+    public string? PhoneNumber { get; init; }
+
+    public DateTime? DateOfBirth { get; init; }
+
+    public string? Country { get; init; }
+
+    public string? Nationality { get; init; }
+
+    public string? Citizenship { get; init; }
 }
 
 public record LoginRequest

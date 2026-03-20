@@ -277,7 +277,17 @@ export const auth = {
     })
   },
   
-  async signup(userData: { email: string; password: string; firstName: string; lastName: string }) {
+  async signup(userData: {
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    phoneNumber?: string
+    dateOfBirth?: string
+    country?: string
+    nationality?: string
+    citizenship?: string
+  }) {
     return fetchJson('/v1/auth/signup', {
       method: 'POST',
       body: JSON.stringify(userData)
@@ -661,17 +671,36 @@ export const interview = {
     password: string
     firstName: string
     lastName: string
+    phoneNumber?: string
+    dateOfBirth?: string
+    country?: string
+    nationality?: string
+    citizenship?: string
   }) {
     return fetchJson<{
       sessionId: string
       userId: string
       email: string
+      token: string
       success: boolean
       errorMessage?: string
     }>('/v1/interview/anonymous/register', {
       method: 'POST',
       body: JSON.stringify(data)
     })
+  },
+
+  async getRegistrationPrefill(sessionToken: string) {
+    return fetchJson<{
+      fullName: string
+      firstName: string
+      lastName: string
+      phoneNumber?: string
+      dateOfBirth?: string
+      country?: string
+      nationality?: string
+      citizenship?: string
+    }>(`/v1/interview/anonymous/registration-prefill/${encodeURIComponent(sessionToken)}`)
   }
 }
 

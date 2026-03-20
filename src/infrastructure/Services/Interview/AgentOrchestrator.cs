@@ -14,7 +14,7 @@ public class AgentOrchestrator : IAgentOrchestrator
     private readonly ISessionManager _sessionManager;
     private readonly IQuestionEngine _questionEngine;
     private readonly IVisaEvaluationEngine _evaluationEngine;
-    private readonly IPasswordHasher _passwordHasher;
+    private readonly IAuthService _authService;
     private readonly L4H.Infrastructure.Interfaces.IAIService _aiService;
     private readonly L4HDbContext _context;
 
@@ -22,14 +22,14 @@ public class AgentOrchestrator : IAgentOrchestrator
         ISessionManager sessionManager,
         IQuestionEngine questionEngine,
         IVisaEvaluationEngine evaluationEngine,
-        IPasswordHasher passwordHasher,
+        IAuthService authService,
         L4H.Infrastructure.Interfaces.IAIService aiService,
         L4HDbContext context)
     {
         _sessionManager = sessionManager;
         _questionEngine = questionEngine;
         _evaluationEngine = evaluationEngine;
-        _passwordHasher = passwordHasher;
+        _authService = authService;
         _aiService = aiService;
         _context = context;
     }
@@ -335,45 +335,84 @@ public class AgentOrchestrator : IAgentOrchestrator
         await _sessionManager.SelectVisaAsync(session.Id, visaTypeId);
     }
 
-    public async Task<InterviewSession> RegisterWithInterviewAsync(
-        Guid anonymousToken,
-        string email,
-        string password,
-        string firstName,
-        string lastName)
+    public async Task<InterviewSession> RegisterWithInterviewAsync(Guid anonymousToken, SignupRequest request)
     {
-        // Check if user already exists
-        var existingUser = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == email);
-
-        if (existingUser != null)
+        var signupResult = await _authService.SignupAsync(request);
+        if (!signupResult.IsSuccess || signupResult.Value?.UserId is not { } userId)
         {
-            throw new InvalidOperationException("A user with this email already exists");
+            throw new InvalidOperationException(signupResult.Error ?? "Unable to create account from interview.");
         }
 
-        // Create user account
-        var user = new User
-        {
-            Id = new UserId(Guid.NewGuid()),
-            Email = email,
-            FirstName = firstName,
-            LastName = lastName,
-            PasswordHash = _passwordHasher.HashPassword(password),
-            EmailVerified = false,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            PasswordUpdatedAt = DateTime.UtcNow
-        };
+        var createdCase = await _context.Cases
+            .OrderByDescending(c => c.CreatedAt)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        if (createdCase == null)
+        {
+            throw new InvalidOperationException("Account was created, but no case could be found.");
+        }
 
         // Convert anonymous session to authenticated
         var session = await _sessionManager.ConvertToAuthenticatedSessionAsync(
             anonymousToken,
-            user.Id);
+            userId,
+            createdCase.Id);
 
         return session;
+    }
+
+    public async Task<InterviewRegistrationPrefillResult> GetRegistrationPrefillAsync(Guid anonymousToken)
+    {
+        var session = await _sessionManager.GetSessionByTokenAsync(anonymousToken);
+        if (session == null)
+        {
+            throw new InvalidOperationException($"Session with token {anonymousToken} not found");
+        }
+
+        var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
+        var answerLookup = answers
+            .GroupBy(answer => answer.QuestionKey, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.Last().AnswerValue, StringComparer.OrdinalIgnoreCase);
+
+        var fullName = GetAnswer(answerLookup, "doc_prefill_full_name");
+        var (firstName, lastName) = SplitFullName(fullName);
+        var nationality = GetAnswer(answerLookup, "doc_prefill_nationality");
+
+        return new InterviewRegistrationPrefillResult
+        {
+            FullName = fullName,
+            FirstName = firstName,
+            LastName = lastName,
+            PhoneNumber = GetAnswer(answerLookup, "phone"),
+            DateOfBirth = TryParseDate(GetAnswer(answerLookup, "doc_prefill_dob")),
+            Nationality = nationality,
+            Citizenship = nationality,
+            Country = GetAnswer(answerLookup, "current_country")
+        };
+    }
+
+    private static string? GetAnswer(IReadOnlyDictionary<string, string> answers, string key)
+        => answers.TryGetValue(key, out var value) ? value : null;
+
+    private static DateTime? TryParseDate(string? value)
+        => DateTime.TryParse(value, out var parsed) ? parsed.Date : null;
+
+    private static (string FirstName, string LastName) SplitFullName(string? fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return (string.Empty, string.Empty);
+        }
+
+        var parts = fullName
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (parts.Length == 1)
+        {
+            return (parts[0], parts[0]);
+        }
+
+        return (parts[0], string.Join(' ', parts.Skip(1)));
     }
 
     public async Task LockVisaForSessionAsync(

@@ -72,7 +72,8 @@ public class SessionManager : ISessionManager
 
     public async Task<InterviewSession> ConvertToAuthenticatedSessionAsync(
         Guid anonymousToken,
-        UserId userId)
+        UserId userId,
+        CaseId caseId)
     {
         var session = await GetSessionByTokenAsync(anonymousToken);
         if (session == null)
@@ -81,7 +82,21 @@ public class SessionManager : ISessionManager
         }
 
         session.UserId = userId;
+        session.CaseId = caseId;
         session.AnonymousToken = null; // Clear anonymous token after conversion
+        session.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (session.User == null)
+        {
+            throw new InvalidOperationException(
+                $"Interview session conversion failed because user {userId.Value} could not be loaded after signup.");
+        }
+
+        session.Case = await _context.Cases.FirstOrDefaultAsync(c => c.Id == caseId);
+        if (session.Case == null)
+        {
+            throw new InvalidOperationException(
+                $"Interview session conversion failed because case {caseId.Value} could not be loaded after signup.");
+        }
 
         await _context.SaveChangesAsync();
 
