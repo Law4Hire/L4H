@@ -19,8 +19,8 @@ interface AuthContextType {
   user: User | null
   isLoading: boolean
   isAuthenticated: boolean
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>
-  loginAsProfessional: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string; code?: string }>
+  loginAsProfessional: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string; code?: string }>
   logout: () => void
   hasRole: (role: string) => boolean
   role: 'Admin' | 'LegalProfessional' | 'Client' | null
@@ -152,7 +152,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error: any) {
       return { 
         success: false, 
-        error: error.detail || error.message || 'Login failed' 
+        error: error.detail || error.message || 'Login failed',
+        code: error.code
       }
     }
   }
@@ -169,7 +170,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error: any) {
       return { 
         success: false, 
-        error: error.detail || error.message || 'Login failed' 
+        error: error.detail || error.message || 'Login failed',
+        code: error.code
       }
     }
   }

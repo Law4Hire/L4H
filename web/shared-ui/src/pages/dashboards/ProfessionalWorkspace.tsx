@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button, fetchJson, useToast, cases } from '../../index'
+import { Card, Button, fetchJson, useToast, cases, messages as messageApi } from '../../index'
 import { useAuth } from '../../hooks/useAuth'
 import { formatDistanceToNow } from 'date-fns'
 import { MessageSquare, Briefcase, Users, Clock, Shield, Settings, Activity, FileText } from 'lucide-react'
@@ -35,8 +35,8 @@ const ProfessionalWorkspace: React.FC = () => {
       const [statsData, assigned, available, msgData, attorneysData] = await Promise.all([
         fetchJson('/v1/dashboard/stats'),
         fetchJson<CaseItem[]>('/v1/cases/dashboard'),
-        fetchJson<CaseItem[]>('/api/v1/cases/available'),
-        fetchJson<any[]>('/api/v1/messaging/assigned'),
+        cases.available(),
+        messageApi.assigned(),
         fetchJson<any[]>('/v1/attorneys')
       ])
       setStats(statsData)
@@ -58,17 +58,7 @@ const ProfessionalWorkspace: React.FC = () => {
   const handleAssign = async (caseId: string, staffId: number | null) => {
     try {
       setIsAssigning(caseId)
-      const token = localStorage.getItem('jwt_token')
-      const response = await fetch(`/api/v1/cases/${caseId}/assign`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ staffId })
-      })
-
-      if (!response.ok) throw new Error('Failed to assign case')
+      await cases.assign(caseId, staffId)
       
       success(staffId === null ? 'Case unassigned' : 'Case assigned successfully')
       loadData()

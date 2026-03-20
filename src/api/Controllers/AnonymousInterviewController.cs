@@ -21,6 +21,8 @@ public class AnonymousInterviewController : ControllerBase
     private readonly IEmailVerificationService _emailVerificationService;
     private readonly ISessionManagementService _sessionManagementService;
     private readonly AuthConfig _authConfig;
+    private readonly IMailService _mailService;
+    private readonly IHostEnvironment _environment;
     private readonly ILogger<AnonymousInterviewController> _logger;
 
     public AnonymousInterviewController(
@@ -28,12 +30,16 @@ public class AnonymousInterviewController : ControllerBase
         IEmailVerificationService emailVerificationService,
         ISessionManagementService sessionManagementService,
         IOptions<AuthConfig> authConfig,
+        IMailService mailService,
+        IHostEnvironment environment,
         ILogger<AnonymousInterviewController> logger)
     {
         _orchestrator = orchestrator;
         _emailVerificationService = emailVerificationService;
         _sessionManagementService = sessionManagementService;
         _authConfig = authConfig.Value;
+        _mailService = mailService;
+        _environment = environment;
         _logger = logger;
     }
 
@@ -67,7 +73,7 @@ public class AnonymousInterviewController : ControllerBase
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
-            return NotFound(new { error = ex.Message });
+            return CreateProblem(StatusCodes.Status404NotFound, "Interview Session Not Found", ex.Message);
         }
     }
 
@@ -92,7 +98,7 @@ public class AnonymousInterviewController : ControllerBase
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
-            return NotFound(new { error = ex.Message });
+            return CreateProblem(StatusCodes.Status404NotFound, "Interview Session Not Found", ex.Message);
         }
     }
 
@@ -113,7 +119,7 @@ public class AnonymousInterviewController : ControllerBase
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Session not found: {SessionToken}", request.SessionToken);
-            return NotFound(new { error = ex.Message });
+            return CreateProblem(StatusCodes.Status404NotFound, "Interview Session Not Found", ex.Message);
         }
     }
 
@@ -131,7 +137,7 @@ public class AnonymousInterviewController : ControllerBase
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Session not found: {SessionToken}", sessionToken);
-            return NotFound(new { error = ex.Message });
+            return CreateProblem(StatusCodes.Status404NotFound, "Interview Session Not Found", ex.Message);
         }
     }
 
@@ -151,7 +157,7 @@ public class AnonymousInterviewController : ControllerBase
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Error selecting visa for session {SessionToken}", request.SessionToken);
-            return BadRequest(new { error = ex.Message });
+            return CreateProblem(StatusCodes.Status400BadRequest, "Visa Selection Failed", ex.Message);
         }
     }
 
@@ -210,8 +216,11 @@ public class AnonymousInterviewController : ControllerBase
 
             if (_authConfig.EmailVerification.Required)
             {
-                var verificationToken = await _emailVerificationService.CreateVerificationTokenAsync(userId);
-                _logger.LogInformation("Email verification token for {Email}: {Token}", request.Email, verificationToken);
+                var verificationUrl = await SendVerificationEmailAsync(userId, request.Email);
+                if (!string.IsNullOrEmpty(verificationUrl))
+                {
+                    Response.Headers.Append("X-Debug-Verification-Url", verificationUrl);
+                }
             }
 
             await _sessionManagementService.CreateSessionAsync(
@@ -243,5 +252,46 @@ public class AnonymousInterviewController : ControllerBase
                 Status = StatusCodes.Status400BadRequest
             });
         }
+    }
+
+    private ObjectResult CreateProblem(int status, string title, string detail, string? code = null)
+    {
+        var problem = new ProblemDetails
+        {
+            Status = status,
+            Title = title,
+            Detail = detail
+        };
+
+        if (!string.IsNullOrWhiteSpace(code))
+        {
+            problem.Extensions["code"] = code;
+        }
+
+        return StatusCode(status, problem);
+    }
+
+    private async Task<string?> SendVerificationEmailAsync(UserId userId, string email)
+    {
+        var verificationToken = await _emailVerificationService.CreateVerificationTokenAsync(userId);
+        var verificationUrl = $"{Request.Scheme}://{Request.Host}/verify?token={Uri.EscapeDataString(verificationToken)}";
+        var body = $"""
+            <p>Please verify your email to continue with Law4Hire.</p>
+            <p><a href="{verificationUrl}">Verify my email</a></p>
+            <p>If the button does not work, copy and paste this link into your browser:</p>
+            <p>{verificationUrl}</p>
+            """;
+
+        try
+        {
+            await _mailService.SendEmailAsync(email, "Verify your Law4Hire email", body);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send interview registration verification email to {Email}. Verification URL: {VerificationUrl}", email, verificationUrl);
+        }
+
+        _logger.LogInformation("Verification URL generated for {Email}: {VerificationUrl}", email, verificationUrl);
+        return _environment.IsProduction() ? null : verificationUrl;
     }
 }

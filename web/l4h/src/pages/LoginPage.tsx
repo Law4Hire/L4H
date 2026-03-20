@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Button, Input, setJwtToken, useToast, cases, interview, useAuth } from '@l4h/shared-ui'
+import { Button, Input, auth, useToast, cases, interview, useAuth } from '@l4h/shared-ui'
 
 interface LoginFormData {
   email: string
@@ -19,10 +19,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
   const { success, error: showError } = useToast()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [errorCode, setErrorCode] = useState<string | undefined>(undefined)
+  const [isResendingVerification, setIsResendingVerification] = useState(false)
 
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<LoginFormData>()
 
@@ -61,6 +64,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
     
     setLoading(true)
     setError('')
+    setErrorCode(undefined)
     console.log('[AUTH] Login attempt started for:', data.email)
 
     try {
@@ -80,6 +84,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       } else {
         const errorMessage = result.error || 'Login Failed'
         setError(errorMessage)
+        setErrorCode(result.code)
         showError('Login Failed', errorMessage)
         console.warn('[AUTH] Login failed:', errorMessage)
       }
@@ -87,10 +92,29 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       console.error('[AUTH] CRITICAL: Login error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Login Failed'
       setError(errorMessage)
+      setErrorCode(undefined)
       showError('Login Failed', errorMessage)
     } finally {
       setLoading(false)
       console.log('[AUTH] Login attempt finalized')
+    }
+  }
+
+  const handleResendVerification = async () => {
+    const email = getValues('email')
+    if (!email) {
+      showError('Verification Email', 'Enter your email address first so we know where to send the verification link.')
+      return
+    }
+
+    try {
+      setIsResendingVerification(true)
+      const result = await auth.resendVerification(email)
+      success('Verification Email Sent', result.message)
+    } catch (err) {
+      showError('Verification Email', err instanceof Error ? err.message : 'Unable to resend verification email right now.')
+    } finally {
+      setIsResendingVerification(false)
     }
   }
 
@@ -158,6 +182,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
           {error && (
             <div className="text-error-600 text-sm text-center" role="alert">
               {error}
+            </div>
+          )}
+
+          {errorCode === 'email_verification_required' && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleResendVerification}
+                loading={isResendingVerification}
+                disabled={isResendingVerification}
+              >
+                Resend verification email
+              </Button>
             </div>
           )}
 

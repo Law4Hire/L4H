@@ -5,6 +5,7 @@ import React from 'react';
 import { interview, ToastProvider } from '@l4h/shared-ui';
 import InterviewPage from './InterviewPage';
 import VisaResultsPage from './VisaResultsPage'; // To test navigation
+import { InterviewProvider } from '../InterviewContext';
 
 // Mock the API client
 vi.mock('@l4h/shared-ui', async () => {
@@ -55,9 +56,9 @@ describe('InterviewPage', () => {
     it('should start the interview on mount and display the first question', async () => {
         render(
             <MemoryRouter initialEntries={['/interview']}>
-                <ToastProvider><Routes>
+                <ToastProvider><InterviewProvider><Routes>
                     <Route path="/interview" element={<InterviewPage />} />
-                </Routes></ToastProvider>
+                </Routes></InterviewProvider></ToastProvider>
             </MemoryRouter>
         );
 
@@ -77,9 +78,9 @@ describe('InterviewPage', () => {
 
         render(
             <MemoryRouter initialEntries={['/interview']}>
-                <ToastProvider><Routes>
+                <ToastProvider><InterviewProvider><Routes>
                     <Route path="/interview" element={<InterviewPage />} />
-                </Routes></ToastProvider>
+                </Routes></InterviewProvider></ToastProvider>
             </MemoryRouter>
         );
 
@@ -103,10 +104,10 @@ describe('InterviewPage', () => {
 
         render(
             <MemoryRouter initialEntries={['/interview']}>
-                <ToastProvider><Routes>
+                <ToastProvider><InterviewProvider><Routes>
                     <Route path="/interview" element={<InterviewPage />} />
                     <Route path="/results" element={<div>Results Page</div>} />
-                </Routes></ToastProvider>
+                </Routes></InterviewProvider></ToastProvider>
             </MemoryRouter>
         );
 

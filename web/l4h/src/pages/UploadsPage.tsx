@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { Container, Card, Button, EmptyState, useToast, useQuery, useMutation, useQueryClient } from '@l4h/shared-ui'
-import { uploads } from '@l4h/shared-ui'
+import { uploads, cases } from '@l4h/shared-ui'
 import { Upload, File, Download, Trash2, CheckCircle, AlertTriangle, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 import { apiClient } from '../apiClient'
@@ -20,10 +20,28 @@ export default function UploadsPage() {
   const [dragActive, setDragActive] = useState(false)
   const [uploading, setUploading] = useState(false)
 
+  const { data: casesList = [] } = useQuery({
+    queryKey: ['cases'],
+    queryFn: cases.mine
+  })
+
+  const activeCaseId = casesList[0]?.id as string | undefined
+
   // Fetch uploaded files
   const { data: files = [], isLoading } = useQuery({
-    queryKey: ['uploads'],
-    queryFn: () => uploads.list('current-case-id') // TODO: Get actual case ID
+    queryKey: ['uploads', activeCaseId],
+    queryFn: async () => {
+      const uploadItems = await uploads.list(activeCaseId!)
+      return uploadItems.map((item: any) => ({
+        id: item.id,
+        fileName: item.originalName,
+        fileSize: item.sizeBytes,
+        uploadDate: item.createdAt,
+        status: item.status,
+        caseId: activeCaseId
+      }))
+    },
+    enabled: !!activeCaseId
   })
 
   // Fetch verified legal documents from the pool
@@ -35,21 +53,23 @@ export default function UploadsPage() {
   // Upload file mutation
   const uploadFileMutation = useMutation({
     mutationFn: async (file: File) => {
+      if (!activeCaseId) {
+        throw new Error('No case is available for uploads yet.')
+      }
+
       // Get presigned URL
       const presignResponse = await uploads.presign({
-        caseId: 'current-case-id', // TODO: Get actual case ID
+        caseId: activeCaseId,
         fileName: file.name,
         contentType: file.type,
         sizeBytes: file.size
       })
 
       // Upload to gateway
-      const uploadResponse = await fetch(presignResponse.uploadUrl, {
+      const uploadResponse = await fetch(presignResponse.url, {
         method: 'PUT',
         body: file,
-        headers: {
-          'Content-Type': file.type
-        }
+        headers: presignResponse.headers
       })
 
       if (!uploadResponse.ok) {
@@ -58,13 +78,12 @@ export default function UploadsPage() {
 
       // Confirm upload
       return uploads.confirm({
-        caseId: 'current-case-id',
-        fileName: file.name,
-        uploadToken: presignResponse.uploadToken
+        caseId: activeCaseId,
+        key: presignResponse.key
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uploads'] })
+      queryClient.invalidateQueries({ queryKey: ['uploads', activeCaseId] })
       success('File uploaded successfully')
     },
     onError: (err) => {
@@ -99,7 +118,7 @@ export default function UploadsPage() {
     } finally {
       setUploading(false)
     }
-  }, [error, uploadFileMutation])
+  }, [activeCaseId, error, uploadFileMutation])
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -180,6 +199,16 @@ export default function UploadsPage() {
         <h1 className="text-2xl font-bold">{'File Uploads'}</h1>
       </div>
 
+      {!activeCaseId && (
+        <Card className="mb-6">
+          <EmptyState
+            icon={File}
+            title={'No case available yet'}
+            description="Create or activate a case before uploading documents."
+          />
+        </Card>
+      )}
+
       {/* Verified Legal Documents */}
       {verifiedDocs.length > 0 && (
         <div className="mb-8">
@@ -233,10 +262,11 @@ export default function UploadsPage() {
             className="hidden"
             id="file-upload"
             accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+            disabled={!activeCaseId}
           />
           <label
             htmlFor="file-upload"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer"
+            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${activeCaseId ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'}`}
           >
             {'Upload Files'}
           </label>
@@ -288,16 +318,33 @@ export default function UploadsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => uploads.download(file.id)}
+                      onClick={async () => {
+                        try {
+                          const blob = await uploads.download(file.id)
+                          const url = window.URL.createObjectURL(blob)
+                          const link = document.createElement('a')
+                          link.href = url
+                          link.download = file.fileName
+                          link.click()
+                          window.URL.revokeObjectURL(url)
+                        } catch (err) {
+                          error('Download failed', err instanceof Error ? err.message : '')
+                        }
+                      }}
                     >
                       <Download className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => {
-                        // TODO: Implement delete functionality
-                        console.log('Delete file:', file.id)
+                      onClick={async () => {
+                        try {
+                          await uploads.delete(file.id)
+                          queryClient.invalidateQueries({ queryKey: ['uploads', activeCaseId] })
+                          success('File deleted successfully')
+                        } catch (err) {
+                          error('Delete failed', err instanceof Error ? err.message : '')
+                        }
                       }}
                     >
                       <Trash2 className="h-4 w-4" />

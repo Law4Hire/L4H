@@ -6,10 +6,12 @@ namespace L4H.Api.Infrastructure;
 public class GlobalExceptionHandler : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger;
+    private readonly IHostEnvironment _environment;
 
-    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IHostEnvironment environment)
     {
         _logger = logger;
+        _environment = environment;
     }
 
     public async ValueTask<bool> TryHandleAsync(
@@ -30,7 +32,9 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             Status = StatusCodes.Status500InternalServerError,
             Title = "An error occurred while processing your request",
-            Detail = exception.Message // Consider hiding this in production
+            Detail = _environment.IsDevelopment()
+                ? exception.Message
+                : "Something went wrong on our side. Please try again or contact support if the problem continues."
         };
 
         httpContext.Response.StatusCode = problemDetails.Status.Value;

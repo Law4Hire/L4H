@@ -331,10 +331,10 @@ public class AuthService : IAuthService
 
     private async Task<bool> IsInterviewCompleteAsync(User user, CancellationToken cancellationToken = default)
     {
-        // Check if user has any completed interview sessions with visa recommendations
+        // Completed interviews persist visa evaluations on the session itself.
         return await _context.InterviewSessions
             .AnyAsync(s => s.UserId == user.Id && 
                            s.Status == "completed" && 
-                           _context.VisaRecommendations.Any(r => r.CaseId == s.CaseId), cancellationToken);
+                           _context.VisaEvaluations.Any(v => v.SessionId == s.Id), cancellationToken);
     }
 }

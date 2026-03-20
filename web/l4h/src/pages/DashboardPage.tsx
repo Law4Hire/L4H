@@ -96,8 +96,8 @@ const DashboardPage: React.FC = () => {
       // Start the interview
       const response = await interview.start(activeCase.id)
 
-      // Navigate to interview page with session ID
-      navigate(`/interview?sessionId=${response.sessionId}`)
+      // Navigate to interview page with the session token so authenticated sessions can resume correctly.
+      navigate(`/interview?sessionId=${response.sessionId}&token=${response.sessionToken}`)
 
     } catch (error: any) {
       console.error('Failed to reset and start interview:', error)

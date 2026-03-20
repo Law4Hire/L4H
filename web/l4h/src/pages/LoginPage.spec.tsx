@@ -5,13 +5,19 @@ import LoginPage from './LoginPage'
 import { auth } from '@l4h/shared-ui'
 import { renderWithProviders } from '../test-utils'
 
+const { mockSharedAuthLogin, mockSharedResendVerification } = vi.hoisted(() => ({
+  mockSharedAuthLogin: vi.fn(),
+  mockSharedResendVerification: vi.fn(),
+}))
+
 // Mock the shared-ui module
 vi.mock('@l4h/shared-ui', async () => {
   const actual = await vi.importActual('@l4h/shared-ui')
   return {
     ...actual,
     auth: {
-      login: vi.fn(),
+      login: mockSharedAuthLogin,
+      resendVerification: mockSharedResendVerification,
     },
     setJwtToken: vi.fn(),
     cases: {
@@ -20,6 +26,16 @@ vi.mock('@l4h/shared-ui', async () => {
     interview: {
       start: vi.fn(),
     },
+    useAuth: () => ({
+      login: async (email: string, password: string, rememberMe?: boolean) => {
+        try {
+          const result = await mockSharedAuthLogin({ email, password, rememberMe })
+          return result?.token ? { success: true } : { success: false, error: 'Login failed' }
+        } catch (error: any) {
+          return { success: false, error: error?.message || 'Login failed' }
+        }
+      },
+    }),
   }
 })
 

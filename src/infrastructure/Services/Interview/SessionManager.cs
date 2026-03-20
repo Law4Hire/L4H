@@ -57,7 +57,8 @@ public class SessionManager : ISessionManager
             .Include(s => s.VisaEvaluations)
                 .ThenInclude(ve => ve.VisaType)
             .FirstOrDefaultAsync(s =>
-                s.AnonymousToken == anonymousToken &&
+                (s.AnonymousToken == anonymousToken ||
+                 (s.AnonymousToken == null && s.Id == anonymousToken)) &&
                 s.Status != "abandoned");
     }
 

@@ -79,7 +79,7 @@ const ClientDashboard: React.FC = () => {
       await cases.resetVisaType(activeCase.id)
       setShowResetWarning(false)
       const response = await interview.start(activeCase.id)
-      navigate(`/interview?sessionId=${response.sessionId}`)
+      navigate(`/interview?sessionId=${response.sessionId}&token=${response.sessionToken}`)
     } catch (error: any) {
       showError(error.message || 'Failed to start interview. Please try again.')
     }

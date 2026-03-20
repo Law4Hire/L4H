@@ -47,7 +47,12 @@ public class InterviewController : ControllerBase
             
             if (caseEntity == null)
             {
-                return NotFound("Case not found");
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Case Not Found",
+                    Detail = "Case not found.",
+                    Status = StatusCodes.Status404NotFound
+                });
             }
 
             if (caseEntity.UserId != new UserId(userId))
@@ -67,7 +72,12 @@ public class InterviewController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error starting interview for case {CaseId}", request.CaseId);
-            return StatusCode(500, "Internal server error");
+            return StatusCode(500, new ProblemDetails
+            {
+                Title = "Interview Start Failed",
+                Detail = "Unable to start the interview right now.",
+                Status = StatusCodes.Status500InternalServerError
+            });
         }
     }
 }
