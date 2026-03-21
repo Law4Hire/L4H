@@ -1,3 +1,5 @@
+using L4H.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -5,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace L4H.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
+    [DbContext(typeof(L4HDbContext))]
+    [Migration("20260321000100_AddAttorneyDisplayOnStaffPage")]
     public partial class AddAttorneyDisplayOnStaffPage : Migration
     {
         /// <inheritdoc />
