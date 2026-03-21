@@ -6,6 +6,7 @@ using L4H.Infrastructure.Entities;
 using L4H.Infrastructure.Services;
 using L4H.Shared.Models;
 using FluentValidation;
+using System.Text.Json;
 
 namespace L4H.Api.Controllers;
 
@@ -133,6 +134,49 @@ public class PublicController : ControllerBase
             };
 
             _context.ContactMessages.Add(message);
+
+            var queueSender = await _context.Users
+                .Where(u => u.IsAdmin && u.IsActive)
+                .OrderBy(u => u.CreatedAt)
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            if (queueSender != null)
+            {
+                var thread = new MessageThread
+                {
+                    Id = Guid.NewGuid(),
+                    Subject = $"Contact inquiry: {request.Name}",
+                    ThreadType = "general",
+                    CreatedAt = DateTime.UtcNow,
+                    LastMessageAt = DateTime.UtcNow
+                };
+
+                var queueMessageBody =
+                    $"New public contact inquiry ({referenceId})\n" +
+                    $"From: {request.Name}\n" +
+                    $"Email: {request.Email}\n" +
+                    $"Phone: {request.Phone ?? "Not provided"}\n" +
+                    $"Type: {request.ConsultationType ?? "general"}\n" +
+                    $"Subject: {request.Subject ?? "No subject"}\n\n" +
+                    request.Message;
+
+                _context.MessageThreads.Add(thread);
+                _context.Messages.Add(new Message
+                {
+                    Id = Guid.NewGuid(),
+                    ThreadId = thread.Id,
+                    SenderUserId = queueSender.Id,
+                    Body = queueMessageBody,
+                    Channel = "in_app",
+                    SentAt = DateTime.UtcNow,
+                    ReadByJson = JsonSerializer.Serialize(new Dictionary<string, DateTime>
+                    {
+                        [queueSender.Id.Value.ToString()] = DateTime.UtcNow
+                    })
+                });
+            }
+
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
             // 2. Get recipient emails (All Admins + Site Config Email)

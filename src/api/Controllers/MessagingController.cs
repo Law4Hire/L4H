@@ -486,7 +486,9 @@ public class MessagingController : ControllerBase
                 caseId = t.CaseId?.Value,
                 title = t.Subject,
                 threadType = t.ThreadType,
-                participantName = t.Case?.User != null ? $"{t.Case.User.FirstName} {t.Case.User.LastName}" : "General Support",
+                participantName = t.Case?.User != null
+                    ? $"{t.Case.User.FirstName} {t.Case.User.LastName}"
+                    : (string.IsNullOrWhiteSpace(t.Subject) ? "General Support" : t.Subject),
                 lastMessageSnippet = lastMsg?.Body ?? "No messages",
                 lastMessageTime = t.LastMessageAt.ToString("O"),
                 unreadCount = t.Messages.Count(m => !IsMessageRead(m, userId)),
