@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react'
-import { auth as apiAuth, getJwtToken, setJwtToken, clearTokens } from '../api-client'
+import { auth as apiAuth, getErrorMessage, getJwtToken, setJwtToken, clearTokens } from '../api-client'
 
 export interface User {
   id: string
@@ -149,11 +149,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true }
       }
       return { success: false, error: 'Login failed' }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return { 
         success: false, 
-        error: error.detail || error.message || 'Login failed',
-        code: error.code
+        error: getErrorMessage(error, 'Login failed'),
+        code: typeof error === 'object' && error !== null && 'code' in error ? (error as any).code : undefined
       }
     }
   }
@@ -167,11 +167,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true }
       }
       return { success: false, error: 'Login failed' }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return { 
         success: false, 
-        error: error.detail || error.message || 'Login failed',
-        code: error.code
+        error: getErrorMessage(error, 'Login failed'),
+        code: typeof error === 'object' && error !== null && 'code' in error ? (error as any).code : undefined
       }
     }
   }

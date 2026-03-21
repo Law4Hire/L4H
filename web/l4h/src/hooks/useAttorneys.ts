@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { getErrorMessage } from '@l4h/shared-ui'
 
 interface Attorney {
   id: number
@@ -41,7 +42,7 @@ export function useAttorneys() {
       setError(null)
     } catch (err) {
       console.error('Error fetching attorneys:', err)
-      setError(err instanceof Error ? err.message : 'Unknown error')
+      setError(getErrorMessage(err, 'Failed to fetch attorneys'))
     } finally {
       setIsLoading(false)
     }
@@ -87,7 +88,7 @@ export function useAttorneys() {
       return { success: true, data: newAttorney }
     } catch (err) {
       console.error('Error creating attorney:', err)
-      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+      return { success: false, error: getErrorMessage(err, 'Failed to create attorney') }
     }
   }, [fetchAttorneys])
 
@@ -111,7 +112,7 @@ export function useAttorneys() {
       return { success: true }
     } catch (err) {
       console.error('Error updating attorney:', err)
-      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+      return { success: false, error: getErrorMessage(err, 'Failed to update attorney') }
     }
   }, [fetchAttorneys])
 

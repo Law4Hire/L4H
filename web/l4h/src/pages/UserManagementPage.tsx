@@ -10,6 +10,7 @@ interface User {
   phone?: string
   isAdmin: boolean
   isStaff: boolean
+  displayOnStaffPage: boolean
   isActive: boolean
   emailVerified: boolean
   createdAt: string
@@ -20,6 +21,7 @@ interface EditUserForm {
   firstName: string
   lastName: string
   phone: string
+  displayOnStaffPage: boolean
 }
 
 interface CreateUserForm {
@@ -29,6 +31,7 @@ interface CreateUserForm {
   password: string
   isAdmin: boolean
   isStaff: boolean
+  displayOnStaffPage: boolean
 }
 
 const UserManagementPage: React.FC = () => {
@@ -45,7 +48,8 @@ const UserManagementPage: React.FC = () => {
     lastName: '',
     password: '',
     isAdmin: false,
-    isStaff: false
+    isStaff: false,
+    displayOnStaffPage: true
   })
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
@@ -53,7 +57,8 @@ const UserManagementPage: React.FC = () => {
     email: '',
     firstName: '',
     lastName: '',
-    phone: ''
+    phone: '',
+    displayOnStaffPage: true
   })
   const [saving, setSaving] = useState(false)
 
@@ -82,7 +87,8 @@ const UserManagementPage: React.FC = () => {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      phone: user.phone || ''
+      phone: user.phone || '',
+      displayOnStaffPage: user.displayOnStaffPage
     })
     setShowEditModal(true)
   }
@@ -143,7 +149,8 @@ const UserManagementPage: React.FC = () => {
         lastName: '',
         password: '',
         isAdmin: false,
-        isStaff: false
+        isStaff: false,
+        displayOnStaffPage: true
       })
       fetchUsers()
     } catch (err: any) {
@@ -225,6 +232,11 @@ const UserManagementPage: React.FC = () => {
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
                       {user.firstName} {user.lastName}
                     </div>
+                    {user.isStaff && (
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Staff page: {user.displayOnStaffPage ? 'Displayed' : 'Hidden'}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900 dark:text-gray-300">{user.email}</div>
@@ -328,6 +340,18 @@ const UserManagementPage: React.FC = () => {
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">Legal Professional</span>
             </label>
+
+            {formData.isStaff && (
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.displayOnStaffPage}
+                  onChange={(e) => setFormData({ ...formData, displayOnStaffPage: e.target.checked })}
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Display on Cannlaw staff page</span>
+              </label>
+            )}
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
@@ -390,6 +414,18 @@ const UserManagementPage: React.FC = () => {
             onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
             placeholder="(410) 555-0123"
           />
+
+          {editingUser?.isStaff && (
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={editFormData.displayOnStaffPage}
+                onChange={(e) => setEditFormData({ ...editFormData, displayOnStaffPage: e.target.checked })}
+                className="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">Display on Cannlaw staff page</span>
+            </label>
+          )}
 
           <div className="flex justify-end space-x-3 pt-4">
             <Button

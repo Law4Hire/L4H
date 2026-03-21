@@ -158,10 +158,10 @@ interface ToastContextType {
   toasts: ToastProps[]
   addToast: (toast: Omit<ToastProps, 'id' | 'onClose'>) => void
   removeToast: (id: string) => void
-  success: (title: string, message?: string, duration?: number) => void
-  error: (title: string, message?: string, duration?: number) => void
-  warning: (title: string, message?: string, duration?: number) => void
-  info: (title: string, message?: string, duration?: number) => void
+  success: (titleOrMessage: string, message?: string, duration?: number) => void
+  error: (titleOrMessage: string, message?: string, duration?: number) => void
+  warning: (titleOrMessage: string, message?: string, duration?: number) => void
+  info: (titleOrMessage: string, message?: string, duration?: number) => void
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined)
@@ -183,20 +183,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts(prev => [...prev, newToast])
   }, [removeToast])
 
-  const success = useCallback((title: string, message?: string, duration?: number) => {
-    addToast({ type: 'success', title, message, duration })
+  const success = useCallback((titleOrMessage: string, message?: string, duration?: number) => {
+    addToast(buildToastPayload('success', titleOrMessage, message, duration))
   }, [addToast])
 
-  const error = useCallback((title: string, message?: string, duration?: number) => {
-    addToast({ type: 'error', title, message, duration })
+  const error = useCallback((titleOrMessage: string, message?: string, duration?: number) => {
+    addToast(buildToastPayload('error', titleOrMessage, message, duration))
   }, [addToast])
 
-  const warning = useCallback((title: string, message?: string, duration?: number) => {
-    addToast({ type: 'warning', title, message, duration })
+  const warning = useCallback((titleOrMessage: string, message?: string, duration?: number) => {
+    addToast(buildToastPayload('warning', titleOrMessage, message, duration))
   }, [addToast])
 
-  const info = useCallback((title: string, message?: string, duration?: number) => {
-    addToast({ type: 'info', title, message, duration })
+  const info = useCallback((titleOrMessage: string, message?: string, duration?: number) => {
+    addToast(buildToastPayload('info', titleOrMessage, message, duration))
   }, [addToast])
 
   const contextValue = {
@@ -224,4 +224,74 @@ export function useToast() {
     throw new Error('useToast must be used within a ToastProvider')
   }
   return context
+}
+
+function buildToastPayload(
+  type: ToastProps['type'],
+  titleOrMessage: string,
+  message?: string,
+  duration?: number
+): Omit<ToastProps, 'id' | 'onClose'> {
+  const normalized = normalizeToastContent(type, titleOrMessage, message)
+  return {
+    type,
+    title: normalized.title || defaultTitle(type),
+    message: normalized.message,
+    duration
+  }
+}
+
+function normalizeToastContent(type: ToastProps['type'], titleOrMessage: string, message?: string) {
+  if (message !== undefined) {
+    return {
+      title: sanitizeToastText(titleOrMessage),
+      message: sanitizeToastText(message)
+    }
+  }
+
+  return {
+    title: defaultTitle(type),
+    message: sanitizeToastText(titleOrMessage)
+  }
+}
+
+function defaultTitle(type: ToastProps['type']) {
+  switch (type) {
+    case 'success':
+      return 'Success'
+    case 'error':
+      return 'Something went wrong'
+    case 'warning':
+      return 'Warning'
+    default:
+      return 'Notice'
+  }
+}
+
+function sanitizeToastText(value?: string) {
+  if (!value) {
+    return value
+  }
+
+  const trimmed = value.trim()
+  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+    try {
+      const parsed = JSON.parse(trimmed)
+      if (typeof parsed?.detail === 'string' && parsed.detail.trim().length > 0) {
+        return parsed.detail
+      }
+
+      if (typeof parsed?.title === 'string' && parsed.title.trim().length > 0) {
+        return parsed.title
+      }
+
+      if (typeof parsed?.message === 'string' && parsed.message.trim().length > 0) {
+        return parsed.message
+      }
+    } catch {
+      return value
+    }
+  }
+
+  return value
 }

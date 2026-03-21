@@ -92,6 +92,10 @@ public class DashboardController : ControllerBase
             .Where(t => t.StartTime >= startOfMonth)
             .SumAsync(t => t.BillableAmount);
 
+        var currentMonthHours = await timeEntriesQuery
+            .Where(t => t.StartTime >= startOfMonth)
+            .SumAsync(t => t.Duration);
+
         // Last Month (for trend)
         var lastMonthRevenue = await timeEntriesQuery
             .Where(t => t.StartTime >= startOfLastMonth && t.StartTime < startOfMonth)
@@ -109,6 +113,7 @@ public class DashboardController : ControllerBase
             PendingTasks = pendingTasks,
             UpcomingAppointments = upcomingAppointments,
             MonthlyRevenue = currentMonthRevenue,
+            MonthlyBillableHours = currentMonthHours,
             LastMonthRevenue = lastMonthRevenue,
             NewClients = newClients,
             CompletedCases = completedCases
@@ -222,6 +227,7 @@ public class DashboardStats
     public int PendingTasks { get; set; }
     public int UpcomingAppointments { get; set; }
     public decimal MonthlyRevenue { get; set; }
+    public decimal MonthlyBillableHours { get; set; }
     public decimal LastMonthRevenue { get; set; }
     public int NewClients { get; set; }
     public int CompletedCases { get; set; }

@@ -17,7 +17,7 @@ namespace L4H.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.3.107")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -772,6 +772,9 @@ namespace L4H.Infrastructure.Migrations
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<bool>("DisplayOnStaffPage")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .IsRequired()

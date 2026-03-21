@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Container, Card, Button, EmptyState, Modal, Input, useToast, useQuery, useMutation, useQueryClient, cases } from '@l4h/shared-ui'
-import { messages } from '@l4h/shared-ui'
-import { MessageCircle, Plus, Send, Mail, Clock, Trash2, Forward, Reply } from 'lucide-react'
+import { MessageCircle, Plus, Send, Mail, Trash2, Forward, Reply } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface MessageThread {
@@ -52,8 +51,6 @@ export default function MessagesPage() {
   // Get the first case (user's active case)
   const activeCase = userCases.length > 0 ? userCases[0] : null
   const activeCaseId = activeCase?.id || null
-  const assignedStaffId = activeCase?.assignedStaffId || null
-
   // Fetch recipients list
   const { data: recipients = [] } = useQuery({
     queryKey: ['messaging-recipients'],
@@ -69,18 +66,11 @@ export default function MessagesPage() {
   })
 
   // Build recipient options for dropdown
-  const recipientOptions = [
-    {
-      id: '',
-      label: 'General (All Admins)',
-      description: 'Message visible to all administrators'
-    },
-    ...recipients.map((r: any) => ({
-      id: r.id,
-      label: r.label,
-      description: r.description
-    }))
-  ]
+  const recipientOptions = recipients.map((r: any) => ({
+    id: r.id ?? '',
+    label: r.label,
+    description: r.description
+  }))
 
   // Fetch all message threads (Unified Inbox)
   const { data: threadsData, isLoading: threadsLoading } = useQuery({
@@ -127,7 +117,7 @@ export default function MessagesPage() {
             },
             body: JSON.stringify({ messageIds: unreadMessageIds })
           }).then(() => {
-            queryClient.invalidateQueries({ queryKey: ['message-threads', activeCaseId] })
+            queryClient.invalidateQueries({ queryKey: ['message-threads-unified'] })
           })
         }
       }
@@ -157,7 +147,7 @@ export default function MessagesPage() {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['message-threads', activeCaseId] })
+      queryClient.invalidateQueries({ queryKey: ['message-threads-unified'] })
       setShowComposeModal(false)
       setNewMessage({ title: '', initialMessage: '', recipientUserId: null })
       success('Message sent successfully')
@@ -204,7 +194,7 @@ export default function MessagesPage() {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['message-threads', activeCaseId] })
+      queryClient.invalidateQueries({ queryKey: ['message-threads-unified'] })
       setSelectedThread(null)
       success('Thread deleted successfully')
     },
@@ -232,7 +222,7 @@ export default function MessagesPage() {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['message-threads', activeCaseId] })
+      queryClient.invalidateQueries({ queryKey: ['message-threads-unified'] })
       setShowForwardModal(false)
       setForwardingMessageId(null)
       setForwardMessage({ title: '', recipientUserId: null })

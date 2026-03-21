@@ -37,6 +37,7 @@ public class MessagingController : ControllerBase
 
         IQueryable<MessageThread> query = _context.MessageThreads
             .Include(t => t.Case)
+            .ThenInclude(c => c!.User)
             .Include(t => t.Messages.OrderByDescending(m => m.SentAt));
 
         if (isAdmin)
@@ -73,6 +74,11 @@ public class MessagingController : ControllerBase
     public async Task<IActionResult> CreateThread([FromBody] JsonElement request)
     {
         var userId = GetCurrentUserId();
+        var sender = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+        if (sender == null)
+        {
+            return Unauthorized();
+        }
 
         CaseId? caseId = null;
         if (request.TryGetProperty("caseId", out var caseProp) && caseProp.ValueKind == JsonValueKind.String)
@@ -85,8 +91,6 @@ public class MessagingController : ControllerBase
 
         var title = request.TryGetProperty("title", out var titleProp) ? titleProp.GetString() ?? "New Message" : "New Message";
         var initialMessage = request.TryGetProperty("initialMessage", out var initialMsgProp) ? initialMsgProp.GetString() : null;
-        var threadType = request.TryGetProperty("threadType", out var typeProp) ? typeProp.GetString() ?? "general" : "general";
-
         UserId? recipientUserId = null;
         if (request.TryGetProperty("recipientUserId", out var recipientProp) && recipientProp.ValueKind == JsonValueKind.String)
         {
@@ -107,11 +111,30 @@ public class MessagingController : ControllerBase
             }
         }
 
+        User? recipientUser = null;
+        if (recipientUserId != null)
+        {
+            recipientUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == recipientUserId.Value).ConfigureAwait(false);
+            if (recipientUser == null)
+            {
+                return BadRequest(new ProblemDetails { Title = "Recipient Not Found", Detail = "The selected recipient could not be found." });
+            }
+        }
+
+        if (!CanCreateThread(sender, recipientUser))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
+            {
+                Title = "Messaging Not Allowed",
+                Detail = "You are not allowed to start this conversation."
+            });
+        }
+
         var thread = new MessageThread
         {
             CaseId = caseId,
             Subject = title,
-            ThreadType = threadType,
+            ThreadType = recipientUserId == null ? "general" : "direct",
             RecipientUserId = recipientUserId,
             CreatedAt = DateTime.UtcNow,
             LastMessageAt = DateTime.UtcNow
@@ -164,10 +187,28 @@ public class MessagingController : ControllerBase
     private async Task<IActionResult> GetThreadsByChannel(string channel)
     {
         var userId = GetCurrentUserId();
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
         var query = _context.MessageThreads
             .Include(t => t.Case)
+            .ThenInclude(c => c!.User)
             .Include(t => t.Messages.OrderByDescending(m => m.SentAt))
             .Where(t => t.ThreadType == channel);
+
+        if (!IsAdmin())
+        {
+            if (channel == "general")
+            {
+                var attorneyId = currentUser?.AttorneyProfileId;
+                query = query.Where(t =>
+                    t.Messages.Any(m => m.SenderUserId == userId) ||
+                    (t.Case != null && attorneyId.HasValue && t.Case.AssignedStaffId == attorneyId.Value));
+            }
+            else if (channel == "assigned")
+            {
+                var attorneyId = currentUser?.AttorneyProfileId;
+                query = query.Where(t => t.Case != null && attorneyId.HasValue && t.Case.AssignedStaffId == attorneyId.Value);
+            }
+        }
 
         var threads = await query.OrderByDescending(t => t.LastMessageAt).ToListAsync().ConfigureAwait(false);
         return Ok(MapThreadsToResponse(threads, userId));
@@ -360,20 +401,80 @@ public class MessagingController : ControllerBase
     public async Task<IActionResult> GetRecipients()
     {
         var userId = GetCurrentUserId();
-        var isAdmin = IsAdmin();
-        var query = _context.Users.AsNoTracking().Where(u => u.Id != userId);
-        
-        if (!isAdmin) query = query.Where(u => u.IsAdmin || u.IsStaff);
+        var currentUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+        if (currentUser == null)
+        {
+            return Unauthorized();
+        }
 
-        var users = await query.ToListAsync();
-        var result = users.Select(u => new { 
-            id = u.Id.Value.ToString(), 
-            label = string.IsNullOrEmpty(u.FirstName) ? u.Email : $"{u.FirstName} {u.LastName}",
-            description = u.IsAdmin ? "Administrator" : (u.IsStaff ? "Legal Professional" : "Client")
-        }).ToList();
+        var recipients = new List<object>
+        {
+            new { id = (string?)null, label = "General Queue", description = "General mailbox monitored by administrators" }
+        };
 
-        if (!isAdmin) result.Insert(0, new { id = "null", label = "General / All Admins", description = "General Mailbox" });
-        return Ok(result);
+        if (IsAdmin())
+        {
+            var everyone = await _context.Users.AsNoTracking()
+                .Where(u => u.Id != userId)
+                .OrderBy(u => u.FirstName)
+                .ThenBy(u => u.LastName)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            recipients.AddRange(everyone.Select(ToRecipientOption));
+            return Ok(recipients);
+        }
+
+        if (IsStaff())
+        {
+            var attorneyId = currentUser.AttorneyProfileId;
+
+            var admins = await _context.Users.AsNoTracking()
+                .Where(u => u.Id != userId && u.IsAdmin)
+                .ToListAsync()
+                .ConfigureAwait(false);
+            recipients.AddRange(admins.Select(ToRecipientOption));
+
+            var otherProfessionals = await _context.Users.AsNoTracking()
+                .Where(u => u.Id != userId && (u.IsStaff || u.IsLegalProfessional))
+                .ToListAsync()
+                .ConfigureAwait(false);
+            recipients.AddRange(otherProfessionals.Select(ToRecipientOption));
+
+            if (attorneyId.HasValue)
+            {
+                var assignedClientIds = await _context.Cases
+                    .Where(c => c.AssignedStaffId == attorneyId.Value)
+                    .Select(c => c.UserId)
+                    .Distinct()
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                var assignedClients = await _context.Users.AsNoTracking()
+                    .Where(u => assignedClientIds.Contains(u.Id))
+                    .OrderBy(u => u.FirstName)
+                    .ThenBy(u => u.LastName)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                recipients.AddRange(assignedClients.Select(ToRecipientOption));
+            }
+
+            return Ok(DeduplicateRecipients(recipients));
+        }
+
+        var assignedProfessionals = await _context.Users.AsNoTracking()
+            .Where(u =>
+                u.Id != userId &&
+                u.AttorneyProfileId != null &&
+                _context.Cases.Any(c => c.UserId == userId && c.AssignedStaffId == u.AttorneyProfileId))
+            .OrderBy(u => u.FirstName)
+            .ThenBy(u => u.LastName)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        recipients.AddRange(assignedProfessionals.Select(ToRecipientOption));
+        return Ok(DeduplicateRecipients(recipients));
     }
 
     private IEnumerable<object> MapThreadsToResponse(IEnumerable<MessageThread> threads, UserId userId)
@@ -410,4 +511,50 @@ public class MessagingController : ControllerBase
 
     private bool IsAdmin() => User.HasClaim("is_admin", "true") || User.HasClaim("is_admin", "True") || User.IsInRole("Admin");
     private bool IsStaff() => IsAdmin() || User.IsInRole("LegalProfessional") || User.HasClaim("is_legal_professional", "true") || User.IsInRole("Staff") || User.HasClaim("is_staff", "true");
+
+    private bool CanCreateThread(User sender, User? recipient)
+    {
+        if (recipient == null)
+        {
+            return true;
+        }
+
+        if (IsAdmin())
+        {
+            return true;
+        }
+
+        if (IsStaff())
+        {
+            if (recipient.IsAdmin || recipient.IsStaff || recipient.IsLegalProfessional)
+            {
+                return true;
+            }
+
+            return sender.AttorneyProfileId.HasValue &&
+                   _context.Cases.Any(c => c.UserId == recipient.Id && c.AssignedStaffId == sender.AttorneyProfileId.Value);
+        }
+
+        if (recipient.IsAdmin)
+        {
+            return true;
+        }
+
+        return _context.Cases.Any(c => c.UserId == sender.Id && recipient.AttorneyProfileId != null && c.AssignedStaffId == recipient.AttorneyProfileId.Value);
+    }
+
+    private static object ToRecipientOption(User user) => new
+    {
+        id = user.Id.Value.ToString(),
+        label = string.IsNullOrWhiteSpace($"{user.FirstName} {user.LastName}".Trim()) ? user.Email : $"{user.FirstName} {user.LastName}".Trim(),
+        description = user.IsAdmin ? "Administrator" : (user.IsStaff || user.IsLegalProfessional ? "Legal Professional" : "Client")
+    };
+
+    private static IEnumerable<object> DeduplicateRecipients(IEnumerable<object> recipients)
+    {
+        return recipients
+            .GroupBy(r => r.GetType().GetProperty("id")?.GetValue(r)?.ToString() ?? string.Empty)
+            .Select(g => g.First())
+            .ToList();
+    }
 }

@@ -56,6 +56,7 @@ public class Attorney
     public decimal DefaultHourlyRate { get; set; }
 
     public bool IsActive { get; set; } = true;
+    public bool DisplayOnStaffPage { get; set; } = true;
     public bool IsManagingAttorney { get; set; }
     public int DisplayOrder { get; set; }
     

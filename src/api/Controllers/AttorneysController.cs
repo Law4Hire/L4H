@@ -58,7 +58,7 @@ public class AttorneysController : ControllerBase
         {
             var attorneys = await _context.Attorneys
                 .Include(a => a.Images)
-                .Where(a => a.IsActive)
+                .Where(a => a.IsActive && (CanViewHiddenProfiles() || a.DisplayOnStaffPage))
                 .OrderBy(a => a.DisplayOrder)
                 .ThenBy(a => a.Name)
                 .ToListAsync()
@@ -69,7 +69,7 @@ public class AttorneysController : ControllerBase
                 await InitializeDefaultAttorney();
                 attorneys = await _context.Attorneys
                     .Include(a => a.Images)
-                    .Where(a => a.IsActive)
+                    .Where(a => a.IsActive && (CanViewHiddenProfiles() || a.DisplayOnStaffPage))
                     .OrderBy(a => a.DisplayOrder)
                     .ThenBy(a => a.Name)
                     .ToListAsync()
@@ -243,6 +243,7 @@ public class AttorneysController : ControllerBase
                 PracticeAreas = request.PracticeAreas ?? "[]",
                 Languages = request.Languages ?? "[]",
                 IsActive = request.IsActive,
+                DisplayOnStaffPage = request.DisplayOnStaffPage,
                 IsManagingAttorney = request.IsManagingAttorney,
                 DisplayOrder = Math.Max(0, request.DisplayOrder),
                 CreatedAt = DateTime.UtcNow,
@@ -294,6 +295,7 @@ public class AttorneysController : ControllerBase
             existing.PracticeAreas = request.PracticeAreas ?? existing.PracticeAreas;
             existing.Languages = request.Languages ?? existing.Languages;
             existing.IsActive = request.IsActive;
+            existing.DisplayOnStaffPage = request.DisplayOnStaffPage;
             existing.IsManagingAttorney = request.IsManagingAttorney;
             existing.DisplayOrder = request.DisplayOrder;
             
@@ -561,6 +563,7 @@ public class AttorneysController : ControllerBase
                 OfficeLocation = "Baltimore Office",
                 DefaultHourlyRate = 450.00m,
                 IsActive = true,
+                DisplayOnStaffPage = true,
                 IsManagingAttorney = true,
                 DisplayOrder = 1,
                 Credentials = "[\"J.D. University of Baltimore School of Law\", \"Member of AILA\"]",
@@ -580,6 +583,7 @@ public class AttorneysController : ControllerBase
                 OfficeLocation = "Baltimore Office",
                 DefaultHourlyRate = 350.00m,
                 IsActive = true,
+                DisplayOnStaffPage = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 2,
                 Credentials = "[\"J.D. University of Maryland School of Law\", \"MBA\"]",
@@ -600,6 +604,7 @@ public class AttorneysController : ControllerBase
                 OfficeLocation = "Philippines Satellite Office",
                 DefaultHourlyRate = 0.00m,
                 IsActive = true,
+                DisplayOnStaffPage = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 3,
                 Credentials = "[\"B.Th. Shalom Bible College\"]",
@@ -619,6 +624,7 @@ public class AttorneysController : ControllerBase
                 OfficeLocation = "Baltimore Office",
                 DefaultHourlyRate = 0.00m,
                 IsActive = true,
+                DisplayOnStaffPage = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 4,
                 Credentials = "[]",
@@ -639,6 +645,7 @@ public class AttorneysController : ControllerBase
                 OfficeLocation = "African Division",
                 DefaultHourlyRate = 0.00m,
                 IsActive = true,
+                DisplayOnStaffPage = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 5,
                 Credentials = "[\"MPH Emory University\", \"M.Sc. Psychology\", \"B.Sc. Applied Biochemistry\"]",
@@ -658,6 +665,7 @@ public class AttorneysController : ControllerBase
                 OfficeLocation = "Taiwan Office",
                 DefaultHourlyRate = 300.00m,
                 IsActive = true,
+                DisplayOnStaffPage = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 6,
                 Credentials = "[\"CPA (USA)\", \"M.S. Accounting NCCU\"]",
@@ -677,6 +685,7 @@ public class AttorneysController : ControllerBase
                 OfficeLocation = "Taiwan Office",
                 DefaultHourlyRate = 300.00m,
                 IsActive = true,
+                DisplayOnStaffPage = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 7,
                 Credentials = "[\"CPA (Taiwan)\", \"Master of Accounting NCCU\"]",
@@ -696,6 +705,7 @@ public class AttorneysController : ControllerBase
                 OfficeLocation = "Taiwan Office",
                 DefaultHourlyRate = 300.00m,
                 IsActive = true,
+                DisplayOnStaffPage = true,
                 IsManagingAttorney = false,
                 DisplayOrder = 8,
                 Credentials = "[\"CPA (Taiwan)\", \"Master of Accounting & Taxation NCCU\"]",
@@ -730,6 +740,16 @@ public class AttorneysController : ControllerBase
         }
 
         await _context.SaveChangesAsync();
+    }
+
+    private bool CanViewHiddenProfiles()
+    {
+        return User.HasClaim("is_admin", "true")
+            || User.HasClaim("is_admin", "True")
+            || User.HasClaim("is_legal_professional", "true")
+            || User.IsInRole("Admin")
+            || User.IsInRole("LegalProfessional")
+            || User.IsInRole("Staff");
     }
 }
 

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, Button, fetchJson, useToast, cases, messages as messageApi } from '../../index'
 import { useAuth } from '../../hooks/useAuth'
-import { formatDistanceToNow } from 'date-fns'
-import { MessageSquare, Briefcase, Users, Clock, Shield, Settings, Activity, FileText } from 'lucide-react'
+import { MessageSquare, Briefcase, Users, Clock } from 'lucide-react'
 
 interface CaseItem {
   id: string
@@ -29,14 +28,15 @@ const ProfessionalWorkspace: React.FC = () => {
   const [messages, setMessages] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAssigning, setIsAssigning] = useState<string | null>(null)
+  const [assignmentSelections, setAssignmentSelections] = useState<Record<string, string>>({})
 
   const loadData = async () => {
     try {
       const [statsData, assigned, available, msgData, attorneysData] = await Promise.all([
         fetchJson('/v1/dashboard/stats'),
-        fetchJson<CaseItem[]>('/v1/cases/dashboard'),
+        isAdmin ? fetchJson<CaseItem[]>('/v1/cases/dashboard?showAssigned=true') : cases.assigned(),
         cases.available(),
-        messageApi.assigned(),
+        isAdmin ? messageApi.general() : messageApi.assigned(),
         fetchJson<any[]>('/v1/attorneys')
       ])
       setStats(statsData)
@@ -53,7 +53,7 @@ const ProfessionalWorkspace: React.FC = () => {
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [isAdmin])
 
   const handleAssign = async (caseId: string, staffId: number | null) => {
     try {
@@ -69,48 +69,49 @@ const ProfessionalWorkspace: React.FC = () => {
     }
   }
 
+  const handleRequestAssignment = async (caseId: string) => {
+    try {
+      setIsAssigning(caseId)
+      await fetchJson(`/v1/cases/${caseId}/request-assignment`, {
+        method: 'POST',
+        body: JSON.stringify({ reason: 'Requested from professional workspace.' })
+      })
+
+      success('Assignment request sent', 'Your request was routed to the admin general queue.')
+    } catch (err) {
+      error('Assignment request failed', err instanceof Error ? err.message : 'Unknown error')
+    } finally {
+      setIsAssigning(null)
+    }
+  }
+
   if (isLoading) return <div className="flex justify-center py-20 animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+
+  const getClientName = (c: CaseItem) => {
+    if (c.userName && c.userName.trim().length > 0) {
+      return c.userName
+    }
+
+    const firstName = (c as any).clientFirstName || ''
+    const lastName = (c as any).clientLastName || ''
+    const fullName = `${firstName} ${lastName}`.trim()
+    return fullName || c.userEmail || 'Unknown client'
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className={`rounded-xl p-8 text-white shadow-2xl flex justify-between items-center relative overflow-hidden border-b-4 ${isAdmin ? 'bg-slate-900 border-red-600' : 'bg-blue-900 border-blue-500'}`}>
+      <div className="rounded-xl p-8 text-white shadow-2xl flex justify-between items-center relative overflow-hidden border-b-4 bg-blue-900 border-blue-500">
         <div className="relative z-10">
           <h1 className="text-4xl font-extrabold mb-2 tracking-tight">
-            {isAdmin ? 'Admin Command Center' : 'Professional Workspace'}
+            Professional Workspace
           </h1>
-          <p className={`${isAdmin ? 'text-slate-300' : 'text-blue-100'} text-xl font-medium`}>
-            {isAdmin ? `System Administrator: ${user?.name}` : `Welcome back, ${user?.name}. Managing your legal queue.`}
+          <p className="text-blue-100 text-xl font-medium">
+            Welcome back, {user?.name}. Managing your legal queue.
           </p>
         </div>
-        {isAdmin ? (
-          <Shield className="absolute right-8 top-1/2 -translate-y-1/2 w-32 h-32 text-red-600 opacity-20" />
-        ) : (
-          <Briefcase className="absolute right-8 top-1/2 -translate-y-1/2 w-32 h-32 text-blue-800 opacity-20" />
-        )}
+        <Briefcase className="absolute right-8 top-1/2 -translate-y-1/2 w-32 h-32 text-blue-800 opacity-20" />
       </div>
-
-      {/* Admin Quick Links */}
-      {isAdmin && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Button variant="outline" className="h-24 flex flex-col gap-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" onClick={() => navigate('/admin/users')}>
-            <Users className="w-6 h-6 text-blue-600" />
-            <span>User Management</span>
-          </Button>
-          <Button variant="outline" className="h-24 flex flex-col gap-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" onClick={() => navigate('/admin/cases')}>
-            <FileText className="w-6 h-6 text-green-600" />
-            <span>Case Oversight</span>
-          </Button>
-          <Button variant="outline" className="h-24 flex flex-col gap-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" onClick={() => navigate('/admin/system-settings')}>
-            <Settings className="w-6 h-6 text-gray-600" />
-            <span>System Settings</span>
-          </Button>
-          <Button variant="outline" className="h-24 flex flex-col gap-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" onClick={() => navigate('/admin/reports')}>
-            <Activity className="w-6 h-6 text-purple-600" />
-            <span>Global Analytics</span>
-          </Button>
-        </div>
-      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -130,7 +131,7 @@ const ProfessionalWorkspace: React.FC = () => {
         </Card>
         <Card className="p-6 border-l-4 border-blue-500 shadow-sm" title="Billable Hours (MTD)">
           <div className="flex items-center justify-between">
-            <span className="text-3xl font-bold text-gray-900 dark:text-white">124.5</span>
+            <span className="text-3xl font-bold text-gray-900 dark:text-white">{Number(stats?.monthlyBillableHours || 0).toFixed(1)}</span>
             <Clock className="text-blue-500 w-8 h-8" />
           </div>
         </Card>
@@ -152,7 +153,7 @@ const ProfessionalWorkspace: React.FC = () => {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {assignedCases.map(c => (
                   <tr key={c.id} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors">
-                    <td className="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">{c.userName || c.userEmail}</td>
+                    <td className="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">{getClientName(c)}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{c.visaTypeCode || '—'}</td>
                     <td className="px-6 py-4 text-sm">
                       {isAdmin ? (
@@ -208,18 +209,42 @@ const ProfessionalWorkspace: React.FC = () => {
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                     {availableCases.map(c => (
                       <tr key={c.id} className="hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition-colors">
-                        <td className="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">{c.userName || c.userEmail}</td>
+                        <td className="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">{getClientName(c)}</td>
                         <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{c.visaTypeCode || '—'}</td>
                         <td className="px-6 py-4 text-right">
-                          <Button 
-                            size="sm" 
-                            variant="primary" 
-                            className="bg-amber-600 hover:bg-amber-700"
-                            onClick={() => handleAssign(c.id, user?.attorneyId || null)}
-                            disabled={isAssigning === c.id || !user?.attorneyId}
-                          >
-                            Claim Case
-                          </Button>
+                          {isAdmin ? (
+                            <div className="flex justify-end gap-2">
+                              <select
+                                value={assignmentSelections[c.id] || ''}
+                                onChange={(e) => setAssignmentSelections(prev => ({ ...prev, [c.id]: e.target.value }))}
+                                className="text-xs bg-transparent border border-gray-300 dark:border-gray-600 rounded px-2 py-1 dark:text-gray-300"
+                              >
+                                <option value="">Select professional</option>
+                                {attorneys.map(a => (
+                                  <option key={a.id} value={a.id}>{a.name}</option>
+                                ))}
+                              </select>
+                              <Button
+                                size="sm"
+                                variant="primary"
+                                className="bg-amber-600 hover:bg-amber-700"
+                                onClick={() => handleAssign(c.id, assignmentSelections[c.id] ? parseInt(assignmentSelections[c.id]) : null)}
+                                disabled={isAssigning === c.id || !assignmentSelections[c.id]}
+                              >
+                                Assign
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button 
+                              size="sm" 
+                              variant="primary" 
+                              className="bg-amber-600 hover:bg-amber-700"
+                              onClick={() => handleRequestAssignment(c.id)}
+                              disabled={isAssigning === c.id}
+                            >
+                              Request Assignment
+                            </Button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -229,7 +254,7 @@ const ProfessionalWorkspace: React.FC = () => {
             </Card>
           )}
 
-          <Card title="Direct Messages" className="shadow-lg border-none overflow-hidden">
+          <Card title={isAdmin ? 'General Queue' : 'Assigned Conversations'} className="shadow-lg border-none overflow-hidden">
             <div className="p-0">
               {messages.slice(0, 5).map(thread => (
                 <div 
