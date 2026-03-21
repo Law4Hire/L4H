@@ -56,9 +56,10 @@ public class AttorneysController : ControllerBase
     {
         try
         {
+            var canViewHiddenProfiles = CanViewHiddenProfiles();
             var attorneys = await _context.Attorneys
                 .Include(a => a.Images)
-                .Where(a => a.IsActive && (CanViewHiddenProfiles() || a.DisplayOnStaffPage))
+                .Where(a => a.IsActive && (canViewHiddenProfiles || a.DisplayOnStaffPage))
                 .OrderBy(a => a.DisplayOrder)
                 .ThenBy(a => a.Name)
                 .ToListAsync()
@@ -69,7 +70,7 @@ public class AttorneysController : ControllerBase
                 await InitializeDefaultAttorney();
                 attorneys = await _context.Attorneys
                     .Include(a => a.Images)
-                    .Where(a => a.IsActive && (CanViewHiddenProfiles() || a.DisplayOnStaffPage))
+                    .Where(a => a.IsActive && (canViewHiddenProfiles || a.DisplayOnStaffPage))
                     .OrderBy(a => a.DisplayOrder)
                     .ThenBy(a => a.Name)
                     .ToListAsync()

@@ -577,8 +577,8 @@ public class CasesController : ControllerBase
     {
         var userId = GetCurrentUserId();
         var currentUser = await _context.Users.FindAsync(userId).ConfigureAwait(false);
-        
-        if (currentUser?.AttorneyProfileId == null && !IsAdmin())
+
+        if (currentUser?.AttorneyProfileId == null)
         {
             return Ok(Array.Empty<CaseDashboardResponse>());
         }
@@ -589,10 +589,7 @@ public class CasesController : ControllerBase
             .FilterActive()
             .FilterForClients();
 
-        if (!IsAdmin())
-        {
-            query = query.Where(c => c.AssignedStaffId == currentUser!.AttorneyProfileId);
-        }
+        query = query.Where(c => c.AssignedStaffId == currentUser.AttorneyProfileId);
 
         var cases = await query.ToListAsync().ConfigureAwait(false);
         return Ok(await MapToDashboardResponse(cases));

@@ -34,7 +34,7 @@ const ProfessionalWorkspace: React.FC = () => {
     try {
       const [statsData, assigned, available, msgData, attorneysData] = await Promise.all([
         fetchJson('/v1/dashboard/stats'),
-        isAdmin ? fetchJson<CaseItem[]>('/v1/cases/dashboard?showAssigned=true') : cases.assigned(),
+        cases.assigned(),
         cases.available(),
         isAdmin ? messageApi.general() : messageApi.assigned(),
         fetchJson<any[]>('/v1/attorneys')
@@ -97,6 +97,8 @@ const ProfessionalWorkspace: React.FC = () => {
     const fullName = `${firstName} ${lastName}`.trim()
     return fullName || c.userEmail || 'Unknown client'
   }
+
+  const assignmentSelectClassName = 'text-xs rounded px-2 py-1 border border-gray-300 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100'
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -161,7 +163,7 @@ const ProfessionalWorkspace: React.FC = () => {
                           disabled={isAssigning === c.id}
                           value={c.assignedStaffId || ''}
                           onChange={(e) => handleAssign(c.id, e.target.value ? parseInt(e.target.value) : null)}
-                          className="text-xs bg-transparent border border-gray-300 dark:border-gray-600 rounded px-2 py-1 dark:text-gray-300"
+                          className={assignmentSelectClassName}
                         >
                           <option value="">Unassign</option>
                           {attorneys.map(a => (
@@ -217,7 +219,7 @@ const ProfessionalWorkspace: React.FC = () => {
                               <select
                                 value={assignmentSelections[c.id] || ''}
                                 onChange={(e) => setAssignmentSelections(prev => ({ ...prev, [c.id]: e.target.value }))}
-                                className="text-xs bg-transparent border border-gray-300 dark:border-gray-600 rounded px-2 py-1 dark:text-gray-300"
+                                className={assignmentSelectClassName}
                               >
                                 <option value="">Select professional</option>
                                 {attorneys.map(a => (
