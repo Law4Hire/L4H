@@ -514,6 +514,7 @@ public class AdminController : ControllerBase
     public async Task<ActionResult<AdminUserResponse[]>> GetAdminUsers()
     {
         var users = await _context.Users
+            .Include(u => u.AttorneyProfile)
             .OrderBy(u => u.CreatedAt)
             .ToListAsync().ConfigureAwait(false);
 
@@ -525,6 +526,8 @@ public class AdminController : ControllerBase
             LastName = u.LastName,
             IsAdmin = u.IsAdmin,
             IsStaff = u.IsStaff,
+            AttorneyProfileId = u.AttorneyProfileId,
+            DisplayOnStaffPage = u.AttorneyProfile?.DisplayOnStaffPage ?? true,
             IsActive = u.IsActive,
             EmailVerified = u.EmailVerified,
             CreatedAt = u.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
@@ -590,6 +593,25 @@ public class AdminController : ControllerBase
             Country = "US" // Default country
         };
 
+        if (request.IsStaff)
+        {
+            var attorneyProfile = new Attorney
+            {
+                Name = string.IsNullOrWhiteSpace(request.FirstName) && string.IsNullOrWhiteSpace(request.LastName)
+                    ? request.Email
+                    : $"{request.FirstName} {request.LastName}".Trim(),
+                Email = request.Email.ToLowerInvariant(),
+                IsActive = true,
+                DisplayOnStaffPage = request.DisplayOnStaffPage,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _context.Attorneys.Add(attorneyProfile);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            user.AttorneyProfileId = attorneyProfile.Id;
+        }
+
         _context.Users.Add(user);
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
@@ -605,6 +627,8 @@ public class AdminController : ControllerBase
             LastName = user.LastName,
             IsAdmin = user.IsAdmin,
             IsStaff = user.IsStaff,
+            AttorneyProfileId = user.AttorneyProfileId,
+            DisplayOnStaffPage = request.DisplayOnStaffPage,
             IsActive = user.IsActive,
             EmailVerified = user.EmailVerified,
             CreatedAt = user.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
@@ -672,6 +696,7 @@ public class AdminController : ControllerBase
                            : $"{user.FirstName} {user.LastName}".Trim(),
                     Email = user.Email,
                     IsActive = true,
+                    DisplayOnStaffPage = request.DisplayOnStaffPage ?? true,
                     CreatedAt = DateTime.UtcNow
                 };
                 
@@ -679,6 +704,17 @@ public class AdminController : ControllerBase
                 await _context.SaveChangesAsync().ConfigureAwait(false); // Get the ID
                 
                 user.AttorneyProfileId = newProfile.Id;
+            }
+        }
+
+        if (request.DisplayOnStaffPage.HasValue && user.AttorneyProfileId.HasValue)
+        {
+            var attorneyProfile = await _context.Attorneys.FirstOrDefaultAsync(a => a.Id == user.AttorneyProfileId.Value).ConfigureAwait(false);
+            if (attorneyProfile != null && attorneyProfile.DisplayOnStaffPage != request.DisplayOnStaffPage.Value)
+            {
+                changes.Add(new { field = "DisplayOnStaffPage", oldValue = attorneyProfile.DisplayOnStaffPage, newValue = request.DisplayOnStaffPage.Value });
+                attorneyProfile.DisplayOnStaffPage = request.DisplayOnStaffPage.Value;
+                attorneyProfile.UpdatedAt = DateTime.UtcNow;
             }
         }
 
@@ -730,6 +766,16 @@ public class AdminController : ControllerBase
             if (exists) return Conflict(new ProblemDetails { Title = "Email already in use" });
 
             user.Email = request.Email.ToLowerInvariant();
+        }
+
+        if (request.DisplayOnStaffPage.HasValue && user.AttorneyProfileId.HasValue)
+        {
+            var attorneyProfile = await _context.Attorneys.FirstOrDefaultAsync(a => a.Id == user.AttorneyProfileId.Value).ConfigureAwait(false);
+            if (attorneyProfile != null)
+            {
+                attorneyProfile.DisplayOnStaffPage = request.DisplayOnStaffPage.Value;
+                attorneyProfile.UpdatedAt = DateTime.UtcNow;
+            }
         }
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
@@ -1636,6 +1682,8 @@ public class AdminUserResponse
     public string LastName { get; set; } = string.Empty;
     public bool IsAdmin { get; set; }
     public bool IsStaff { get; set; }
+    public int? AttorneyProfileId { get; set; }
+    public bool DisplayOnStaffPage { get; set; } = true;
     public bool IsActive { get; set; }
     public bool EmailVerified { get; set; }
     public string CreatedAt { get; set; } = string.Empty;
@@ -1645,6 +1693,7 @@ public class UpdateUserRolesRequest
 {
     public bool IsAdmin { get; set; }
     public bool IsStaff { get; set; }
+    public bool? DisplayOnStaffPage { get; set; }
 }
 
 public class UpdateUserRequest
@@ -1653,6 +1702,7 @@ public class UpdateUserRequest
     public string? LastName { get; set; }
     public string? Email { get; set; }
     public string? Phone { get; set; }
+    public bool? DisplayOnStaffPage { get; set; }
 }
 
 public class AdminCaseResponse
@@ -1817,6 +1867,7 @@ public class CreateUserRequest
     public string Password { get; set; } = string.Empty;
     public bool IsAdmin { get; set; }
     public bool IsStaff { get; set; }
+    public bool DisplayOnStaffPage { get; set; } = true;
 }
 
 public class AdminVerificationTokenResponse

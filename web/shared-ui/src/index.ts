@@ -12,6 +12,7 @@ export {
   admin,
   fetchJson, 
   ApiError,
+  getErrorMessage,
   setJwtToken,
   getJwtToken,
   clearTokens

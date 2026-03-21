@@ -121,12 +121,13 @@ async function fetchJson<T = any>(
     const contentType = response.headers.get('content-type')
     if (!contentType?.includes('application/json')) {
       if (!response.ok) {
-        // Try to read the error message from the body even if it's not JSON
-        const errorText = await response.text().catch(() => response.statusText);
+        const errorText = await response.text().catch(() => response.statusText)
+        const parsedError = parseErrorText(errorText, response.status, response.statusText)
         throw new ApiError(
-          `HTTP ${response.status}`,
-          errorText || response.statusText,
-          response.status
+          parsedError.title,
+          parsedError.detail,
+          parsedError.status,
+          parsedError.code
         )
       }
       return response as unknown as T
@@ -588,6 +589,69 @@ export const uploads = {
   }
 }
 
+function formatValidationErrors(errors?: Record<string, string[]>): string | undefined {
+  if (!errors) {
+    return undefined
+  }
+
+  const messages = Object.values(errors).flat().filter(Boolean)
+  return messages.length > 0 ? messages.join(' ') : undefined
+}
+
+function normalizeErrorResponse(
+  responseData: any,
+  status: number,
+  fallbackStatusText: string
+): ProblemDetails {
+  const validationMessage = formatValidationErrors(responseData?.errors)
+
+  return {
+    title: responseData?.title || `HTTP ${status}`,
+    detail: responseData?.detail || validationMessage || fallbackStatusText,
+    status: responseData?.status || status,
+    type: responseData?.type,
+    instance: responseData?.instance,
+    errors: responseData?.errors,
+    code: responseData?.code || responseData?.extensions?.code
+  }
+}
+
+function parseErrorText(text: string, status: number, fallbackStatusText: string): ProblemDetails {
+  const trimmed = text?.trim()
+  if (!trimmed) {
+    return normalizeErrorResponse({}, status, fallbackStatusText)
+  }
+
+  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+    try {
+      const parsed = JSON.parse(trimmed)
+      return normalizeErrorResponse(parsed, status, fallbackStatusText)
+    } catch {
+      // Fall through to plain-text normalization.
+    }
+  }
+
+  return normalizeErrorResponse({ detail: trimmed }, status, fallbackStatusText)
+}
+
+export function getErrorMessage(error: unknown, fallback = 'Unknown error'): string {
+  if (error instanceof ApiError) {
+    return error.detail || error.title || fallback
+  }
+
+  if (error instanceof Error) {
+    const normalized = parseErrorText(error.message, 0, fallback)
+    return normalized.detail || normalized.title || fallback
+  }
+
+  if (typeof error === 'string') {
+    const normalized = parseErrorText(error, 0, fallback)
+    return normalized.detail || normalized.title || fallback
+  }
+
+  return fallback
+}
+
 // Invoices API methods
 export const invoices = {
   async list(caseId?: string) {
@@ -748,33 +812,6 @@ export const interview = {
       citizenship?: string
     }>(`/v1/interview/anonymous/registration-prefill/${encodeURIComponent(sessionToken)}`)
   }
-}
-
-function normalizeErrorResponse(
-  responseData: any,
-  status: number,
-  fallbackStatusText: string
-): ProblemDetails {
-  const validationMessage = formatValidationErrors(responseData?.errors)
-
-  return {
-    title: responseData?.title || `HTTP ${status}`,
-    detail: responseData?.detail || validationMessage || fallbackStatusText,
-    status: responseData?.status || status,
-    type: responseData?.type,
-    instance: responseData?.instance,
-    errors: responseData?.errors,
-    code: responseData?.code || responseData?.extensions?.code
-  }
-}
-
-function formatValidationErrors(errors?: Record<string, string[]>): string | undefined {
-  if (!errors) {
-    return undefined
-  }
-
-  const messages = Object.values(errors).flat().filter(Boolean)
-  return messages.length > 0 ? messages.join(' ') : undefined
 }
 
 // Professional Interview API methods

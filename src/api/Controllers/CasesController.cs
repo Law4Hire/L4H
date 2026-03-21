@@ -393,6 +393,7 @@ public class CasesController : ControllerBase
 
         // Update assignment
         caseEntity.AssignedStaffId = request.StaffId;
+        caseEntity.User.AssignedAttorneyId = request.StaffId;
         caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
@@ -419,6 +420,115 @@ public class CasesController : ControllerBase
             new { previousStaffId, newStaffId = request.StaffId, attorneyName = attorney?.Name ?? "Unassigned" }).ConfigureAwait(false);
 
         return Ok(new { message = "Case assigned successfully" });
+    }
+
+    /// <summary>
+    /// Request assignment of an unassigned case to the current legal professional.
+    /// The request is routed to the general admin queue instead of self-assigning.
+    /// </summary>
+    [HttpPost("{id}/request-assignment")]
+    [Authorize(Policy = "IsLegalProfessional")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> RequestAssignment(Guid id, [FromBody] AssignmentRequestBody request)
+    {
+        if (IsAdmin())
+        {
+            return Forbid();
+        }
+
+        var userId = GetCurrentUserId();
+        var caller = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+        if (caller?.AttorneyProfileId == null)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
+            {
+                Title = "Assignment Request Denied",
+                Detail = "Your legal professional profile is incomplete."
+            });
+        }
+
+        var caseId = new CaseId(id);
+        var caseEntity = await _context.Cases
+            .Include(c => c.User)
+            .FirstOrDefaultAsync(c => c.Id == caseId)
+            .ConfigureAwait(false);
+
+        if (caseEntity == null)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Case Not Found",
+                Detail = "Case not found."
+            });
+        }
+
+        if (caseEntity.AssignedStaffId.HasValue)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Title = "Case Already Assigned",
+                Detail = "This case is already assigned to a legal professional."
+            });
+        }
+
+        var requesterName = string.IsNullOrWhiteSpace(caller.FirstName) && string.IsNullOrWhiteSpace(caller.LastName)
+            ? caller.Email
+            : $"{caller.FirstName} {caller.LastName}".Trim();
+        var clientName = string.IsNullOrWhiteSpace(caseEntity.User.FirstName) && string.IsNullOrWhiteSpace(caseEntity.User.LastName)
+            ? caseEntity.User.Email
+            : $"{caseEntity.User.FirstName} {caseEntity.User.LastName}".Trim();
+        var reason = string.IsNullOrWhiteSpace(request.Reason)
+            ? "Assignment requested from the professional dashboard."
+            : request.Reason.Trim();
+
+        var thread = new MessageThread
+        {
+            Id = Guid.NewGuid(),
+            CaseId = caseEntity.Id,
+            Subject = $"Assignment request: {clientName}",
+            ThreadType = "general",
+            CreatedAt = DateTime.UtcNow,
+            LastMessageAt = DateTime.UtcNow
+        };
+
+        _context.MessageThreads.Add(thread);
+        _context.Messages.Add(new Message
+        {
+            Id = Guid.NewGuid(),
+            ThreadId = thread.Id,
+            SenderUserId = caller.Id,
+            Body = $"{requesterName} requested assignment for case {id}. Client: {clientName}. Reason: {reason}",
+            Channel = "in_app",
+            SentAt = DateTime.UtcNow,
+            ReadByJson = JsonSerializer.Serialize(new Dictionary<string, DateTime>
+            {
+                [caller.Id.Value.ToString()] = DateTime.UtcNow
+            })
+        });
+
+        var admins = await _context.Users.Where(u => u.IsAdmin).ToListAsync().ConfigureAwait(false);
+        foreach (var admin in admins)
+        {
+            _context.Notifications.Add(new Notification
+            {
+                UserId = admin.Id,
+                Title = "Case Assignment Requested",
+                Message = $"{requesterName} requested assignment for {clientName}.",
+                Priority = NotificationPriority.Normal,
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+
+        caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+
+        await LogAuditAsync("case", "assignment_request", "Case", id.ToString(),
+            new { requestedBy = caller.Email, reason }).ConfigureAwait(false);
+
+        return Ok(new { message = "Assignment request sent to the admin general queue." });
     }
 
     /// <summary>
@@ -521,6 +631,8 @@ public class CasesController : ControllerBase
             ClientFirstName = c.User.FirstName ?? "",
             ClientLastName = c.User.LastName ?? "",
             ClientEmail = c.User.Email,
+            UserName = $"{c.User.FirstName} {c.User.LastName}".Trim(),
+            UserEmail = c.User.Email,
             Status = c.Status,
             LastActivityAt = c.LastActivityAt,
             CreatedAt = c.CreatedAt,
@@ -625,6 +737,8 @@ public class CaseDashboardResponse
     public string ClientFirstName { get; set; } = string.Empty;
     public string ClientLastName { get; set; } = string.Empty;
     public string ClientEmail { get; set; } = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public string UserEmail { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public DateTimeOffset LastActivityAt { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -644,6 +758,7 @@ public class CaseVisaTypeInfo
 
 public class AssignCaseRequest { public int? StaffId { get; set; } }
 public class ReassignmentRequestBody { public string? Reason { get; set; } }
+public class AssignmentRequestBody { public string? Reason { get; set; } }
 public class UpdateCaseVisaTypesRequest
 {
     public List<int> VisaTypeIds { get; set; } = new List<int>();

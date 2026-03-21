@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { interview } from '@l4h/shared-ui';
+import { getErrorMessage, interview } from '@l4h/shared-ui';
 
 interface Question {
   key: string;
@@ -68,8 +68,8 @@ export const InterviewProvider = ({ children }: { children: ReactNode }) => {
       if (sessionStorage.getItem('fastpath_session_id')) {
         sessionStorage.removeItem('fastpath_session_id');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to start interview');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to start interview'));
     } finally {
       setIsLoading(false);
     }
@@ -90,8 +90,8 @@ export const InterviewProvider = ({ children }: { children: ReactNode }) => {
         setCurrentQuestion(response.nextQuestion);
         setIsComplete(false);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to resume interview');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to resume interview'));
       // If resume fails, start a fresh one
       startInterview();
     } finally {
@@ -119,8 +119,8 @@ export const InterviewProvider = ({ children }: { children: ReactNode }) => {
       } else if (response.nextQuestion) {
         setCurrentQuestion(response.nextQuestion);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit answer');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to submit answer'));
     } finally {
       setIsLoading(false);
     }

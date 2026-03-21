@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { getErrorMessage } from '@l4h/shared-ui'
 
 interface SiteConfiguration {
   id: number
@@ -46,7 +47,7 @@ export function useSiteConfig() {
       setError(null)
     } catch (err) {
       console.error('Error fetching site config:', err)
-      setError(err instanceof Error ? err.message : 'Unknown error')
+      setError(getErrorMessage(err, 'Failed to fetch site configuration'))
     } finally {
       setIsLoading(false)
     }
@@ -72,7 +73,7 @@ export function useSiteConfig() {
       return { success: true }
     } catch (err) {
       console.error('Error updating site config:', err)
-      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+      return { success: false, error: getErrorMessage(err, 'Failed to update site configuration') }
     }
   }
 

@@ -16,6 +16,7 @@ public class AttorneyRequestDto
     public string? PracticeAreas { get; set; }
     public string? Languages { get; set; }
     public bool IsActive { get; set; }
+    public bool DisplayOnStaffPage { get; set; } = true;
     public bool IsManagingAttorney { get; set; }
     public int DisplayOrder { get; set; }
 }
