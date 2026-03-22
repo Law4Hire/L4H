@@ -192,6 +192,7 @@ public class SessionManager : ISessionManager
     public async Task SelectVisaAsync(Guid sessionId, int visaTypeId)
     {
         var evaluation = await _context.VisaEvaluations
+            .Include(ve => ve.Session)
             .FirstOrDefaultAsync(ve =>
                 ve.SessionId == sessionId &&
                 ve.VisaTypeId == visaTypeId);
@@ -217,6 +218,40 @@ public class SessionManager : ISessionManager
         evaluation.IsUserSelected = true;
         evaluation.UserSelectedAt = DateTime.UtcNow;
         evaluation.UpdatedAt = DateTime.UtcNow;
+
+        if (evaluation.Session?.CaseId is { } caseId)
+        {
+            var caseEntity = await _context.Cases
+                .Include(c => c.CaseVisaTypes)
+                .FirstOrDefaultAsync(c => c.Id == caseId);
+
+            if (caseEntity != null)
+            {
+                caseEntity.VisaTypeId = visaTypeId;
+                caseEntity.UpdatedAt = DateTime.UtcNow;
+                caseEntity.LastActivityAt = DateTimeOffset.UtcNow;
+
+                foreach (var existing in caseEntity.CaseVisaTypes)
+                {
+                    existing.IsPrimary = existing.VisaTypeId == visaTypeId;
+                }
+
+                if (!caseEntity.CaseVisaTypes.Any(cvt => cvt.VisaTypeId == visaTypeId))
+                {
+                    var nextDisplayOrder = caseEntity.CaseVisaTypes.Count == 0
+                        ? 1
+                        : caseEntity.CaseVisaTypes.Max(cvt => cvt.DisplayOrder) + 1;
+
+                    caseEntity.CaseVisaTypes.Add(new CaseVisaType
+                    {
+                        CaseId = caseEntity.Id,
+                        VisaTypeId = visaTypeId,
+                        IsPrimary = true,
+                        DisplayOrder = nextDisplayOrder
+                    });
+                }
+            }
+        }
 
         await _context.SaveChangesAsync();
     }

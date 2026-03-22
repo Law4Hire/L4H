@@ -102,6 +102,17 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
                 a => a.AnswerValue!.Trim(),
                 StringComparer.OrdinalIgnoreCase);
 
+        NormalizeAnswers(answerDict);
+
+        if (answerDict.TryGetValue("subcategory", out var selectedSubcategory) &&
+            !DoesVisaMatchSelectedSubcategory(visa.Code, selectedSubcategory))
+        {
+            result.Status = EligibilityStatus.NotEligible;
+            result.MatchScore = 0;
+            result.Explanation = $"{visa.Name} was ruled out because you selected {selectedSubcategory} as your intended visa path.";
+            return result;
+        }
+
         // 1. Geopolitical/Country Restrictions Check (Highest Priority)
         if (answerDict.TryGetValue("doc_prefill_nationality", out var nationality))
         {
@@ -191,8 +202,12 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             case "B-2": result = EvaluateB2(visa, answerDict, user); break;
             case "B-1/B-2": result = EvaluateB1B2(visa, answerDict, user); break;
             case "H-1B": result = EvaluateH1B(visa, answerDict, user); break;
+            case "H-1B1": result = EvaluateH1B1(visa, answerDict, user); break;
+            case "H-2B": result = EvaluateH2B(visa, answerDict, user); break;
             case "F-1": result = EvaluateF1(visa, answerDict, user); break;
+            case "L-1A": case "L-1B": result = EvaluateL1(visa, answerDict, user); break;
             case "O-1": result = EvaluateO1(visa, answerDict, user); break;
+            case "TN": result = EvaluateTN(visa, answerDict, user); break;
             case "EB-5": result = EvaluateEB5(visa, answerDict, user); break;
             case "IR-1": case "CR-1": result = EvaluateFamilySpouse(visa, answerDict, user); break;
             case "IR-3": case "IR-4": case "ADOP": result = EvaluateAdoption(visa, answerDict, user); break;
@@ -331,8 +346,14 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         if (hasWorkPurpose && hasEmployerSponsor && hasBachelors)
         {
             result.Status = EligibilityStatus.Eligible;
-            result.MatchScore = 95;
+            result.MatchScore = answers.TryGetValue("subcategory", out var selected) && selected.Equals("H-1B", StringComparison.OrdinalIgnoreCase) ? 100 : 95;
             result.Explanation = "You have a US employer sponsor and a bachelor's degree or higher, making you highly eligible for an H-1B visa.";
+        }
+        else if (hasWorkPurpose && !hasBachelors)
+        {
+            result.Status = EligibilityStatus.NotEligible;
+            result.MatchScore = 0;
+            result.Explanation = "H-1B requires a bachelor's degree or higher in a qualifying specialty occupation.";
         }
         else if (hasWorkPurpose)
         {
@@ -350,6 +371,72 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             result.Explanation = "H-1B visa is for professional work in specialty occupations.";
         }
 
+        return result;
+    }
+
+    private VisaEvaluationResult EvaluateH1B1(VisaType visa, Dictionary<string, string> answers, User? user)
+    {
+        var result = new VisaEvaluationResult { MatchScore = 20 };
+
+        var nationality = GetNationality(answers);
+        bool countryEligible = nationality is "chile" or "singapore";
+        bool hasBachelors = HasBachelorsOrHigher(answers);
+        bool hasWorkPurpose = HasWorkPurpose(answers);
+
+        if (!countryEligible)
+        {
+            result.Status = EligibilityStatus.NotEligible;
+            result.MatchScore = 0;
+            result.Explanation = "H-1B1 is only available to citizens of Chile or Singapore.";
+            return result;
+        }
+
+        if (!hasBachelors)
+        {
+            result.Status = EligibilityStatus.NotEligible;
+            result.MatchScore = 0;
+            result.Explanation = "H-1B1 requires a bachelor's degree or higher in a qualifying specialty occupation.";
+            return result;
+        }
+
+        result.Status = hasWorkPurpose ? EligibilityStatus.Eligible : EligibilityStatus.Potential;
+        result.MatchScore = hasWorkPurpose ? 96 : 70;
+        result.Explanation = hasWorkPurpose
+            ? "Your country and education align with H-1B1 requirements."
+            : "H-1B1 may fit if you are pursuing a qualifying specialty occupation.";
+        return result;
+    }
+
+    private VisaEvaluationResult EvaluateH2B(VisaType visa, Dictionary<string, string> answers, User? user)
+    {
+        var result = new VisaEvaluationResult { MatchScore = 35 };
+        bool explicitlyChosen = answers.TryGetValue("subcategory", out var subcategory) &&
+            subcategory.Equals("H-2B", StringComparison.OrdinalIgnoreCase);
+        bool hasWorkPurpose = HasWorkPurpose(answers);
+        bool hasJobOffer = HasChecklistYes(answers, "jobOffer") || HasEmployerSponsor(answers);
+        bool temporaryWork = HasChecklistYes(answers, "temporary");
+
+        if (explicitlyChosen && (temporaryWork || !answers.Keys.Any(k => k.StartsWith("checklist_", StringComparison.OrdinalIgnoreCase))))
+        {
+            result.Status = EligibilityStatus.Eligible;
+            result.MatchScore = 100;
+            result.Explanation = "You selected H-2B as your intended pathway, and your answers align with temporary non-agricultural work.";
+            return result;
+        }
+
+        if (hasWorkPurpose && (hasJobOffer || temporaryWork))
+        {
+            result.Status = EligibilityStatus.Eligible;
+            result.MatchScore = 90;
+            result.Explanation = "Your answers align with temporary non-agricultural employment.";
+            return result;
+        }
+
+        result.Status = hasWorkPurpose ? EligibilityStatus.Potential : EligibilityStatus.NotEligible;
+        result.MatchScore = hasWorkPurpose ? 65 : 0;
+        result.Explanation = hasWorkPurpose
+            ? "H-2B may fit if the job is temporary and backed by a qualifying employer."
+            : "H-2B is for temporary non-agricultural work.";
         return result;
     }
 
@@ -413,6 +500,59 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             result.Explanation = "O-1 visa is for work requiring extraordinary ability.";
         }
 
+        return result;
+    }
+
+    private VisaEvaluationResult EvaluateL1(VisaType visa, Dictionary<string, string> answers, User? user)
+    {
+        var result = new VisaEvaluationResult { MatchScore = 20 };
+        bool employed = answers.TryGetValue("employment_status", out var employmentStatus) &&
+            !employmentStatus.Equals("unemployed", StringComparison.OrdinalIgnoreCase);
+        bool selected = answers.TryGetValue("subcategory", out var selectedSubcategory) &&
+            selectedSubcategory.Equals("L-1", StringComparison.OrdinalIgnoreCase);
+        bool hasRelationship = HasChecklistYes(answers, "relationship");
+        bool hasPriorEmployment = HasChecklistYes(answers, "employment");
+
+        if (!employed)
+        {
+            result.Status = EligibilityStatus.NotEligible;
+            result.MatchScore = 0;
+            result.Explanation = "L-1 requires current qualifying employment with the transferring company.";
+            return result;
+        }
+
+        if (selected && hasRelationship && hasPriorEmployment)
+        {
+            result.Status = EligibilityStatus.Eligible;
+            result.MatchScore = 96;
+            result.Explanation = "Your answers fit the intracompany transfer requirements for an L-1 visa.";
+            return result;
+        }
+
+        result.Status = selected ? EligibilityStatus.Potential : EligibilityStatus.NotEligible;
+        result.MatchScore = selected ? 72 : 0;
+        result.Explanation = selected
+            ? "L-1 may fit if the foreign and U.S. companies have a qualifying relationship and you meet the transfer requirements."
+            : "L-1 is only for intracompany transfers.";
+        return result;
+    }
+
+    private VisaEvaluationResult EvaluateTN(VisaType visa, Dictionary<string, string> answers, User? user)
+    {
+        var result = new VisaEvaluationResult { MatchScore = 20 };
+        var nationality = GetNationality(answers);
+
+        if (nationality is not ("canada" or "mexico"))
+        {
+            result.Status = EligibilityStatus.NotEligible;
+            result.MatchScore = 0;
+            result.Explanation = "TN status is only available to citizens of Canada or Mexico.";
+            return result;
+        }
+
+        result.Status = EligibilityStatus.Eligible;
+        result.MatchScore = 95;
+        result.Explanation = "Your nationality aligns with TN eligibility.";
         return result;
     }
 
@@ -567,6 +707,16 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
             return result;
         }
 
+        if (purpose == "professional" && code.StartsWith("E") && !answers.ContainsKey("investment_capital"))
+        {
+            return result;
+        }
+
+        if (purpose == "professional" && (code.StartsWith("O") || code.StartsWith("P")) && !HasExtraordinaryOrPerformanceEvidence(answers))
+        {
+            return result;
+        }
+
         // If purpose is 'visitor', generic visas should be NotEligible unless they are B visas
         if (purpose == "visitor" && !code.StartsWith("B"))
         {
@@ -604,6 +754,92 @@ public class VisaEvaluationEngine : IVisaEvaluationEngine
         result.MissingInformation.Add("Detailed information about your specific situation");
 
         return result;
+    }
+
+    private static void NormalizeAnswers(Dictionary<string, string> answers)
+    {
+        MirrorAnswer(answers, "nationality", "doc_prefill_nationality");
+        MirrorAnswer(answers, "citizenship", "doc_prefill_nationality");
+        MirrorAnswer(answers, "service_fit_intent_type", "intent_type");
+        MirrorAnswer(answers, "service_fit_category", "category");
+    }
+
+    private static void MirrorAnswer(Dictionary<string, string> answers, string sourceKey, string destinationKey)
+    {
+        if (answers.ContainsKey(destinationKey))
+        {
+            return;
+        }
+
+        if (answers.TryGetValue(sourceKey, out var sourceValue) && !string.IsNullOrWhiteSpace(sourceValue))
+        {
+            answers[destinationKey] = sourceValue;
+        }
+    }
+
+    private static bool DoesVisaMatchSelectedSubcategory(string visaCode, string selectedSubcategory)
+    {
+        var normalizedVisaCode = visaCode.Trim().ToUpperInvariant();
+        var normalizedSelection = selectedSubcategory.Trim().ToUpperInvariant();
+
+        return normalizedSelection switch
+        {
+            "L-1" => normalizedVisaCode is "L-1A" or "L-1B",
+            "J-1 STUDENT" => normalizedVisaCode == "J-1",
+            "EB-2 NIW" => normalizedVisaCode is "EB-2" or "NIW",
+            "EB-3 SKILLED WORKER" => normalizedVisaCode == "EB-3",
+            _ => normalizedVisaCode == normalizedSelection
+        };
+    }
+
+    private static string? GetNationality(Dictionary<string, string> answers)
+    {
+        if (!answers.TryGetValue("doc_prefill_nationality", out var nationality) || string.IsNullOrWhiteSpace(nationality))
+        {
+            return null;
+        }
+
+        return nationality.Trim().ToLowerInvariant();
+    }
+
+    private static bool HasBachelorsOrHigher(Dictionary<string, string> answers)
+    {
+        return answers.TryGetValue("education_level", out var education) &&
+            (education.Contains("bachelor", StringComparison.OrdinalIgnoreCase) ||
+             education.Contains("master", StringComparison.OrdinalIgnoreCase) ||
+             education.Contains("phd", StringComparison.OrdinalIgnoreCase) ||
+             education.Contains("doctorate", StringComparison.OrdinalIgnoreCase) ||
+             education.Contains("professional", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool HasWorkPurpose(Dictionary<string, string> answers)
+    {
+        return answers.TryGetValue("purpose", out var purpose) &&
+            (purpose.Contains("professional", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("employment", StringComparison.OrdinalIgnoreCase) ||
+             purpose.Contains("work", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool HasEmployerSponsor(Dictionary<string, string> answers)
+    {
+        return answers.TryGetValue("employer_sponsor", out var sponsor) &&
+            (sponsor.Equals("yes", StringComparison.OrdinalIgnoreCase) || sponsor.Equals("true", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool HasChecklistYes(Dictionary<string, string> answers, string checklistSuffix)
+    {
+        return answers.TryGetValue($"checklist_{checklistSuffix}", out var value) &&
+            value.Equals("yes", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool HasExtraordinaryOrPerformanceEvidence(Dictionary<string, string> answers)
+    {
+        return HasChecklistYes(answers, "extraordinary") ||
+               HasChecklistYes(answers, "awards") ||
+               HasChecklistYes(answers, "recognition") ||
+               HasChecklistYes(answers, "athlete") ||
+               answers.TryGetValue("extraordinary_ability", out var ability) &&
+               ability.Equals("yes", StringComparison.OrdinalIgnoreCase);
     }
 
     #endregion

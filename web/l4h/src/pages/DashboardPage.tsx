@@ -13,6 +13,8 @@ interface Case {
   createdAt: string
   visaTypeName?: string
   visaTypeCode?: string
+  assignedStaffId?: number | null
+  visaTypes?: Array<{ visaTypeCode: string }>
   interviewSessionId?: string
   isVisaLockedByAttorney: boolean
 }
@@ -43,6 +45,7 @@ const DashboardPage: React.FC = () => {
 
   const activeCase = casesList.length > 0 ? casesList[0] : undefined
   const hasQualifiedVisa = !!(activeCase?.visaTypeCode || (activeCase?.visaTypes && activeCase.visaTypes.length > 0))
+  const hasAssignedAttorney = !!activeCase?.assignedStaffId
 
   const handleStartInterview = async () => {
     try {
@@ -172,7 +175,7 @@ const DashboardPage: React.FC = () => {
             onClick={handleStartInterview}
           >
             <div className="text-lg mb-1">🤖</div>
-            <div className="text-sm">{'Start AI Interview'}</div>
+            <div className="text-sm">{hasQualifiedVisa ? 'Redo Interview' : 'Start AI Interview'}</div>
           </Button>
           
           <Button
@@ -203,6 +206,14 @@ const DashboardPage: React.FC = () => {
           >
             <div className="text-lg mb-1">💬</div>
             <div className="text-sm">{'Messages'}</div>
+          </Button>
+          <Button
+            variant="outline"
+            className={`h-20 flex flex-col items-center justify-center ${!hasAssignedAttorney ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={() => hasAssignedAttorney && activeCase ? navigate(`/messages?caseId=${activeCase.id}`) : showError('You can message your attorney after one has been assigned to your case.')}
+          >
+            <div className="text-lg mb-1">📨</div>
+            <div className="text-sm">{'Message My Attorney'}</div>
           </Button>
         </div>
       </Card>

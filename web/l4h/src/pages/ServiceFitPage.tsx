@@ -255,11 +255,37 @@ const ServiceFitPage: React.FC = () => {
   
   const [currentStepId, setCurrentStepId] = useState<string>('start');
   const [history, setHistory] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [resultMessage, setResultOptions] = useState<{message: string, result: 'GOOD_FIT' | 'TERMINATED' | 'DOCUMENTS' | 'RECOMMENDED_WIZARD' | 'HOLD_REVIEW'} | null>(null);
 
   const currentStep = SERVICE_FIT_TREE[currentStepId];
 
+  const persistInterviewPrefill = () => {
+    const initialAnswers: Record<string, string> = {};
+
+    if (answers.start === 'immigrant') initialAnswers.intent_type = 'immigrant';
+    if (answers.start === 'non_immigrant') initialAnswers.intent_type = 'nonimmigrant';
+    if (answers.start === 'documents' && answers.docs_first_gc) initialAnswers.intent_type = answers.docs_first_gc === 'inside' || answers.docs_first_gc === 'abroad' ? 'immigrant' : 'nonimmigrant';
+    if (answers.start === 'humanitarian') initialAnswers.intent_type = 'refugee';
+
+    if (answers.humanitarian_type === 'yes') {
+      initialAnswers.intent_type = 'citizenship';
+      initialAnswers.category = 'adoption';
+    }
+
+    if (initialAnswers.intent_type) {
+      initialAnswers.service_fit_intent_type = initialAnswers.intent_type;
+    }
+    if (initialAnswers.category) {
+      initialAnswers.service_fit_category = initialAnswers.category;
+    }
+
+    sessionStorage.setItem('fastpath_answers', JSON.stringify(initialAnswers));
+  };
+
   const handleOptionClick = (option: Option) => {
+    setAnswers(prev => ({ ...prev, [currentStepId]: option.value }));
+
     if (option.result) {
       setResultOptions({
         result: option.result,
@@ -305,7 +331,7 @@ const ServiceFitPage: React.FC = () => {
               <Button onClick={() => navigate('/register')} size="lg" className="px-12">
                 Create Account
               </Button>
-              <Button onClick={() => navigate('/interview')} variant="secondary" size="lg" className="px-12">
+              <Button onClick={() => { persistInterviewPrefill(); navigate('/interview'); }} variant="secondary" size="lg" className="px-12">
                 Start Full Interview
               </Button>
             </div>
@@ -343,7 +369,7 @@ const ServiceFitPage: React.FC = () => {
               {resultMessage.message}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-              <Button onClick={() => navigate('/interview')} size="lg" className="px-12">
+              <Button onClick={() => { persistInterviewPrefill(); navigate('/interview'); }} size="lg" className="px-12">
                 Start Full Assessment
               </Button>
               <Button onClick={() => navigate('/uscis-documents')} variant="secondary" size="lg" className="px-12">
@@ -393,7 +419,7 @@ const ServiceFitPage: React.FC = () => {
               <Button onClick={() => navigate('/register')} size="lg" className="px-12">
                 Create Account
               </Button>
-              <Button onClick={() => navigate('/interview')} variant="secondary" size="lg" className="px-12">
+              <Button onClick={() => { persistInterviewPrefill(); navigate('/interview'); }} variant="secondary" size="lg" className="px-12">
                 Start Full Interview
               </Button>
               <Button onClick={() => navigate('/uscis-documents')} variant="secondary" size="lg" className="px-12">
