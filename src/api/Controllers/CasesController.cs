@@ -148,6 +148,8 @@ public class CasesController : ControllerBase
         var cases = await _context.Cases
             .Include(c => c.VisaType)
             .Include(c => c.Package)
+            .Include(c => c.CaseVisaTypes)
+                .ThenInclude(cvt => cvt.VisaType)
             .Where(c => c.UserId == userId)
             .OrderByDescending(c => c.LastActivityAt)
             .ToListAsync().ConfigureAwait(false);
@@ -161,7 +163,19 @@ public class CasesController : ControllerBase
             VisaTypeName = c.VisaType?.Name,
             PackageCode = c.Package?.Code,
             PackageDisplayName = c.Package?.DisplayName,
-            CreatedAt = c.CreatedAt
+            CreatedAt = c.CreatedAt,
+            AssignedStaffId = c.AssignedStaffId,
+            VisaTypes = c.CaseVisaTypes
+                .OrderBy(cvt => cvt.DisplayOrder)
+                .Select(cvt => new CaseVisaTypeInfo
+                {
+                    VisaTypeId = cvt.VisaTypeId,
+                    VisaTypeCode = cvt.VisaType.Code ?? string.Empty,
+                    VisaTypeName = cvt.VisaType.Name ?? string.Empty,
+                    IsPrimary = cvt.IsPrimary,
+                    DisplayOrder = cvt.DisplayOrder
+                })
+                .ToList()
         }).ToArray();
 
         // Audit log for case access
@@ -602,6 +616,8 @@ public class CaseResponse
     public string? PackageCode { get; set; }
     public string? PackageDisplayName { get; set; }
     public DateTime CreatedAt { get; set; }
+    public int? AssignedStaffId { get; set; }
+    public List<CaseVisaTypeInfo> VisaTypes { get; set; } = new List<CaseVisaTypeInfo>();
     public PriceSnapshotResponse? LatestPriceSnapshot { get; set; }
 }
 

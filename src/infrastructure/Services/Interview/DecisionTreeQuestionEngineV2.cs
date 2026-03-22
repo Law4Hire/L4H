@@ -28,6 +28,8 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             qa => qa.AnswerValue, 
             StringComparer.OrdinalIgnoreCase);
 
+        HydrateKnownAnswers(answers);
+
         // Step 1: Denise Fork - Intent Type classification (MANDATORY FIRST)
         if (!answers.ContainsKey("intent_type"))
         {
@@ -72,7 +74,7 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         // Step 5: Subcategory question (if applicable for this category)
         if (RequiresSubcategory(intentType, category) && !answers.ContainsKey("subcategory"))
         {
-            return GetSubcategoryQuestion(intentType, category);
+            return GetSubcategoryQuestion(intentType, category, answers);
         }
 
         // Step 6: Eligibility checklist questions (if subcategory has one)
@@ -407,11 +409,11 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         return !skipSubcategory.Contains(category.ToLower());
     }
 
-    private InterviewQuestion GetSubcategoryQuestion(string intentType, string category)
+    private InterviewQuestion GetSubcategoryQuestion(string intentType, string category, Dictionary<string, string> answers)
     {
         return category.ToLower() switch
         {
-            "work_visa" => GetWorkVisaSubcategoryQuestion(),
+            "work_visa" => GetWorkVisaSubcategoryQuestion(GetEligibleWorkVisaOptions(answers)),
             "student_visa" => GetStudentVisaSubcategoryQuestion(),
             "visitor_visa" => GetVisitorVisaSubcategoryQuestion(),
             "green_card_employment" => GetEmploymentGreenCardSubcategoryQuestion(),
@@ -419,7 +421,7 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         };
     }
 
-    private InterviewQuestion GetWorkVisaSubcategoryQuestion()
+    private InterviewQuestion GetWorkVisaSubcategoryQuestion(List<QuestionOption>? options = null)
     {
         return new InterviewQuestion
         {
@@ -429,7 +431,7 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
             InputType = "select",
             Order = 5,
             IsRequired = true,
-            Options = new List<QuestionOption>
+            Options = options ?? new List<QuestionOption>
             {
                 new() { Value = "H-1B", Label = "H-1B Specialty Occupation - Requires bachelor's degree or higher in specific field" },
                 new() { Value = "H-2A", Label = "H-2A Agricultural Worker - Seasonal agricultural employment" },
@@ -509,6 +511,12 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
 
     private InterviewQuestion? GetNextDocumentPrerequisiteQuestion(Dictionary<string, string> answers)
     {
+        if (IsAdoptionFlow(answers))
+        {
+            return null;
+        }
+
+        HydrateKnownAnswers(answers);
         // 1. Full Legal Name
         if (!answers.ContainsKey("doc_prefill_full_name"))
         {
@@ -589,6 +597,66 @@ public class DecisionTreeQuestionEngineV2 : IQuestionEngine
         }
 
         return null;
+    }
+
+    #endregion
+
+    #region Answer Hydration / Eligibility Helpers
+
+    private void HydrateKnownAnswers(Dictionary<string, string> answers)
+    {
+        MirrorAnswer(answers, "service_fit_intent_type", "intent_type");
+        MirrorAnswer(answers, "service_fit_category", "category");
+        MirrorAnswer(answers, "full_name", "doc_prefill_full_name");
+        MirrorAnswer(answers, "passport_full_name", "doc_prefill_full_name");
+        MirrorAnswer(answers, "date_of_birth", "doc_prefill_dob");
+        MirrorAnswer(answers, "dob", "doc_prefill_dob");
+        MirrorAnswer(answers, "nationality", "doc_prefill_nationality");
+        MirrorAnswer(answers, "citizenship", "doc_prefill_nationality");
+        MirrorAnswer(answers, "passport_number", "doc_prefill_passport_number");
+        MirrorAnswer(answers, "passport_expiry", "doc_prefill_passport_expiry");
+    }
+
+    private static void MirrorAnswer(Dictionary<string, string> answers, string sourceKey, string destinationKey)
+    {
+        if (answers.ContainsKey(destinationKey))
+        {
+            return;
+        }
+
+        if (answers.TryGetValue(sourceKey, out var value) && !string.IsNullOrWhiteSpace(value))
+        {
+            answers[destinationKey] = value;
+        }
+    }
+
+    private List<QuestionOption> GetEligibleWorkVisaOptions(Dictionary<string, string> answers)
+    {
+        var options = new List<QuestionOption>
+        {
+            new() { Value = "H-1B", Label = "H-1B Specialty Occupation - Requires bachelor's degree or higher in specific field" },
+            new() { Value = "H-2A", Label = "H-2A Agricultural Worker - Seasonal agricultural employment" },
+            new() { Value = "H-2B", Label = "H-2B Temporary Worker - Non-agricultural temporary work" },
+            new() { Value = "L-1", Label = "L-1 Intracompany Transfer - Transfer within same company to U.S. office" },
+            new() { Value = "O-1", Label = "O-1 Extraordinary Ability - Arts, sciences, business, athletics, or entertainment" },
+            new() { Value = "P-1", Label = "P-1 Athlete/Entertainer - Individual or team athletes, entertainment groups" },
+            new() { Value = "TN", Label = "TN NAFTA Professional - Canadian or Mexican professionals" },
+            new() { Value = "R-1", Label = "R-1 Religious Worker - Religious occupations and vocations" }
+        };
+
+        if (answers.TryGetValue("education_level", out var educationLevel) &&
+            educationLevel.Equals("associate", StringComparison.OrdinalIgnoreCase))
+        {
+            options.RemoveAll(option => option.Value.Equals("H-1B", StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (answers.TryGetValue("employment_status", out var employmentStatus) &&
+            employmentStatus.Equals("unemployed", StringComparison.OrdinalIgnoreCase))
+        {
+            options.RemoveAll(option => option.Value.Equals("L-1", StringComparison.OrdinalIgnoreCase));
+        }
+
+        return options;
     }
 
     #endregion

@@ -321,7 +321,9 @@ public class AgentOrchestrator : IAgentOrchestrator
 
         // Otherwise, evaluate on the fly
         var answers = await _sessionManager.GetSessionAnswersAsync(session.Id);
-        return await _evaluationEngine.EvaluateAllVisasAsync(answers);
+        var evaluations = await _evaluationEngine.EvaluateAllVisasAsync(answers);
+        await PersistEvaluationsAsync(session.Id, evaluations);
+        return evaluations;
     }
 
     public async Task SelectVisaAsync(Guid sessionToken, int visaTypeId)
@@ -330,6 +332,11 @@ public class AgentOrchestrator : IAgentOrchestrator
         if (session == null)
         {
             throw new InvalidOperationException($"Session with token {sessionToken} not found");
+        }
+
+        if (session.VisaEvaluations.Count == 0)
+        {
+            await GetVisaEvaluationsAsync(sessionToken);
         }
 
         await _sessionManager.SelectVisaAsync(session.Id, visaTypeId);
@@ -449,5 +456,25 @@ public class AgentOrchestrator : IAgentOrchestrator
             LockedByStaffId = caseEntity.VisaLockedByStaffId,
             LockedAt = caseEntity.VisaLockedAt
         };
+    }
+
+    private async Task PersistEvaluationsAsync(Guid sessionId, List<VisaEvaluationResult> evaluationResults)
+    {
+        var evaluationEntities = evaluationResults.Select(result => new VisaEvaluation
+        {
+            Id = Guid.NewGuid(),
+            SessionId = sessionId,
+            VisaTypeId = result.VisaType.Id,
+            Status = result.Status,
+            MatchScore = result.MatchScore,
+            Rank = result.Rank,
+            Explanation = result.Explanation,
+            MissingInformation = string.Join("; ", result.MissingInformation),
+            RequiredDocuments = result.RequiredDocuments,
+            IsUserSelected = false,
+            IsAttorneyLocked = false
+        }).ToList();
+
+        await _sessionManager.CompleteSessionAsync(sessionId, evaluationEntities);
     }
 }

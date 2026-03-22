@@ -20,13 +20,17 @@ vi.mock('@l4h/shared-ui', async () => {
 describe('VisaResultsPage', () => {
     const mockEvaluations = [
         {
+            visaTypeId: 101,
             visaName: 'H-1B Visa',
+            visaCode: 'H-1B',
             status: 'Eligible',
             matchScore: 95,
             explanation: 'You meet all the requirements.',
         },
         {
+            visaTypeId: 202,
             visaName: 'O-1 Visa',
+            visaCode: 'O-1',
             status: 'Potential',
             matchScore: 75,
             explanation: 'You meet most of the requirements.',
@@ -86,7 +90,7 @@ describe('VisaResultsPage', () => {
             expect(screen.getByText('H-1B Visa')).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByText('Register'));
+        fireEvent.click(screen.getByText('Select & Register'));
 
         await waitFor(() => {
             expect(screen.getByText('Registration Page')).toBeInTheDocument();
